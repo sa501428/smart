@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import juicebox.HiCGlobals;
 import juicebox.data.ChromosomeHandler;
 import juicebox.data.feature.FeatureFilter;
 import juicebox.data.feature.GenomeWideList;
-import juicebox.gui.SuperAdapter;
 import juicebox.track.feature.Feature2D;
 import juicebox.track.feature.Feature2DList;
 import juicebox.track.feature.FeatureFunction;
@@ -95,11 +94,7 @@ public class MotifAnchorTools {
         try {
             minSize = Integer.parseInt(newSize);
         } catch (Exception e) {
-            if (HiCGlobals.guiIsCurrentlyActive) {
-                SuperAdapter.showMessageDialog("Invalid integer, using default size " + minSize);
-            } else {
-                MessageUtils.showMessage("Invalid integer, using default size " + minSize);
-            }
+            MessageUtils.showMessage("Invalid integer, using default size " + minSize);
         }
         return minSize;
     }

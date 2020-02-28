@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,6 @@
 package juicebox.track.feature;
 
 import juicebox.HiCGlobals;
-import juicebox.assembly.AssemblyHeatmapHandler;
-import juicebox.assembly.Scaffold;
 import juicebox.data.ChromosomeHandler;
 import juicebox.data.anchor.MotifAnchor;
 import juicebox.tools.utils.juicer.arrowhead.ArrowheadScore;
@@ -198,14 +196,6 @@ public class Feature2D implements Comparable<Feature2D> {
         String scaledStart2 = formatter.format(start2 * HiCGlobals.hicMapScale + 1);
         String scaledEnd1 = formatter.format(end1 * HiCGlobals.hicMapScale);
         String scaledEnd2 = formatter.format(end2 * HiCGlobals.hicMapScale);
-
-        if (getFeatureType() == FeatureType.SCAFFOLD) {
-            Scaffold scaffold = AssemblyHeatmapHandler.getSuperAdapter().getAssemblyStateTracker().getAssemblyHandler().getScaffoldFromFeature(this);
-            scaledStart1 = formatter.format(scaffold.getCurrentStart() + 1);
-            scaledStart2 = formatter.format(scaffold.getCurrentStart() + 1);
-            scaledEnd1 = formatter.format(scaffold.getCurrentEnd());
-            scaledEnd2 = formatter.format(scaffold.getCurrentEnd());
-        }
 
         StringBuilder txt = new StringBuilder();
         txt.append("<span style='color:red; font-family: arial; font-size: 12pt;'>");

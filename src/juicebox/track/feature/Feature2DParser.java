@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package juicebox.track.feature;
 
 import juicebox.HiCGlobals;
-import juicebox.MainWindow;
 import juicebox.data.ChromosomeHandler;
 import juicebox.data.HiCFileTools;
 import juicebox.tools.utils.juicer.arrowhead.ArrowheadScoreList;
@@ -35,7 +34,6 @@ import org.broad.igv.feature.Chromosome;
 import org.broad.igv.ui.color.ColorUtilities;
 import org.broad.igv.util.ParsingUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -151,9 +149,6 @@ public class Feature2DParser {
                     String text = "Improperly formatted file: \nLine " + lineNum + " has " + tokens.length + " entries" +
                             " while header has " + headers.length;
                     System.err.println(text);
-                    if (HiCGlobals.guiIsCurrentlyActive) {
-                        JOptionPane.showMessageDialog(MainWindow.getInstance(), text, "Error", JOptionPane.ERROR_MESSAGE);
-                    }
                     throw new IOException(text);
                 }
 
@@ -162,11 +157,7 @@ public class Feature2DParser {
 
             br.close();
         } catch (Exception ec) {
-            if (HiCGlobals.guiIsCurrentlyActive) {
-                ec.printStackTrace();
-            } else {
-                System.err.println("File " + path + " could not be parsed");
-            }
+            System.err.println("File " + path + " could not be parsed");
         }
 
         if (featureFilter != null)
@@ -306,8 +297,6 @@ public class Feature2DParser {
             } catch (Exception e) {
                 String text = "Line " + lineNum + " improperly formatted in <br>" + path + "<br>Line format should start with:  CHR1  X1  X2";
                 System.err.println(text);
-                if (HiCGlobals.guiIsCurrentlyActive)
-                    JOptionPane.showMessageDialog(MainWindow.getInstance(), text, "Error", JOptionPane.ERROR_MESSAGE);
                 throw new IOException(text);
             }
 
@@ -340,8 +329,6 @@ public class Feature2DParser {
                 String text = "Line " + lineNum + " improperly formatted in <br>" +
                         path + "<br>Line format should start with:  CHR1  X1  X2  CHR2  Y1  Y2";
                 System.err.println(text);
-                if (HiCGlobals.guiIsCurrentlyActive)
-                    JOptionPane.showMessageDialog(MainWindow.getInstance(), text, "Error", JOptionPane.ERROR_MESSAGE);
                 throw new IOException(text);
             }
 
@@ -371,8 +358,6 @@ public class Feature2DParser {
                 String text = "Line " + lineNum + " improperly formatted in <br>" +
                         path + "<br>Line format should start with:  CHR1  X1  X2  CHR2  Y1  Y2";
                 System.err.println(text);
-                if (HiCGlobals.guiIsCurrentlyActive)
-                    JOptionPane.showMessageDialog(MainWindow.getInstance(), text, "Error", JOptionPane.ERROR_MESSAGE);
                 throw new IOException(text);
             }
 
@@ -401,8 +386,6 @@ public class Feature2DParser {
                 String text = "Line " + lineNum + " improperly formatted in <br>" +
                         path + "<br>Line format should start with:  CHR1  X1  CHR2  Y1";
                 System.err.println(text);
-                if (HiCGlobals.guiIsCurrentlyActive)
-                    JOptionPane.showMessageDialog(MainWindow.getInstance(), text, "Error", JOptionPane.ERROR_MESSAGE);
                 throw new IOException(text);
             }
 

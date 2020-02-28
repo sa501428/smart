@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2019 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package juicebox.tools.utils.norm;
 import juicebox.HiC;
 import juicebox.HiCGlobals;
 import juicebox.data.*;
-import juicebox.gui.SuperAdapter;
 import juicebox.tools.utils.original.ExpectedValueCalculation;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationHandler;
@@ -57,36 +56,6 @@ public class CustomNormVectorFileHandler extends NormVectorUpdater {
         System.out.println("all custom norms added");
     }
 
-    public static void unsafeHandleUpdatingOfNormalizations(SuperAdapter superAdapter, File[] files, boolean isControl) {
-
-        Dataset ds = superAdapter.getHiC().getDataset();
-        if (isControl) {
-            ds = superAdapter.getHiC().getControlDataset();
-        }
-
-        String[] filePaths = new String[files.length];
-        for (int i = 0; i < filePaths.length; i++) {
-            filePaths[i] = files[i].getAbsolutePath();
-        }
-
-        try {
-            NormVectorInfo normVectorInfo = completeCalculationsNecessaryForUpdatingCustomNormalizations(ds, filePaths, false);
-
-            for (NormalizationType customNormType : normVectorInfo.getNormalizationVectorsMap().keySet()) {
-                ds.addNormalizationType(customNormType);
-                for (NormalizationVector normalizationVector : normVectorInfo.getNormalizationVectorsMap().get(customNormType).values()) {
-                    if (normalizationVector == null) {
-                        System.out.println("error encountered");
-                    }
-                    ds.addNormalizationVectorDirectlyToRAM(normalizationVector);
-                }
-            }
-            System.out.println("all custom norms added v2");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private static NormVectorInfo completeCalculationsNecessaryForUpdatingCustomNormalizations(
             final Dataset ds, String[] filePaths, boolean overwriteHicFileFooter) throws IOException {

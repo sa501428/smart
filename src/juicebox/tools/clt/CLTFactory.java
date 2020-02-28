@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import juicebox.HiCGlobals;
 import juicebox.tools.clt.juicer.*;
 import juicebox.tools.clt.old.*;
 import juicebox.tools.dev.*;
-import juicebox.tools.utils.Benchmark;
 
 
 /**
@@ -50,7 +49,6 @@ public class CLTFactory {
             //        "fragmentToBed","fragmentToBed <fragmentFile>",
             //        "pairsToBin",   "pairsToBin <input_HiC_file> <output_HiC_file> <genomeID>",
             //        "db",           "db <frag|annot|update> [items]",
-            Dump.getUsage(),
             PreProcessing.getBasicUsage(),
             AddNorm.getBasicUsage(),
             Pearsons.getBasicUsage(),
@@ -79,8 +77,6 @@ public class CLTFactory {
         cmd = cmd.toLowerCase();
         if (cmd.equals("pre")) {
             return new PreProcessing();
-        } else if (cmd.equals("dump")) {
-            return new Dump();
         } else if (cmd.equals("compare-vectors")) {
             return new CompareVectors();
         } else if (cmd.equals("validate")) {
@@ -131,8 +127,6 @@ public class CLTFactory {
             return new ABCompartmentsDiff();
         } else if (cmd.equals("genes")) {
             return new GeneFinder();
-        } else if (cmd.equals("benchmark")) {
-            return new Benchmark();
         } else if (cmd.equals("pearsons")) {
             return new Pearsons();
         } else if (cmd.equals("eigenvector")) {

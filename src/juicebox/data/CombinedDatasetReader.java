@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2019 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 package juicebox.data;
 
 import juicebox.HiC;
-import juicebox.HiCGlobals;
-import juicebox.MainWindow;
 import juicebox.matrix.BasicMatrix;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationType;
@@ -309,9 +307,6 @@ public class CombinedDatasetReader implements DatasetReader {
             } catch (Exception e) {
                 // TODO - test on hic file with no stats file specified
                 e.printStackTrace();
-                if (HiCGlobals.guiIsCurrentlyActive)
-                    JOptionPane.showMessageDialog(MainWindow.getInstance(), "Unable to retrieve statistics for one of the maps.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
             }
         }
 

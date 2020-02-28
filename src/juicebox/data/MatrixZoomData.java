@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,8 @@
 
 package juicebox.data;
 
-import htsjdk.tribble.util.LittleEndianOutputStream;
 import juicebox.HiC;
 import juicebox.HiCGlobals;
-import juicebox.assembly.AssemblyHeatmapHandler;
-import juicebox.assembly.AssemblyScaffoldHandler;
-import juicebox.assembly.Scaffold;
-import juicebox.gui.SuperAdapter;
 import juicebox.matrix.BasicMatrix;
 import juicebox.matrix.RealMatrixWrapper;
 import juicebox.tools.clt.old.Pearsons;
@@ -39,7 +34,6 @@ import juicebox.track.HiCFixedGridAxis;
 import juicebox.track.HiCFragmentAxis;
 import juicebox.track.HiCGridAxis;
 import juicebox.windowui.HiCZoom;
-import juicebox.windowui.MatrixType;
 import juicebox.windowui.NormalizationHandler;
 import juicebox.windowui.NormalizationType;
 import org.apache.commons.math.linear.Array2DRowRealMatrix;
@@ -50,7 +44,6 @@ import org.broad.igv.feature.Chromosome;
 import org.broad.igv.util.collections.LRUCache;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -188,14 +181,6 @@ public class MatrixZoomData {
         return getKey(chr1, chr2) + "_" + blockNumber + "_" + no;
     }
 
-    public String getColorScaleKey(MatrixType displayOption, NormalizationType n1, NormalizationType n2) {
-        return getKey() + displayOption + "_" + n1 + "_" + n2;
-    }
-
-    public String getTileKey(int tileRow, int tileColumn, MatrixType displayOption) {
-        return getKey() + "_" + tileRow + "_" + tileColumn + "_ " + displayOption;
-    }
-
     /**
      * Return the blocks of normalized, observed values overlapping the rectangular region specified.
      * The units are "bins"
@@ -211,13 +196,7 @@ public class MatrixZoomData {
                                                       boolean isImportant, boolean fillUnderDiagonal) {
         final List<Block> blockList = new ArrayList<>();
         Block b = new Block(1, getBlockKey(1, no));
-        if (HiCGlobals.isAssemblyMatCheck) {
-            return addNormalizedBlocksToList(blockList, binX1, binY1, binX2, binY2, no, 1, 1);
-        } else if (SuperAdapter.assemblyModeCurrentlyActive && !HiCGlobals.isAssemblyMatCheck) {
-            return addNormalizedBlocksToListAssembly(blockList, binX1, binY1, binX2, binY2, no);
-        } else {
-            return addNormalizedBlocksToList(blockList, binX1, binY1, binX2, binY2, no, fillUnderDiagonal);
-        }
+        return addNormalizedBlocksToList(blockList, binX1, binY1, binX2, binY2, no, fillUnderDiagonal);
     }
 
     private void populateBlocksToLoad(int r, int c, NormalizationType no, List<Block> blockList, Set<Integer> blocksToLoad) {
@@ -294,112 +273,6 @@ public class MatrixZoomData {
         return new ArrayList<>(new HashSet<>(blockList));
     }
 
-    private List<Block> addNormalizedBlocksToListAssembly(final List<Block> blockList, int binX1, int binY1, int binX2, int binY2,
-                                                          final NormalizationType no) {
-
-        Set<Integer> blocksToLoad = new HashSet<>();
-
-        // get aggregate scaffold handler
-        AssemblyScaffoldHandler aFragHandler = AssemblyHeatmapHandler.getSuperAdapter().getAssemblyStateTracker().getAssemblyHandler();
-
-        final int binSize = zoom.getBinSize();
-        long actualBinSize = binSize;
-        if (chr1.getIndex() == 0 && chr2.getIndex() == 0) {
-            actualBinSize = 1000 * actualBinSize;
-        }
-
-        List<Scaffold> xAxisAggregateScaffolds = aFragHandler.getIntersectingAggregateFeatures(
-                (long) (actualBinSize * binX1 * HiCGlobals.hicMapScale), (long) (actualBinSize * binX2 * HiCGlobals.hicMapScale));
-        List<Scaffold> yAxisAggregateScaffolds = aFragHandler.getIntersectingAggregateFeatures(
-                (long) (actualBinSize * binY1 * HiCGlobals.hicMapScale), (long) (actualBinSize * binY2 * HiCGlobals.hicMapScale));
-
-        int x1pos, x2pos, y1pos, y2pos;
-
-        for (Scaffold xScaffold : xAxisAggregateScaffolds) {
-            for (Scaffold yScaffold : yAxisAggregateScaffolds) {
-
-                x1pos = (int) (xScaffold.getOriginalStart() / HiCGlobals.hicMapScale);
-                x2pos = (int) (xScaffold.getOriginalEnd() / HiCGlobals.hicMapScale);
-                y1pos = (int) (yScaffold.getOriginalStart() / HiCGlobals.hicMapScale);
-                y2pos = (int) (yScaffold.getOriginalEnd() / HiCGlobals.hicMapScale);
-
-                // have to case long because of thumbnail, maybe fix thumbnail instead
-
-                if (xScaffold.getCurrentStart() < actualBinSize * binX1 * HiCGlobals.hicMapScale) {
-                    if (!xScaffold.getInvertedVsInitial()) {
-                        x1pos = (int) ((xScaffold.getOriginalStart() + actualBinSize * binX1 * HiCGlobals.hicMapScale - xScaffold.getCurrentStart()) / HiCGlobals.hicMapScale);
-                    } else {
-                        x2pos = (int) ((xScaffold.getOriginalStart() - actualBinSize * binX1 * HiCGlobals.hicMapScale + xScaffold.getCurrentEnd()) / HiCGlobals.hicMapScale);
-                    }
-                }
-
-                if (yScaffold.getCurrentStart() < actualBinSize * binY1 * HiCGlobals.hicMapScale) {
-                    if (!yScaffold.getInvertedVsInitial()) {
-                        y1pos = (int) ((yScaffold.getOriginalStart() + actualBinSize * binY1 * HiCGlobals.hicMapScale - yScaffold.getCurrentStart()) / HiCGlobals.hicMapScale);
-                    } else {
-                        y2pos = (int) ((yScaffold.getOriginalStart() - actualBinSize * binY1 * HiCGlobals.hicMapScale + yScaffold.getCurrentEnd()) / HiCGlobals.hicMapScale);
-                    }
-                }
-
-                if (xScaffold.getCurrentEnd() > actualBinSize * binX2 * HiCGlobals.hicMapScale) {
-                    if (!xScaffold.getInvertedVsInitial()) {
-                        x2pos = (int) ((xScaffold.getOriginalStart() + actualBinSize * binX2 * HiCGlobals.hicMapScale - xScaffold.getCurrentStart()) / HiCGlobals.hicMapScale);
-                    } else {
-                        x1pos = (int) ((xScaffold.getOriginalStart() - actualBinSize * binX2 * HiCGlobals.hicMapScale + xScaffold.getCurrentEnd()) / HiCGlobals.hicMapScale);
-                    }
-                }
-
-                if (yScaffold.getCurrentEnd() > actualBinSize * binY2 * HiCGlobals.hicMapScale) {
-                    if (!yScaffold.getInvertedVsInitial()) {
-                        y2pos = (int) ((yScaffold.getOriginalStart() + actualBinSize * binY2 * HiCGlobals.hicMapScale - yScaffold.getCurrentStart()) / HiCGlobals.hicMapScale);
-                    } else {
-                        y1pos = (int) ((yScaffold.getOriginalStart() - actualBinSize * binY2 * HiCGlobals.hicMapScale + yScaffold.getCurrentEnd()) / HiCGlobals.hicMapScale);
-                    }
-                }
-
-                int[] genomePosition = new int[]{
-                        x1pos, x2pos, y1pos, y2pos
-                };
-
-                List<Integer> tempBlockNumbers = getBlockNumbersForRegionFromGenomePosition(genomePosition);
-                for (int blockNumber : tempBlockNumbers) {
-                    if (!blocksToLoad.contains(blockNumber)) {
-                        String key = getBlockKey(blockNumber, no);
-                        Block b;
-                        //temp fix for AllByAll. TODO: trace this!
-                        if (HiCGlobals.useCache && blockCache.containsKey(key)) {
-                            b = blockCache.get(key);
-                            blockList.add(b);
-                        } else {
-                            blocksToLoad.add(blockNumber);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove basic duplicates here
-        // Actually load new blocks
-        actuallyLoadGivenBlocks(blockList, blocksToLoad, no);
-
-        return new ArrayList<>(new HashSet<>(blockList));
-    }
-
-//    private List<Contig2D> retrieveContigsIntersectingWithWindow(Feature2DHandler handler, Rectangle currentWindow) {
-//        List<Feature2D> xAxisFeatures;
-//        if (chr1.getIndex() == 0 && chr2.getIndex() == 0) {
-//            xAxisFeatures = handler.getIntersectingFeatures(1, 1, currentWindow, true);
-//            // helps with disappearing heatmap but doesn't fix everything
-//        } else {
-//            xAxisFeatures = handler.getIntersectingFeatures(chr1.getIndex(), chr2.getIndex(), currentWindow, true);
-//        }
-//        List<Contig2D> axisContigs = new ArrayList<>();
-//        for (Feature2D feature2D : new HashSet<>(xAxisFeatures)) {
-//            axisContigs.add(feature2D.toContig());
-//        }
-//        Collections.sort(axisContigs);
-//        return AssemblyHeatmapHandler.mergeRedundantContiguousContigs(axisContigs);
-//    }
 
     private void actuallyLoadGivenBlocks(final List<Block> blockList, Set<Integer> blocksToLoad,
                                          final NormalizationType no) {
@@ -422,9 +295,6 @@ public class MatrixZoomData {
                             b = new Block(blockNumber, key);   // An empty block
                         }
                         //Run out of memory if do it here
-                        if (SuperAdapter.assemblyModeCurrentlyActive) {
-                            b = AssemblyHeatmapHandler.modifyBlock(b, key, binSize, chr1Index, chr2Index);
-                        }
                         if (HiCGlobals.useCache) {
                             blockCache.put(key, b);
                         }
@@ -476,9 +346,6 @@ public class MatrixZoomData {
                             b = new Block(blockNumber, key);   // An empty block
                         }
                         //Run out of memory if do it here
-                        if (SuperAdapter.assemblyModeCurrentlyActive) {
-                            b = AssemblyHeatmapHandler.modifyBlock(b, key, binSize, chr1Id, chr2Id);
-                        }
                         if (HiCGlobals.useCache) {
                             blockCache.put(key, b);
                         }
@@ -869,246 +736,7 @@ public class MatrixZoomData {
     }
 
 
-    public void dump(PrintWriter printWriter, LittleEndianOutputStream les, NormalizationType norm, MatrixType matrixType,
-                     boolean useRegionIndices, int[] regionIndices, ExpectedValueFunction df, boolean dense) throws IOException {
 
-        // determine which output will be used
-        if (printWriter == null && les == null) {
-            printWriter = new PrintWriter(System.out);
-        }
-        boolean usePrintWriter = printWriter != null && les == null;
-        boolean isIntraChromosomal = chr1.getIndex() == chr2.getIndex();
-
-        // Get the block index keys, and sort
-        List<Integer> blocksToIterateOver;
-        if (useRegionIndices) {
-            blocksToIterateOver = getBlockNumbersForRegionFromGenomePosition(regionIndices);
-        } else {
-            blocksToIterateOver = reader.getBlockNumbers(this);
-            Collections.sort(blocksToIterateOver);
-        }
-
-        if (!dense) {
-            for (Integer blockNumber : blocksToIterateOver) {
-                Block b = reader.readNormalizedBlock(blockNumber, MatrixZoomData.this, norm);
-                if (b != null) {
-                    for (ContactRecord rec : b.getContactRecords()) {
-                        float counts = rec.getCounts();
-                        int x = rec.getBinX();
-                        int y = rec.getBinY();
-                        int xActual = x * zoom.getBinSize();
-                        int yActual = y * zoom.getBinSize();
-                        float oeVal = 0f;
-                        if (matrixType == MatrixType.OE) {
-                            double expected = 0;
-                            if (chr1 == chr2) {
-                                if (df != null) {
-                                    int dist = Math.abs(x - y);
-                                    expected = df.getExpectedValue(chr1.getIndex(), dist);
-                                }
-                            } else {
-                                expected = (averageCount > 0 ? averageCount : 1);
-                            }
-
-                            double observed = rec.getCounts(); // Observed is already normalized
-                            oeVal = (float) (observed / expected);
-                        }
-                        if (!useRegionIndices || // i.e. use full matrix
-                                // or check regions that overlap with upper left
-                                (xActual >= regionIndices[0] && xActual <= regionIndices[1] &&
-                                        yActual >= regionIndices[2] && yActual <= regionIndices[3]) ||
-                                // or check regions that overlap with lower left
-                                (isIntraChromosomal && yActual >= regionIndices[0] && yActual <= regionIndices[1] &&
-                                        xActual >= regionIndices[2] && xActual <= regionIndices[3])) {
-                            // but leave in upper right triangle coordinates
-                            if (usePrintWriter) {
-                                if (matrixType == MatrixType.OBSERVED) {
-                                    printWriter.println(xActual + "\t" + yActual + "\t" + counts);
-                                } else if (matrixType == MatrixType.OE) {
-                                    printWriter.println(xActual + "\t" + yActual + "\t" + oeVal);
-                                }
-                            } else {
-                                // TODO I suspect this is wrong - should be writing xActual - but this is for binary dumping and we never use it
-                                if (matrixType == MatrixType.OBSERVED) {
-                                    les.writeInt(x);
-                                    les.writeInt(y);
-                                    les.writeFloat(counts);
-                                } else if (matrixType == MatrixType.OE) {
-                                    les.writeInt(x);
-                                    les.writeInt(y);
-                                    les.writeFloat(oeVal);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (usePrintWriter) {
-                printWriter.close();
-            }
-            else {
-                les.close();
-            }
-        }
-        else {
-            int maxX = 0;
-            int maxY = 0;
-            for (Integer blockNumber : blocksToIterateOver) {
-                Block b = reader.readNormalizedBlock(blockNumber, MatrixZoomData.this, norm);
-                if (b != null) {
-                    for (ContactRecord rec : b.getContactRecords()) {
-                        int x = rec.getBinX();
-                        int y = rec.getBinY();
-                        if (maxX < x) maxX = x;
-                        if (maxY < y) maxY = y;
-                    }
-                }
-            }
-            if (isIntraChromosomal) {
-                if (maxX < maxY) {
-                    maxX = maxY;
-                } else {
-                    maxY = maxX;
-                }
-            }
-
-            maxX++;
-            maxY++;
-            float[][] matrix = new float[maxX][maxY];  // auto initialized to 0
-
-            for (Integer blockNumber : blocksToIterateOver) {
-                Block b = reader.readNormalizedBlock(blockNumber, MatrixZoomData.this, norm);
-                if (b != null) {
-                    for (ContactRecord rec : b.getContactRecords()) {
-                        float counts = rec.getCounts();
-                        int x = rec.getBinX();
-                        int y = rec.getBinY();
-
-                        int xActual = x * zoom.getBinSize();
-                        int yActual = y * zoom.getBinSize();
-                        float oeVal = 0f;
-                        if (matrixType == MatrixType.OE) {
-                            int dist = Math.abs(x - y);
-                            double expected = 0;
-                            try {
-                                expected = df.getExpectedValue(chr1.getIndex(), dist);
-                            } catch (Exception e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            }
-                            double observed = rec.getCounts(); // Observed is already normalized
-                            oeVal = (float) (observed / expected);
-                        }
-                        if (!useRegionIndices || // i.e. use full matrix
-                                // or check regions that overlap with upper left
-                                (xActual >= regionIndices[0] && xActual <= regionIndices[1] &&
-                                        yActual >= regionIndices[2] && yActual <= regionIndices[3]) ||
-                                // or check regions that overlap with lower left
-                                (isIntraChromosomal && yActual >= regionIndices[0] && yActual <= regionIndices[1] &&
-                                        xActual >= regionIndices[2] && xActual <= regionIndices[3])) {
-
-                            if (matrixType == MatrixType.OBSERVED) {
-                                matrix[x][y] = counts;
-                                if (isIntraChromosomal) {
-                                    matrix[y][x] = counts;
-                                }
-                                // printWriter.println(xActual + "\t" + yActual + "\t" + counts);
-                            } else if (matrixType == MatrixType.OE) {
-                                matrix[x][y] = oeVal;
-                                if (isIntraChromosomal) {
-                                    matrix[y][x] = oeVal;
-                                }
-                                // printWriter.println(xActual + "\t" + yActual + "\t" + oeVal);
-                            }
-                        }
-                    }
-                }
-            }
-            if (usePrintWriter) {
-                for (int i = 0; i < maxX; i++) {
-                    for (int j = 0; j < maxY; j++) {
-                        printWriter.print(matrix[i][j] + "\t");
-                    }
-                    printWriter.println();
-                }
-            } else {
-                for (int i = 0; i < maxX; i++) {
-                    for (int j = 0; j < maxY; j++) {
-                        les.writeFloat(matrix[i][j]);
-
-                    }
-
-                }
-            }
-
-            if (usePrintWriter) {
-                printWriter.close();
-            }
-            else {
-                les.close();
-            }
-        }
-    }
-
-    public void dump1DTrackFromCrossHairAsWig(PrintWriter printWriter, int binStartPosition,
-                                              boolean isIntraChromosomal, int[] regionBinIndices,
-                                              NormalizationType norm, MatrixType matrixType) {
-
-        if (!MatrixType.isObservedOrControl(matrixType)) {
-            System.out.println("This feature is only available for Observed or Control views");
-            return;
-        }
-
-        int binCounter = 0;
-
-        // Get the block index keys, and sort
-        List<Integer> blocksToIterateOver = getBlockNumbersForRegionFromBinPosition(regionBinIndices);
-        Collections.sort(blocksToIterateOver);
-
-        for (Integer blockNumber : blocksToIterateOver) {
-            Block b = null;
-            try {
-                b = reader.readNormalizedBlock(blockNumber, MatrixZoomData.this, norm);
-            } catch (Exception e) {
-                System.err.println("Skipping block " + blockNumber);
-            }
-            if (b != null) {
-                for (ContactRecord rec : b.getContactRecords()) {
-                    float counts = rec.getCounts();
-                    int x = rec.getBinX();
-                    int y = rec.getBinY();
-
-                    if (    //check regions that overlap with upper left
-                            (x >= regionBinIndices[0] && x <= regionBinIndices[1] &&
-                                    y >= regionBinIndices[2] && y <= regionBinIndices[3]) ||
-                                    // or check regions that overlap with lower left
-                                    (isIntraChromosomal && x >= regionBinIndices[2] && x <= regionBinIndices[3] &&
-                                            y >= regionBinIndices[0] && y <= regionBinIndices[1])) {
-                        // but leave in upper right triangle coordinates
-
-                        if (x == binStartPosition) {
-                            while (binCounter < y) {
-                                printWriter.println("0");
-                                binCounter++;
-                            }
-                        } else if (y == binStartPosition) {
-                            while (binCounter < x) {
-                                printWriter.println("0");
-                                binCounter++;
-                            }
-                        } else {
-                            System.err.println("Something went wrong while generating 1D track");
-                            System.err.println("Improper input was likely provided");
-                        }
-
-                        printWriter.println(counts);
-                        binCounter++;
-
-                    }
-                }
-            }
-        }
-    }
 
 
     /**

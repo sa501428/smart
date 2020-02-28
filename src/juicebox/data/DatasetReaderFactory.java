@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2019 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,6 @@ package juicebox.data;
 import htsjdk.samtools.seekablestream.SeekableHTTPStream;
 import htsjdk.samtools.seekablestream.SeekableStream;
 import htsjdk.tribble.util.LittleEndianInputStream;
-import juicebox.HiCGlobals;
-import juicebox.gui.SuperAdapter;
-import org.broad.igv.ui.util.MessageUtils;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -92,11 +89,7 @@ public class DatasetReaderFactory {
             try {
                 dis = new LittleEndianInputStream(new FileInputStream(path));
             } catch (Exception e2) {
-                if (HiCGlobals.guiIsCurrentlyActive) {
-                    SuperAdapter.showMessageDialog("File could not be found\n(" + path + ")");
-                } else {
-                    MessageUtils.showErrorMessage("File could not be found\n(" + path + ")", e2);
-                }
+                System.err.println("File could not be found\n(" + path + ")" + e2.getLocalizedMessage());
             }
         } finally {
             if (stream != null) stream.close();
