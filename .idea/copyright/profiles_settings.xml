@@ -1,7 +1,7 @@
 <component name="CopyrightManager">
-  <settings default="GRIND">
+  <settings default="Juicebox">
     <module2copyright>
-      <element module="GRIND Source" copyright="GRIND" />
+      <element module="Juicebox Source" copyright="Juicebox" />
     </module2copyright>
   </settings>
 </component>
