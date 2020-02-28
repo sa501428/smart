@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="GRIND Source" pattern="file:src/juicebox//*.java" />
+</component>
