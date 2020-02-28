@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ import juicebox.HiCGlobals;
 import juicebox.tools.clt.CLTFactory;
 import juicebox.tools.clt.CommandLineParser;
 import juicebox.tools.clt.CommandLineParserForJuicer;
-import juicebox.tools.clt.JuiceboxCLT;
+import juicebox.tools.clt.JuicerCLT;
 import org.broad.igv.Globals;
 
 
@@ -74,7 +74,7 @@ public class HiCTools {
 
         String[] args = parser.getRemainingArgs();
 
-        JuiceboxCLT instanceOfCLT;
+        JuicerCLT instanceOfCLT;
         String cmd = "";
         if (args.length == 0) {
             instanceOfCLT = null;

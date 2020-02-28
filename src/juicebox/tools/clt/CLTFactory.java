@@ -27,8 +27,6 @@ package juicebox.tools.clt;
 import juicebox.HiCGlobals;
 import juicebox.tools.clt.juicer.CompareLists;
 import juicebox.tools.clt.juicer.LoopDomains;
-import juicebox.tools.clt.old.ValidateFile;
-import juicebox.tools.dev.CompareVectors;
 import juicebox.tools.dev.Drink;
 import juicebox.tools.dev.Grind;
 import juicebox.tools.dev.Shuffle;
@@ -44,7 +42,7 @@ public class CLTFactory {
 
     // Commenting some out because we're not going to release all these when we release CLT
     private final static String[] commandLineToolUsages = {
-            ValidateFile.getUsage()
+            "grind---"
     };
 
     public static void generalUsage() {
@@ -59,14 +57,10 @@ public class CLTFactory {
         System.out.println("Type juicer_tools <commandName> for more detailed usage instructions");
     }
 
-    public static JuiceboxCLT getCLTCommand(String cmd) {
+    public static JuicerCLT getCLTCommand(String cmd) {
 
         cmd = cmd.toLowerCase();
-        if (cmd.equals("compare-vectors")) {
-            return new CompareVectors();
-        } else if (cmd.equals("validate")) {
-            return new ValidateFile();
-        } else if (cmd.equals("compare")) {
+        if (cmd.equals("compare")) {
             return new CompareLists();
         } else if (cmd.equals("shuffle")) {
             return new Shuffle();

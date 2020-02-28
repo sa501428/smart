@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,25 +26,29 @@ package juicebox.tools.clt;
 
 import juicebox.data.ChromosomeHandler;
 import juicebox.data.Dataset;
+import juicebox.data.HiCFileTools;
 import juicebox.data.Matrix;
 import juicebox.windowui.NormalizationHandler;
 import juicebox.windowui.NormalizationType;
 import org.broad.igv.feature.Chromosome;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by muhammadsaadshamim on 9/21/15.
  */
-public abstract class JuicerCLT extends JuiceboxCLT {
+public abstract class JuicerCLT {
 
     protected NormalizationType norm = NormalizationHandler.KR;
     protected List<String> givenChromosomes = null; //TODO set to protected
     protected static int numCPUThreads = 1;
+    private static String usage;
+    protected Dataset dataset = null;
 
     protected JuicerCLT(String usage) {
-        super(usage);
+        setUsage(usage);
     }
 
     protected int determineHowManyChromosomesWillActuallyRun(Dataset ds, ChromosomeHandler chromosomeHandler) {
@@ -57,7 +61,6 @@ public abstract class JuicerCLT extends JuiceboxCLT {
         return maxProgressStatus;
     }
 
-    @Override
     public void readArguments(String[] args, CommandLineParser parser) {
         CommandLineParserForJuicer juicerParser = (CommandLineParserForJuicer)parser;
         assessIfChromosomesHaveBeenSpecified(juicerParser);
@@ -78,10 +81,42 @@ public abstract class JuicerCLT extends JuiceboxCLT {
 
     protected abstract void readJuicerArguments(String[] args, CommandLineParserForJuicer juicerParser);
 
+    public static String[] splitToList(String nextLine) {
+        return nextLine.trim().split("\\s+");
+    }
+
     private void assessIfChromosomesHaveBeenSpecified(CommandLineParserForJuicer juicerParser) {
         List<String> possibleChromosomes = juicerParser.getChromosomeListOption();
         if (possibleChromosomes != null && possibleChromosomes.size() > 0) {
             givenChromosomes = new ArrayList<>(possibleChromosomes);
+        }
+    }
+
+    public abstract void run();
+
+    private void setUsage(String newUsage) {
+        usage = newUsage;
+    }
+
+    public void printUsageAndExit() {
+        System.out.println("Usage:   juicer_tools " + usage);
+        System.exit(0);
+    }
+
+    public void printUsageAndExit(int exitcode) {
+        System.out.println("Usage:   juicer_tools " + usage);
+        System.exit(exitcode);
+    }
+
+    protected void setDatasetAndNorm(String files, String normType, boolean allowPrinting) {
+        dataset = HiCFileTools.extractDatasetForCLT(Arrays.asList(files.split("\\+")), allowPrinting);
+
+        norm = dataset.getNormalizationHandler().getNormTypeFromString(normType);
+        if (norm == null) {
+            System.err.println("Normalization type " + norm + " unrecognized.  Normalization type must be one of \n" +
+                    "\"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\"," +
+                    " \"GW_VC\", \"INTER_KR\", \"INTER_VC\", or a custom added normalization.");
+            System.exit(16);
         }
     }
 }
