@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -115,13 +115,6 @@ public class CustomMatrixZoomData extends MatrixZoomData {
         int gy2 = (int) (binY2 * resolution);
 
         return addNormalizedBlocksToListByGenomeCoordinates(gx1, gy1, gx2, gy2, norm);
-    }
-
-    @Override
-    public void printFullDescription() {
-        System.out.println("Custom Chromosome: " + chr1.getName() + " - " + chr2.getName());
-        System.out.println("unit: " + zoom.getUnit());
-        System.out.println("binSize (bp): " + zoom.getBinSize());
     }
 
     private List<Block> addNormalizedBlocksToListByGenomeCoordinates(int gx1, int gy1, int gx2, int gy2,

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2019 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package juicebox.data;
 
 import juicebox.HiC;
-import juicebox.matrix.BasicMatrix;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationType;
 
@@ -53,25 +52,13 @@ public interface DatasetReader {
 
     Block readNormalizedBlock(int blockNumber, MatrixZoomData zd, NormalizationType no) throws IOException;
 
-    /**
-     * Return the list of occupied block numbers for the given matrix.
-     *
-     * @param matrixZoomData
-     * @return
-     */
     List<Integer> getBlockNumbers(MatrixZoomData matrixZoomData);
-
-    double[] readEigenvector(String chrName, HiCZoom zoom, int number, String type);
 
     void close();
 
     NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int binSize) throws IOException;
 
-    BasicMatrix readPearsons(String chr1Name, String chr2Name, HiCZoom zoom, NormalizationType type) throws IOException;
-
     String getPath();
-
-    String readStats() throws IOException;
 
     List<JCheckBox> getCheckBoxes(List<ActionListener> actionListeners);
 

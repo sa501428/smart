@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2019 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,17 +28,12 @@ import com.google.common.primitives.Ints;
 import juicebox.HiC;
 import juicebox.HiCGlobals;
 import juicebox.tools.dev.Private;
-import juicebox.tools.utils.original.Preprocessor;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationHandler;
 import juicebox.windowui.NormalizationType;
 import org.broad.igv.feature.Chromosome;
-import org.broad.igv.util.FileUtils;
-import org.broad.igv.util.ResourceLocator;
 import org.broad.igv.util.collections.LRUCache;
 
-import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -113,114 +108,6 @@ public class Dataset {
     }
 
 
-    public ResourceLocator getSubcompartments() {
-        ResourceLocator locator = null;
-
-        String path = reader.getPath();
-        //Special case for combined maps:
-        if (path == null) {
-            return null;
-        }
-
-        if (path.contains("gm12878/in-situ/combined")) {
-            path = path.substring(0, path.lastIndexOf('.'));
-            if (path.lastIndexOf("_30") > -1) {
-                path = path.substring(0, path.lastIndexOf("_30"));
-            }
-
-            String location = path + "_subcompartments.bed";
-            locator = new ResourceLocator(location);
-
-            locator.setName("Subcompartments");
-        }
-        return locator;
-    }
-
-    public ResourceLocator getSuperLoops() {
-        ResourceLocator locator = null;
-
-        String path = reader.getPath();
-        //Special case for combined maps:
-        if (path == null) {
-            return null;
-        }
-
-        if (path.contains("gm12878/in-situ/combined")) {
-            path = path.substring(0, path.lastIndexOf('.'));
-
-            if (path.lastIndexOf("_30") > -1) {
-                path = path.substring(0, path.lastIndexOf("_30"));
-            }
-
-            String location = path + "_chrX_superloop_list.txt";
-            locator = new ResourceLocator(location);
-
-            locator.setName("ChrX super loops");
-        }
-        return locator;
-    }
-
-    public ResourceLocator getPeaks() {
-
-        String path = reader.getPath();
-
-        //Special case for combined maps:
-        if (path == null) {
-            return null;
-        }
-
-        path = path.substring(0, path.lastIndexOf('.'));
-
-
-        if (path.lastIndexOf("_30") > -1) {
-            path = path.substring(0, path.lastIndexOf("_30"));
-        }
-
-        String location = path + "_peaks.txt";
-
-        if (FileUtils.resourceExists(location)) {
-            return new ResourceLocator(location);
-        } else {
-            location = path + "_loops.txt";
-            if (FileUtils.resourceExists(location)) {
-                return new ResourceLocator(location);
-            } else {
-                return null;
-            }
-        }
-
-    }
-
-    public ResourceLocator getBlocks() {
-
-        String path = reader.getPath();
-
-        //Special case for combined maps:
-        if (path == null) {
-            return null;
-        }
-
-        path = path.substring(0, path.lastIndexOf('.'));
-
-        if (path.lastIndexOf("_30") > -1) {
-            path = path.substring(0, path.lastIndexOf("_30"));
-        }
-
-        String location = path + "_blocks.txt";
-
-        if (FileUtils.resourceExists(location)) {
-            return new ResourceLocator(location);
-        } else {
-            location = path + "_domains.txt";
-            if (FileUtils.resourceExists(location)) {
-                return new ResourceLocator(location);
-            } else {
-                return null;
-            }
-
-        }
-
-    }
 
     public void setAttributes(Map<String, String> map) {
         this.attributes = map;
@@ -305,31 +192,6 @@ public class Dataset {
         restrictionEnzyme = findRestrictionEnzyme(nSites);
     }
 
-    private String getSoftware() {
-        if (attributes != null) return attributes.get(Preprocessor.SOFTWARE);
-        else return null;
-    }
-
-    public String getHiCFileScalingFactor() {
-        if (attributes != null) return attributes.get(Preprocessor.HIC_FILE_SCALING);
-        else return null;
-    }
-
-    public String getStatistics() {
-        String stats = null;
-        if (attributes != null) stats = attributes.get(Preprocessor.STATISTICS);
-        if ((stats == null) || !stats.contains("<table>")) {
-            try {
-                attributes.put(Preprocessor.STATISTICS, reader.readStats());
-            } catch (IOException error) {
-                if (stats != null) {
-                    attributes.put(Preprocessor.STATISTICS, convertStats(stats));
-                } else return null;
-            }
-        }
-        return attributes.get(Preprocessor.STATISTICS);
-    }
-
     private String convertStats(String oldStats) {
         HashMap<String, String> statsMap = new HashMap<>();
         StringTokenizer lines = new StringTokenizer(oldStats, "\n");
@@ -367,12 +229,6 @@ public class Dataset {
             String value = statsMap.get("Experiment description").trim();
             if (!value.isEmpty())
                 newStats += "<tr><td>Experiment Description:</td><td>" + value + "</td></tr>";
-        }
-        if (getSoftware() != null)  {
-            newStats += "<tr> <td> Software: </td><td>" + getSoftware() + "</td></tr>";
-        }
-        if (getHiCFileScalingFactor() != null) {
-            newStats += "<tr> <td> File Scaling: </td><td>" + getHiCFileScalingFactor() + "</td></tr>";
         }
 
         newStats += "<tr><th colspan=2>Alignment Information</th></tr>\n" +
@@ -753,11 +609,6 @@ public class Dataset {
         return newStats;
     }
 
-    public String getGraphs() {
-        if (attributes == null) return null;
-        return attributes.get(Preprocessor.GRAPHS);
-    }
-
     public List<HiCZoom> getBpZooms() {
         return bpZooms;
     }
@@ -787,9 +638,6 @@ public class Dataset {
         }
     }
 
-    public boolean hasFrags() {
-        return fragZooms != null && fragZooms.size() > 0;
-    }
 
     public Map<String, Integer> getFragmentCounts() {
         return fragmentCounts;
@@ -799,60 +647,7 @@ public class Dataset {
         fragmentCounts = map;
     }
 
-    /**
-     * Return the "next" zoom level, relative to the current one, in the direction indicated
-     *
-     * @param zoom - current zoom level
-     * @param b    -- direction, true == increasing resolution, false decreasing
-     * @return Next zoom level
-     */
 
-    public HiCZoom getNextZoom(HiCZoom zoom, boolean b) {
-        final HiC.Unit currentUnit = zoom.getUnit();
-        List<HiCZoom> zoomList = currentUnit == HiC.Unit.BP ? bpZooms : fragZooms;
-
-        // TODO MSS - is there a reason not to just rewrite this using indexOf? cleaner?
-        if (b) {
-            for (int i = 0; i < zoomList.size() - 1; i++) {
-                if (zoom.equals(zoomList.get(i))) return zoomList.get(i + 1);
-            }
-            return zoomList.get(zoomList.size() - 1);
-
-        } else {
-            // Decreasing
-            for (int i = zoomList.size() - 1; i > 0; i--) {
-                if (zoom.equals(zoomList.get(i))) {
-                    return zoomList.get(i - 1);
-                }
-            }
-            return zoomList.get(0);
-        }
-    }
-
-
-    public double[] getEigenvector(Chromosome chr, HiCZoom zoom, int number, NormalizationType type) {
-
-        String key = chr.getName() + "_" + zoom.getKey() + "_" + number + "_" + type;
-        if (!eigenvectorCache.containsKey(key)) {
-
-            double[] eigenvector;
-            //eigenvector = reader.readEigenvector(chr.getName(), zoom, number, type.toString());
-
-            ExpectedValueFunction df = getExpectedValues(zoom, type);
-            Matrix m = getMatrix(chr, chr);
-            MatrixZoomData mzd = m.getZoomData(zoom);
-            if (df != null && mzd.getPearsons(df) != null) {
-                eigenvector = mzd.computeEigenvector(df, number);
-            } else {
-                eigenvector = new double[0];
-            }
-
-            eigenvectorCache.put(key, eigenvector);
-        }
-
-        return eigenvectorCache.get(key);
-
-    }
 
     public NormalizationVector getNormalizationVector(int chrIdx, HiCZoom zoom, NormalizationType type) {
 
@@ -876,9 +671,6 @@ public class Dataset {
         return normalizationVectorCache.get(key);
     }
 
-    public void addNormalizationVectorDirectlyToRAM(NormalizationVector normalizationVector) {
-        normalizationsVectorsOnlySavedInRAMCache.put(normalizationVector.getKey(), normalizationVector);
-    }
 
     private String findRestrictionEnzyme(int sites) {
         if (genomeId == null) return null;
@@ -919,17 +711,6 @@ public class Dataset {
             if (sites == 65) return "HindIII"; // chrI
         }
         return null;
-    }
-
-    public void setAttributes(String key, String value) {
-        if (this.attributes == null) {
-            attributes = new HashMap<>();
-        }
-        attributes.put(key, value);
-    }
-
-    public List<JCheckBox> getCheckBoxes(List<ActionListener> actionListeners) {
-        return reader.getCheckBoxes(actionListeners);
     }
 
     public List<HiCZoom> getAllPossibleResolutions() {

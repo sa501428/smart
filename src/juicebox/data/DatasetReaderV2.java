@@ -29,7 +29,6 @@ import htsjdk.samtools.seekablestream.SeekableStream;
 import htsjdk.tribble.util.LittleEndianInputStream;
 import juicebox.HiC;
 import juicebox.HiCGlobals;
-import juicebox.tools.utils.original.Preprocessor;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationHandler;
 import juicebox.windowui.NormalizationType;
@@ -60,12 +59,12 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
      */
     private final Map<String, int[]> fragmentSitesCache = new HashMap<>();
     private final SeekableStream stream, backUpStream;
-    private Map<String, Preprocessor.IndexEntry> masterIndex;
-    private Map<String, Preprocessor.IndexEntry> normVectorIndex;
+    private Map<String, IndexEntry> masterIndex;
+    private Map<String, IndexEntry> normVectorIndex;
     private Dataset dataset = null;
     private int version = -1;
     private Map<String, FragIndexEntry> fragmentSitesIndex;
-    private Map<String, Map<Integer, Preprocessor.IndexEntry>> blockIndexMap;
+    private Map<String, Map<Integer, IndexEntry>> blockIndexMap;
     private long masterIndexPos;
     private long normVectorFilePosition;
     private boolean activeStatus = true;
@@ -114,10 +113,6 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
             }
 
             dataset.setAttributes(attributes);
-
-            if (dataset.getHiCFileScalingFactor() != null) {
-                HiCGlobals.hicMapScale = Double.parseDouble(dataset.getHiCFileScalingFactor());
-            }
 
             // Read chromosome dictionary
             int nchrs = dis.readInt();
@@ -228,13 +223,13 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
                 this);
 
         int nBlocks = dis.readInt();
-        HashMap<Integer, Preprocessor.IndexEntry> blockIndex = new HashMap<>(nBlocks);
+        HashMap<Integer, IndexEntry> blockIndex = new HashMap<>(nBlocks);
 
         for (int b = 0; b < nBlocks; b++) {
             int blockNumber = dis.readInt();
             long filePosition = dis.readLong();
             int blockSizeInBytes = dis.readInt();
-            blockIndex.put(blockNumber, new Preprocessor.IndexEntry(filePosition, blockSizeInBytes));
+            blockIndex.put(blockNumber, new IndexEntry(filePosition, blockSizeInBytes));
         }
         blockIndexMap.put(zd.getKey(), blockIndex);
 
@@ -404,7 +399,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
             String key = dis.readString();
             long filePosition = dis.readLong();
             int sizeInBytes = dis.readInt();
-            masterIndex.put(key, new Preprocessor.IndexEntry(filePosition, sizeInBytes));
+            masterIndex.put(key, new IndexEntry(filePosition, sizeInBytes));
         }
 
         Map<String, ExpectedValueFunction> expectedValuesMap = new LinkedHashMap<>();
@@ -497,13 +492,13 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
 
                 dataset.addNormalizationType(type);
 
-                normVectorIndex.put(key, new Preprocessor.IndexEntry(filePosition, sizeInBytes));
+                normVectorIndex.put(key, new IndexEntry(filePosition, sizeInBytes));
             }
         }
     }
 
     private int[] readSites(long position, int nSites) throws IOException {
-        Preprocessor.IndexEntry idx = new Preprocessor.IndexEntry(position, 4 + nSites * 4);
+        IndexEntry idx = new IndexEntry(position, 4 + nSites * 4);
         byte[] buffer = seekAndFullyReadCompressedBytes(idx);
         LittleEndianInputStream les = new LittleEndianInputStream(new ByteArrayInputStream(buffer));
         int[] sites = new int[nSites];
@@ -516,7 +511,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
 
     @Override
     public Matrix readMatrix(String key) throws IOException {
-        Preprocessor.IndexEntry idx = masterIndex.get(key);
+        IndexEntry idx = masterIndex.get(key);
         if (idx == null) {
             return null;
         }
@@ -582,7 +577,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
 
     @Override
     public List<Integer> getBlockNumbers(MatrixZoomData zd) {
-        Map<Integer, Preprocessor.IndexEntry> blockIndex = blockIndexMap.get(zd.getKey());
+        Map<Integer, IndexEntry> blockIndex = blockIndexMap.get(zd.getKey());
         return blockIndex == null ? null : new ArrayList<>(blockIndex.keySet());
     }
 
@@ -599,7 +594,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
         }
     }
 
-    public Map<String, Preprocessor.IndexEntry> getNormVectorIndex() {
+    public Map<String, IndexEntry> getNormVectorIndex() {
         return normVectorIndex;
     }
 
@@ -622,7 +617,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
 
         String key = NormalizationVector.getKey(type, chrIdx, unit.toString(), binSize);
         if (normVectorIndex == null) return null;
-        Preprocessor.IndexEntry idx = normVectorIndex.get(key);
+        IndexEntry idx = normVectorIndex.get(key);
         if (idx == null) return null;
 
         byte[] buffer = seekAndFullyReadCompressedBytes(idx);
@@ -641,7 +636,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
         else return new NormalizationVector(type, chrIdx, unit, binSize, values);
     }
 
-    private byte[] seekAndFullyReadCompressedBytes(Preprocessor.IndexEntry idx) throws IOException {
+    private byte[] seekAndFullyReadCompressedBytes(IndexEntry idx) throws IOException {
 
         boolean currentlyUseMainStream;
         byte[] compressedBytes = new byte[idx.size];
@@ -724,10 +719,10 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
         timeDiffThings[0] = System.currentTimeMillis();
 
         Block b = null;
-        Map<Integer, Preprocessor.IndexEntry> blockIndex = blockIndexMap.get(zd.getKey());
+        Map<Integer, IndexEntry> blockIndex = blockIndexMap.get(zd.getKey());
         if (blockIndex != null) {
 
-            Preprocessor.IndexEntry idx = blockIndex.get(blockNumber);
+            IndexEntry idx = blockIndex.get(blockNumber);
             if (idx != null) {
 
                 //System.out.println(" blockIndexPosition:" + idx.position);
@@ -847,12 +842,20 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
         }
     }
 
-    /*
-    private static byte[] seekAndFullyReadCompressedBytes(SeekableStream stream, long positionInStream, int byteArraySize) throws IOException{
-        byte[] compressedBytes = new byte[byteArraySize];
-        stream.seek(positionInStream);
-        stream.readFully(compressedBytes);
-        return compressedBytes;
+    public static class IndexEntry {
+        public final long position;
+        public final int size;
+        int id;
+
+        IndexEntry(int id, long position, int size) {
+            this.id = id;
+            this.position = position;
+            this.size = size;
+        }
+
+        public IndexEntry(long position, int size) {
+            this.position = position;
+            this.size = size;
+        }
     }
-    */
 }

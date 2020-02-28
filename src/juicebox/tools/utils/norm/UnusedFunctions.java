@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2019 Broad Institute, Aiden Lab
+ * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package juicebox.tools.utils.norm;
 
 import juicebox.data.*;
-import juicebox.tools.utils.original.Preprocessor;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationHandler;
 import juicebox.windowui.NormalizationType;
@@ -154,11 +153,11 @@ class UnusedFunctions {
             buffer.putInt(1);
             buffer.putNullTerminatedString(path);
 
-            Map<String, Preprocessor.IndexEntry> normVectorMap = reader.getNormVectorIndex();
+            Map<String, DatasetReaderV2.IndexEntry> normVectorMap = reader.getNormVectorIndex();
 
             List<NormalizationVectorIndexEntry> normList = new ArrayList<>();
 
-            for (Map.Entry<String, Preprocessor.IndexEntry> entry : normVectorMap.entrySet()) {
+            for (Map.Entry<String, DatasetReaderV2.IndexEntry> entry : normVectorMap.entrySet()) {
                 String[] parts = entry.getKey().split("_");
                 String strType;
                 int chrIdx;

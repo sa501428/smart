@@ -28,18 +28,12 @@ package juicebox.data;
 import juicebox.HiC;
 import juicebox.HiCGlobals;
 import juicebox.matrix.BasicMatrix;
-import juicebox.matrix.RealMatrixWrapper;
-import juicebox.tools.clt.old.Pearsons;
 import juicebox.track.HiCFixedGridAxis;
 import juicebox.track.HiCFragmentAxis;
 import juicebox.track.HiCGridAxis;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationHandler;
 import juicebox.windowui.NormalizationType;
-import org.apache.commons.math.linear.Array2DRowRealMatrix;
-import org.apache.commons.math.linear.EigenDecompositionImpl;
-import org.apache.commons.math.linear.RealMatrix;
-import org.apache.commons.math.linear.RealVector;
 import org.broad.igv.feature.Chromosome;
 import org.broad.igv.util.collections.LRUCache;
 
@@ -442,234 +436,7 @@ public class MatrixZoomData {
 //        return 0;
 //    }
 
-    /**
-     * Computes eigenvector from Pearson's.
-     *
-     * @param df    Expected values, needed to get Pearson's
-     * @param which Which eigenvector; 0 is principal.
-     * @return Eigenvector
-     */
-    public double[] computeEigenvector(ExpectedValueFunction df, int which) {
-        BasicMatrix pearsons = getPearsons(df);
-        if (pearsons == null) {
-            return null;
-        }
 
-        int dim = pearsons.getRowDimension();
-        double[][] data = new double[dim][dim];
-        BitSet bitSet = new BitSet(dim);
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                float tmp = pearsons.getEntry(i, j);
-                data[i][j] = tmp;
-                if (data[i][j] != 0 && !Float.isNaN(tmp)) {
-                    bitSet.set(i);
-                }
-            }
-        }
-
-        int[] nonCentromereColumns = new int[bitSet.cardinality()];
-        int count = 0;
-        for (int i = 0; i < dim; i++) {
-            if (bitSet.get(i)) nonCentromereColumns[count++] = i;
-        }
-
-        RealMatrix subMatrix = new Array2DRowRealMatrix(data).getSubMatrix(nonCentromereColumns, nonCentromereColumns);
-        RealVector rv = (new EigenDecompositionImpl(subMatrix, 0)).getEigenvector(which);
-
-        double[] ev = rv.toArray();
-
-        int size = pearsons.getColumnDimension();
-        double[] eigenvector = new double[size];
-        int num = 0;
-        for (int i = 0; i < size; i++) {
-            if (num < nonCentromereColumns.length && i == nonCentromereColumns[num]) {
-                eigenvector[i] = ev[num];
-                num++;
-            } else {
-                eigenvector[i] = Double.NaN;
-            }
-        }
-        return eigenvector;
-
-    }
-
-    public BasicMatrix getNormSquared(NormalizationType normalizationType) {
-
-        if (normSquaredMaps.containsKey(normalizationType) && normSquaredMaps.get(normalizationType) != null) {
-            return normSquaredMaps.get(normalizationType);
-        }
-
-        // otherwise calculate
-        BasicMatrix normSquared = computeNormSquared(normalizationType);
-        normSquaredMaps.put(normalizationType, normSquared);
-        return normSquared;
-    }
-
-    // todo only compute local region at high resolution otherwise memory gets exceeded
-    private BasicMatrix computeNormSquared(NormalizationType normalizationType) {
-        double[] nv1Data = reader.getNormalizationVector(getChr1Idx(), getZoom(), normalizationType).getData();
-        double[] nv2Data = reader.getNormalizationVector(getChr2Idx(), getZoom(), normalizationType).getData();
-
-        double[][] matrix = new double[nv1Data.length][nv2Data.length];
-        for (int i = 0; i < nv1Data.length; i++) {
-            for (int j = 0; j < nv2Data.length; j++) {
-                int diff = Math.max(1, Math.abs(i - j));
-                matrix[i][j] = 1 / (nv1Data[i] * nv2Data[j] * diff * diff * diff * diff);
-            }
-        }
-
-        return new RealMatrixWrapper(new Array2DRowRealMatrix(matrix));
-    }
-
-    /**
-     * Returns the Pearson's matrix; read if available (currently commented out), calculate if small enough.
-     *
-     * @param df Expected values
-     * @return Pearson's matrix or null if not able to calculate or read
-     */
-    public BasicMatrix getPearsons(ExpectedValueFunction df) {
-        boolean readPearsons = false; // check if were able to read in
-        // try to get from local cache
-        BasicMatrix pearsons = pearsonsMap.get(df.getNormalizationType());
-        if (pearsons != null) {
-            return pearsons;
-        }
-        else if (!missingPearsonFiles.contains(df.getNormalizationType())) {
-            // try to read
-            try {
-                pearsons = reader.readPearsons(chr1.getName(), chr2.getName(), zoom, df.getNormalizationType());
-            } catch (IOException e) {
-                pearsons = null;
-                System.err.println(e.getMessage());
-            }
-            if (pearsons != null) {
-                // put it back in the map.
-                pearsonsMap.put(df.getNormalizationType(), pearsons);
-                readPearsons = true;
-            } else {
-                missingPearsonFiles.add(df.getNormalizationType());  // To keep from trying repeatedly
-            }
-        }
-        // we weren't able to read in the Pearsons. check that the resolution is low enough to calculate
-        if (!readPearsons && (zoom.getUnit() == HiC.Unit.BP && zoom.getBinSize() >= HiCGlobals.MAX_PEARSON_ZOOM) ||
-                (zoom.getUnit() == HiC.Unit.FRAG && zoom.getBinSize() >= HiCGlobals.MAX_PEARSON_ZOOM/1000)) {
-            pearsons = computePearsons(df);
-            pearsonsMap.put(df.getNormalizationType(), pearsons);
-        }
-
-        return pearsonsMap.get(df.getNormalizationType());
-    }
-
-    /**
-     * Returns Pearson value at given bin X and Y
-     *
-     * @param binX X bin
-     * @param binY Y bin
-     * @param type Normalization type
-     * @return Pearson's value at this location
-     */
-    public float getPearsonValue(int binX, int binY, NormalizationType type) {
-        BasicMatrix pearsons = pearsonsMap.get(type);
-        if (pearsons != null) {
-            return pearsons.getEntry(binX, binY);
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * Compute the Pearson's.  Read in the observed, calculate O/E from the expected value function, subtract the row
-     * means, compute the Pearson's correlation on that matrix
-     *
-     * @param df Expected value
-     * @return Pearson's correlation matrix
-     */
-    private BasicMatrix computePearsons(ExpectedValueFunction df) {
-        if (chr1 != chr2) {
-            throw new RuntimeException("Cannot compute pearsons for non-diagonal matrices");
-        }
-
-        // # of columns.  We could let the data itself define this
-        int dim;
-        if (zoom.getUnit() == HiC.Unit.BP) {
-            dim = chr1.getLength() / zoom.getBinSize() + 1;
-        } else {
-            dim = ((DatasetReaderV2) reader).getFragCount(chr1) / zoom.getBinSize() + 1;
-        }
-
-        // Compute O/E column vectors
-        double[][] vectors = new double[dim][];
-
-        // Loop through all contact records
-        Iterator<ContactRecord> iter = getNewContactRecordIterator();
-        while (iter.hasNext()) {
-
-            ContactRecord record = iter.next();
-            int i = record.getBinX();
-            int j = record.getBinY();
-            float counts = record.getCounts();
-            if (Float.isNaN(counts)) continue;
-
-            int dist = Math.abs(i - j);
-            double expected = df.getExpectedValue(chr1.getIndex(), dist);
-            double oeValue = counts / expected;
-
-            double[] vi = vectors[i];
-            if (vi == null) {
-                vi = new double[dim]; //zeroValue) ;
-                vectors[i] = vi;
-            }
-            vi[j] = oeValue;
-
-
-            double[] vj = vectors[j];
-            if (vj == null) {
-                vj = new double[dim]; // zeroValue) ;
-                vectors[j] = vj;
-            }
-            vj[i] = oeValue;
-
-        }
-
-        // Subtract row means
-        double[] rowMeans = new double[dim];
-        for (int i = 0; i < dim; i++) {
-            double[] row = vectors[i];
-            rowMeans[i] = row == null ? 0 : getVectorMean(row);
-        }
-
-        for (int j = 0; j < dim; j++) {
-            for (int i = 0; i < dim; i++) {
-                double[] column = vectors[j];
-                if (column == null) continue;
-                column[i] -= rowMeans[i];
-            }
-        }
-
-        BasicMatrix pearsons = Pearsons.computePearsons(vectors, dim);
-        pearsonsMap.put(df.getNormalizationType(), pearsons);
-
-        return pearsons;
-    }
-
-    /**
-     * Return the mean of the given vector, ignoring NaNs
-     *
-     * @param vector Vector to calculate the mean on
-     * @return The mean of the vector, not including NaNs.
-     */
-    private double getVectorMean(double[] vector) {
-        double sum = 0;
-        int count = 0;
-        for (double aVector : vector) {
-            if (!Double.isNaN(aVector)) {
-                sum += aVector;
-                count++;
-            }
-        }
-        return count == 0 ? 0 : sum / count;
-    }
 
     /**
      * Utility for printing description of this matrix.
@@ -678,17 +445,7 @@ public class MatrixZoomData {
         return chr1.getName() + " - " + chr2.getName() + " - " + getZoom();
     }
 
-    public void printFullDescription() {
-        System.out.println("Chromosomes: " + chr1.getName() + " - " + chr2.getName());
-        System.out.println("unit: " + zoom.getUnit());
-        System.out.println("binSize (bp): " + zoom.getBinSize());
-        System.out.println("blockBinCount (bins): " + blockBinCount);
-        System.out.println("blockColumnCount (columns): " + blockColumnCount);
 
-        System.out.println("Block size (bp): " + blockBinCount * zoom.getBinSize());
-        System.out.println();
-
-    }
 
     /**
      * For a specified region, select the block numbers corresponding to it

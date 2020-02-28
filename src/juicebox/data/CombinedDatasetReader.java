@@ -25,7 +25,6 @@
 package juicebox.data;
 
 import juicebox.HiC;
-import juicebox.matrix.BasicMatrix;
 import juicebox.windowui.HiCZoom;
 import juicebox.windowui.NormalizationType;
 
@@ -95,12 +94,6 @@ public class CombinedDatasetReader implements DatasetReader {
     @Override
     public String getPath() {
         // we use this for peaks and blocks list, maybe the best thing to do is to somehow combine them
-        return null;
-    }
-
-    @Override
-    public String readStats() {
-        // again we need to somehow combine from constituent datasets
         return null;
     }
 
@@ -178,12 +171,6 @@ public class CombinedDatasetReader implements DatasetReader {
     }
 
     @Override
-    public double[] readEigenvector(String chr, HiCZoom zoom, int number, String type) {
-        // Eigenvectors not supported for combined datasets
-        return null;
-    }
-
-    @Override
     public void close() {
         for (DatasetReader r : readers) {
             r.close();
@@ -193,12 +180,6 @@ public class CombinedDatasetReader implements DatasetReader {
     @Override
     public NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int binSize) {
         return null; // Undefined for combined datasets
-    }
-
-    @Override
-    public BasicMatrix readPearsons(String chr1Name, String chr2Name, HiCZoom zoom, NormalizationType type) {
-        // At this time combined datasets do not have precomputed pearsons.
-        return null;
     }
 
     /**
@@ -301,8 +282,6 @@ public class CombinedDatasetReader implements DatasetReader {
         HashSet<String> reList = new HashSet<>();
         for (Dataset ds : datasetList) {
             try {
-                statisticsList.add(ds.getStatistics());
-                graphsList.add(ds.getGraphs());
                 reList.add(ds.getRestrictionEnzyme());
             } catch (Exception e) {
                 // TODO - test on hic file with no stats file specified
