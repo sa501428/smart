@@ -18,7 +18,7 @@ While we strongly suggest using the public forum so that the community at large 
 
 * **Ensure the bug was not already reported** by searching on GitHub under [Issues](https://github.com/aidenlab/Juicebox/issues).
 
-* If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/aidenlab/juicebox/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample, executable test case, or clear set of instructions** demonstrating the expected behavior that is not occurring.
+* If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/aidenlab/mixer/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample, executable test case, or clear set of instructions** demonstrating the expected behavior that is not occurring.
 
 ## **Did you write a patch that fixes a bug?**
 
