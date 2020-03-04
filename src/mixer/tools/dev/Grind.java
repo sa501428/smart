@@ -51,7 +51,7 @@ public class Grind extends MixerCLT {
     public Grind() {
         super("grind [-k NONE/KR/VC/VC_SQRT] [-r resolution] [--stride increment] " +
                 "[--off-from-diagonal max-dist-from-diag] " +
-                "--observed-over-expected --dense-labels --ignore-feature-orientation --only-make-positives " + //--whole-genome --distort
+                "--observed-over-expected --dense-labels --ignore-feature-orientation --only-make-positives " +
                 "<mode> <hic file> <bedpe positions> <x,y,z> <directory>" +
                 "     \n" +
                 "     mode: --iterate-down-diagonal --iterate-on-list --iterate-distortions --iterate-domains");
@@ -127,10 +127,10 @@ public class Grind extends MixerCLT {
             finder = new IterateOnFeatureListFinder(container);
         } else if (container.grindIterationTypeOption == DOMAIN_OPTION) {
             finder = new DomainFinder(container);
-        } else if (container.grindIterationTypeOption == DISTORTION_OPTION) {
-            runDistortionTypeOfIteration();
-        } else {
+        } else if (container.grindIterationTypeOption == DOWN_DIAGONAL_OPTION) {
             finder = new IterateDownDiagonalFinder(container);
+        } else {
+            runDistortionTypeOfIteration();
         }
 
         if (finder != null) {
