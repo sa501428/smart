@@ -24,7 +24,7 @@
 
 package mixer.tools.utils.mixer.arrowhead;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.HiCFileTools;
 import mixer.data.MatrixZoomData;
 import mixer.tools.utils.common.MatrixTools;
@@ -99,7 +99,7 @@ public class BlockBuster {
 
             // if any contact domains are found
             if (results.getCumulativeResults().size() > 0) {
-                if (HiCGlobals.printVerboseComments) {
+                if (MixerGlobals.printVerboseComments) {
                     System.out.println("Initial # of contact domains: " + results.getCumulativeResults().size());
                 }
 
@@ -118,7 +118,7 @@ public class BlockBuster {
                 contactDomainListScoresGenomeWide.add(blockResultListScores);
                 contactDomainControlScoresGenomeWide.add(blockResultControlScores);
             } else {
-                if (HiCGlobals.printVerboseComments) {
+                if (MixerGlobals.printVerboseComments) {
                     System.out.println("No contact domains found for chromosome " + chrName);
                 }
             }
@@ -147,7 +147,7 @@ public class BlockBuster {
 
         // container for results
         CumulativeBlockResults cumulativeBlockResults = new CumulativeBlockResults(resolution);
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("Loading incr " + increment + " chrLength " + chrLength);
         }
 
@@ -161,7 +161,7 @@ public class BlockBuster {
                     adjustedLimStart = limEnd - matrixWidth;
                 }
             }
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.out.println("Reading " + limStart + ":" + limEnd);
             }
 
@@ -174,18 +174,18 @@ public class BlockBuster {
             BlockResults results = new BlockResults(observed, varThreshold, signThreshold, list, control,
                     adjustedLimStart, limEnd);
 
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.out.println("Found " + results.getResults().size() + " blocks");
             }
 
             // accumulate results across the windows
             results.offsetResultsIndex(limStart); // +1? because genome index should start at 1 not 0?
             cumulativeBlockResults.add(results);
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.out.print(".");
             }
         }
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println(".");
         }
         return cumulativeBlockResults;

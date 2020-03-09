@@ -26,7 +26,7 @@
 package mixer.data;
 
 import mixer.HiC;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.anchor.MotifAnchor;
 import mixer.data.feature.FeatureFunction;
 import mixer.data.feature.GenomeWideList;
@@ -141,7 +141,7 @@ public class Matrix {
             indicesForChr2 = getIndicesFromSubChromosomes(handler, chr2);
         }
 
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("Indices_1 " + indicesForChr1);
             System.out.println("Indices_2 " + indicesForChr2);
         }
@@ -175,7 +175,7 @@ public class Matrix {
                             }
                         }
                         if (m == null) {
-                            if (HiCGlobals.printVerboseComments) {
+                            if (MixerGlobals.printVerboseComments) {
                                 System.out.println("nothing found for cc4 " + i.getName() + " - " + j.getName());
                             }
                             continue;
@@ -192,7 +192,7 @@ public class Matrix {
                     System.err.println("Custom Chr Region Missing " + key);
                     //ee.printStackTrace();
                 }
-                if (HiCGlobals.printVerboseComments)
+                if (MixerGlobals.printVerboseComments)
                     System.out.println("completed cc4 " + i.getName() + " - " + j.getName());
             }
         }
@@ -233,7 +233,7 @@ public class Matrix {
     }
 
     public static String generateKey(Chromosome chr1, Chromosome chr2) {
-        if (HiCGlobals.printVerboseComments) System.out.println("c1 " + chr1 + " c2 " + chr2);
+        if (MixerGlobals.printVerboseComments) System.out.println("c1 " + chr1 + " c2 " + chr2);
         int t1 = Math.min(chr1.getIndex(), chr2.getIndex());
         int t2 = Math.max(chr1.getIndex(), chr2.getIndex());
         return generateKey(t1, t2);

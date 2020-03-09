@@ -26,7 +26,7 @@ package mixer.data;
 
 import com.google.common.primitives.Ints;
 import mixer.HiC;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.tools.dev.Private;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationHandler;
@@ -88,9 +88,9 @@ public class Dataset {
                 //    m = Matrix.createCustomChromosomeMatrix(chr1, chr2, chromosomeHandler, matrices, reader);
                 //} else
                 if (chromosomeHandler.isCustomChromosome(chr1) || chromosomeHandler.isCustomChromosome(chr2)) {
-                    if (HiCGlobals.printVerboseComments) System.out.println("Custom Chromosome Index key is " + key);
+                    if (MixerGlobals.printVerboseComments) System.out.println("Custom Chromosome Index key is " + key);
                     m = Matrix.createCustomChromosomeMatrix(chr1, chr2, chromosomeHandler, matrices, reader);
-                } else if (HiCGlobals.isAssemblyMatCheck) {
+                } else if (MixerGlobals.isAssemblyMatCheck) {
                     m = Matrix.createAssemblyChromosomeMatrix(chromosomeHandler, matrices, reader);
                 } else {
                     m = reader.readMatrix(key);

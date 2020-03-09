@@ -30,10 +30,10 @@ import java.awt.*;
  * @author Muhammad Shamim
  * @since 11/25/14
  */
-public class HiCGlobals {
+public class MixerGlobals {
 
     // Juicebox version (for display and header purposes only)
-    public static final String versionNum = "2.01.00";
+    public static final String versionNum = "2.01.02";
 
     // for plotting
     public static final String topChromosomeColor = "#0000FF";

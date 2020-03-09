@@ -25,7 +25,7 @@
 
 package mixer.track.feature;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.anchor.MotifAnchor;
 import mixer.tools.utils.mixer.arrowhead.ArrowheadScore;
@@ -79,7 +79,7 @@ public class Feature2D implements Comparable<Feature2D> {
     }
 
     public static String getDefaultOutputFileHeader() {
-        if (HiCGlobals.isLegacyOutputPrintingEnabled) {
+        if (MixerGlobals.isLegacyOutputPrintingEnabled) {
             return genericLegacyHeader;
         } else {
             return genericHeader;
@@ -161,7 +161,7 @@ public class Feature2D implements Comparable<Feature2D> {
 
     public Color getColor() {
         if (isSelected) {
-            return HiCGlobals.SELECT_FEATURE_COLOR;
+            return MixerGlobals.SELECT_FEATURE_COLOR;
         } else {
             return color;
         }
@@ -177,7 +177,7 @@ public class Feature2D implements Comparable<Feature2D> {
 
     public Color getTranslucentColor() {
         if (isSelected) {
-            return HiCGlobals.SELECT_FEATURE_COLOR;
+            return MixerGlobals.SELECT_FEATURE_COLOR;
         } else {
             return translucentColor;
         }
@@ -191,17 +191,17 @@ public class Feature2D implements Comparable<Feature2D> {
 
     public String tooltipText() {
 
-        String scaledStart1 = formatter.format(start1 * HiCGlobals.hicMapScale + 1);
-        String scaledStart2 = formatter.format(start2 * HiCGlobals.hicMapScale + 1);
-        String scaledEnd1 = formatter.format(end1 * HiCGlobals.hicMapScale);
-        String scaledEnd2 = formatter.format(end2 * HiCGlobals.hicMapScale);
+        String scaledStart1 = formatter.format(start1 * MixerGlobals.hicMapScale + 1);
+        String scaledStart2 = formatter.format(start2 * MixerGlobals.hicMapScale + 1);
+        String scaledEnd1 = formatter.format(end1 * MixerGlobals.hicMapScale);
+        String scaledEnd2 = formatter.format(end2 * MixerGlobals.hicMapScale);
 
         StringBuilder txt = new StringBuilder();
         txt.append("<span style='color:red; font-family: arial; font-size: 12pt;'>");
         txt.append(getFeatureName());
         txt.append("</span><br>");
 
-        txt.append("<span style='font-family: arial; font-size: 12pt;color:" + HiCGlobals.topChromosomeColor + ";'>");
+        txt.append("<span style='font-family: arial; font-size: 12pt;color:" + MixerGlobals.topChromosomeColor + ";'>");
         txt.append(chr1).append(":").append(scaledStart1);
         if ((end1 - start1) > 1) {
             txt.append("-").append(scaledEnd1);
@@ -209,7 +209,7 @@ public class Feature2D implements Comparable<Feature2D> {
 
         txt.append("</span><br>");
 
-        txt.append("<span style='font-family: arial; font-size: 12pt;color:" + HiCGlobals.leftChromosomeColor + ";'>");
+        txt.append("<span style='font-family: arial; font-size: 12pt;color:" + MixerGlobals.leftChromosomeColor + ";'>");
         txt.append(chr2).append(":").append(scaledStart2);
         if ((end2 - start2) > 1) {
             txt.append("-").append(scaledEnd2);
@@ -217,7 +217,7 @@ public class Feature2D implements Comparable<Feature2D> {
         txt.append("</span>");
         DecimalFormat df = new DecimalFormat("#.##");
 
-        if (HiCGlobals.allowSpacingBetweenFeatureText) {
+        if (MixerGlobals.allowSpacingBetweenFeatureText) {
             // organize attributes into categories. +1 is for the leftover category if no keywords present
             ArrayList<ArrayList<Map.Entry<String, String>>> sortedFeatureAttributes = new ArrayList<>();
             for (int i = 0; i < categories.length + 1; i++) {
@@ -313,7 +313,7 @@ public class Feature2D implements Comparable<Feature2D> {
     }
 
     public String simpleStringWithColor() {
-        if (HiCGlobals.isLegacyOutputPrintingEnabled) {
+        if (MixerGlobals.isLegacyOutputPrintingEnabled) {
             return simpleString() + justColorString();
         } else {
             return simpleString() + BEDPE_SPACER + justColorString();

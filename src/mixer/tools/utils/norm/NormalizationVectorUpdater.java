@@ -25,7 +25,7 @@
 package mixer.tools.utils.norm;
 
 import mixer.HiC;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.*;
 import mixer.tools.utils.original.ExpectedValueCalculation;
 import mixer.windowui.HiCZoom;
@@ -62,7 +62,7 @@ public class NormalizationVectorUpdater extends NormVectorUpdater {
     private boolean weShouldBuildScale = true;
 
     private static void printNormTiming(String norm, Chromosome chr, HiCZoom zoom, long currentTime) {
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println(norm + " normalization of " + chr + " at " + zoom + " took " + (System.currentTimeMillis() - currentTime) + " milliseconds");
         }
     }
@@ -72,7 +72,7 @@ public class NormalizationVectorUpdater extends NormVectorUpdater {
 
         DatasetReaderV2 reader = new DatasetReaderV2(path);
         Dataset ds = reader.read();
-        HiCGlobals.verifySupportedHiCFileVersion(reader.getVersion());
+        MixerGlobals.verifySupportedHiCFileVersion(reader.getVersion());
 
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
         Map<String, Integer> fragCountMap = ds.getFragmentCounts();

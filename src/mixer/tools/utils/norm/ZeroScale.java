@@ -24,7 +24,7 @@
 
 package mixer.tools.utils.norm;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ContactRecord;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class ZeroScale {
             percentLowRowSumExcluded = 1.5 * percentLowRowSumExcluded;
             percentZValsToIgnore = 1.5 * percentZValsToIgnore;
 
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.err.println("Did not converge for " + key);
                 System.err.println("new percentLowRowSumExcluded = " + percentLowRowSumExcluded + " and new percentZValsToIgnore = " + percentZValsToIgnore);
             }
@@ -69,7 +69,7 @@ public class ZeroScale {
 
         }
 
-        if (newVector == null && HiCGlobals.printVerboseComments) {
+        if (newVector == null && MixerGlobals.printVerboseComments) {
             System.err.println("Scaling result still null for " + key + "; vector did not converge");
         }
         return newVector;

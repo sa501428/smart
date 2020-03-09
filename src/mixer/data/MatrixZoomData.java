@@ -26,7 +26,7 @@
 package mixer.data;
 
 import mixer.HiC;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.matrix.BasicMatrix;
 import mixer.track.HiCFixedGridAxis;
 import mixer.track.HiCFragmentAxis;
@@ -197,7 +197,7 @@ public class MatrixZoomData {
         int blockNumber = r * getBlockColumnCount() + c;
         String key = getBlockKey(blockNumber, no);
         Block b;
-        if (HiCGlobals.useCache && blockCache.containsKey(key)) {
+        if (MixerGlobals.useCache && blockCache.containsKey(key)) {
             b = blockCache.get(key);
             blockList.add(b);
         } else {
@@ -289,7 +289,7 @@ public class MatrixZoomData {
                             b = new Block(blockNumber, key);   // An empty block
                         }
                         //Run out of memory if do it here
-                        if (HiCGlobals.useCache) {
+                        if (MixerGlobals.useCache) {
                             blockCache.put(key, b);
                         }
                         blockList.add(b);
@@ -310,7 +310,7 @@ public class MatrixZoomData {
             service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
             System.err.println("Error loading mzd data " + e.getLocalizedMessage());
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 e.printStackTrace();
             }
         }
@@ -340,7 +340,7 @@ public class MatrixZoomData {
                             b = new Block(blockNumber, key);   // An empty block
                         }
                         //Run out of memory if do it here
-                        if (HiCGlobals.useCache) {
+                        if (MixerGlobals.useCache) {
                             blockCache.put(key, b);
                         }
                         blockList.add(b);
@@ -361,7 +361,7 @@ public class MatrixZoomData {
             service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
             System.err.println("Error loading mzd data " + e.getLocalizedMessage());
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 e.printStackTrace();
             }
         }
@@ -576,7 +576,7 @@ public class MatrixZoomData {
                         // TODO why is this always NONE, should trace to ensure hard coding doesn't cause bug?
                         String key = getBlockKey(blockNumber, NormalizationHandler.NONE);
                         Block nextBlock;
-                        if (HiCGlobals.useCache && blockCache.containsKey(key)) {
+                        if (MixerGlobals.useCache && blockCache.containsKey(key)) {
                             nextBlock = blockCache.get(key);
                         } else {
                             nextBlock = reader.readNormalizedBlock(blockNumber, MatrixZoomData.this, NormalizationHandler.NONE);

@@ -24,7 +24,7 @@
 
 package mixer.tools.dev;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ContactRecord;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -57,7 +57,7 @@ public class ChromosomeCalculation {
         File logEnrichColumnSumsFile = new File(outputFolder, "log_enrich_" + colString);
         File logEnrichDiagValFile = new File(outputFolder, "log_enrich_" + diagString);
 
-        HiCGlobals.useCache = false;
+        MixerGlobals.useCache = false;
 
         files.add(filePath); // replace with hic file paths
         Dataset ds = HiCFileTools.extractDatasetForCLT(files, false); // see this class and its functions

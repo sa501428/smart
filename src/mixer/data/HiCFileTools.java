@@ -24,7 +24,7 @@
 
 package mixer.data;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.tools.chrom.sizes.ChromosomeSizes;
 import mixer.tools.utils.common.MatrixTools;
 import mixer.tools.utils.dev.drink.ExtractingOEDataUtils;
@@ -69,7 +69,7 @@ public class HiCFileTools {
                     dataset = reader.read();
                 }
             }
-            HiCGlobals.verifySupportedHiCFileVersion(reader.getVersion());
+            MixerGlobals.verifySupportedHiCFileVersion(reader.getVersion());
         } catch (Exception e) {
             System.err.println("Could not read hic file: " + e.getMessage());
             System.exit(34);
@@ -146,7 +146,7 @@ public class HiCFileTools {
             chromosomes.add(0, null);   // Index 0 reserved for "whole genome" pseudo-chromosome
 
             Pattern pattern = Pattern.compile("\\s+");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is), HiCGlobals.bufferSize);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is), MixerGlobals.bufferSize);
             String nextLine;
             int idx = 1;
 
@@ -364,7 +364,7 @@ public class HiCFileTools {
             blocks.addAll(zd.getNormalizedBlocksOverlapping(binXStart, binYStart, binXEnd, binYEnd, normalizationType, false, fillUnderDiagonal));
         } catch (Exception e) {
             triggerNormError(normalizationType);
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.err.println("You do not have " + normalizationType + " normalized maps available for this resolution/region:");
                 System.err.println("x1 " + binXStart + " x2 " + binXEnd + " y1 " + binYStart + " y2 " + binYEnd + " res " + zd.getBinSize());
                 System.err.println("Map is likely too sparse or a different normalization/resolution should be chosen.");
@@ -373,7 +373,7 @@ public class HiCFileTools {
             }
         }
 
-        if (HiCGlobals.printVerboseComments && numDataReadingErrors > 0) {
+        if (MixerGlobals.printVerboseComments && numDataReadingErrors > 0) {
             //System.err.println(numDataReadingErrors + " errors while reading data from region. Map is likely too sparse");
             triggerNormError(normalizationType);
         }

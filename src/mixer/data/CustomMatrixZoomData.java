@@ -24,7 +24,7 @@
 
 package mixer.data;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.anchor.MotifAnchor;
 import mixer.data.censoring.CustomMZDRegionHandler;
 import mixer.data.censoring.RegionPair;
@@ -132,7 +132,7 @@ public class CustomMatrixZoomData extends MatrixZoomData {
         List<Pair<MotifAnchor, MotifAnchor>> yAxisRegions = rTreeHandler.getIntersectingFeatures(chr2.getName(), gy1, gy2);
 
         if (isImportant) {
-            if (HiCGlobals.printVerboseComments)
+            if (MixerGlobals.printVerboseComments)
                 System.out.println("num x regions " + xAxisRegions.size() + " num y regions " + yAxisRegions.size());
         }
 
@@ -168,7 +168,7 @@ public class CustomMatrixZoomData extends MatrixZoomData {
                         synchronized (blocksNumsToLoadForZd) {
                             for (int blockNumber : tempBlockNumbers) {
                                 String key = zd.getBlockKey(blockNumber, no);
-                                if (HiCGlobals.useCache
+                                if (MixerGlobals.useCache
                                         && allBlockCaches.containsKey(zd)
                                         && allBlockCaches.get(zd).containsKey(rp)
                                         && allBlockCaches.get(zd).get(rp).containsKey(key)) {
@@ -199,7 +199,7 @@ public class CustomMatrixZoomData extends MatrixZoomData {
         //System.out.println("num blocks post "+blockList.size());
 
         if (blockList.size() < 1) {
-            if (HiCGlobals.printVerboseComments)
+            if (MixerGlobals.printVerboseComments)
                 System.err.println("no blocks?? for num x regions " + xAxisRegions.size() + " num y regions " + yAxisRegions.size());
         }
 
@@ -241,7 +241,7 @@ public class CustomMatrixZoomData extends MatrixZoomData {
                                 }
                                 long time3 = System.currentTimeMillis();
 
-                                if (HiCGlobals.useCache) {
+                                if (MixerGlobals.useCache) {
                                     synchronized (allBlockCaches) {
                                         if (!allBlockCaches.containsKey(zd)) {
                                             allBlockCaches.put(zd, new HashMap<RegionPair, LRUCache<String, Block>>());
@@ -283,7 +283,7 @@ public class CustomMatrixZoomData extends MatrixZoomData {
         } catch (InterruptedException e) {
             //String.format("Pending tasks: %d", executor.getQueue().size())
             System.err.println("Error loading custom mzd data " + e.getLocalizedMessage());
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 e.printStackTrace();
             }
         }
@@ -291,7 +291,7 @@ public class CustomMatrixZoomData extends MatrixZoomData {
         long timeFinalOverall = System.currentTimeMillis();
         //System.out.println("Time taken in actuallyLoadGivenBlocks (seconds): " + timesPassed[0] / 1000.0 + " - " + timesPassed[1] / 1000.0 + " - " + timesPassed[2] / 1000.0);
 
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("Time taken overall breakdown (seconds): "
                     + DatasetReaderV2.globalTimeDiffThings[0] + " - "
                     + DatasetReaderV2.globalTimeDiffThings[1] + " - "

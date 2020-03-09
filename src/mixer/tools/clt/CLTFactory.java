@@ -24,7 +24,7 @@
 
 package mixer.tools.clt;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.tools.clt.mixer.CompareLists;
 import mixer.tools.clt.mixer.LoopDomains;
 import mixer.tools.dev.Distortion;
@@ -47,7 +47,7 @@ public class CLTFactory {
     };
 
     public static void generalUsage() {
-        System.out.println("Mixer Tools Version " + HiCGlobals.versionNum);
+        System.out.println("Mixer Tools Version " + MixerGlobals.versionNum);
         System.out.println("Usage:");
         for (String usage : commandLineToolUsages) {
             System.out.println("\t" + usage);

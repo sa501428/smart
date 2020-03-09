@@ -24,7 +24,7 @@
 
 package mixer.tools.clt.mixer;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
 import mixer.data.anchor.MotifAnchorTools;
@@ -57,7 +57,7 @@ public class CompareLists extends MixerCLT {
                 "comparetype:   0 - overlap/intersect within distance threshold\n" +
                 "               1 - comparison with ctcf motifs\n" +
                 "               2 - convergence calculation for list1 with ctcf motifs");
-        HiCGlobals.useCache = false;
+        MixerGlobals.useCache = false;
     }
 
     @Override

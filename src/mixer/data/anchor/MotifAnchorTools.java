@@ -24,7 +24,7 @@
 
 package mixer.data.anchor;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.feature.FeatureFilter;
 import mixer.data.feature.GenomeWideList;
@@ -506,7 +506,7 @@ public class MotifAnchorTools {
         for (MotifAnchor anchor : bottomListToTopList.keySet()) {
             for (MotifAnchor anchor2 : bottomListToTopList.get(anchor)) {
                 anchor2.addFeatureReferencesFrom(anchor);
-                if (HiCGlobals.printVerboseComments) {
+                if (MixerGlobals.printVerboseComments) {
                     if (anchor2.getSequence().equals("TGAGTCACTAGAGGGAGGCA")) {
                         System.out.println(bottomListToTopList.get(anchor));
                     }

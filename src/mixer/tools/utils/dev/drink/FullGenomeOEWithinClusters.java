@@ -24,7 +24,7 @@
 
 package mixer.tools.utils.dev.drink;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
 import mixer.data.feature.GenomeWideList;
@@ -70,7 +70,7 @@ public class FullGenomeOEWithinClusters {
 
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
 
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             interMatrix.exportData(outputDirectory);
         }
 

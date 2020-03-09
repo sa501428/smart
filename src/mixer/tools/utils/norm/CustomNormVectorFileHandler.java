@@ -25,7 +25,7 @@
 package mixer.tools.utils.norm;
 
 import mixer.HiC;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.*;
 import mixer.tools.utils.original.ExpectedValueCalculation;
 import mixer.windowui.HiCZoom;
@@ -46,7 +46,7 @@ public class CustomNormVectorFileHandler extends NormVectorUpdater {
     public static void updateHicFile(String path, String vectorPath) throws IOException {
         DatasetReaderV2 reader = new DatasetReaderV2(path);
         Dataset ds = reader.read();
-        HiCGlobals.verifySupportedHiCFileVersion(reader.getVersion());
+        MixerGlobals.verifySupportedHiCFileVersion(reader.getVersion());
 
         String[] vectorPaths = vectorPath.split(",");
         NormVectorInfo normVectorInfo = completeCalculationsNecessaryForUpdatingCustomNormalizations(ds, vectorPaths, true);
@@ -194,7 +194,7 @@ public class CustomNormVectorFileHandler extends NormVectorUpdater {
                 vectorReader = new BufferedReader(decoder, 4194304);
             } else {
                 //this.reader = org.broad.igv.util.ParsingUtils.openBufferedReader(path);
-                vectorReader = new BufferedReader(new InputStreamReader(new FileInputStream(fname)), HiCGlobals.bufferSize);
+                vectorReader = new BufferedReader(new InputStreamReader(new FileInputStream(fname)), MixerGlobals.bufferSize);
             }
 
             Chromosome chr = null;
@@ -221,7 +221,7 @@ public class CustomNormVectorFileHandler extends NormVectorUpdater {
                     needsToBeScaledTo = tokens[0].toLowerCase().contains("scale");
                 }
                 if (chr != null && customNormType != null) {
-                    if (HiCGlobals.printVerboseComments) {
+                    if (MixerGlobals.printVerboseComments) {
                         System.out.println("Adding norm " + customNormType + " for chr " + chr.getName() + " at " + resolution + " " + unit + " resolution.");
                     }
 

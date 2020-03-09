@@ -28,7 +28,7 @@ package mixer.data;
 import htsjdk.samtools.seekablestream.SeekableStream;
 import htsjdk.tribble.util.LittleEndianInputStream;
 import mixer.HiC;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationHandler;
 import mixer.windowui.NormalizationType;
@@ -437,12 +437,12 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
         if (version >= 6) {
 
             //dis = new LittleEndianInputStream(new BufferedInputStream(stream, 512000));
-            dis = new LittleEndianInputStream(new BufferedInputStream(stream, HiCGlobals.bufferSize));
+            dis = new LittleEndianInputStream(new BufferedInputStream(stream, MixerGlobals.bufferSize));
 
             try {
                 nExpectedValues = dis.readInt();
             } catch (EOFException | HttpResponseException e) {
-                if (HiCGlobals.printVerboseComments) {
+                if (MixerGlobals.printVerboseComments) {
                     System.out.println("No normalization vectors");
                 }
                 return;
@@ -674,7 +674,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
             NormalizationVector nv2 = dataset.getNormalizationVector(zd.getChr2Idx(), zd.getZoom(), no);
 
             if (nv1 == null || nv2 == null) {
-                if (HiCGlobals.printVerboseComments) { // todo should this print an error always instead?
+                if (MixerGlobals.printVerboseComments) { // todo should this print an error always instead?
                     System.err.println("Norm " + no + " missing for: " + zd.getDescription());
                     System.err.println(nv1 + " - " + nv2);
                 }
@@ -704,7 +704,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
 
             //double sparsity = (normRecords.size() * 100) / (Preprocessor.BLOCK_SIZE * Preprocessor.BLOCK_SIZE);
             //System.out.println(sparsity);
-            //if(HiCGlobals.printVerboseComments) {
+            //if(MixerGlobals.printVerboseComments) {
             //    System.out.println("Time taken inside of reader " +
             //            (timeDiffThings[1] - timeDiffThings[0]) / 1000.0 + " - " + (timeDiffThings[2] - timeDiffThings[1]) / 1000.0 + " - " + (timeDiffThings[3] - timeDiffThings[2]) / 1000.0);
             //}

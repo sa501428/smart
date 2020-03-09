@@ -24,7 +24,7 @@
 
 package mixer.tools.clt.mixer;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
 import mixer.tools.clt.CommandLineParserForMixer;
@@ -73,7 +73,7 @@ public class LoopDomains extends MixerCLT {
     public LoopDomains() {
         super("loop_domains [-m threshold] [-c chromosome(s)] <genomeID> " +
                 "<loop_list_with_motifs> <contact_domains_list> [output_path]");
-        HiCGlobals.useCache = false;
+        MixerGlobals.useCache = false;
     }
 
 

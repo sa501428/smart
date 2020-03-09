@@ -25,7 +25,7 @@
 package mixer.tools;
 
 import jargs.gnu.CmdLineParser;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.tools.clt.CLTFactory;
 import mixer.tools.clt.CommandLineParserForMixer;
 import mixer.tools.clt.MixerCLT;
@@ -49,14 +49,14 @@ public class HiCTools {
         }
 
         CommandLineParserForMixer parser = new CommandLineParserForMixer();
-        HiCGlobals.useCache = false; //TODO until memory leak cleared
+        MixerGlobals.useCache = false; //TODO until memory leak cleared
         boolean help;
         boolean version;
         parser.parse(argv);
 
         help = parser.getHelpOption();
         version = parser.getVersionOption();
-        HiCGlobals.printVerboseComments = parser.getVerboseOption();
+        MixerGlobals.printVerboseComments = parser.getVerboseOption();
 
         String[] args = parser.getRemainingArgs();
 
@@ -70,7 +70,7 @@ public class HiCTools {
         }
         if (instanceOfCLT != null) {
             if (version) {
-                System.out.println("Mixer tools version " + HiCGlobals.versionNum);
+                System.out.println("Mixer tools version " + MixerGlobals.versionNum);
             }
             if (args.length == 1 || help) {
                 instanceOfCLT.printUsageAndExit();

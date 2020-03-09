@@ -24,7 +24,7 @@
 
 package mixer.tools.utils.dev.drink;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -300,7 +300,7 @@ public class CompositeGenomeWideDensityMatrix {
     public synchronized Pair<Double, int[]> processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("GW Composite data vs clustered into " + clusters.length + " clusters");
         }
 
@@ -313,7 +313,7 @@ public class CompositeGenomeWideDensityMatrix {
             int currentClusterID = ++genomewideCompartmentID;
             ids[z] = currentClusterID;
 
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
             }
 
@@ -346,7 +346,7 @@ public class CompositeGenomeWideDensityMatrix {
             }
         }
 
-        if (HiCGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("Final MSE " + meanSquaredErrorWithinClusters);
         }
 

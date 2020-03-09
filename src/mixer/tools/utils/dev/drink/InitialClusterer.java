@@ -24,7 +24,7 @@
 
 package mixer.tools.utils.dev.drink;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -118,7 +118,7 @@ public class InitialClusterer {
 
         Map<Chromosome, DataCleanerV2> dataCleanerV2MapForChrom = getCleanedDatasets(outputDirectory);
         for (long seed : randomSeeds) {
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.out.println("** Cluster with seed " + seed);
             }
             for (Chromosome chromosome : dataCleanerV2MapForChrom.keySet()) {
@@ -148,7 +148,7 @@ public class InitialClusterer {
 
             @Override
             public void kmeansComplete(Cluster[] clusters, long l) {
-                if (HiCGlobals.printVerboseComments) {
+                if (MixerGlobals.printVerboseComments) {
                     System.out.println("Chromosome " + chromosome.getName() + " clustered into " + clusters.length + " clusters");
                 }
                 System.out.print(".");
@@ -218,7 +218,7 @@ public class InitialClusterer {
                             norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED, true);
                     if (localizedRegionData != null) {
                         matrices.add(localizedRegionData.getData());
-                        if (HiCGlobals.printVerboseComments) {
+                        if (MixerGlobals.printVerboseComments) {
                             MatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
                         }
                     }

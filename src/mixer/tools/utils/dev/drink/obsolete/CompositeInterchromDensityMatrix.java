@@ -24,7 +24,7 @@
 
 package mixer.tools.utils.dev.drink.obsolete;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -263,7 +263,7 @@ public class CompositeInterchromDensityMatrix {
             int currentClusterID = genomewideInitialClusterID.getAndIncrement();
             subcompartmentIDsToSize.put(currentClusterID, cluster.getMemberIndexes().length);
 
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
             }
 

@@ -24,7 +24,7 @@
 
 package mixer.data.anchor;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
 import mixer.data.feature.FeatureFilter;
@@ -72,7 +72,7 @@ public class MotifAnchorParser {
         try {
             // locate file from appropriate source and creat input stream
             is = ParsingUtils.openInputStream(extractProperMotifFilePath(genomeID, path, motifLocation));
-            reader = new BufferedReader(new InputStreamReader(is), HiCGlobals.bufferSize);
+            reader = new BufferedReader(new InputStreamReader(is), MixerGlobals.bufferSize);
         } catch (Exception e) {
             System.err.println("Unable to create input stream for global motifs " + motifLocation);
             System.exit(49);
@@ -136,7 +136,7 @@ public class MotifAnchorParser {
 
         try {
             //BufferedReader br = ParsingUtils.openBufferedReader(path);
-            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(path)), HiCGlobals.bufferSize);
+            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(path)), MixerGlobals.bufferSize);
             anchors.addAll(parseGlobalMotifFile(br, handler));
         } catch (IOException ec) {
             ec.printStackTrace();
@@ -208,7 +208,7 @@ public class MotifAnchorParser {
 
                 Chromosome chr = handler.getChromosomeFromName(chr1Name);
                 if (chr == null) {
-                    if (HiCGlobals.printVerboseComments) {
+                    if (MixerGlobals.printVerboseComments) {
                         if (errorCount < 10) {
                             System.out.println("Skipping line: " + nextLine);
                         } else if (errorCount == 10) {
@@ -246,7 +246,7 @@ public class MotifAnchorParser {
 
         try {
             //BufferedReader br = ParsingUtils.openBufferedReader(bedFilePath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(bedFilePath)), HiCGlobals.bufferSize);
+            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(bedFilePath)), MixerGlobals.bufferSize);
             anchors.addAll(parseBEDFile(br, handler));
         } catch (IOException ec) {
             ec.printStackTrace();
@@ -326,7 +326,7 @@ public class MotifAnchorParser {
             is = urlConn.getInputStream();
             fos = new FileOutputStream(outputFile);
 
-            byte[] buffer = new byte[HiCGlobals.bufferSize];
+            byte[] buffer = new byte[MixerGlobals.bufferSize];
             int length;
 
             // read from source and write into local file

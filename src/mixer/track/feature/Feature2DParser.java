@@ -24,7 +24,7 @@
 
 package mixer.track.feature;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
 import mixer.tools.utils.mixer.arrowhead.ArrowheadScoreList;
@@ -132,7 +132,7 @@ public class Feature2DParser {
         Feature2DList newList = new Feature2DList();
         try {
             //BufferedReader br = ParsingUtils.openBufferedReader(path);
-            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(path)), HiCGlobals.bufferSize);
+            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(path)), MixerGlobals.bufferSize);
             String nextLine;
 
             // header
@@ -271,7 +271,7 @@ public class Feature2DParser {
         }
 
         private static void handleError(String nextLine) {
-            if (HiCGlobals.printVerboseComments) {
+            if (MixerGlobals.printVerboseComments) {
                 if (errorCount < errorLimit) {
                     System.err.println("Skipping line: " + nextLine);
                 } else if (errorCount == errorLimit) {

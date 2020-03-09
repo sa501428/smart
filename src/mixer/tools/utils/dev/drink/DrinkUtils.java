@@ -24,7 +24,7 @@
 
 package mixer.tools.utils.dev.drink;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
 import mixer.data.feature.FeatureFilter;
@@ -154,7 +154,7 @@ public class DrinkUtils {
 
         try {
             //BufferedReader br = ParsingUtils.openBufferedReader(bedFilePath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(bedFilePath)), HiCGlobals.bufferSize);
+            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(bedFilePath)), MixerGlobals.bufferSize);
             anchors.addAll(parseSubcompartmentBEDFile(br, handler));
         } catch (IOException ec) {
             ec.printStackTrace();

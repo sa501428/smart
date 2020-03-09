@@ -24,7 +24,7 @@
 
 package mixer.tools.dev;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -67,7 +67,7 @@ public class Drink extends MixerCLT {
 
     public Drink(boolean compareOnlyNotSubcompartment) {
         super("drink [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] <input1.hic+input2.hic+input3.hic...> <output_file>");
-        HiCGlobals.useCache = false;
+        MixerGlobals.useCache = false;
         this.compareOnlyNotSubcompartment = compareOnlyNotSubcompartment;
     }
 

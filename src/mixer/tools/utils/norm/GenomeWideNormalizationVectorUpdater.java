@@ -25,7 +25,7 @@
 package mixer.tools.utils.norm;
 
 import mixer.HiC;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.*;
 import mixer.tools.utils.original.ExpectedValueCalculation;
 import mixer.windowui.HiCZoom;
@@ -42,7 +42,7 @@ public class GenomeWideNormalizationVectorUpdater extends NormVectorUpdater {
     public static void addGWNorm(String path, int genomeWideResolution) throws IOException {
         DatasetReaderV2 reader = new DatasetReaderV2(path);
         Dataset ds = reader.read();
-        HiCGlobals.verifySupportedHiCFileVersion(reader.getVersion());
+        MixerGlobals.verifySupportedHiCFileVersion(reader.getVersion());
 
         List<HiCZoom> resolutions = new ArrayList<>();
         resolutions.addAll(ds.getBpZooms());
@@ -122,7 +122,7 @@ public class GenomeWideNormalizationVectorUpdater extends NormVectorUpdater {
 
                     long currentTime = System.currentTimeMillis();
                     Pair<Map<Chromosome, NormalizationVector>, ExpectedValueCalculation> wgVectors = getWGVectors(ds, zoom, normType);
-                    if (HiCGlobals.printVerboseComments) {
+                    if (MixerGlobals.printVerboseComments) {
                         System.out.println("\n" + normType.getLabel() + " normalization genome wide at " + zoom + " took " + (System.currentTimeMillis() - currentTime) + " milliseconds");
                     }
 

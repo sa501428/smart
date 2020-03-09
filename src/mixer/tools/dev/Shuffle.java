@@ -24,7 +24,7 @@
 
 package mixer.tools.dev;
 
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.*;
 import mixer.tools.clt.CommandLineParserForMixer;
 import mixer.tools.clt.MixerCLT;
@@ -60,7 +60,7 @@ public class Shuffle extends MixerCLT {
     public Shuffle() {
         super("shuffle [-r res1,res2] [-k normalization] [-w clique size] [-m matrixSizesForNeuralNet]" +
                 "  <hicFile> <assembly_file> <output_directory>");
-        HiCGlobals.useCache = false;
+        MixerGlobals.useCache = false;
     }
 
     public static void writeStrictIntsToFile(File path, List<Integer> positions) {

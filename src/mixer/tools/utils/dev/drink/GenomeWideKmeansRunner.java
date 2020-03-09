@@ -25,7 +25,7 @@
 package mixer.tools.utils.dev.drink;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import mixer.HiCGlobals;
+import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.feature.GenomeWideList;
 import mixer.tools.utils.dev.drink.kmeansfloat.Cluster;
@@ -79,7 +79,7 @@ public class GenomeWideKmeansRunner {
             KMeansListener kMeansListener = new KMeansListener() {
                 @Override
                 public void kmeansMessage(String s) {
-                    if (HiCGlobals.printVerboseComments) {
+                    if (MixerGlobals.printVerboseComments) {
                         System.out.println(s);
                     }
                 }
