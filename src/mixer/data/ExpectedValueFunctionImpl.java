@@ -24,7 +24,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
 
@@ -41,13 +40,13 @@ public class ExpectedValueFunctionImpl implements ExpectedValueFunction {
 
     private final int binSize;
     private final NormalizationType type;
-    private final HiC.Unit unit;
+    private final HiCFileTools.Unit unit;
 
     private final Map<Integer, Double> normFactors;
 
     private final double[] expectedValues;
 
-    public ExpectedValueFunctionImpl(NormalizationType type, HiC.Unit unit, int binSize, double[] expectedValues, Map<Integer, Double> normFactors) {
+    public ExpectedValueFunctionImpl(NormalizationType type, HiCFileTools.Unit unit, int binSize, double[] expectedValues, Map<Integer, Double> normFactors) {
         this.type = type;
         this.unit = unit;
         this.binSize = binSize;
@@ -113,7 +112,7 @@ public class ExpectedValueFunctionImpl implements ExpectedValueFunction {
     }
 
     @Override
-    public HiC.Unit getUnit() {
+    public HiCFileTools.Unit getUnit() {
         return unit;
     }
 

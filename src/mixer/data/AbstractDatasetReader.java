@@ -24,7 +24,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.windowui.NormalizationType;
 
 import java.io.IOException;
@@ -49,7 +48,7 @@ public abstract class AbstractDatasetReader implements DatasetReader {
     }
 
     @Override
-    public NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int binSize) throws IOException {
+    public NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiCFileTools.Unit unit, int binSize) throws IOException {
         return null;  // Override as necessary
     }
 

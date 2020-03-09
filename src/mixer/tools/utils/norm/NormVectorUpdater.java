@@ -24,10 +24,10 @@
 
 package mixer.tools.utils.norm;
 
-import mixer.HiC;
 import mixer.data.DatasetReaderV2;
 import mixer.data.ExpectedValueFunction;
 import mixer.data.ExpectedValueFunctionImpl;
+import mixer.data.HiCFileTools;
 import mixer.tools.utils.original.ExpectedValueCalculation;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
@@ -156,7 +156,7 @@ public class NormVectorUpdater {
             ev.computeDensity();
             buffer.putNullTerminatedString(ev.getType().toString());
 
-            HiC.Unit unit = ev.isFrag ? HiC.Unit.FRAG : HiC.Unit.BP;
+            HiCFileTools.Unit unit = ev.isFrag ? HiCFileTools.Unit.FRAG : HiCFileTools.Unit.BP;
             buffer.putNullTerminatedString(unit.toString());
 
             buffer.putInt(ev.getGridSize());

@@ -25,7 +25,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.MixerGlobals;
 import mixer.data.anchor.MotifAnchor;
 import mixer.data.feature.FeatureFunction;
@@ -248,7 +247,7 @@ public class Matrix {
         bpZoomData = new ArrayList<>();
         fragZoomData = new ArrayList<>();
         for (MatrixZoomData zd : zoomDataList) {
-            if (zd.getZoom().getUnit() == HiC.Unit.BP) {
+            if (zd.getZoom().getUnit() == HiCFileTools.Unit.BP) {
                 bpZoomData.add(zd);
             } else {
                 fragZoomData.add(zd);
@@ -269,22 +268,22 @@ public class Matrix {
 
     public MatrixZoomData getFirstZoomData() {
         if (bpZoomData != null && bpZoomData.size() > 0) {
-            return getFirstZoomData(HiC.Unit.BP);
+            return getFirstZoomData(HiCFileTools.Unit.BP);
        } else {
-            return getFirstZoomData(HiC.Unit.FRAG);
+            return getFirstZoomData(HiCFileTools.Unit.FRAG);
         }
     }
 
-    public MatrixZoomData getFirstZoomData(HiC.Unit unit) {
-        if (unit == HiC.Unit.BP) {
+    public MatrixZoomData getFirstZoomData(HiCFileTools.Unit unit) {
+        if (unit == HiCFileTools.Unit.BP) {
             return bpZoomData != null && bpZoomData.size() > 0 ? bpZoomData.get(0) : null;
         } else {
             return fragZoomData != null && fragZoomData.size() > 0 ? fragZoomData.get(0) : null;
         }
     }
 
-    public MatrixZoomData getFirstPearsonZoomData(HiC.Unit unit) {
-        if (unit == HiC.Unit.BP) {
+    public MatrixZoomData getFirstPearsonZoomData(HiCFileTools.Unit unit) {
+        if (unit == HiCFileTools.Unit.BP) {
             return bpZoomData != null ? bpZoomData.get(2) : null;
         } else {
             return fragZoomData != null ? fragZoomData.get(2) : null;
@@ -294,7 +293,7 @@ public class Matrix {
 
     public MatrixZoomData getZoomData(HiCZoom zoom) {
         int targetZoom = zoom.getBinSize();
-        List<MatrixZoomData> zdList = (zoom.getUnit() == HiC.Unit.BP) ? bpZoomData : fragZoomData;
+        List<MatrixZoomData> zdList = (zoom.getUnit() == HiCFileTools.Unit.BP) ? bpZoomData : fragZoomData;
         //linear search for bin size, the lists are not large
         for (MatrixZoomData zd : zdList) {
             if (zd.getBinSize() == targetZoom) {
@@ -321,8 +320,8 @@ public class Matrix {
         return null;
     }
 
-    public int getNumberOfZooms(HiC.Unit unit) {
-        return (unit == HiC.Unit.BP) ? bpZoomData.size() : fragZoomData.size();
+    public int getNumberOfZooms(HiCFileTools.Unit unit) {
+        return (unit == HiCFileTools.Unit.BP) ? bpZoomData.size() : fragZoomData.size();
     }
 
     public boolean isNotIntra() {

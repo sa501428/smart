@@ -24,7 +24,6 @@
 
 package mixer.tools.utils.norm;
 
-import mixer.HiC;
 import mixer.MixerGlobals;
 import mixer.data.*;
 import mixer.tools.utils.original.ExpectedValueCalculation;
@@ -138,7 +137,7 @@ public class CustomNormVectorFileHandler extends NormVectorUpdater {
         }
 
         for (HiCZoom zoom : resolutions) {
-            Map<String, Integer> fcm = zoom.getUnit() == HiC.Unit.FRAG ? fragCountMap : null;
+            Map<String, Integer> fcm = zoom.getUnit() == HiCFileTools.Unit.FRAG ? fragCountMap : null;
 
             for (NormalizationType customNormType : normalizationVectorMap.keySet()) {
 
@@ -199,7 +198,7 @@ public class CustomNormVectorFileHandler extends NormVectorUpdater {
 
             Chromosome chr = null;
             int resolution = -1;
-            HiC.Unit unit = null;
+            HiCFileTools.Unit unit = null;
             NormalizationType customNormType = null;
             boolean needsToBeScaledTo = false;
 
@@ -217,7 +216,7 @@ public class CustomNormVectorFileHandler extends NormVectorUpdater {
 
                     customNormType = normalizationHandler.getNormTypeFromString(tokens[1]);
                     resolution = Integer.parseInt(tokens[3]);
-                    unit = HiC.Unit.valueOf(tokens[4]);
+                    unit = HiCFileTools.Unit.valueOf(tokens[4]);
                     needsToBeScaledTo = tokens[0].toLowerCase().contains("scale");
                 }
                 if (chr != null && customNormType != null) {

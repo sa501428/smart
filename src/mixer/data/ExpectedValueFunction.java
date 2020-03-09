@@ -24,7 +24,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.windowui.NormalizationType;
 
 /**
@@ -40,7 +39,7 @@ public interface ExpectedValueFunction {
 
     NormalizationType getNormalizationType();
 
-    HiC.Unit getUnit();
+    HiCFileTools.Unit getUnit();
 
     int getBinSize();
 

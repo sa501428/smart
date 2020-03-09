@@ -25,7 +25,7 @@
 
 package mixer.windowui;
 
-import mixer.HiC;
+import mixer.data.HiCFileTools;
 
 /**
  * @author jrobinso
@@ -34,10 +34,10 @@ import mixer.HiC;
  */
 public class HiCZoom implements Comparable<HiCZoom> {
 
-    private final HiC.Unit unit;
+    private final HiCFileTools.Unit unit;
     private final Integer binSize;
 
-    public HiCZoom(HiC.Unit unit, int binSize) {
+    public HiCZoom(HiCFileTools.Unit unit, int binSize) {
         this.unit = unit;
         this.binSize = binSize;
     }
@@ -47,7 +47,7 @@ public class HiCZoom implements Comparable<HiCZoom> {
         return new HiCZoom(unit, binSize);
     }
 
-    public HiC.Unit getUnit() {
+    public HiCFileTools.Unit getUnit() {
         return unit;
     }
 

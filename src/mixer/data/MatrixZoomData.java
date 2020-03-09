@@ -25,7 +25,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.MixerGlobals;
 import mixer.matrix.BasicMatrix;
 import mixer.track.HiCFixedGridAxis;
@@ -91,7 +90,7 @@ public class MatrixZoomData {
 
         int correctedBinCount = blockBinCount;
         if (reader.getVersion() < 8 && chr1.getLength() < chr2.getLength()) {
-            boolean isFrag = zoom.getUnit() == HiC.Unit.FRAG;
+            boolean isFrag = zoom.getUnit() == HiCFileTools.Unit.FRAG;
             int len1 = chr1.getLength();
             int len2 = chr2.getLength();
             if (chr1Sites != null && chr2Sites != null && isFrag) {
@@ -105,7 +104,7 @@ public class MatrixZoomData {
         if (this instanceof CustomMatrixZoomData) {
             this.xGridAxis = new HiCFixedGridAxis(chr1.getLength() / zoom.getBinSize() + 1, zoom.getBinSize(), null);
             this.yGridAxis = new HiCFixedGridAxis(chr2.getLength() / zoom.getBinSize() + 1, zoom.getBinSize(), null);
-        } else if (zoom.getUnit() == HiC.Unit.BP) {
+        } else if (zoom.getUnit() == HiCFileTools.Unit.BP) {
             this.xGridAxis = new HiCFixedGridAxis(correctedBinCount * blockColumnCount, zoom.getBinSize(), chr1Sites);
             this.yGridAxis = new HiCFixedGridAxis(correctedBinCount * blockColumnCount, zoom.getBinSize(), chr2Sites);
         } else {

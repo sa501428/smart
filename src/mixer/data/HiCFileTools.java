@@ -42,6 +42,17 @@ import java.util.regex.Pattern;
  */
 public class HiCFileTools {
 
+    public static Unit valueOfUnit(String unit) {
+        if (unit.equalsIgnoreCase(Unit.BP.toString())) {
+            return Unit.BP;
+        } else if (unit.equalsIgnoreCase(Unit.FRAG.toString())) {
+            return Unit.FRAG;
+        }
+        return null;
+    }
+
+    public enum Unit {BP, FRAG}
+
     public static Dataset extractDatasetForCLT(List<String> files, boolean allowPrinting) {
         Dataset dataset = null;
         try {
@@ -469,4 +480,6 @@ public class HiCFileTools {
     public static MatrixZoomData getMatrixZoomData(Dataset ds, Chromosome chrom1, Chromosome chrom2, int resolution) {
         return getMatrixZoomData(ds, chrom1, chrom2, ds.getZoomForBPResolution(resolution));
     }
+
+
 }

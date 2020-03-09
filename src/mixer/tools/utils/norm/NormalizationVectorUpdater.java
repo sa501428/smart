@@ -24,7 +24,6 @@
 
 package mixer.tools.utils.norm;
 
-import mixer.HiC;
 import mixer.MixerGlobals;
 import mixer.data.*;
 import mixer.tools.utils.original.ExpectedValueCalculation;
@@ -81,10 +80,10 @@ public class NormalizationVectorUpdater extends NormVectorUpdater {
         reEvaluateWhichIntraNormsToBuild(normalizationsToBuild);
 
         for (HiCZoom zoom : resolutions) {
-            if (noFrag && zoom.getUnit() == HiC.Unit.FRAG) continue;
+            if (noFrag && zoom.getUnit() == HiCFileTools.Unit.FRAG) continue;
 
             // compute genome-wide normalizations
-            if (zoom.getUnit() == HiC.Unit.BP && zoom.getBinSize() >= genomeWideLowestResolutionAllowed) {
+            if (zoom.getUnit() == HiCFileTools.Unit.BP && zoom.getBinSize() >= genomeWideLowestResolutionAllowed) {
                 GenomeWideNormalizationVectorUpdater.updateHicFileForGWfromPreAddNormOnly(ds, zoom, normalizationsToBuild, resolutionsToBuildTo,
                         normVectorIndices, normVectorBuffer, expectedValueCalculations);
             }
@@ -92,7 +91,7 @@ public class NormalizationVectorUpdater extends NormVectorUpdater {
             System.out.println();
             System.out.print("Calculating norms for zoom " + zoom);
 
-            Map<String, Integer> fcm = zoom.getUnit() == HiC.Unit.FRAG ? fragCountMap : null;
+            Map<String, Integer> fcm = zoom.getUnit() == HiCFileTools.Unit.FRAG ? fragCountMap : null;
 
             ExpectedValueCalculation evVC = new ExpectedValueCalculation(chromosomeHandler, zoom.getBinSize(), fcm, NormalizationHandler.VC);
             ExpectedValueCalculation evVCSqrt = new ExpectedValueCalculation(chromosomeHandler, zoom.getBinSize(), fcm, NormalizationHandler.VC_SQRT);
@@ -172,7 +171,7 @@ public class NormalizationVectorUpdater extends NormVectorUpdater {
     }
 
     private void buildKR(Chromosome chr, NormalizationCalculations nc, HiCZoom zoom, MatrixZoomData zd, ExpectedValueCalculation evKR) throws IOException {
-        Set<Chromosome> failureSetKR = zoom.getUnit() == HiC.Unit.FRAG ? krFragFailedChromosomes : krBPFailedChromosomes;
+        Set<Chromosome> failureSetKR = zoom.getUnit() == HiCFileTools.Unit.FRAG ? krFragFailedChromosomes : krBPFailedChromosomes;
         final int chrIdx = chr.getIndex();
 
         long currentTime = System.currentTimeMillis();
@@ -201,7 +200,7 @@ public class NormalizationVectorUpdater extends NormVectorUpdater {
     }
 
     private void buildScale(Chromosome chr, NormalizationCalculations nc, HiCZoom zoom, MatrixZoomData zd, ExpectedValueCalculation evSCALE) throws IOException {
-        Set<Chromosome> failureSetMMBA = zoom.getUnit() == HiC.Unit.FRAG ? mmbaFragFailedChromosomes : mmbaBPFailedChromosomes;
+        Set<Chromosome> failureSetMMBA = zoom.getUnit() == HiCFileTools.Unit.FRAG ? mmbaFragFailedChromosomes : mmbaBPFailedChromosomes;
         final int chrIdx = chr.getIndex();
         long currentTime = System.currentTimeMillis();
 

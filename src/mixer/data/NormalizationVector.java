@@ -25,7 +25,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.tools.utils.norm.ZeroScale;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
@@ -42,12 +41,12 @@ public class NormalizationVector {
 
     private final NormalizationType type;
     private final int chrIdx;
-    private final HiC.Unit unit;
+    private final HiCFileTools.Unit unit;
     private final int resolution;
     private final double[] data;
     private boolean needsToBeScaledTo = false;
 
-    public NormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int resolution, double[] data) {
+    public NormalizationVector(NormalizationType type, int chrIdx, HiCFileTools.Unit unit, int resolution, double[] data) {
         this.type = type;
         this.chrIdx = chrIdx;
         this.unit = unit;
@@ -55,7 +54,7 @@ public class NormalizationVector {
         this.data = data;
     }
 
-    public NormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int resolution, double[] data, boolean needsToBeScaledTo) {
+    public NormalizationVector(NormalizationType type, int chrIdx, HiCFileTools.Unit unit, int resolution, double[] data, boolean needsToBeScaledTo) {
         this(type, chrIdx, unit, resolution, data);
         this.needsToBeScaledTo = needsToBeScaledTo;
     }

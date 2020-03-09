@@ -24,7 +24,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
 
@@ -178,7 +177,7 @@ public class CombinedDatasetReader implements DatasetReader {
     }
 
     @Override
-    public NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int binSize) {
+    public NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiCFileTools.Unit unit, int binSize) {
         return null; // Undefined for combined datasets
     }
 
@@ -234,7 +233,7 @@ public class CombinedDatasetReader implements DatasetReader {
         Collection<String> keys = firstDataset.getExpectedValueFunctionMap().keySet();
         Set<String> zoomsToRemove = new HashSet<>();
         for (String key : keys) {
-            if (!hasFrags && key.startsWith(HiC.Unit.FRAG.toString())) continue;
+            if (!hasFrags && key.startsWith(HiCFileTools.Unit.FRAG.toString())) continue;
             List<ExpectedValueFunction> evFunctions = new ArrayList<>();
             boolean haveAll = true;
             for (Dataset ds : datasetList) {
@@ -322,7 +321,7 @@ public class CombinedDatasetReader implements DatasetReader {
 
             ExpectedValueFunction protoFunction = densityFunctions.get(0);
             int binSize = protoFunction.getBinSize();
-            HiC.Unit unit = protoFunction.getUnit();
+            HiCFileTools.Unit unit = protoFunction.getUnit();
             NormalizationType type = protoFunction.getNormalizationType();
             int len = protoFunction.getLength();
 

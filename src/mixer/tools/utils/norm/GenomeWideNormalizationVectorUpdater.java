@@ -24,7 +24,6 @@
 
 package mixer.tools.utils.norm;
 
-import mixer.HiC;
 import mixer.MixerGlobals;
 import mixer.data.*;
 import mixer.tools.utils.original.ExpectedValueCalculation;
@@ -64,7 +63,7 @@ public class GenomeWideNormalizationVectorUpdater extends NormVectorUpdater {
 
             // compute genome-wide normalization
             // TODO make this dependent on memory, do as much as possible
-            if (genomeWideResolution >= 10000 && zoom.getUnit() == HiC.Unit.BP && zoom.getBinSize() >= genomeWideResolution) {
+            if (genomeWideResolution >= 10000 && zoom.getUnit() == HiCFileTools.Unit.BP && zoom.getBinSize() >= genomeWideResolution) {
                 for (NormalizationType normType : NormalizationHandler.getAllGWNormTypes(false)) {
 
                     Pair<Map<Chromosome, NormalizationVector>, ExpectedValueCalculation> wgVectors = getWGVectors(ds, zoom, normType);

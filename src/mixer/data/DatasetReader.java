@@ -24,7 +24,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
 
@@ -56,7 +55,7 @@ public interface DatasetReader {
 
     void close();
 
-    NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int binSize) throws IOException;
+    NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiCFileTools.Unit unit, int binSize) throws IOException;
 
     String getPath();
 

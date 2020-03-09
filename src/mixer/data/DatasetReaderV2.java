@@ -27,7 +27,6 @@ package mixer.data;
 
 import htsjdk.samtools.seekablestream.SeekableStream;
 import htsjdk.tribble.util.LittleEndianInputStream;
-import mixer.HiC;
 import mixer.MixerGlobals;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationHandler;
@@ -203,7 +202,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
     private MatrixZoomData readMatrixZoomData(Chromosome chr1, Chromosome chr2, int[] chr1Sites, int[] chr2Sites,
                                               LittleEndianInputStream dis) throws IOException {
 
-        HiC.Unit unit = HiC.valueOfUnit(dis.readString());
+        HiCFileTools.Unit unit = HiCFileTools.valueOfUnit(dis.readString());
         dis.readInt();                // Old "zoom" index -- not used
 
         // Stats.  Not used yet, but we need to read them anyway
@@ -410,7 +409,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
 
             NormalizationType no = NormalizationHandler.NONE;
             String unitString = dis.readString();
-            HiC.Unit unit = HiC.valueOfUnit(unitString);
+            HiCFileTools.Unit unit = HiCFileTools.valueOfUnit(unitString);
             int binSize = dis.readInt();
             String key = unitString + "_" + binSize + "_" + no;
 
@@ -452,7 +451,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
 
                 String typeString = dis.readString();
                 String unitString = dis.readString();
-                HiC.Unit unit = HiC.valueOfUnit(unitString);
+                HiCFileTools.Unit unit = HiCFileTools.valueOfUnit(unitString);
                 int binSize = dis.readInt();
                 String key = unitString + "_" + binSize + "_" + typeString;
 
@@ -613,7 +612,7 @@ public class DatasetReaderV2 extends AbstractDatasetReader {
     }
 
     @Override
-    public NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiC.Unit unit, int binSize) throws IOException {
+    public NormalizationVector readNormalizationVector(NormalizationType type, int chrIdx, HiCFileTools.Unit unit, int binSize) throws IOException {
 
         String key = NormalizationVector.getKey(type, chrIdx, unit.toString(), binSize);
         if (normVectorIndex == null) return null;

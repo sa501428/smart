@@ -25,7 +25,6 @@
 package mixer.data;
 
 import com.google.common.primitives.Ints;
-import mixer.HiC;
 import mixer.MixerGlobals;
 import mixer.tools.dev.Private;
 import mixer.windowui.HiCZoom;
@@ -126,17 +125,17 @@ public class Dataset {
         if (!normalizationTypes.contains(type)) normalizationTypes.add(type);
     }
 
-    public int getNumberZooms(HiC.Unit unit) {
-        return unit == HiC.Unit.BP ? bpZooms.size() : fragZooms.size();
+    public int getNumberZooms(HiCFileTools.Unit unit) {
+        return unit == HiCFileTools.Unit.BP ? bpZooms.size() : fragZooms.size();
     }
 
 
-    public HiCZoom getZoom(HiC.Unit unit, int index) {
-        return unit == HiC.Unit.BP ? bpZooms.get(index) : fragZooms.get(index);
+    public HiCZoom getZoom(HiCFileTools.Unit unit, int index) {
+        return unit == HiCFileTools.Unit.BP ? bpZooms.get(index) : fragZooms.get(index);
     }
 
     public HiCZoom getZoomForBPResolution(Integer resolution) {
-        return getZoom(HiC.Unit.BP, bpZoomResolutions.indexOf(resolution));
+        return getZoom(HiCFileTools.Unit.BP, bpZoomResolutions.indexOf(resolution));
     }
 
     public ExpectedValueFunction getExpectedValues(HiCZoom zoom, NormalizationType type) {
@@ -619,7 +618,7 @@ public class Dataset {
 
         bpZooms = new ArrayList<>(bpBinSizes.length);
         for (int bpBinSize : bpZoomResolutions) {
-            bpZooms.add(new HiCZoom(HiC.Unit.BP, bpBinSize));
+            bpZooms.add(new HiCZoom(HiCFileTools.Unit.BP, bpBinSize));
         }
     }
 
@@ -634,7 +633,7 @@ public class Dataset {
 
         this.fragZooms = new ArrayList<>(fragBinSizes.length);
         for (int fragBinSize : fragBinSizes) {
-            fragZooms.add(new HiCZoom(HiC.Unit.FRAG, fragBinSize));
+            fragZooms.add(new HiCZoom(HiCFileTools.Unit.FRAG, fragBinSize));
         }
     }
 

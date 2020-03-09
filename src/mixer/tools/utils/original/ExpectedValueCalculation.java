@@ -25,10 +25,10 @@
 
 package mixer.tools.utils.original;
 
-import mixer.HiC;
 import mixer.data.ChromosomeHandler;
 import mixer.data.ContactRecord;
 import mixer.data.ExpectedValueFunctionImpl;
+import mixer.data.HiCFileTools;
 import mixer.tools.utils.norm.NormVectorUpdater;
 import mixer.windowui.NormalizationType;
 import org.broad.igv.feature.Chromosome;
@@ -311,7 +311,7 @@ public class ExpectedValueCalculation {
 
     public ExpectedValueFunctionImpl getExpectedValueFunction() {
         computeDensity();
-        return new ExpectedValueFunctionImpl(type, isFrag ? HiC.Unit.FRAG : HiC.Unit.BP, gridSize, densityAvg, chrScaleFactors);
+        return new ExpectedValueFunctionImpl(type, isFrag ? HiCFileTools.Unit.FRAG : HiCFileTools.Unit.BP, gridSize, densityAvg, chrScaleFactors);
     }
 
     // TODO: this is often inefficient, we have all of the contact records when we leave norm calculations, should do this there if possible

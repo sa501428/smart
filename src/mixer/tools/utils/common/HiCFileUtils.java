@@ -24,7 +24,6 @@
 
 package mixer.tools.utils.common;
 
-import mixer.HiC;
 import mixer.data.*;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationHandler;
@@ -53,11 +52,11 @@ class HiCFileUtils {
 
     public static void main(String[] args) throws IOException {
         HiCFileUtils utils = new HiCFileUtils(args[0]);
-        utils.dumpNormalizationVectors(NormalizationHandler.KR, "1", HiC.Unit.BP, 250000);
-        utils.dumpExpectedVectors(NormalizationHandler.KR, HiC.Unit.BP, 1000000);
+        utils.dumpNormalizationVectors(NormalizationHandler.KR, "1", HiCFileTools.Unit.BP, 250000);
+        utils.dumpExpectedVectors(NormalizationHandler.KR, HiCFileTools.Unit.BP, 1000000);
     }
 
-    private void dumpNormalizationVectors(NormalizationType normType, String chrName, HiC.Unit unit, int binSize) {
+    private void dumpNormalizationVectors(NormalizationType normType, String chrName, HiCFileTools.Unit unit, int binSize) {
         Chromosome chromosome = findChromosome(chrName);
         HiCZoom zoom = new HiCZoom(unit, binSize);
         NormalizationVector nv = dataset.getNormalizationVector(chromosome.getIndex(), zoom, normType);
@@ -75,7 +74,7 @@ class HiCFileUtils {
         }
     }
 
-    private void dumpExpectedVectors(NormalizationType normType, HiC.Unit unit, int binSize) {
+    private void dumpExpectedVectors(NormalizationType normType, HiCFileTools.Unit unit, int binSize) {
 
         Map<String, ExpectedValueFunction> expValFunMap = dataset.getExpectedValueFunctionMap();
         for (Map.Entry<String, ExpectedValueFunction> entry : expValFunMap.entrySet()) {

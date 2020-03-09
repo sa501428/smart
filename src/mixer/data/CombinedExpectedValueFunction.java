@@ -24,7 +24,6 @@
 
 package mixer.data;
 
-import mixer.HiC;
 import mixer.windowui.NormalizationType;
 
 import java.util.ArrayList;
@@ -89,7 +88,7 @@ public class CombinedExpectedValueFunction implements ExpectedValueFunction {
     }
 
     @Override
-    public HiC.Unit getUnit() {
+    public HiCFileTools.Unit getUnit() {
         return densityFunctions.get(0).getUnit();
     }
 
