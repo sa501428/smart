@@ -27,6 +27,7 @@ package mixer.tools.clt;
 import mixer.HiCGlobals;
 import mixer.tools.clt.mixer.CompareLists;
 import mixer.tools.clt.mixer.LoopDomains;
+import mixer.tools.dev.Distortion;
 import mixer.tools.dev.Drink;
 import mixer.tools.dev.Grind;
 import mixer.tools.dev.Shuffle;
@@ -72,6 +73,8 @@ public class CLTFactory {
             return new Drink(true);
         } else if (cmd.equals("grind")) {
             return new Grind();
+        } else if (cmd.equals("distort")) {
+            return new Distortion();
         }
 
         return null;

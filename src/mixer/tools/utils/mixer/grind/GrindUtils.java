@@ -151,8 +151,10 @@ public class GrindUtils {
             String npyFileName = fileName + ".npy";
             MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, labels);
         }
-        synchronized (writer) {
-            writer.write(fileName + "\n");
+        if (writer != null) {
+            synchronized (writer) {
+                writer.write(fileName + "\n");
+            }
         }
     }
 
@@ -168,8 +170,10 @@ public class GrindUtils {
             String npyFileName = fileName + ".npy";
             MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
         }
-        synchronized (writer) {
-            writer.write(fileName + "\n");
+        if (writer != null) {
+            synchronized (writer) {
+                writer.write(fileName + "\n");
+            }
         }
     }
 
@@ -181,8 +185,10 @@ public class GrindUtils {
             String npyFileName = fileName + ".npy";
             MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
         }
-        synchronized (writer) {
-            writer.write(fileName + "\n");
+        if (writer != null) {
+            synchronized (writer) {
+                writer.write(fileName + "\n");
+            }
         }
     }
 

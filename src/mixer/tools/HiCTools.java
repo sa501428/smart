@@ -27,7 +27,6 @@ package mixer.tools;
 import jargs.gnu.CmdLineParser;
 import mixer.HiCGlobals;
 import mixer.tools.clt.CLTFactory;
-import mixer.tools.clt.CommandLineParser;
 import mixer.tools.clt.CommandLineParserForMixer;
 import mixer.tools.clt.MixerCLT;
 import org.broad.igv.Globals;
@@ -49,25 +48,12 @@ public class HiCTools {
             System.exit(0);
         }
 
-        String cmdName = argv[0].toLowerCase();
-
-        CommandLineParser parser = new CommandLineParser();
-        if (CommandLineParserForMixer.isMixerCommand(cmdName)) {
-            parser = new CommandLineParserForMixer();
-            HiCGlobals.useCache = false; //TODO until memory leak cleared
-        }
+        CommandLineParserForMixer parser = new CommandLineParserForMixer();
+        HiCGlobals.useCache = false; //TODO until memory leak cleared
         boolean help;
         boolean version;
         parser.parse(argv);
 
-        if (CommandLineParserForMixer.isMixerCommand(cmdName)) {
-            HiCGlobals.isLegacyOutputPrintingEnabled = ((CommandLineParserForMixer) parser).getLegacyOutputOption();
-        }
-        else {
-            if (parser.getAllPearsonsOption()) {
-                HiCGlobals.MAX_PEARSON_ZOOM = 1;
-            }
-        }
         help = parser.getHelpOption();
         version = parser.getVersionOption();
         HiCGlobals.printVerboseComments = parser.getVerboseOption();

@@ -61,8 +61,8 @@ public abstract class MixerCLT {
         return maxProgressStatus;
     }
 
-    public void readArguments(String[] args, CommandLineParser parser) {
-        CommandLineParserForMixer mixerParser = (CommandLineParserForMixer) parser;
+    public void readArguments(String[] args, CommandLineParserForMixer parser) {
+        CommandLineParserForMixer mixerParser = parser;
         assessIfChromosomesHaveBeenSpecified(mixerParser);
         readMixerArguments(args, mixerParser);
     }

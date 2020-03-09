@@ -33,7 +33,7 @@ import java.awt.*;
 public class HiCGlobals {
 
     // Juicebox version (for display and header purposes only)
-    public static final String versionNum = "2.00.00";
+    public static final String versionNum = "2.01.00";
 
     // for plotting
     public static final String topChromosomeColor = "#0000FF";

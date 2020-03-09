@@ -248,6 +248,21 @@ public class ChromosomeHandler {
         return genomeLength;
     }
 
+    public List<Pair<Chromosome, Chromosome>> getAutosomalPairs() {
+        List<Pair<Chromosome, Chromosome>> pairs = new ArrayList<>();
+
+        for (int i = 0; i < chromosomeArrayAutosomesOnly.length; i++) {
+            Chromosome first = chromosomeArrayAutosomesOnly[i];
+            for (int j = i; j < chromosomeArrayAutosomesOnly.length; j++) {
+                Chromosome second = chromosomeArrayAutosomesOnly[j];
+
+                pairs.add(new Pair<>(first, second));
+            }
+        }
+
+        return pairs;
+    }
+
     static class ChromosomeComparator implements Comparator<Chromosome> {
         @Override
         public int compare(Chromosome a, Chromosome b) {

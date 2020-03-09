@@ -24,31 +24,38 @@
 
 package mixer.tools.clt;
 
+import jargs.gnu.CmdLineParser;
 import mixer.tools.dev.Drink;
 import mixer.tools.dev.Grind;
 import mixer.windowui.NormalizationHandler;
 import mixer.windowui.NormalizationType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Command Line Parser for Mixer commands (hiccups, arrowhead, apa)
  * @author Muhammad Shamim
  */
-public class CommandLineParserForMixer extends CommandLineParser {
+public class CommandLineParserForMixer extends CmdLineParser {
 
     // used flags
     // wmnxcrplafdptkqbvuhgjyz
 
     // available flags
     // oes
+    // universal
+    private final Option verboseOption = addBooleanOption('v', "verbose");
+    private final Option helpOption = addBooleanOption('h', "help");
+    private final Option versionOption = addBooleanOption('V', "version");
+    private final Option normalizationTypeOption = addStringOption('k', "normalization");
+
 
     // General
     private final Option matrixSizeOption = addIntegerOption('m', "matrix-window-width");
     private final Option multipleChromosomesOption = addStringOption('c', "chromosomes");
     private final Option multipleResolutionsOption = addStringOption('r', "resolutions");
-    private final Option bypassMinimumMapCountCheckOption = addBooleanOption('b', "ignore-sparsity");
-    private final Option legacyOutputOption = addBooleanOption('g', "legacy");
     private final Option threadNumOption = addIntegerOption('z', "threads");
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option convolutionOption = addStringOption("conv1d");
@@ -58,8 +65,6 @@ public class CommandLineParserForMixer extends CommandLineParser {
     private final Option apaMinValOption = addDoubleOption('n', "min_dist");
     private final Option apaMaxValOption = addDoubleOption('x', "max_dist");
     private final Option multipleCornerRegionDimensionsOption = addStringOption('q', "corner-width");
-    private final Option includeInterChromosomalOption = addBooleanOption('e', "include-inter-chr");
-    private final Option apaSaveAllData = addBooleanOption('u', "all_data");
 
     // HICCUPS
     private final Option fdrOption = addStringOption('f', "fdr-thresholds");
@@ -71,7 +76,6 @@ public class CommandLineParserForMixer extends CommandLineParser {
     private final Option restrictSearchRegionsOption = addBooleanOption('y', "restrict");
 
     // previously for AFA
-    private final Option relativeLocationOption = addStringOption('l', "location-type");
     private final Option multipleAttributesOption = addStringOption('a', "attributes");
 
     // for GRIND
@@ -102,14 +106,6 @@ public class CommandLineParserForMixer extends CommandLineParser {
     public CommandLineParserForMixer() {
     }
 
-    public static boolean isMixerCommand(String cmd) {
-        return cmd.equals("hiccups") || cmd.equals("apa") || cmd.equals("arrowhead") || cmd.equals("motifs")
-                || cmd.equals("cluster") || cmd.equals("compare") || cmd.equals("loop_domains")
-                || cmd.equals("hiccupsdiff") || cmd.equals("ab_compdiff") || cmd.equals("genes")
-                || cmd.equals("apa_vs_distance") || cmd.equals("drink") || cmd.equals("drinks")
-                || cmd.equals("shuffle") || cmd.equals("grind");
-    }
-
     public int getGrindDataSliceOption() {
         Object opt = getOptionValue(useListIterationOption);
         if (opt != null) return Grind.LIST_ITERATION_OPTION;
@@ -134,9 +130,6 @@ public class CommandLineParserForMixer extends CommandLineParser {
         return optionToBoolean(usingRowNormalizationOption);
     }
 
-    public boolean getBypassMinimumMapCountCheckOption() {
-        return optionToBoolean(bypassMinimumMapCountCheckOption);
-    }
 
     // for GRIND
     public boolean getUseObservedOverExpectedOption() {
@@ -167,50 +160,12 @@ public class CommandLineParserForMixer extends CommandLineParser {
         return optionToBoolean(useOnlyMakePositiveExamplesOption);
     }
 
-    public boolean getLegacyOutputOption() {
-        return optionToBoolean(legacyOutputOption);
-    }
-
-    public boolean getIncludeInterChromosomal() {
-        return optionToBoolean(includeInterChromosomalOption);
-    }
-
-
-    public boolean getAPASaveAllData() {
-        return optionToBoolean(apaSaveAllData);
-    }
-
     /**
      * String flags
      */
 
-    public String getRelativeLocationOption() {
-        return optionToString(relativeLocationOption);
-    }
-
     public NormalizationType getNormalizationTypeOption(NormalizationHandler normalizationHandler) {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
-    }
-
-    public NormalizationType[] getBothNormalizationTypeOption(NormalizationHandler normHandler1,
-                                                              NormalizationHandler normHandler2) {
-        NormalizationType[] normalizationTypes = new NormalizationType[2];
-        String normStrings = optionToString(normalizationTypeOption);
-        if (normStrings != null) {
-            String[] bothNorms = normStrings.split(",");
-            if (bothNorms.length > 2 || bothNorms.length < 1) {
-                System.err.println("Invalid norm syntax: " + normStrings);
-                return null;
-            } else if (bothNorms.length == 2) {
-                normalizationTypes[0] = retrieveNormalization(bothNorms[0], normHandler1);
-                normalizationTypes[1] = retrieveNormalization(bothNorms[1], normHandler2);
-            } else if (bothNorms.length == 1) {
-                normalizationTypes[0] = retrieveNormalization(bothNorms[0], normHandler1);
-                normalizationTypes[1] = retrieveNormalization(bothNorms[0], normHandler2);
-            }
-            return normalizationTypes;
-        }
-        return null;
     }
 
     /**
@@ -237,18 +192,6 @@ public class CommandLineParserForMixer extends CommandLineParser {
     }
 
     /**
-     * double flags
-     */
-
-    public double getAPAMinVal() {
-        return optionToDouble(apaMinValOption);
-    }
-
-    public double getAPAMaxVal() {
-        return optionToDouble(apaMaxValOption);
-    }
-
-    /**
      * String Set flags
      */
 
@@ -259,43 +202,6 @@ public class CommandLineParserForMixer extends CommandLineParser {
     // todo fix to return list of ints
     public List<String> getMultipleResolutionOptions() {
         return optionToStringList(multipleResolutionsOption);
-    }
-
-    public List<String> getAPACornerRegionDimensionOptions() {
-        return optionToStringList(multipleCornerRegionDimensionsOption);
-    }
-
-    public List<String> getAttributeOption() {
-        return optionToStringList(multipleAttributesOption);
-    }
-
-    public List<String> getFDROptions() {
-        return optionToStringList(fdrOption);
-    }
-
-    public List<String> getPeakOptions() {
-        return optionToStringList(peakOption);
-    }
-
-    public List<String> getWindowOptions() {
-        return optionToStringList(windowOption);
-    }
-
-    public List<String> getClusterRadiusOptions() {
-        return optionToStringList(clusterRadiusOption);
-    }
-
-    public List<String> getThresholdOptions() {
-        return optionToStringList(thresholdOption);
-    }
-
-    public boolean getCPUVersionOfHiCCUPSOptions() {
-        Object opt = getOptionValue(cpuVersionHiCCUPSOption);
-        return opt != null;
-    }
-
-    public boolean restrictSearchRegionsOptions() {
-        return optionToBoolean(restrictSearchRegionsOption);
     }
 
     public String getGenerateImageFormatPicturesOption() {
@@ -326,6 +232,68 @@ public class CommandLineParserForMixer extends CommandLineParser {
                 values[i] = Double.parseDouble(conv1d.get(i));
             }
             return values;
+        }
+        return null;
+    }
+
+    /**
+     * boolean flags
+     */
+    private boolean optionToBoolean(Option option) {
+        Object opt = getOptionValue(option);
+        return opt != null && (Boolean) opt;
+    }
+
+    public boolean getHelpOption() {
+        return optionToBoolean(helpOption);
+    }
+
+    public boolean getVerboseOption() {
+        return optionToBoolean(verboseOption);
+    }
+
+    public boolean getVersionOption() {
+        return optionToBoolean(versionOption);
+    }
+
+    /**
+     * String flags
+     */
+    private String optionToString(Option option) {
+        Object opt = getOptionValue(option);
+        return opt == null ? null : opt.toString();
+    }
+
+    /**
+     * int flags
+     */
+    private int optionToInt(Option option) {
+        Object opt = getOptionValue(option);
+        return opt == null ? 0 : ((Number) opt).intValue();
+    }
+
+    /**
+     * double flags
+     */
+    private double optionToDouble(Option option) {
+        Object opt = getOptionValue(option);
+        return opt == null ? 0 : ((Number) opt).doubleValue();
+    }
+
+    private List<String> optionToStringList(Option option) {
+        Object opt = getOptionValue(option);
+        return opt == null ? null : new ArrayList<>(Arrays.asList(opt.toString().split(",")));
+    }
+
+    private NormalizationType retrieveNormalization(String norm, NormalizationHandler normalizationHandler) {
+        if (norm == null || norm.length() < 1)
+            return null;
+
+        try {
+            return normalizationHandler.getNormTypeFromString(norm);
+        } catch (IllegalArgumentException error) {
+            System.err.println("Normalization must be one of \"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\", \"GW_VC\", \"INTER_KR\", or \"INTER_VC\".");
+            System.exit(7);
         }
         return null;
     }
