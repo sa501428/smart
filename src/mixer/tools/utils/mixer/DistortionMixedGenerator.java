@@ -143,7 +143,7 @@ public class DistortionMixedGenerator {
             if (regionOverlapsBadAreas(posIndex1, vectorB, imgHalfSliceWidth)) continue;
             int numTimesRegionUsed = 0;
 
-            for (int posIndex2 = posIndex1 + imgHalfSliceWidth; posIndex2 < maxChrLength; posIndex2 += stride) {
+            for (int posIndex2 = posIndex1 + imgHalfSliceWidth; posIndex2 < maxChrLength - imgHalfSliceWidth; posIndex2 += stride) {
                 if (numTimesRegionUsed > numExamplesPerRegion) break;
                 if (regionOverlapsBadAreas(posIndex2, vectorA, imgHalfSliceWidth)) continue;
                 if (regionOverlapsBadAreas(posIndex2, vectorB, imgHalfSliceWidth)) continue;
@@ -218,6 +218,10 @@ public class DistortionMixedGenerator {
         counter++;
     }
 
+    private float getRandScale() {
+        return Math.max(generator.nextFloat(), .05f);
+    }
+
     private boolean getTrainingDataAndSaveToFile(MatrixZoomData zdA1, MatrixZoomData zdA2, MatrixZoomData zdA12,
                                                  MatrixZoomData zdB1, MatrixZoomData zdB2, MatrixZoomData zdB12,
                                                  int box1XIndex, int box2XIndex, String chrom1Name, String chrom2Name,
@@ -245,9 +249,8 @@ public class DistortionMixedGenerator {
             float[][] labelsMatrixB = GrindUtils.generateDefaultDistortionLabelsFile(compositeMatrixB.length, 4, isContinuousRegion);
             //GrindUtils.cleanUpLabelsMatrixBasedOnData(labelsMatrix, compositeMatrix);
 
-            float scaleB = Math.max(generator.nextFloat(), .05f);
 
-            float[][] compositeMatrixAB = MatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, scaleB);
+            float[][] compositeMatrixAB = MatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
             float[][] labelsMatrixAB = MatrixTools.max(labelsMatrixA, labelsMatrixB);
 
             String filePrefix = prefixString + "orig_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_matrix";
@@ -259,18 +262,16 @@ public class DistortionMixedGenerator {
                 compositeMatrixB = alteredMatrices.getFirst();
                 labelsMatrixB = alteredMatrices.getSecond();
 
-                compositeMatrixAB = MatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, scaleB);
-                labelsMatrixAB = MatrixTools.max(labelsMatrixA, labelsMatrixB);
-
                 if (k == 0 || k == (numManipulations - 1) || generator.nextBoolean()) {
+                    compositeMatrixAB = MatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
+                    labelsMatrixAB = MatrixTools.max(labelsMatrixA, labelsMatrixB);
+
                     filePrefix = prefixString + "dstrt_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_" + k + "_matrix";
                     GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrixAB, posDataWriter, false);
                     GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrixAB, null, false);
                 }
             }
-
         } catch (Exception e) {
-
         }
         return true;
     }
