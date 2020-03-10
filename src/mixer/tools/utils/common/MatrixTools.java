@@ -25,7 +25,6 @@
 package mixer.tools.utils.common;
 
 import mixer.data.ContactRecord;
-import mixer.tools.utils.mixer.apa.APARegionStatistics;
 import org.apache.commons.math.linear.Array2DRowRealMatrix;
 import org.apache.commons.math.linear.RealMatrix;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -136,7 +135,79 @@ public class MatrixTools {
      * @return mean of matrix
      */
     public static double mean(RealMatrix matrix) {
-        return APARegionStatistics.statistics(matrix.getData()).getMean();
+        return mean(matrix.getData());
+    }
+
+    private static double mean(double[][] data) {
+        double average = 0;
+        if (data.length > 0) {
+            double total = 0;
+            for (double[] vals : data) {
+                for (double val : vals) {
+                    total += val;
+                }
+            }
+            average = (total / data.length) / data[0].length;
+        }
+        return average;
+    }
+
+    private static float mean(float[][] data) {
+        double average = 0;
+        if (data.length > 0) {
+            double total = 0;
+            for (float[] vals : data) {
+                for (float val : vals) {
+                    total += val;
+                }
+            }
+            average = (total / data.length) / data[0].length;
+        }
+        return (float) average;
+    }
+
+    public static float[][] add(float[][] first, float[][] second, float scaleFirst, float scaleSecond) {
+        float[][] answer = new float[first.length][first[0].length];
+        for (int i = 0; i < answer.length; i++) {
+            for (int j = 0; j < answer[i].length; j++) {
+                answer[i][j] = scaleFirst * first[i][j] + scaleSecond * second[i][j];
+            }
+        }
+        return answer;
+    }
+
+    public static float[][] max(float[][] first, float[][] second) {
+        float[][] answer = new float[first.length][first[0].length];
+        for (int i = 0; i < answer.length; i++) {
+            for (int j = 0; j < answer[i].length; j++) {
+                answer[i][j] = Math.max(first[i][j], second[i][j]);
+            }
+        }
+        return answer;
+    }
+
+    public float standardDeviation(float[][] data, float mean) {
+        double stddev = 0;
+
+        for (float[] vals : data) {
+            for (float val : vals) {
+                stddev += (val - mean) * (val - mean);
+            }
+        }
+        stddev = (stddev / data.length) / data[0].length;
+
+        return (float) Math.sqrt(stddev);
+    }
+
+    public void inPlaceZscore(float[][] data) {
+        float mean = mean(data);
+        float stddev = standardDeviation(data, mean);
+
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                data[i][j] = (data[i][j] - mean) / stddev;
+            }
+        }
     }
 
     /**
@@ -707,24 +778,6 @@ public class MatrixTools {
             }
         }
         return sum;
-    }
-
-    public static double getAverage(RealMatrix data) {
-        return getAverage(data.getData());
-    }
-
-    private static double getAverage(double[][] data) {
-        double average = 0;
-        if (data.length > 0) {
-            double total = 0;
-            for (double[] vals : data) {
-                for (double val : vals) {
-                    total += val;
-                }
-            }
-            average = (total / data.length) / data[0].length;
-        }
-        return average;
     }
 
     public static void exportData(double[][] data, File file) {

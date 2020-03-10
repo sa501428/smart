@@ -30,12 +30,12 @@ import mixer.data.HiCFileTools;
 import mixer.tools.clt.CommandLineParserForMixer;
 import mixer.tools.clt.MixerCLT;
 import mixer.tools.utils.mixer.DistortionGenerator;
+import mixer.tools.utils.mixer.DistortionMixedGenerator;
 import mixer.windowui.NormalizationType;
 import org.broad.igv.feature.Chromosome;
 import org.broad.igv.util.Pair;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,9 +46,10 @@ import java.util.concurrent.Executors;
 
 public class Distortion extends MixerCLT {
 
-    private Dataset ds;
+    private Dataset ds, ds2;
     private int x, y, z, stride, resolution;
     private File outputDirectory;
+    private boolean onlyOneFileBeingUsed = true;
 
     public Distortion() {
         super("distort [-k NONE/KR/VC/VC_SQRT] [-r resolution] [--stride increment] " +
@@ -61,8 +62,13 @@ public class Distortion extends MixerCLT {
             printUsageAndExit();
         }
 
-        ds = HiCFileTools.
-                extractDatasetForCLT(Arrays.asList(args[1].split("\\+")), true);
+        String[] files = args[1].split("\\+");
+        onlyOneFileBeingUsed = files.length == 1;
+        ds = HiCFileTools.extractDatasetForCLT(files[0], true);
+
+        if (!onlyOneFileBeingUsed) {
+            ds2 = HiCFileTools.extractDatasetForCLT(files[1], true);
+        }
 
         // split on commas
         // save the dimensions
@@ -99,8 +105,13 @@ public class Distortion extends MixerCLT {
             Runnable worker = new Runnable() {
                 @Override
                 public void run() {
-                    DistortionGenerator generator = new DistortionGenerator(ds, chromosomePair, x, y, z, resolution, norm, stride, outputDirectory);
-                    generator.makeExamples();
+                    if (onlyOneFileBeingUsed) {
+                        DistortionGenerator generator = new DistortionGenerator(ds, chromosomePair, x, y, z, resolution, norm, stride, outputDirectory);
+                        generator.makeExamples();
+                    } else {
+                        DistortionMixedGenerator generator = new DistortionMixedGenerator(ds, ds2, chromosomePair, x, y, z, resolution, norm, stride, outputDirectory);
+                        generator.makeExamples();
+                    }
                 }
             };
             executor.execute(worker);

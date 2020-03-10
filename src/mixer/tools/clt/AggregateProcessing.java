@@ -24,7 +24,7 @@
 
 package mixer.tools.clt;
 
-import mixer.tools.HiCTools;
+import mixer.tools.MixerTools;
 
 
 
@@ -53,7 +53,7 @@ class AggregateProcessing {
                 "null", "2000,12,100",
                 "/Users/muhammad/Desktop/deeplearning/testing/distortion_bank_4_5_debug_version"};
 
-        HiCTools.main(strings);
+        MixerTools.main(strings);
 
         // load the model
 
