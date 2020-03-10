@@ -237,6 +237,7 @@ public class DistortionMixedGenerator {
                     box1RectUL, box1RectLR, box2RectUL, box2RectLR, imgHalfSliceWidth, norm);
             float[][] compositeMatrixB = generateCompositeMatrixWithNansCleanedFromZDS(zdB1, zdB2, zdB12,
                     box1RectUL, box1RectLR, box2RectUL, box2RectLR, imgHalfSliceWidth, norm);
+            if (compositeMatrixA == null || compositeMatrixB == null) return false;
 
             //if (!GrindUtils.isJustEmptyEnough(compositeMatrix)) return false;
 

@@ -219,6 +219,7 @@ public class DistortionGenerator {
         try {
             float[][] compositeMatrix = generateCompositeMatrixWithNansCleanedFromZDS(zd1, zd2, zd12,
                     box1RectUL, box1RectLR, box2RectUL, box2RectLR, imgHalfSliceWidth, norm);
+            if (compositeMatrix == null) return false;
 
 
             //if (!GrindUtils.isJustEmptyEnough(compositeMatrix)) return false;
