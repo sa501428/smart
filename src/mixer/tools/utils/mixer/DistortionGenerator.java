@@ -35,8 +35,7 @@ import org.apache.commons.math.linear.RealMatrix;
 import org.broad.igv.feature.Chromosome;
 import org.broad.igv.util.Pair;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
 import java.util.Random;
 
 public class DistortionGenerator {
@@ -50,7 +49,6 @@ public class DistortionGenerator {
     private final Random generator = new Random(0);
     private Integer imgSliceWidth, imgHalfSliceWidth;
     private Integer numManipulations, numExamplesPerRegion;
-    private Writer posDataWriter, negDataWriter;
     private String negPath, posPath;
     private int counter = 0, stride;
 
@@ -79,10 +77,6 @@ public class DistortionGenerator {
 
             updateLatestMainPaths();
 
-
-            posDataWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outFolder, "pos_file_names.txt")), StandardCharsets.UTF_8));
-            negDataWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outFolder, "neg_file_names.txt")), StandardCharsets.UTF_8));
-
             boolean isIntraChromosomal = chromI.getIndex() == chromJ.getIndex();
             System.out.println("Currently processing: " + chromI.getName() + " - " + chromJ.getName() +
                     " at specificResolution " + specificResolution);
@@ -96,10 +90,6 @@ public class DistortionGenerator {
                 if (matrixZoomDataI == null || matrixZoomDataJ == null) return;
 
                 iterateBetweenInterChromosomalRegions(matrixZoomDataI, matrixZoomDataJ, zd, chromI, chromJ, specificResolution);
-            }
-
-            for (Writer writer : new Writer[]{posDataWriter, negDataWriter}) {
-                writer.close();
             }
 
         } catch (Exception ex) {
@@ -145,7 +135,7 @@ public class DistortionGenerator {
                 }
                 if (getTrainingDataAndSaveToFile(zd, zd, zd, posIndex1, posIndex2, chrom.getName(), chrom.getName(),
                         posIndex2 == posIndex1 + imgHalfSliceWidth, imgHalfSliceWidth, norm, numManipulations,
-                        posPath, negPath, posDataWriter, negDataWriter)) {
+                        posPath, negPath)) {
                     numberOfExamplesCounter++;
                     numTimesRegionUsed++;
                 }
@@ -187,7 +177,7 @@ public class DistortionGenerator {
                 }
                 if (getTrainingDataAndSaveToFile(zd1, zd2, zd12, posIndex1, posIndex2, chrom1.getName(), chrom2.getName(),
                         false, imgHalfSliceWidth, norm, numManipulations,
-                        posPath, negPath, posDataWriter, negDataWriter)) {
+                        posPath, negPath)) {
                     numberOfExamplesCounter++;
                     numTimesRegionUsed++;
                 }
@@ -207,8 +197,7 @@ public class DistortionGenerator {
                                                  int box1XIndex, int box2XIndex, String chrom1Name, String chrom2Name,
                                                  boolean isContinuousRegion, int imgHalfSliceWidth, NormalizationType norm,
                                                  int numManipulations,
-                                                 String posPath, String negPath,
-                                                 Writer posDataWriter, Writer negDataWriter) {
+                                                 String posPath, String negPath) {
 
         int box1RectUL = box1XIndex;
         int box1RectLR = box1XIndex + imgHalfSliceWidth;
