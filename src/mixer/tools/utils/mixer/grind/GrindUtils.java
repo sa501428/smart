@@ -143,7 +143,7 @@ public class GrindUtils {
         return numNonZeroRows > data.length * maxAllowedPercentZeroedOutColumns;
     }
 
-    public static void saveGrindMatrixDataToFile(String fileName, String path, int[][] labels, Writer writer, boolean useTxtInsteadOfNPY) throws IOException {
+    public static void saveGrindMatrixDataToFile(String fileName, String path, int[][] labels, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
             MatrixTools.saveMatrixTextV2(path + "/" + txtFileName, labels);
@@ -151,18 +151,13 @@ public class GrindUtils {
             String npyFileName = fileName + ".npy";
             MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, labels);
         }
-        if (writer != null) {
-            synchronized (writer) {
-                writer.write(fileName + "\n");
-            }
-        }
     }
 
-    public static void saveGrindMatrixDataToFile(String fileName, String path, RealMatrix matrix, Writer writer, boolean useTxtInsteadOfNPY) throws IOException {
-        saveGrindMatrixDataToFile(fileName, path, matrix.getData(), writer, useTxtInsteadOfNPY);
+    public static void saveGrindMatrixDataToFile(String fileName, String path, RealMatrix matrix, boolean useTxtInsteadOfNPY) throws IOException {
+        saveGrindMatrixDataToFile(fileName, path, matrix.getData(), useTxtInsteadOfNPY);
     }
 
-    public static void saveGrindMatrixDataToFile(String fileName, String path, double[][] data, Writer writer, boolean useTxtInsteadOfNPY) throws IOException {
+    public static void saveGrindMatrixDataToFile(String fileName, String path, double[][] data, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
             MatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
@@ -170,14 +165,9 @@ public class GrindUtils {
             String npyFileName = fileName + ".npy";
             MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
         }
-        if (writer != null) {
-            synchronized (writer) {
-                writer.write(fileName + "\n");
-            }
-        }
     }
 
-    public static void saveGrindMatrixDataToFile(String fileName, String path, float[][] data, Writer writer, boolean useTxtInsteadOfNPY) throws IOException {
+    public static void saveGrindMatrixDataToFile(String fileName, String path, float[][] data, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
             MatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
@@ -185,15 +175,9 @@ public class GrindUtils {
             String npyFileName = fileName + ".npy";
             MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
         }
-        if (writer != null) {
-            synchronized (writer) {
-                writer.write(fileName + "\n");
-            }
-        }
     }
 
-    public static void saveGrindMatrixDataToImage(String fileName, String path, float[][] data, Writer writer,
-                                                  boolean isLabelMatrix) throws IOException {
+    public static void saveGrindMatrixDataToImage(String fileName, String path, float[][] data, boolean isLabelMatrix) throws IOException {
         float meanToScaleWithR = 1, meanToScaleWithG = 1, meanToScaleWithB = 1;
         if (!isLabelMatrix) {
             float meanToScaleWith = 0;

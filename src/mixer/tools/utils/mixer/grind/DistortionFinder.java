@@ -174,22 +174,23 @@ public class DistortionFinder extends RegionFinder {
             float[][] compositeMatrix = generateCompositeMatrixWithNansCleanedFromZDS(zd1, zd2, zd12,
                     box1RectUL, box1RectLR, box2RectUL, box2RectLR, imgHalfSliceWidth, norm);
 
-            if (!GrindUtils.isJustEmptyEnough(compositeMatrix)) return false;
+            if (compositeMatrix == null) return false;
+            //!GrindUtils.isJustEmptyEnough(compositeMatrix) return false
 
             float[][] labelsMatrix = GrindUtils.generateDefaultDistortionLabelsFile(compositeMatrix.length, 4, isContinuousRegion);
             //GrindUtils.cleanUpLabelsMatrixBasedOnData(labelsMatrix, compositeMatrix);
 
             String filePrefix = prefixString + "orig_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_matrix";
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, negDataWriter, false);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, false);
             if (includeLabels) {
-                GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", negPath, labelsMatrix, negLabelWriter, false);
+                GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", negPath, labelsMatrix, false);
             }
 
             if (generateImages) {
                 String imagePrefix = filePrefix + "." + imgFileType;
-                GrindUtils.saveGrindMatrixDataToImage(imagePrefix, negImgPath, compositeMatrix, negImgWriter, false);
+                GrindUtils.saveGrindMatrixDataToImage(imagePrefix, negImgPath, compositeMatrix, false);
                 if (includeLabels) {
-                    GrindUtils.saveGrindMatrixDataToImage(imagePrefix + "_labels." + imgFileType, negImgPath, labelsMatrix, negImgLabelWriter, true);
+                    GrindUtils.saveGrindMatrixDataToImage(imagePrefix + "_labels." + imgFileType, negImgPath, labelsMatrix, true);
                 }
             }
 
@@ -201,13 +202,13 @@ public class DistortionFinder extends RegionFinder {
 
                     if (k == 0 || k == (numManipulations - 1) || generator.nextBoolean()) {
                         filePrefix = prefixString + "dstrt_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_" + k + "_matrix";
-                        GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrix, posDataWriter, false);
-                        GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrix, posLabelWriter, false);
+                        GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrix, false);
+                        GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrix, false);
 
                         if (generateImages) {
                             String imagePrefix = filePrefix + "." + imgFileType;
-                            GrindUtils.saveGrindMatrixDataToImage(imagePrefix, posImgPath, compositeMatrix, posImgWriter, false);
-                            GrindUtils.saveGrindMatrixDataToImage(imagePrefix + "_labels." + imgFileType, posImgPath, labelsMatrix, posImgLabelWriter, true);
+                            GrindUtils.saveGrindMatrixDataToImage(imagePrefix, posImgPath, compositeMatrix, false);
+                            GrindUtils.saveGrindMatrixDataToImage(imagePrefix + "_labels." + imgFileType, posImgPath, labelsMatrix, true);
                         }
                     }
                 }

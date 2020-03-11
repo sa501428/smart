@@ -139,7 +139,7 @@ public class Shuffle extends MixerCLT {
             MatrixTools.cleanUpNaNs(compositeMatrix);
 
             String filePrefix = "origDiag_" + chrom1Name + "_" + box1XIndex + "_" + chrom1Name + "_" + box1Mid + "_matrix";
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, negDataWriter, false);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, false);
 
         } catch (Exception e) {
         }

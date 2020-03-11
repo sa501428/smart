@@ -254,8 +254,8 @@ public class DistortionMixedGenerator {
             float[][] labelsMatrixAB = MatrixTools.max(labelsMatrixA, labelsMatrixB);
 
             String filePrefix = prefixString + "orig_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_matrix";
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrixAB, negDataWriter, false);
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", negPath, labelsMatrixAB, null, false);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrixAB, false);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", negPath, labelsMatrixAB, false);
 
             for (int k = 0; k < numManipulations; k++) {
                 Pair<float[][], float[][]> alteredMatrices = GrindUtils.randomlyManipulateMatrix(compositeMatrixB, labelsMatrixB, generator);
@@ -267,8 +267,8 @@ public class DistortionMixedGenerator {
                     labelsMatrixAB = MatrixTools.max(labelsMatrixA, labelsMatrixB);
 
                     filePrefix = prefixString + "dstrt_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_" + k + "_matrix";
-                    GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrixAB, posDataWriter, false);
-                    GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrixAB, null, false);
+                    GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrixAB, false);
+                    GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrixAB, false);
                 }
             }
         } catch (Exception e) {

@@ -95,8 +95,8 @@ public class DomainFinder extends RegionFinder {
                                     String exactFileName = chromosome.getName() + "_" + rowIndex + "_" + colIndex;
                                     String exactLabelFileName = chromosome.getName() + "_" + rowIndex + "_" + colIndex + "_label";
 
-                                    GrindUtils.saveGrindMatrixDataToFile(exactFileName, originalPath, localizedRegionData, writer, useTxtInsteadOfNPY);
-                                    GrindUtils.saveGrindMatrixDataToFile(exactLabelFileName, originalPath, labelsMatrix, writer, useTxtInsteadOfNPY);
+                                    GrindUtils.saveGrindMatrixDataToFile(exactFileName, originalPath, localizedRegionData, useTxtInsteadOfNPY);
+                                    GrindUtils.saveGrindMatrixDataToFile(exactLabelFileName, originalPath, labelsMatrix, useTxtInsteadOfNPY);
 
                                 }
                             } catch (Exception ignored) {

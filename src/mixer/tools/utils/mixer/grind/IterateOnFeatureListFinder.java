@@ -242,7 +242,7 @@ public class IterateOnFeatureListFinder extends RegionFinder {
                             if (MatrixTools.sum(localizedRegionData.getData()) > 0) {
 
                                 String exactFileName = chrom.getName() + "_" + i + "_" + j;
-                                GrindUtils.saveGrindMatrixDataToFile(exactFileName, originalPath, localizedRegionData, writer, useTxtInsteadOfNPY);
+                                GrindUtils.saveGrindMatrixDataToFile(exactFileName, originalPath, localizedRegionData, useTxtInsteadOfNPY);
 
                             }
                         }

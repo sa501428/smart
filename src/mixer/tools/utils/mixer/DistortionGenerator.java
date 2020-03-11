@@ -228,8 +228,8 @@ public class DistortionGenerator {
             //GrindUtils.cleanUpLabelsMatrixBasedOnData(labelsMatrix, compositeMatrix);
 
             String filePrefix = prefixString + "orig_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_matrix";
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, negDataWriter, false);
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", negPath, labelsMatrix, null, false);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, false);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", negPath, labelsMatrix, false);
 
             for (int k = 0; k < numManipulations; k++) {
                 Pair<float[][], float[][]> alteredMatrices = GrindUtils.randomlyManipulateMatrix(compositeMatrix, labelsMatrix, generator);
@@ -238,8 +238,8 @@ public class DistortionGenerator {
 
                 if (k == 0 || k == (numManipulations - 1) || generator.nextBoolean()) {
                     filePrefix = prefixString + "dstrt_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_" + k + "_matrix";
-                    GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrix, posDataWriter, false);
-                    GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrix, null, false);
+                    GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrix, false);
+                    GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrix, false);
                 }
             }
 

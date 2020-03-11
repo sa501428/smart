@@ -38,20 +38,11 @@ class AggregateProcessing {
     public static void main(String[] argv) throws Exception {
 
 
-        String[] strings = new String[]{"grind",
-                "-k", "KR", "-r", "5000,10000,25000", "--stride", "1500", "-c", "1,2",
-                "--dense-labels", "--distort",
-                "/Users/muhammad/Desktop/local_hic_files/HIC053_30.hic",
-                "null", "2000,12,100",
-                "/Users/muhammad/Desktop/deeplearning/testing/distortion_bank_1_2_float_version"};
-
-        strings = new String[]{"grind",
-                "-k", "KR", "-r", "25000",// "5000,10000,25000",
-                "--stride", "1500", "-c", "4,5",
-                "--dense-labels", "--distort",
-                "/Users/muhammad/Desktop/local_hic_files/HIC053_30.hic",
-                "null", "2000,12,100",
-                "/Users/muhammad/Desktop/deeplearning/testing/distortion_bank_4_5_debug_version"};
+        String[] strings = new String[]{"distort", "-r", "250000", "--stride", "50",
+                "-c", "1,2,3,4,5,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,X", //6,11
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_primary_30.hic+" +
+                        "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_replicate_30.hic",
+                "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
         MixerTools.main(strings);
 

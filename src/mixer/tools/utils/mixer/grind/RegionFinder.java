@@ -177,13 +177,13 @@ abstract public class RegionFinder {
         String filePrefix = chrom.getName() + "_" + rowIndex + "_" + colIndex + orientationType;
 
         if (annotationFoundInRegion) {
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix", posPath, finalData, posWriter, useTxtInsteadOfNPY);
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix.label", posPath, finalLabels, posLabelWriter, useTxtInsteadOfNPY);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix", posPath, finalData, useTxtInsteadOfNPY);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix.label", posPath, finalLabels, useTxtInsteadOfNPY);
             if (useAmorphicPixelLabeling) {
-                GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix.label.exp", posPath, finalExpLabels, posLabelWriter, useTxtInsteadOfNPY);
+                GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix.label.exp", posPath, finalExpLabels, useTxtInsteadOfNPY);
             }
         } else if (!onlyMakePositiveExamples) {
-            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix", negPath, finalData, negWriter, useTxtInsteadOfNPY);
+            GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_matrix", negPath, finalData, useTxtInsteadOfNPY);
         }
     }
 }
