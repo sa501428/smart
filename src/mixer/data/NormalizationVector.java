@@ -25,7 +25,7 @@
 
 package mixer.data;
 
-import mixer.tools.utils.norm.ZeroScale;
+import mixer.commandline.utils.norm.ZeroScale;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
 import org.broad.igv.feature.Chromosome;

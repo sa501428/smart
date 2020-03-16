@@ -22,30 +22,32 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.commandline.tools;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-    public static final String versionNum = "2.03.01";
-    public static final int minVersion = 6;
-    public static final int bufferSize = 2097152;
+public class ParallelizedMixerTools {
 
-    // whether MatrixZoomData should cache or not
-    public static boolean useCache = true;
-    public static boolean printVerboseComments = false;
+    public static void launchParallelizedCode(Runnable runnable) {
+        launchParallelizedCode(Runtime.getRuntime().availableProcessors(), runnable);
+    }
 
+    public static void launchParallelizedCode(int numCPUThreads, Runnable runnable) {
+        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
+        for (int l = 0; l < numCPUThreads; l++) {
+            Runnable worker = new Runnable() {
+                @Override
+                public void run() {
+                    runnable.run();
+                }
+            };
+            executor.execute(worker);
+        }
+        executor.shutdown();
 
-    // whether instance was linked before mouse press or not
-    public static boolean isLegacyOutputPrintingEnabled = false;
-
-    public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
-        if (version < minVersion) {
-            throw new RuntimeException("This file is version " + version +
-                    ". Only versions " + minVersion + " and greater are supported at this time.");
+        // Wait until all threads finish
+        while (!executor.isTerminated()) {
         }
     }
 }

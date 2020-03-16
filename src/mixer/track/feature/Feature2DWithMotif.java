@@ -24,9 +24,9 @@
 
 package mixer.track.feature;
 
+import mixer.commandline.tools.CompareLists;
 import mixer.data.ChromosomeHandler;
 import mixer.data.anchor.MotifAnchor;
-import mixer.tools.clt.mixer.CompareLists;
 
 import java.awt.*;
 import java.util.ArrayList;

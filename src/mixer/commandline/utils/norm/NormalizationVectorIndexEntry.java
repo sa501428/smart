@@ -22,30 +22,27 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.commandline.utils.norm;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
+class NormalizationVectorIndexEntry {
+    final String type;
+    final int chrIdx;
+    final String unit;
+    final int resolution;
+    final int sizeInBytes;
+    long position;
 
-    public static final String versionNum = "2.03.01";
-    public static final int minVersion = 6;
-    public static final int bufferSize = 2097152;
+    NormalizationVectorIndexEntry(String type, int chrIdx, String unit, int resolution, long position, int sizeInBytes) {
+        this.type = type;
+        this.chrIdx = chrIdx;
+        this.unit = unit;
+        this.resolution = resolution;
+        this.position = position;
+        this.sizeInBytes = sizeInBytes;
+    }
 
-    // whether MatrixZoomData should cache or not
-    public static boolean useCache = true;
-    public static boolean printVerboseComments = false;
-
-
-    // whether instance was linked before mouse press or not
-    public static boolean isLegacyOutputPrintingEnabled = false;
-
-    public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
-        if (version < minVersion) {
-            throw new RuntimeException("This file is version " + version +
-                    ". Only versions " + minVersion + " and greater are supported at this time.");
-        }
+    @Override
+    public String toString() {
+        return type + " " + chrIdx + " " + unit + " " + resolution + " " + position + " " + sizeInBytes;
     }
 }

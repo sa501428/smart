@@ -26,7 +26,7 @@ package mixer.data;
 
 import com.google.common.primitives.Ints;
 import mixer.MixerGlobals;
-import mixer.tools.dev.Private;
+import mixer.commandline.tools.Private;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationHandler;
 import mixer.windowui.NormalizationType;

@@ -28,7 +28,6 @@ package mixer.track.feature;
 import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.anchor.MotifAnchor;
-import mixer.tools.utils.mixer.arrowhead.ArrowheadScore;
 
 import java.awt.*;
 import java.util.List;
@@ -297,16 +296,11 @@ public class Feature2D implements Comparable<Feature2D> {
     }
 
     public boolean containsAttributeValue(String attribute) {
-        return attributes.values().contains(attribute);
+        return attributes.containsValue(attribute);
     }
 
     public String getLocationKey() {
         return start1 + "_" + start2;
-    }
-
-    public ArrowheadScore toArrowheadScore() {
-        int[] indices = new int[]{start1, end1, start2, end2};
-        return new ArrowheadScore(indices);
     }
 
     @Override

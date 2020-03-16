@@ -27,8 +27,6 @@ package mixer.track.feature;
 import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
-import mixer.tools.utils.mixer.arrowhead.ArrowheadScoreList;
-import mixer.tools.utils.mixer.arrowhead.HighScore;
 import org.broad.igv.Globals;
 import org.broad.igv.feature.Chromosome;
 import org.broad.igv.ui.color.ColorUtilities;
@@ -39,7 +37,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -107,23 +104,6 @@ public class Feature2DParser {
         } else {
             return Feature2D.FeatureType.GENERIC;
         }
-    }
-
-    public static Feature2DList parseHighScoreList(int chrIndex, String chrName, int resolution, List<HighScore> binnedScores) {
-        Feature2DList feature2DList = new Feature2DList();
-
-        for (HighScore score : binnedScores) {
-            feature2DList.add(chrIndex, chrIndex, score.toFeature2D(chrName, resolution));
-        }
-
-        return feature2DList;
-    }
-
-    public static Feature2DList parseArrowheadScoreList(int chrIndex, String chrName,
-                                                        ArrowheadScoreList scoreList) {
-        Feature2DList feature2DList = new Feature2DList();
-        feature2DList.add(scoreList.toFeature2DList(chrIndex, chrName));
-        return feature2DList;
     }
 
 

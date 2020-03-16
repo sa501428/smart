@@ -22,30 +22,22 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.commandline.utils.norm;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
+class NormalizedSum {
+    final String type;
+    final int chr1Idx;
+    final int chr2Idx;
+    final String unit;
+    final int resolution;
+    final double value;
 
-    public static final String versionNum = "2.03.01";
-    public static final int minVersion = 6;
-    public static final int bufferSize = 2097152;
-
-    // whether MatrixZoomData should cache or not
-    public static boolean useCache = true;
-    public static boolean printVerboseComments = false;
-
-
-    // whether instance was linked before mouse press or not
-    public static boolean isLegacyOutputPrintingEnabled = false;
-
-    public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
-        if (version < minVersion) {
-            throw new RuntimeException("This file is version " + version +
-                    ". Only versions " + minVersion + " and greater are supported at this time.");
-        }
+    public NormalizedSum(String type, int chr1Idx, int chr2Idx, String unit, int resolution, double value) {
+        this.type = type;
+        this.chr1Idx = chr1Idx;
+        this.chr2Idx = chr2Idx;
+        this.unit = unit;
+        this.resolution = resolution;
+        this.value = value;
     }
 }
