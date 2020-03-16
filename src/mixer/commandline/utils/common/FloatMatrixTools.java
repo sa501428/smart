@@ -466,4 +466,26 @@ public class FloatMatrixTools {
 
         return importantDerivative;
     }
+
+    public static float[] runSlidingAverageOnArray(int radius, float[] values) {
+
+        float[] newValues = new float[values.length];
+        for (int i = 0; i < values.length; i++) {
+            float sum = 0;
+            int numVals = 0;
+            for (int j = Math.max(i - radius, 0); j < Math.min(i + radius, values.length); j++) {
+                if (values[j] > 0) {
+                    sum += values[j];
+                    numVals++;
+                }
+            }
+            if (numVals == 0) {
+                newValues[i] = 0;
+            } else {
+                newValues[i] = sum / numVals;
+            }
+
+        }
+        return newValues;
+    }
 }
