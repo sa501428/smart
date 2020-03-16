@@ -26,6 +26,7 @@ package mixer.commandline.utils.grind;
 
 import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.common.FloatMatrixTools;
+import mixer.commandline.utils.common.IntMatrixTools;
 import org.apache.commons.math.linear.RealMatrix;
 import org.broad.igv.util.Pair;
 
@@ -147,10 +148,10 @@ public class GrindUtils {
     public static void saveGrindMatrixDataToFile(String fileName, String path, int[][] labels, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
-            FloatMatrixTools.saveMatrixTextV2(path + "/" + txtFileName, labels);
+            IntMatrixTools.saveMatrixTextV2(path + "/" + txtFileName, labels);
         } else {
             String npyFileName = fileName + ".npy";
-            FloatMatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, labels);
+            IntMatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, labels);
         }
     }
 

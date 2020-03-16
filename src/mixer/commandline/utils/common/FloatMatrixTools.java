@@ -114,21 +114,6 @@ public class FloatMatrixTools {
         return flattenedMatrix;
     }
 
-    public static int[] flattenedRowMajorOrderMatrix(int[][] matrix) {
-        int m = matrix.length;
-        int n = matrix[0].length;
-
-        int numElements = m * n;
-        int[] flattenedMatrix = new int[numElements];
-
-        int index = 0;
-        for (int i = 0; i < m; i++) {
-            System.arraycopy(matrix[i], 0, flattenedMatrix, index, n);
-            index += n;
-        }
-        return flattenedMatrix;
-    }
-
     /**
      * Reshape array into a matrix
      *
@@ -176,46 +161,7 @@ public class FloatMatrixTools {
 
 
 
-    public static int[][] normalizeMatrixUsingColumnSum(int[][] matrix) {
-        int[][] newMatrix = new int[matrix.length][matrix[0].length];
-        int[] columnSum = new int[matrix[0].length];
-        for (int[] row : matrix) {
-            for (int i = 0; i < row.length; i++) {
-                columnSum[i] += row[i];
-            }
-        }
 
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                newMatrix[i][j] = matrix[i][j] / columnSum[j];
-            }
-        }
-
-        return newMatrix;
-    }
-
-    public static int[][] normalizeMatrixUsingRowSum(int[][] matrix) {
-        int[][] newMatrix = new int[matrix.length][matrix[0].length];
-        int[] rowSum = getRowSums(matrix);
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                newMatrix[i][j] = matrix[i][j] / rowSum[i];
-            }
-        }
-
-        return newMatrix;
-    }
-
-    public static int[] getRowSums(int[][] matrix) {
-        int[] rowSum = new int[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int val : matrix[i]) {
-                rowSum[i] += val;
-            }
-        }
-        return rowSum;
-    }
 
     public static float[] getAbsValColSums(float[][] matrix) {
         float[] colSum = new float[matrix[0].length];
@@ -227,15 +173,7 @@ public class FloatMatrixTools {
         return colSum;
     }
 
-    public static int[] getAbsValColSums(int[][] matrix) {
-        int[] colSum = new int[matrix[0].length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                colSum[j] += Math.abs(matrix[i][j]);
-            }
-        }
-        return colSum;
-    }
+
 
     public static float[] getRowSums(float[][] matrix) {
         float[] rowSum = new float[matrix.length];
@@ -301,29 +239,6 @@ public class FloatMatrixTools {
         }
     }
 
-    public static void saveMatrixTextV2(String filename, int[][] matrix) {
-        Writer writer = null;
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8));
-            for (int[] row : matrix) {
-                String s = Arrays.toString(row);//.replaceAll().replaceAll("]","").trim();
-                s = s.replaceAll("\\[", "").replaceAll("\\]", "").trim();
-                writer.write(s + "\n");
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (writer != null)
-                    writer.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-
-
     public static void saveMatrixTextNumpy(String filename, float[][] matrix) {
         int numRows = matrix.length;
         int numCols = matrix[0].length;
@@ -331,19 +246,6 @@ public class FloatMatrixTools {
 
         NpyFile.write(Paths.get(filename), flattenedArray, new int[]{numRows, numCols});
     }
-
-    public static void saveMatrixTextNumpy(String filename, int[][] matrix) {
-        int numRows = matrix.length;
-        int numCols = matrix[0].length;
-        int[] flattenedArray = FloatMatrixTools.flattenedRowMajorOrderMatrix(matrix);
-
-        NpyFile.write(Paths.get(filename), flattenedArray, new int[]{numRows, numCols});
-    }
-
-    public static void saveMatrixTextNumpy(String filename, int[] matrix) {
-        NpyFile.write(Paths.get(filename), matrix, new int[]{1, matrix.length});
-    }
-
 
     public static float[][] generateCompositeMatrixWithNansCleaned(float[][] matrixDiag1, float[][] matrixDiag2, float[][] matrix1vs2) {
         int newLength = matrixDiag1.length + matrixDiag2.length;
@@ -371,16 +273,6 @@ public class FloatMatrixTools {
         }
         return copy;
     }
-
-    public static void labelRegionWithOnes(int[][] labelsMatrix, int rowLength, int numRows, int colLength, int numCols, int startRowOf1, int startColOf1) {
-        for (int i = 0; i < Math.min(rowLength, numRows); i++) {
-            for (int j = 0; j < Math.min(colLength, numCols); j++) {
-                labelsMatrix[startRowOf1 + i][startColOf1 + j] = 1;
-            }
-        }
-    }
-
-
 
     public static float[][] getNormalizedThresholdedAndAppendedDerivativeDownColumn(float[][] data, float maxVal, float scaleDerivFactor, float derivativeThreshold) {
 
@@ -555,7 +447,7 @@ public class FloatMatrixTools {
             }
         }
 
-        int[] columnSums = getAbsValColSums(derivative);
+        int[] columnSums = IntMatrixTools.getAbsValColSums(derivative);
         List<Integer> indicesToUse = new ArrayList<>();
         for (int k = 0; k < columnSums.length; k++) {
             if (columnSums[k] > 0) {

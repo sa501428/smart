@@ -25,7 +25,7 @@
 package mixer.commandline.utils.drink.kmeansfloat;
 
 import mixer.commandline.utils.common.DoubleMatrixTools;
-import mixer.commandline.utils.common.FloatMatrixTools;
+import mixer.commandline.utils.common.IntMatrixTools;
 import org.apache.commons.math.stat.inference.ChiSquareTest;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
@@ -76,7 +76,7 @@ public class ClusterTools {
         File statsFolder = new File(directory, description + "_cluster_stats");
         statsFolder.mkdir();
 
-        FloatMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
+        IntMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
 
         saveClusterSizes(statsFolder, "sizes", clusters);
         saveDistComparisonBetweenClusters(statsFolder, "distances", clusters);
@@ -152,7 +152,7 @@ public class ClusterTools {
             sizeClusters[0][i] = clusters[i].getMemberIndexes().length;
         }
 
-        FloatMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
+        IntMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
     }
 
     public static double getDistance(Cluster observed, Cluster expected) {
