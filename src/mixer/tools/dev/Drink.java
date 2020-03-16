@@ -65,10 +65,10 @@ public class Drink extends MixerCLT {
     private int derivativeStatus = 0;
     private boolean useNormalizationOfRows = false;
 
-    public Drink(boolean compareOnlyNotSubcompartment) {
+    public Drink(String command) {
         super("drink [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] <input1.hic+input2.hic+input3.hic...> <output_file>");
         MixerGlobals.useCache = false;
-        this.compareOnlyNotSubcompartment = compareOnlyNotSubcompartment;
+        this.compareOnlyNotSubcompartment = command.equalsIgnoreCase("drink");
     }
 
     @Override

@@ -89,8 +89,6 @@ public class Dataset {
                 if (chromosomeHandler.isCustomChromosome(chr1) || chromosomeHandler.isCustomChromosome(chr2)) {
                     if (MixerGlobals.printVerboseComments) System.out.println("Custom Chromosome Index key is " + key);
                     m = Matrix.createCustomChromosomeMatrix(chr1, chr2, chromosomeHandler, matrices, reader);
-                } else if (MixerGlobals.isAssemblyMatCheck) {
-                    m = Matrix.createAssemblyChromosomeMatrix(chromosomeHandler, matrices, reader);
                 } else {
                     m = reader.readMatrix(key);
                 }
