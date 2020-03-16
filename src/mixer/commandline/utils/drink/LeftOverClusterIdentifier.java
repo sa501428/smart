@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
@@ -52,7 +52,7 @@ public class LeftOverClusterIdentifier {
             try {
                 RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution,
                         norm, threshold, ExtractingOEDataUtils.ThresholdType.LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, true);
-                allDataForRegion = MatrixTools.convertToFloatMatrix(localizedRegionData.getData());
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(99);

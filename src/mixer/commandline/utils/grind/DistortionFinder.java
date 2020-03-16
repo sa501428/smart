@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.grind;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.RealMatrixTools;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.data.HiCFileTools;
 import mixer.data.MatrixZoomData;
@@ -152,7 +152,7 @@ public class DistortionFinder extends RegionFinder {
         RealMatrix localizedRegionDataBox12 = HiCFileTools.extractLocalBoundedRegion(zd12,
                 box1RectUL, box1RectLR, box2RectUL, box2RectLR, imgHalfSliceWidth, imgHalfSliceWidth, norm, false);
 
-        return MatrixTools.generateCompositeMatrixWithNansCleaned(localizedRegionDataBox1, localizedRegionDataBox2, localizedRegionDataBox12);
+        return RealMatrixTools.generateCompositeMatrixWithNansCleaned(localizedRegionDataBox1, localizedRegionDataBox2, localizedRegionDataBox12);
     }
 
     public static boolean getTrainingDataAndSaveToFile(MatrixZoomData zd1, MatrixZoomData zd2, MatrixZoomData zd12,

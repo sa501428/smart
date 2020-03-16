@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.grind;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
 import mixer.data.*;
 import mixer.mapcolorui.Feature2DHandler;
@@ -150,16 +151,16 @@ abstract public class RegionFinder {
 
                 int relativeStartRowFromOrigin = feature2D.getStart1() / resolution - rectULX;
                 int relativeStartColFromOrigin = feature2D.getStart2() / resolution - rectULY;
-                MatrixTools.labelRegionWithOnes(labelsMatrix, featureRowLength, numRows, featureColLength, numCols, relativeStartRowFromOrigin, relativeStartColFromOrigin);
+                FloatMatrixTools.labelRegionWithOnes(labelsMatrix, featureRowLength, numRows, featureColLength, numCols, relativeStartRowFromOrigin, relativeStartColFromOrigin);
 
                 if (useAmorphicPixelLabeling) {
-                    MatrixTools.labelEnrichedRegionWithOnes(experimentalAmorphicLabelsMatrix, localizedRegionData.getData(), featureRowLength, numRows, featureColLength, numCols, relativeStartRowFromOrigin, relativeStartColFromOrigin);
+                    DoubleMatrixTools.labelEnrichedRegionWithOnes(experimentalAmorphicLabelsMatrix, localizedRegionData.getData(), featureRowLength, numRows, featureColLength, numCols, relativeStartRowFromOrigin, relativeStartColFromOrigin);
                 }
                 annotationFoundInRegion = true;
             }
         }
 
-        float[][] finalData = MatrixTools.convertToFloatMatrix(localizedRegionData.getData());
+        float[][] finalData = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
         int[][] finalLabels = labelsMatrix;
         int[][] finalExpLabels = experimentalAmorphicLabelsMatrix;
 

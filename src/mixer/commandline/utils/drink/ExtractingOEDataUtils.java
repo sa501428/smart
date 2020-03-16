@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.RealMatrixTools;
 import mixer.data.*;
 import mixer.windowui.NormalizationType;
 import org.apache.commons.math.linear.RealMatrix;
@@ -46,7 +46,7 @@ public class ExtractingOEDataUtils {
         // numRows/numCols is just to ensure a set size in case bounds are approximate
         // left upper corner is reference for 0,0
         List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, binXStart, binXEnd, binYStart, binYEnd, normalizationType, isIntraFillUnderDiagonal);
-        RealMatrix data = MatrixTools.cleanArray2DMatrix(numRows, numCols);
+        RealMatrix data = RealMatrixTools.cleanArray2DMatrix(numRows, numCols);
 
         double averageCount = zd.getAverageCount();
         if (blocks.size() > 0) {

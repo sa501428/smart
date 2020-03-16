@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.grind;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
 import org.apache.commons.math.linear.RealMatrix;
 import org.broad.igv.util.Pair;
 
@@ -102,7 +103,7 @@ public class GrindUtils {
      * @param compositeMatrix
      */
     public static void cleanUpLabelsMatrixBasedOnData(float[][] labelsMatrix, float[][] compositeMatrix) {
-        float[] rowSums = MatrixTools.getRowSums(compositeMatrix);
+        float[] rowSums = FloatMatrixTools.getRowSums(compositeMatrix);
         zeroOutLabelsBasedOnNeighboringRowSums(labelsMatrix, rowSums);
     }
 
@@ -146,10 +147,10 @@ public class GrindUtils {
     public static void saveGrindMatrixDataToFile(String fileName, String path, int[][] labels, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
-            MatrixTools.saveMatrixTextV2(path + "/" + txtFileName, labels);
+            FloatMatrixTools.saveMatrixTextV2(path + "/" + txtFileName, labels);
         } else {
             String npyFileName = fileName + ".npy";
-            MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, labels);
+            FloatMatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, labels);
         }
     }
 
@@ -160,20 +161,20 @@ public class GrindUtils {
     public static void saveGrindMatrixDataToFile(String fileName, String path, double[][] data, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
-            MatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
+            DoubleMatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
         } else {
             String npyFileName = fileName + ".npy";
-            MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
+            DoubleMatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
         }
     }
 
     public static void saveGrindMatrixDataToFile(String fileName, String path, float[][] data, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
-            MatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
+            FloatMatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
         } else {
             String npyFileName = fileName + ".npy";
-            MatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
+            FloatMatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
         }
     }
 
@@ -264,12 +265,12 @@ public class GrindUtils {
 
     private static float[][] invertMatrixRegion(float[][] data, Pair<Integer, Integer> boundaries) {
         float[][] transformedData = flipRowsInBoundaries(data, boundaries);
-        transformedData = MatrixTools.transpose(transformedData);
+        transformedData = FloatMatrixTools.transpose(transformedData);
         return flipRowsInBoundaries(transformedData, boundaries);
     }
 
     private static float[][] flipRowsInBoundaries(float[][] data, Pair<Integer, Integer> boundaries) {
-        float[][] transformedRegion = MatrixTools.deepClone(data);
+        float[][] transformedRegion = FloatMatrixTools.deepClone(data);
         for (int i = boundaries.getFirst(); i <= boundaries.getSecond(); i++) {
             int copyIndex = boundaries.getSecond() - i + boundaries.getFirst();
             System.arraycopy(data[i], 0, transformedRegion[copyIndex], 0, data[i].length);
@@ -279,7 +280,7 @@ public class GrindUtils {
 
     private static float[][] translocateMatrixRegion(float[][] data, Pair<Integer, Integer> boundaries, int newIndex) {
         float[][] transformedData = translateRowsInBoundaries(data, boundaries, newIndex);
-        transformedData = MatrixTools.transpose(transformedData);
+        transformedData = FloatMatrixTools.transpose(transformedData);
         return translateRowsInBoundaries(transformedData, boundaries, newIndex);
     }
 
@@ -349,7 +350,7 @@ public class GrindUtils {
 
     public static boolean isTooEmpty(float[][] compositeMatrix) {
 
-        float[] rowSums = MatrixTools.getRowSums(compositeMatrix);
+        float[] rowSums = FloatMatrixTools.getRowSums(compositeMatrix);
         int numZeros = 0;
 
         // if n rows in a row totally empty, let's skip
@@ -364,7 +365,7 @@ public class GrindUtils {
 
     public static boolean isJustEmptyEnough(float[][] compositeMatrix) {
 
-        float[] rowSums = MatrixTools.getRowSums(compositeMatrix);
+        float[] rowSums = FloatMatrixTools.getRowSums(compositeMatrix);
         int numZeros = 0;
 
         // if n rows in a row totally empty, let's skip

@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class DataCleanerV2 extends DataCleaner {
     private final int numDatasets;
 
     public DataCleanerV2(List<double[][]> data, double maxPercentAllowedToBeZeroThreshold, int resolution, double[] convolution1d) {
-        super(MatrixTools.stitchMultipleMatricesTogetherByRowDim(data), maxPercentAllowedToBeZeroThreshold, resolution, convolution1d);
+        super(DoubleMatrixTools.stitchMultipleMatricesTogetherByRowDim(data), maxPercentAllowedToBeZeroThreshold, resolution, convolution1d);
         numDatasets = data.size();
         determineSeparatingIndices(data);
     }

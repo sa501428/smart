@@ -26,7 +26,7 @@ package mixer.data;
 
 import mixer.MixerGlobals;
 import mixer.commandline.chrom.sizes.ChromosomeSizes;
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.RealMatrixTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
@@ -333,7 +333,7 @@ public class HiCFileTools {
         // left upper corner is reference for 0,0
         List<Block> blocks = getAllRegionBlocks(zd, binXStart, binXEnd, binYStart, binYEnd, normalizationType, fillUnderDiagonal);
 
-        RealMatrix data = MatrixTools.cleanArray2DMatrix(numRows, numCols);
+        RealMatrix data = RealMatrixTools.cleanArray2DMatrix(numRows, numCols);
 
         if (blocks.size() > 0) {
             for (Block b : blocks) {

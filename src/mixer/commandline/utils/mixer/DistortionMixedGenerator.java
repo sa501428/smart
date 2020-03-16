@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.mixer;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
+import mixer.commandline.utils.common.RealMatrixTools;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.commandline.utils.grind.GrindUtils;
 import mixer.data.Dataset;
@@ -115,7 +116,7 @@ public class DistortionMixedGenerator {
         RealMatrix localizedRegionDataBox12 = HiCFileTools.extractLocalBoundedRegion(zd12,
                 box1RectUL, box1RectLR, box2RectUL, box2RectLR, imgHalfSliceWidth, imgHalfSliceWidth, norm, false);
 
-        return MatrixTools.generateCompositeMatrixWithNansCleaned(localizedRegionDataBox1, localizedRegionDataBox2, localizedRegionDataBox12);
+        return RealMatrixTools.generateCompositeMatrixWithNansCleaned(localizedRegionDataBox1, localizedRegionDataBox2, localizedRegionDataBox12);
     }
 
     private void iterateAcrossIntraChromosomalRegion(MatrixZoomData zdA, MatrixZoomData zdB, Chromosome chrom, int resolution) {
@@ -239,8 +240,8 @@ public class DistortionMixedGenerator {
             //GrindUtils.cleanUpLabelsMatrixBasedOnData(labelsMatrix, compositeMatrix);
 
 
-            float[][] compositeMatrixAB = MatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
-            float[][] labelsMatrixAB = MatrixTools.max(labelsMatrixA, labelsMatrixB);
+            float[][] compositeMatrixAB = FloatMatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
+            float[][] labelsMatrixAB = FloatMatrixTools.max(labelsMatrixA, labelsMatrixB);
 
             String filePrefix = prefixString + "orig_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_matrix";
             GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrixAB, false);
@@ -252,8 +253,8 @@ public class DistortionMixedGenerator {
                 labelsMatrixB = alteredMatrices.getSecond();
 
                 if (k == 0 || k == (numManipulations - 1) || generator.nextBoolean()) {
-                    compositeMatrixAB = MatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
-                    labelsMatrixAB = MatrixTools.max(labelsMatrixA, labelsMatrixB);
+                    compositeMatrixAB = FloatMatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
+                    labelsMatrixAB = FloatMatrixTools.max(labelsMatrixA, labelsMatrixB);
 
                     filePrefix = prefixString + "dstrt_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_" + k + "_matrix";
                     GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrixAB, false);

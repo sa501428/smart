@@ -26,7 +26,8 @@ package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
 import mixer.commandline.tools.Drink;
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
 import mixer.data.ChromosomeHandler;
@@ -66,19 +67,19 @@ public class CompositeGenomeWideDensityMatrix {
 
         if (useNormalizationOfRows) {
             if (derivativeStatus == Drink.USE_ONLY_DERIVATIVE) {
-                gwCleanMatrix = MatrixTools.getNormalizedThresholdedByMedian(MatrixTools.getRelevantDerivativeScaledPositive(tempCleanData, threshold / 2, threshold), threshold);
+                gwCleanMatrix = FloatMatrixTools.getNormalizedThresholdedByMedian(FloatMatrixTools.getRelevantDerivativeScaledPositive(tempCleanData, threshold / 2, threshold), threshold);
             } else if (derivativeStatus == Drink.IGNORE_DERIVATIVE) {
-                gwCleanMatrix = MatrixTools.getNormalizedThresholdedByMedian(tempCleanData, threshold);
+                gwCleanMatrix = FloatMatrixTools.getNormalizedThresholdedByMedian(tempCleanData, threshold);
             } else {
-                gwCleanMatrix = MatrixTools.getNormalizedThresholdedByMedian(MatrixTools.getMainAppendedDerivativeScaledPosDownColumn(tempCleanData, threshold / 2, threshold), threshold);
+                gwCleanMatrix = FloatMatrixTools.getNormalizedThresholdedByMedian(FloatMatrixTools.getMainAppendedDerivativeScaledPosDownColumn(tempCleanData, threshold / 2, threshold), threshold);
             }
         } else {
             if (derivativeStatus == Drink.USE_ONLY_DERIVATIVE) {
-                gwCleanMatrix = MatrixTools.getRelevantDerivative(tempCleanData, threshold / 2, threshold);
+                gwCleanMatrix = FloatMatrixTools.getRelevantDerivative(tempCleanData, threshold / 2, threshold);
             } else if (derivativeStatus == Drink.IGNORE_DERIVATIVE) {
                 gwCleanMatrix = tempCleanData;
             } else {
-                gwCleanMatrix = MatrixTools.getMainAppendedDerivativeDownColumn(tempCleanData, threshold / 2, threshold);
+                gwCleanMatrix = FloatMatrixTools.getMainAppendedDerivativeDownColumn(tempCleanData, threshold / 2, threshold);
             }
         }
     }
@@ -152,10 +153,10 @@ public class CompositeGenomeWideDensityMatrix {
             if (isIntra) {
                 //RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution, norm, threshold, ExtractingOEDataUtils.ThresholdType.LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, true);
                 RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution, norm, threshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_SCALED_BOUNDED_MADE_POS, true);
-                allDataForRegion = MatrixTools.convertToFloatMatrix(localizedRegionData.getData());
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
             } else {
                 RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0, lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, isIntra);
-                allDataForRegion = MatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -370,6 +371,6 @@ public class CompositeGenomeWideDensityMatrix {
 
     public void exportData(File outputDirectory) {
         System.out.println(getLength() + " -v- " + getWidth());
-        MatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
+        FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
     }
 }

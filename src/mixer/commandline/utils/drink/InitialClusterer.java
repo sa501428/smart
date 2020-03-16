@@ -25,7 +25,7 @@
 package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.commandline.utils.drink.kmeansfloat.ConcurrentKMeans;
 import mixer.commandline.utils.drink.kmeansfloat.KMeansListener;
@@ -54,7 +54,6 @@ public class InitialClusterer {
     private final double maxPercentAllowBeZero = 0.75;
     private final int maxIters = 20000;
     private final List<Dataset> datasets;
-    private final int numDatasets;
     private final ChromosomeHandler chromosomeHandler;
     private final int resolution;
     private final NormalizationType norm;
@@ -65,11 +64,11 @@ public class InitialClusterer {
     private final List<GenomeWideList<SubcompartmentInterval>> comparativeSubcompartments = new ArrayList<>();
     private Map<Integer, float[]> idToCentroidMap = new HashMap<>();
     private double[] convolution1d;
+    private final boolean useStackingAlongRow;
 
     public InitialClusterer(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                            int numClusters, Random generator, float logThreshold, double[] convolution1d, int numIters) {
+                            int numClusters, Random generator, float logThreshold, double[] convolution1d, int numIters, boolean useStackingAlongRow) {
         this.datasets = datasets;
-        numDatasets = datasets.size();
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
         this.norm = norm;
@@ -81,10 +80,16 @@ public class InitialClusterer {
 
         this.logThreshold = logThreshold;
         this.convolution1d = convolution1d;
+        this.useStackingAlongRow = useStackingAlongRow;
 
-        for (int i = 0; i < numDatasets; i++) {
+        if (useStackingAlongRow) {
             comparativeSubcompartments.add(new GenomeWideList<>(chromosomeHandler));
             mapPosIndexToCluster.add(new HashMap<>());
+        } else {
+            for (int i = 0; i < datasets.size(); i++) {
+                comparativeSubcompartments.add(new GenomeWideList<>(chromosomeHandler));
+                mapPosIndexToCluster.add(new HashMap<>());
+            }
         }
     }
 
@@ -170,7 +175,7 @@ public class InitialClusterer {
     }
 
     private synchronized void mapIterationRunToGlobalMap(Chromosome chromosome, List<Map<Integer, List<Integer>>> mapOfClusterIDForIndexForChrom) {
-        for (int i = 0; i < numDatasets; i++) {
+        for (int i = 0; i < datasets.size(); i++) {
             if (mapPosIndexToCluster.get(i).containsKey(chromosome)) {
                 Map<Integer, List<Integer>> mapToUpdate = mapPosIndexToCluster.get(i).get(chromosome);
 
@@ -213,13 +218,33 @@ public class InitialClusterer {
             try {
                 List<double[][]> matrices = new ArrayList<>();
 
-                for (Dataset ds : datasets) {
-                    RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
-                            norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED, true);
-                    if (localizedRegionData != null) {
-                        matrices.add(localizedRegionData.getData());
-                        if (MixerGlobals.printVerboseComments) {
-                            MatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
+                if (useStackingAlongRow) {
+                    for (Dataset ds : datasets) {
+                        RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
+                                norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED, true);
+                        if (localizedRegionData != null) {
+                            if (matrices.size() > 0) {
+
+                                //double[][] stackedMatrix = MatrixTools.con
+
+                                matrices = new ArrayList<>();
+                            } else {
+                                matrices.add(localizedRegionData.getData());
+                            }
+                            if (MixerGlobals.printVerboseComments) {
+                                DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
+                            }
+                        }
+                    }
+                } else {
+                    for (Dataset ds : datasets) {
+                        RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
+                                norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED, true);
+                        if (localizedRegionData != null) {
+                            matrices.add(localizedRegionData.getData());
+                            if (MixerGlobals.printVerboseComments) {
+                                DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
+                            }
                         }
                     }
                 }
@@ -248,7 +273,7 @@ public class InitialClusterer {
 
         Map<Integer, List<Integer>> metaIDtoPriorIDs = new HashMap<>();
 
-        for (int i = 0; i < numDatasets; i++) {
+        for (int i = 0; i < datasets.size(); i++) {
             Map<Chromosome, Map<Integer, List<Integer>>> chromToIDs = mapPosIndexToCluster.get(i);
             subcompartmentIntervals.add(new ArrayList<>());
             for (Chromosome chromosome : chromToIDs.keySet()) {
@@ -274,7 +299,7 @@ public class InitialClusterer {
             }
         }
 
-        for (int i = 0; i < numDatasets; i++) {
+        for (int i = 0; i < datasets.size(); i++) {
             comparativeSubcompartments.get(i).addAll(subcompartmentIntervals.get(i));
         }
 

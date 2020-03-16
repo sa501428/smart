@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.drink.obsolete;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.SimpleInterval;
 import mixer.commandline.utils.drink.SubcompartmentInterval;
 import mixer.data.feature.FeatureFunction;
@@ -73,7 +73,7 @@ public class SecondGWApproach {
 
         File outputFile = new File(outputDirectory, "subcompartment_adj_matrix_data.txt");
         //MatrixTools.exportData(MatrixTools.convertToDoubleMatrix(adjacencyMatrix), outputFile);
-        MatrixTools.exportData(MatrixTools.convertToDoubleMatrix(adjacencyMatrix), outputFile);
+        DoubleMatrixTools.exportData(DoubleMatrixTools.convertToDoubleMatrix(adjacencyMatrix), outputFile);
 
         Set<Set<Integer>> connectedComponents = ConnectedComponents.calculateConnectedComponents(adjacencyMatrix, connectedComponentThreshold);
 

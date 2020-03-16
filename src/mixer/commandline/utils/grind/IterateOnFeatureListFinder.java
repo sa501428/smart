@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.grind;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.RealMatrixTools;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
@@ -170,11 +171,11 @@ public class IterateOnFeatureListFinder extends RegionFinder {
                             try {
                                 RealMatrix localizedRegionData = HiCFileTools.extractLocalBoundedRegion(zd,
                                         i, i + x, j, j + y, x, y, norm, true);
-                                if (MatrixTools.sum(localizedRegionData.getData()) > 0) {
+                                if (DoubleMatrixTools.sum(localizedRegionData.getData()) > 0) {
 
                                     String exactFileName = chrom.getName() + "_" + i + "_" + j + ".txt";
 
-                                    MatrixTools.saveMatrixTextV2(originalPath + exactFileName, localizedRegionData);
+                                    RealMatrixTools.saveMatrixTextV2(originalPath + exactFileName, localizedRegionData);
                                     writer.write(exactFileName + "\n");
                                 }
                             } catch (Exception ignored) {
@@ -239,7 +240,7 @@ public class IterateOnFeatureListFinder extends RegionFinder {
                             int j = j0 + getNonZeroPosOrNegIntegerNearby(halfWidthI, 2. / 3.);
 
                             RealMatrix localizedRegionData = HiCFileTools.extractLocalBoundedRegion(zd, i, j, x, y, norm, true);
-                            if (MatrixTools.sum(localizedRegionData.getData()) > 0) {
+                            if (DoubleMatrixTools.sum(localizedRegionData.getData()) > 0) {
 
                                 String exactFileName = chrom.getName() + "_" + i + "_" + j;
                                 GrindUtils.saveGrindMatrixDataToFile(exactFileName, originalPath, localizedRegionData, useTxtInsteadOfNPY);

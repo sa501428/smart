@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.data.feature.GenomeWideList;
 import org.broad.igv.feature.Chromosome;
@@ -47,7 +47,7 @@ public class DataCleaner {
     public DataCleaner(double[][] data, double maxPercentAllowedToBeZeroThreshold, int resolution, double[] convolution1d) {
         this.resolution = resolution;
         this.maxPercentAllowedToBeZeroThreshold = maxPercentAllowedToBeZeroThreshold;
-        cleanData = cleanUpData(MatrixTools.smoothAndAppendDerivativeDownColumn(data, convolution1d));
+        cleanData = cleanUpData(DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(data, convolution1d));
         System.gc();
     }
 
@@ -75,7 +75,7 @@ public class DataCleaner {
 
         calculateWhichIndicesToKeep(numZerosRowIndx, rowSums, cleanIndexRowToOriginalIndexRow);
         calculateWhichIndicesToKeep(numZerosColIndx, columnSums, cleanIndexColToOriginalIndexCol);
-        return MatrixTools.convertToFloatMatrix(makeCleanMatrix(originalData));
+        return DoubleMatrixTools.convertToFloatMatrix(makeCleanMatrix(originalData));
     }
 
     private double[][] makeCleanMatrix(double[][] originalData) {

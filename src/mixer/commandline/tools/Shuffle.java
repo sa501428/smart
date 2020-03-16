@@ -27,7 +27,8 @@ package mixer.commandline.tools;
 import mixer.MixerGlobals;
 import mixer.commandline.handling.CommandLineParserForMixer;
 import mixer.commandline.handling.MixerCLT;
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.commandline.utils.dev.LocalGenomeRegion;
 import mixer.commandline.utils.grind.DistortionFinder;
@@ -135,8 +136,8 @@ public class Shuffle extends MixerCLT {
         try {
             RealMatrix localizedRegionDataBox = HiCFileTools.extractLocalBoundedRegion(zd,
                     box1RectUL, box1RectLR, box1RectUL, box1RectLR, fullWidth, fullWidth, norm, true);
-            float[][] compositeMatrix = MatrixTools.convertToFloatMatrix(localizedRegionDataBox.getData());
-            MatrixTools.cleanUpNaNs(compositeMatrix);
+            float[][] compositeMatrix = DoubleMatrixTools.convertToFloatMatrix(localizedRegionDataBox.getData());
+            FloatMatrixTools.cleanUpNaNs(compositeMatrix);
 
             String filePrefix = "origDiag_" + chrom1Name + "_" + box1XIndex + "_" + chrom1Name + "_" + box1Mid + "_matrix";
             GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, false);

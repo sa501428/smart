@@ -25,7 +25,8 @@
 package mixer.commandline.utils.drink.obsolete;
 
 import mixer.MixerGlobals;
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.DrinkUtils;
 import mixer.commandline.utils.drink.SubcompartmentInterval;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
@@ -82,7 +83,7 @@ public class CompositeInterchromDensityMatrix {
         }
 
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
-        transposedGWCleanMatrix = MatrixTools.transpose(gwCleanMatrix);
+        transposedGWCleanMatrix = FloatMatrixTools.transpose(gwCleanMatrix);
     }
 
     private float[][] makeCleanScaledInterMatrix(Dataset ds) {
@@ -153,10 +154,10 @@ public class CompositeInterchromDensityMatrix {
             if (needToFlip) {
                 RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0, lengthChr2, 0, lengthChr1, lengthChr2, lengthChr1, norm, false);
                 allDataForRegionMatrix = allDataForRegionMatrix.transpose();
-                allDataForRegion = MatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
             } else {
                 RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0, lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, false);
-                allDataForRegion = MatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -349,9 +350,9 @@ public class CompositeInterchromDensityMatrix {
                 }
             }
         }
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".contacts.npy").getAbsolutePath(), contacts);
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".areas.npy").getAbsolutePath(), areas);
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".density.npy").getAbsolutePath(), interactions);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".contacts.npy").getAbsolutePath(), contacts);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".areas.npy").getAbsolutePath(), areas);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".density.npy").getAbsolutePath(), interactions);
 
     }
 
@@ -379,10 +380,10 @@ public class CompositeInterchromDensityMatrix {
             if (needToFlip) {
                 RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0, lengthChr2, 0, lengthChr1, lengthChr2, lengthChr1, norm, false);
                 allDataForRegionMatrix = allDataForRegionMatrix.transpose();
-                allDataForRegion = MatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
             } else {
                 RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0, lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, false);
-                allDataForRegion = MatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
             }
         } catch (Exception e) {
             e.printStackTrace();

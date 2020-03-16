@@ -25,7 +25,7 @@
 package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
 import mixer.data.ChromosomeHandler;
@@ -50,9 +50,10 @@ public class FullGenomeOEWithinClusters {
     private final int numAttemptsForKMeans = 10;
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
+    private final boolean useStackingAlongRow;
 
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold, int derivativeStatus, boolean useNormalizationOfRows) {
+                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold, int derivativeStatus, boolean useNormalizationOfRows, boolean useStackingAlongRow) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -60,9 +61,11 @@ public class FullGenomeOEWithinClusters {
         this.oeThreshold = oeThreshold;
         DrinkUtils.collapseGWList(origIntraSubcompartments);
         this.origIntraSubcompartments = origIntraSubcompartments;
+        this.useStackingAlongRow = useStackingAlongRow;
 
         interMatrix = new CompositeGenomeWideDensityMatrix(
                 chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, derivativeStatus, useNormalizationOfRows, minIntervalSizeAllowed);
+
         System.gc();
     }
 
@@ -110,7 +113,7 @@ public class FullGenomeOEWithinClusters {
             LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults, origIntraSubcompartments, minIntervalSizeAllowed, oeThreshold);
         }
 
-        MatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSizeToMeanSquaredError.npy").getAbsolutePath(), iterToMSE);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSizeToMeanSquaredError.npy").getAbsolutePath(), iterToMSE);
 
         return numItersToResults;
     }

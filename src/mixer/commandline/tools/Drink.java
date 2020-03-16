@@ -64,11 +64,13 @@ public class Drink extends MixerCLT {
     private Random generator = new Random(22871L);
     private int derivativeStatus = 0;
     private boolean useNormalizationOfRows = false;
+    private boolean useStackingAlongRow = false;
 
     public Drink(String command) {
         super("drink [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] <input1.hic+input2.hic+input3.hic...> <output_file>");
         MixerGlobals.useCache = false;
         this.compareOnlyNotSubcompartment = command.equalsIgnoreCase("drink");
+        useStackingAlongRow = command.contains("2");
     }
 
     @Override
@@ -132,7 +134,7 @@ public class Drink extends MixerCLT {
 
         if (datasetList.size() < 1) return;
 
-        InitialClusterer clusterer = new InitialClusterer(datasetList, chromosomeHandler, resolution, norm, numIntraClusters, generator, oeThreshold, convolution1d, numIntraIters);
+        InitialClusterer clusterer = new InitialClusterer(datasetList, chromosomeHandler, resolution, norm, numIntraClusters, generator, oeThreshold, convolution1d, numIntraIters, useStackingAlongRow);
 
         File initialClusteringOut = new File(outputDirectory, "initial_clustering");
         UNIXTools.makeDir(initialClusteringOut);
@@ -158,7 +160,7 @@ public class Drink extends MixerCLT {
 
             for (int i = 0; i < datasetList.size(); i++) {
                 FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                        chromosomeHandler, resolution, norm, initialClustering.getFirst().get(i), oeThreshold, derivativeStatus, useNormalizationOfRows);
+                        chromosomeHandler, resolution, norm, initialClustering.getFirst().get(i), oeThreshold, derivativeStatus, useNormalizationOfRows, useStackingAlongRow);
 
                 Map<Integer, GenomeWideList<SubcompartmentInterval>> gwListMap = withinClusters.extractFinalGWSubcompartments(outputDirectory, generator);
 

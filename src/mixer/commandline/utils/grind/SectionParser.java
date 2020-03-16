@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.grind;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.RealMatrixTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -108,7 +109,7 @@ class SectionParser {
                                 RealMatrix localizedRegionData = HiCFileTools.extractLocalBoundedRegion(zd,
                                         i, i + submatrixSize,
                                         j, j + submatrixSize, submatrixSize, submatrixSize, norm, true);
-                                if (MatrixTools.sum(localizedRegionData.getData()) > 0) {
+                                if (DoubleMatrixTools.sum(localizedRegionData.getData()) > 0) {
 
                                     String exactFileName = chrom.getName() + "_" + i + "_" + j + ".txt";
 
@@ -117,7 +118,7 @@ class SectionParser {
                                     //mm = (m-yStats.getMean())/Math.max(yStats.getStandardDeviation(),1e-7);
                                     //ZscoreLL = (centralVal - yStats.getMean()) / yStats.getStandardDeviation();
 
-                                    MatrixTools.saveMatrixTextV2(savepath + exactFileName, localizedRegionData);
+                                    RealMatrixTools.saveMatrixTextV2(savepath + exactFileName, localizedRegionData);
                                     writer.write(exactFileName + "\n");
                                 }
                             } catch (Exception ignored) {
@@ -181,7 +182,7 @@ class SectionParser {
                             RealMatrix localizedRegionData = HiCFileTools.extractLocalBoundedRegion(zd,
                                     i, i + submatrixSize,
                                     j, j + submatrixSize, submatrixSize, submatrixSize, norm, true);
-                            if (MatrixTools.sum(localizedRegionData.getData()) > 0) {
+                            if (DoubleMatrixTools.sum(localizedRegionData.getData()) > 0) {
 
                                 String exactFileName = chrom.getName() + "_" + i + "_" + j + ".txt";
 
@@ -190,7 +191,7 @@ class SectionParser {
                                 //mm = (m-yStats.getMean())/Math.max(yStats.getStandardDeviation(),1e-7);
                                 //ZscoreLL = (centralVal - yStats.getMean()) / yStats.getStandardDeviation();
 
-                                MatrixTools.saveMatrixTextV2(savepath + exactFileName, localizedRegionData);
+                                RealMatrixTools.saveMatrixTextV2(savepath + exactFileName, localizedRegionData);
                                 writer.write(exactFileName + "\n");
                             }
                         } catch (Exception ignored) {
@@ -343,7 +344,7 @@ class SectionParser {
                         for (int j = i; j < 1600 + i; j += incrementSize) {
                             try {
                                 RealMatrix localizedRegionData = HiCFileTools.extractLocalBoundedRegion(zd, i, i + submatrixSize, j, j + submatrixSize, submatrixSize, submatrixSize, norm, true);
-                                if (MatrixTools.sum(localizedRegionData.getData()) > 0) {
+                                if (DoubleMatrixTools.sum(localizedRegionData.getData()) > 0) {
 
                                     String exactFileName = chromosome.getName() + "_" + i + "_" + j + ".txt";
 
@@ -352,7 +353,7 @@ class SectionParser {
                                     //mm = (m-yStats.getMean())/Math.max(yStats.getStandardDeviation(),1e-7);
                                     //ZscoreLL = (centralVal - yStats.getMean()) / yStats.getStandardDeviation();
 
-                                    MatrixTools.saveMatrixTextV2(savepath + exactFileName, localizedRegionData);
+                                    RealMatrixTools.saveMatrixTextV2(savepath + exactFileName, localizedRegionData);
                                     writer.write(exactFileName + "\n");
                                 }
                             } catch (Exception ignored) {

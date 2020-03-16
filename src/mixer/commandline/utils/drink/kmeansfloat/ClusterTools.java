@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.drink.kmeansfloat;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
 import org.apache.commons.math.stat.inference.ChiSquareTest;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
@@ -75,7 +76,7 @@ public class ClusterTools {
         File statsFolder = new File(directory, description + "_cluster_stats");
         statsFolder.mkdir();
 
-        MatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
+        FloatMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
 
         saveClusterSizes(statsFolder, "sizes", clusters);
         saveDistComparisonBetweenClusters(statsFolder, "distances", clusters);
@@ -97,8 +98,8 @@ public class ClusterTools {
             }
         }
 
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), distances);
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + "_normed.npy").getAbsolutePath(), distancesNormalized);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), distances);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + "_normed.npy").getAbsolutePath(), distancesNormalized);
     }
 
     private static void saveChiSquarePvalComparisonBetweenClusters(File directory, String filename, Cluster[] clusters) {
@@ -110,7 +111,7 @@ public class ClusterTools {
                 pvalues[i][j] = getPvalueChiSquared(clusters[j], expected);
             }
         }
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), pvalues);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), pvalues);
     }
 
 
@@ -126,8 +127,8 @@ public class ClusterTools {
             }
         }
 
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), numDiffEntries);
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + "_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), numDiffEntries);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + "_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
     }
 
     private static void saveChiSquareValComparisonBetweenClusters(File directory, String filename, Cluster[] clusters) {
@@ -139,7 +140,7 @@ public class ClusterTools {
                 chi2Val[i][j] = getValueChiSquared(clusters[j], expected);
             }
         }
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), chi2Val);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), chi2Val);
 
     }
 
@@ -151,7 +152,7 @@ public class ClusterTools {
             sizeClusters[0][i] = clusters[i].getMemberIndexes().length;
         }
 
-        MatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
+        FloatMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
     }
 
     public static double getDistance(Cluster observed, Cluster expected) {

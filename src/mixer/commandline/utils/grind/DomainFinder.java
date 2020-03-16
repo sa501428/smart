@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.grind;
 
-import mixer.commandline.utils.common.MatrixTools;
+import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
@@ -78,7 +78,7 @@ public class DomainFinder extends RegionFinder {
                                 RealMatrix localizedRegionData = HiCFileTools.extractLocalBoundedRegion(zd,
                                         rowIndex, rowIndex + x, colIndex, colIndex + y, x, y, norm, true);
 
-                                if (MatrixTools.sum(localizedRegionData.getData()) > 0) {
+                                if (DoubleMatrixTools.sum(localizedRegionData.getData()) > 0) {
 
                                     net.sf.jsi.Rectangle currentWindow = new net.sf.jsi.Rectangle(rowIndex * resolution,
                                             y * resolution, (rowIndex + x) * resolution, (colIndex + y) * resolution);
