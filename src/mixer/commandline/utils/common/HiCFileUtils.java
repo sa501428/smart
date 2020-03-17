@@ -90,13 +90,7 @@ class HiCFileUtils {
                 }
 
                 System.out.println("Expected values: " + label);
-                double[] values = ev.getExpectedValues();
-                /*
-                for (int i = 0; i < values.length; i++) {
-                    System.out.println(values[i]);
-                }
-                */
-                for (double datum : values) {
+                for (double datum : ev.getExpectedValues()) {
                     System.out.println(datum);
                 }
 
