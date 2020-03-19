@@ -44,6 +44,9 @@ class AggregateProcessing {
                         "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_replicate_30.hic",
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
+        strings = new String[]{"drinks", "-r", "100000", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
+                , "/Users/muhammad/Desktop/drinks/zscore_100k_KR_GM"};
+
         MixerTools.main(strings);
 
         // load the model

@@ -54,6 +54,7 @@ public class InitialClusterer {
     private final double maxPercentAllowBeZero = 0.75;
     private final int maxIters = 20000;
     private final List<Dataset> datasets;
+    private final int numDatasets;
     private final ChromosomeHandler chromosomeHandler;
     private final int resolution;
     private final NormalizationType norm;
@@ -83,10 +84,12 @@ public class InitialClusterer {
         this.useStackingAlongRow = useStackingAlongRow;
 
         if (useStackingAlongRow) {
+            numDatasets = 1;
             comparativeSubcompartments.add(new GenomeWideList<>(chromosomeHandler));
             mapPosIndexToCluster.add(new HashMap<>());
         } else {
-            for (int i = 0; i < datasets.size(); i++) {
+            numDatasets = datasets.size();
+            for (int i = 0; i < numDatasets; i++) {
                 comparativeSubcompartments.add(new GenomeWideList<>(chromosomeHandler));
                 mapPosIndexToCluster.add(new HashMap<>());
             }
@@ -175,7 +178,7 @@ public class InitialClusterer {
     }
 
     private synchronized void mapIterationRunToGlobalMap(Chromosome chromosome, List<Map<Integer, List<Integer>>> mapOfClusterIDForIndexForChrom) {
-        for (int i = 0; i < datasets.size(); i++) {
+        for (int i = 0; i < numDatasets; i++) {
             if (mapPosIndexToCluster.get(i).containsKey(chromosome)) {
                 Map<Integer, List<Integer>> mapToUpdate = mapPosIndexToCluster.get(i).get(chromosome);
 
@@ -218,33 +221,13 @@ public class InitialClusterer {
             try {
                 List<double[][]> matrices = new ArrayList<>();
 
-                if (useStackingAlongRow) {
-                    for (Dataset ds : datasets) {
-                        RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
-                                norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED, true);
-                        if (localizedRegionData != null) {
-                            if (matrices.size() > 0) {
-
-                                //double[][] stackedMatrix = MatrixTools.con
-
-                                matrices = new ArrayList<>();
-                            } else {
-                                matrices.add(localizedRegionData.getData());
-                            }
-                            if (MixerGlobals.printVerboseComments) {
-                                DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
-                            }
-                        }
-                    }
-                } else {
-                    for (Dataset ds : datasets) {
-                        RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
-                                norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED, true);
-                        if (localizedRegionData != null) {
-                            matrices.add(localizedRegionData.getData());
-                            if (MixerGlobals.printVerboseComments) {
-                                DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
-                            }
+                for (Dataset ds : datasets) {
+                    RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
+                            norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED, true);
+                    if (localizedRegionData != null) {
+                        matrices.add(localizedRegionData.getData());
+                        if (MixerGlobals.printVerboseComments) {
+                            DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
                         }
                     }
                 }
@@ -252,7 +235,14 @@ public class InitialClusterer {
                 // can't assess vs non existent map
                 if (matrices.size() != datasets.size() || matrices.size() < 1) continue;
 
-                DataCleanerV2 dataCleaner = new DataCleanerV2(matrices, maxPercentAllowBeZero, resolution, convolution1d);
+                double[][] collapsedMatrix;
+                if (useStackingAlongRow) {
+                    collapsedMatrix = DoubleMatrixTools.stitchMultipleMatricesTogetherByColDim(matrices);
+                } else {
+                    collapsedMatrix = DoubleMatrixTools.stitchMultipleMatricesTogetherByRowDim(matrices);
+                }
+
+                DataCleanerV2 dataCleaner = new DataCleanerV2(matrices, collapsedMatrix, numDatasets, maxPercentAllowBeZero, resolution, convolution1d);
 
                 if (dataCleaner.getLength() > 0) {
                     dataCleanerV2MapForChrom.put(chromosome, dataCleaner);

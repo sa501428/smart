@@ -24,7 +24,6 @@
 
 package mixer.commandline.utils.drink;
 
-import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 
 import java.util.ArrayList;
@@ -37,10 +36,10 @@ public class DataCleanerV2 extends DataCleaner {
     private final List<Integer> dataSetSeparatingIndices = new ArrayList<>();
     private final int numDatasets;
 
-    public DataCleanerV2(List<double[][]> data, double maxPercentAllowedToBeZeroThreshold, int resolution, double[] convolution1d) {
-        super(DoubleMatrixTools.stitchMultipleMatricesTogetherByRowDim(data), maxPercentAllowedToBeZeroThreshold, resolution, convolution1d);
-        numDatasets = data.size();
-        determineSeparatingIndices(data);
+    public DataCleanerV2(List<double[][]> matrices, double[][] data, int numDatasets, double maxPercentAllowedToBeZeroThreshold, int resolution, double[] convolution1d) {
+        super(data, maxPercentAllowedToBeZeroThreshold, resolution, convolution1d);
+        this.numDatasets = numDatasets;
+        determineSeparatingIndices(matrices);
     }
 
     private int determineWhichDatasetThisBelongsTo(int originalRow) {
@@ -52,9 +51,9 @@ public class DataCleanerV2 extends DataCleaner {
 
     private void determineSeparatingIndices(List<double[][]> data) {
         int rowOffSet = 0;
-        for (double[][] region : data) {
+        for (int i = 0; i < numDatasets; i++) {
             dataSetSeparatingIndices.add(rowOffSet);
-            rowOffSet += region.length;
+            rowOffSet += data.get(i).length;
         }
     }
 

@@ -58,8 +58,8 @@ public class ExtractingOEDataUtils {
                         if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
                             oeVal = (threshold / 2) * Math.log(oeVal / expected);
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
-                        } else if (thresholdType.equals(ThresholdType.LOG_OE_SCALED_BOUNDED_MADE_POS)) {
-                            oeVal = (threshold / 2) * Math.log(oeVal / expected);
+                        } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_MADE_POS)) {
+                            oeVal = Math.log(oeVal / expected);
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold) + threshold;
                         } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE)) {
                             oeVal = Math.log(oeVal / expected);
@@ -164,5 +164,5 @@ public class ExtractingOEDataUtils {
         return average;
     }
 
-    public enum ThresholdType {LOG_OE_BOUNDED, LOG_OE_SCALED_BOUNDED_MADE_POS, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE}
+    public enum ThresholdType {LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE}
 }

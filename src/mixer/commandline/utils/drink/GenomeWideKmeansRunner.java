@@ -48,7 +48,7 @@ public class GenomeWideKmeansRunner {
     private final ChromosomeHandler chromosomeHandler;
     private final Random generator;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
-    private final AtomicDouble meanSquaredErrorForRun = new AtomicDouble(0);
+    private final AtomicDouble withinClusterSumOfSquaresForRun = new AtomicDouble(0);
     private final int maxIters = 20000;
 
 
@@ -66,7 +66,7 @@ public class GenomeWideKmeansRunner {
         recentIDs = null;
         this.numClusters = numClusters;
         numActualClusters.set(0);
-        meanSquaredErrorForRun.set(0);
+        withinClusterSumOfSquaresForRun.set(0);
         finalCompartments = new GenomeWideList<>(chromosomeHandler);
     }
 
@@ -90,11 +90,11 @@ public class GenomeWideKmeansRunner {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
 
                     System.out.print(".");
-                    Pair<Double, int[]> mseAndIds = matrix.processGWKmeansResult(clusters, finalCompartments);
+                    Pair<Double, int[]> wcssAndIds = matrix.processGWKmeansResult(clusters, finalCompartments);
                     recentClusters = ClusterTools.clone(clusters);
-                    recentIDs = mseAndIds.getSecond();
+                    recentIDs = wcssAndIds.getSecond();
                     numActualClusters.set(clusters.length);
-                    meanSquaredErrorForRun.set(mseAndIds.getFirst());
+                    withinClusterSumOfSquaresForRun.set(wcssAndIds.getFirst());
                 }
 
                 @Override
@@ -112,7 +112,7 @@ public class GenomeWideKmeansRunner {
     }
 
     private void waitUntilDone() {
-        while (numActualClusters.get() < 1 && meanSquaredErrorForRun.get() == 0.0) {
+        while (numActualClusters.get() < 1 && withinClusterSumOfSquaresForRun.get() == 0.0) {
             System.out.print(".");
             try {
                 TimeUnit.SECONDS.sleep(10);
@@ -126,8 +126,8 @@ public class GenomeWideKmeansRunner {
         return numActualClusters.get();
     }
 
-    public double getMeanSquaredError() {
-        return meanSquaredErrorForRun.get();
+    public double getWithinClusterSumOfSquares() {
+        return withinClusterSumOfSquaresForRun.get();
     }
 
     public Cluster[] getRecentClustersClone() {

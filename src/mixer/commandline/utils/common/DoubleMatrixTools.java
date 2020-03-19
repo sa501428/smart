@@ -253,7 +253,7 @@ public class DoubleMatrixTools {
 
     // column length assumed identical and kept the same
     public static double[][] stitchMultipleMatricesTogetherByRowDim(List<double[][]> data) {
-        // todo currently assuming each one identical...
+        if (data.size() == 1) return data.get(0);
 
         int colNums = data.get(0)[0].length;
         int rowNums = 0;
@@ -274,7 +274,7 @@ public class DoubleMatrixTools {
 
     // column length assumed identical and kept the same
     public static double[][] stitchMultipleMatricesTogetherByColDim(List<double[][]> data) {
-        // todo currently assuming each one identical...
+        if (data.size() == 1) return data.get(0);
 
         int rowNums = data.get(0).length;
         int colNums = 0;

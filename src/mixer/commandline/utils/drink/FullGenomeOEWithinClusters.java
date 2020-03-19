@@ -50,10 +50,9 @@ public class FullGenomeOEWithinClusters {
     private final int numAttemptsForKMeans = 10;
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
-    private final boolean useStackingAlongRow;
 
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold, int derivativeStatus, boolean useNormalizationOfRows, boolean useStackingAlongRow) {
+                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -61,12 +60,19 @@ public class FullGenomeOEWithinClusters {
         this.oeThreshold = oeThreshold;
         DrinkUtils.collapseGWList(origIntraSubcompartments);
         this.origIntraSubcompartments = origIntraSubcompartments;
-        this.useStackingAlongRow = useStackingAlongRow;
 
         interMatrix = new CompositeGenomeWideDensityMatrix(
-                chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, derivativeStatus, useNormalizationOfRows, minIntervalSizeAllowed);
+                chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed);
 
         System.gc();
+    }
+
+    public void appendGWDataFromAdditionalDataset(Dataset ds2) {
+
+        CompositeGenomeWideDensityMatrix additionalData = new CompositeGenomeWideDensityMatrix(
+                chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed);
+
+        interMatrix.appendDataAlongExistingRows(additionalData);
     }
 
     public Map<Integer, GenomeWideList<SubcompartmentInterval>> extractFinalGWSubcompartments(File outputDirectory, Random generator) {
@@ -79,8 +85,10 @@ public class FullGenomeOEWithinClusters {
 
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix, generator);
 
-        double[][] iterToMSE = new double[2][numRounds];
-        Arrays.fill(iterToMSE[1], Double.MAX_VALUE);
+        double[][] iterToWcssAicBic = new double[4][numRounds];
+        Arrays.fill(iterToWcssAicBic[1], Double.MAX_VALUE);
+        Arrays.fill(iterToWcssAicBic[2], Double.MAX_VALUE);
+        Arrays.fill(iterToWcssAicBic[3], Double.MAX_VALUE);
 
         for (int z = 0; z < numRounds; z++) {
 
@@ -90,16 +98,14 @@ public class FullGenomeOEWithinClusters {
 
             for (int p = 0; p < numAttemptsForKMeans; p++) {
 
-
                 kmeansRunner.prepareForNewRun(k);
                 kmeansRunner.launchKmeansGWMatrix();
 
                 int numActualClustersThisAttempt = kmeansRunner.getNumActualClusters();
-                double mseThisAttempt = kmeansRunner.getMeanSquaredError();
+                double wcss = kmeansRunner.getWithinClusterSumOfSquares();
 
-                if (mseThisAttempt < iterToMSE[1][z]) {
-                    iterToMSE[0][z] = numActualClustersThisAttempt;
-                    iterToMSE[1][z] = mseThisAttempt;
+                if (wcss < iterToWcssAicBic[1][z]) {
+                    setMseAicBicValues(z, iterToWcssAicBic, numActualClustersThisAttempt, wcss);
                     numItersToResults.put(k, kmeansRunner.getFinalCompartments());
                     bestClusters = kmeansRunner.getRecentClustersClone();
                     bestIDs = kmeansRunner.getRecentIDsClone();
@@ -113,8 +119,17 @@ public class FullGenomeOEWithinClusters {
             LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults, origIntraSubcompartments, minIntervalSizeAllowed, oeThreshold);
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSizeToMeanSquaredError.npy").getAbsolutePath(), iterToMSE);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
 
         return numItersToResults;
+    }
+
+    private void setMseAicBicValues(int z, double[][] iterToWcssAicBic, int numClusters, double sumOfSquares) {
+        iterToWcssAicBic[0][z] = numClusters;
+        iterToWcssAicBic[1][z] = sumOfSquares;
+        // AIC
+        iterToWcssAicBic[2][z] = sumOfSquares + 2 * interMatrix.getWidth() * numClusters;
+        // BIC .5*k*d*log(n)
+        iterToWcssAicBic[3][z] = sumOfSquares + 0.5 * interMatrix.getWidth() * numClusters * Math.log(interMatrix.getLength());
     }
 }

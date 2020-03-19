@@ -59,7 +59,7 @@ public class Drink extends MixerCLT {
     private final List<Dataset> datasetList = new ArrayList<>();
     private List<String> inputHicFilePaths = new ArrayList<>();
     private final boolean compareOnlyNotSubcompartment;
-    private final float oeThreshold = 3f;
+    private final float oeThreshold = 2f;
     private double[] convolution1d = null;
     private Random generator = new Random(22871L);
     private int derivativeStatus = 0;
@@ -158,9 +158,10 @@ public class Drink extends MixerCLT {
             processor.writeFinalSubcompartmentsToFiles(outputDirectory, inputHicFilePaths);
         } else {
 
-            for (int i = 0; i < datasetList.size(); i++) {
-                FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                        chromosomeHandler, resolution, norm, initialClustering.getFirst().get(i), oeThreshold, derivativeStatus, useNormalizationOfRows, useStackingAlongRow);
+            if (useStackingAlongRow) {
+                /*
+                FullGenomeOEWithinClusters withinClusters = new StackedFullGenomeOEWithinClusters(datasetList,
+                        chromosomeHandler, resolution, norm, initialClustering.getFirst().get(0), oeThreshold, derivativeStatus, useNormalizationOfRows);
 
                 Map<Integer, GenomeWideList<SubcompartmentInterval>> gwListMap = withinClusters.extractFinalGWSubcompartments(outputDirectory, generator);
 
@@ -168,6 +169,21 @@ public class Drink extends MixerCLT {
                     GenomeWideList<SubcompartmentInterval> gwList = gwListMap.get(key);
                     DrinkUtils.collapseGWList(gwList);
                     gwList.simpleExport(new File(outputDirectory, "gw_full_" + key + "_clusters_" + DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + ".subcompartment.bed"));
+                }
+
+                 */
+            } else {
+                for (int i = 0; i < datasetList.size(); i++) {
+                    FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
+                            chromosomeHandler, resolution, norm, initialClustering.getFirst().get(i), oeThreshold);
+
+                    Map<Integer, GenomeWideList<SubcompartmentInterval>> gwListMap = withinClusters.extractFinalGWSubcompartments(outputDirectory, generator);
+
+                    for (Integer key : gwListMap.keySet()) {
+                        GenomeWideList<SubcompartmentInterval> gwList = gwListMap.get(key);
+                        DrinkUtils.collapseGWList(gwList);
+                        gwList.simpleExport(new File(outputDirectory, "gw_full_" + key + "_clusters_" + DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + ".subcompartment.bed"));
+                    }
                 }
                 System.out.println("\nClustering complete");
             }
