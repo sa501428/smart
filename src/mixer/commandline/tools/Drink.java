@@ -119,8 +119,7 @@ public class Drink extends MixerCLT {
     private void determineNumClusters(CommandLineParserForMixer mixerParser) {
         int n = mixerParser.getMatrixSizeOption();
         if (n > 1) {
-            numInterClusters = n;
-            numIntraClusters = n + 5;
+            numIntraClusters = n;
         }
     }
 
