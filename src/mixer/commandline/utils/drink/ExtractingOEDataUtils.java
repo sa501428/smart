@@ -56,10 +56,16 @@ public class ExtractingOEDataUtils {
                         double expected = getExpected(rec, df, chrIndex, isIntraFillUnderDiagonal, averageCount);
                         double oeVal = rec.getCounts();
                         if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
-                            oeVal = (threshold / 2) * Math.log(oeVal / expected);
+                            oeVal = Math.log(oeVal / expected);
+                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+                        } else if (thresholdType.equals(ThresholdType.LOG_OE_PLUS1_BOUNDED)) {
+                            oeVal = Math.log((oeVal + 1) / (expected + 1));
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
                         } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_MADE_POS)) {
                             oeVal = Math.log(oeVal / expected);
+                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold) + threshold;
+                        } else if (thresholdType.equals(ThresholdType.LOG_OE_PLUS1_BOUNDED_MADE_POS)) {
+                            oeVal = Math.log((oeVal + 1) / (expected + 1));
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold) + threshold;
                         } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE)) {
                             oeVal = Math.log(oeVal / expected);
@@ -164,5 +170,8 @@ public class ExtractingOEDataUtils {
         return average;
     }
 
-    public enum ThresholdType {LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE}
+    public enum ThresholdType {
+        LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE,
+        LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LOG_OE_PLUS1_BOUNDED, LOG_OE_PLUS1_BOUNDED_MADE_POS
+    }
 }

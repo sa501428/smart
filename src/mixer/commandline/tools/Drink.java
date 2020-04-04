@@ -53,9 +53,8 @@ public class Drink extends MixerCLT {
     private Dataset ds;
     private File outputDirectory;
     private final int numIntraIters = 3;
-    private int numIntraClusters = 10;
+    private int numIntraClusters = 6;
     private final int whichApproachtoUse = 0;
-    private int numInterClusters = 8;
     private final List<Dataset> datasetList = new ArrayList<>();
     private List<String> inputHicFilePaths = new ArrayList<>();
     private final boolean compareOnlyNotSubcompartment;

@@ -83,7 +83,10 @@ public class CompositeGenomeWideDensityMatrix {
             }
         }
         */
-        gwCleanMatrix = FloatMatrixTools.getMainAppendedDerivativeDownColumn(tempCleanData, threshold / 2, threshold);
+        //gwCleanMatrix = FloatMatrixTools.getMainAppendedDerivativeDownColumn(tempCleanData, threshold / 2, threshold);
+        //gwCleanMatrix = FloatMatrixTools.inPlaceZscoreDownRows(FloatMatrixTools.getRelevantDerivative(tempCleanData, 1, 3), 3);
+
+        gwCleanMatrix = FloatMatrixTools.getSimpleAppendedDerivativeDownColumn(tempCleanData, 6);
 
     }
 
@@ -154,7 +157,7 @@ public class CompositeGenomeWideDensityMatrix {
         float[][] allDataForRegion = null;
         try {
             if (isIntra) {
-                RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution, norm, threshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED_MADE_POS, true);
+                RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution, norm, threshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_PLUS1_BOUNDED_MADE_POS, true);
                 allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
             } else {
                 RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0, lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, isIntra);

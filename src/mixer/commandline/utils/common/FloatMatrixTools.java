@@ -75,6 +75,44 @@ public class FloatMatrixTools {
         return answer;
     }
 
+    public static float[][] inPlaceZscoreDownRows(float[][] matrix, float threshold) {
+        float[] rowMeans = getRowSums(matrix);
+        for (int k = 0; k < rowMeans.length; k++) {
+            rowMeans[k] = rowMeans[k] / matrix[k].length;
+        }
+
+        float[] stdDevs = new float[matrix.length];
+        for (int k = 0; k < matrix.length; k++) {
+            stdDevs[k] = getStdDev(matrix[k], rowMeans[k]);
+        }
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = (matrix[i][j] - rowMeans[i]) / stdDevs[i];
+            }
+        }
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = Math.min(Math.max(matrix[i][j], -threshold), threshold);
+            }
+        }
+
+        return matrix;
+    }
+
+    private static float getStdDev(float[] data, float mean) {
+        double stddev = 0;
+
+        for (float val : data) {
+            float diff = val - mean;
+            stddev += diff * diff;
+        }
+        stddev = (stddev / data.length);
+
+        return (float) Math.sqrt(stddev);
+    }
+
     public float standardDeviation(float[][] data, float mean) {
         double stddev = 0;
 
@@ -362,6 +400,48 @@ public class FloatMatrixTools {
         return appendedDerivative;
     }
 
+    public static float[][] getSimpleAppendedDerivativeDownColumn(float[][] data, float threshold) {
+        List<Integer> indicesToUse = getImportantIndices(data);
+        int n = indicesToUse.size();
+
+        float[][] importantDataAndDerivative = new float[data.length][2 * n];
+
+        for (int i = 0; i < data.length; i++) {
+            for (int k = 0; k < n; k++) {
+                int indexToUse = indicesToUse.get(k);
+                importantDataAndDerivative[i][k] = Math.min(threshold, Math.max(-threshold, data[i][indexToUse]));
+            }
+        }
+
+        for (int i = 0; i < data.length; i++) {
+            for (int k = 0; k < n; k++) {
+                int indexToUse = indicesToUse.get(k);
+                importantDataAndDerivative[i][n + k] = Math.min(threshold, Math.max(-threshold, data[i][indexToUse] - data[i][indexToUse + 1]));
+            }
+        }
+
+        return importantDataAndDerivative;
+    }
+
+    private static List<Integer> getImportantIndices(float[][] data) {
+        int n = Math.max(data.length / 5, 1);
+        float[][] derivative = new float[n][data[0].length - 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < data[0].length - 1; j++) {
+                derivative[i][j] = data[i][j] - data[i][j + 1];
+            }
+        }
+
+        float[] columnSums = getAbsValColSums(derivative);
+        List<Integer> indicesToUse = new ArrayList<>();
+        for (int k = 0; k < columnSums.length; k++) {
+            if (columnSums[k] > 0) {
+                indicesToUse.add(k);
+            }
+        }
+        return indicesToUse;
+    }
+
     public static float[][] getMainAppendedDerivativeDownColumn(float[][] data, float scaleDerivFactor, float threshold) {
 
         int numColumns = data[0].length;
@@ -405,6 +485,18 @@ public class FloatMatrixTools {
         }
 
         return importantDerivative;
+    }
+
+    public static float[][] getSimpleDerivative(float[][] data, float threshold) {
+
+        float[][] derivative = new float[data.length][data[0].length - 1];
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[0].length - 1; j++) {
+                derivative[i][j] = Math.min(threshold, Math.max(-threshold, data[i][j] - data[i][j + 1]));
+            }
+        }
+
+        return derivative;
     }
 
     public static float[][] getRelevantDerivative(float[][] data, float scaleDerivFactor, float threshold) {
