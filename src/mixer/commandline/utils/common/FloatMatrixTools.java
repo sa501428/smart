@@ -312,6 +312,24 @@ public class FloatMatrixTools {
         return copy;
     }
 
+    public static float[][] getWithAppendedDerivative(float[][] data) {
+
+        int numColumns = data[0].length;
+        float[][] appendedDerivative = new float[data.length][2 * numColumns - 1];
+
+        for (int i = 0; i < data.length; i++) {
+            System.arraycopy(data[i], 0, appendedDerivative[i], 0, numColumns);
+        }
+
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < numColumns - 1; j++) {
+                appendedDerivative[i][numColumns + j] = appendedDerivative[i][j] - appendedDerivative[i][j + 1];
+            }
+        }
+
+        return appendedDerivative;
+    }
+
     public static float[][] getNormalizedThresholdedAndAppendedDerivativeDownColumn(float[][] data, float maxVal, float scaleDerivFactor, float derivativeThreshold) {
 
         double[] averageVal = new double[data.length];
@@ -381,7 +399,7 @@ public class FloatMatrixTools {
     public static float[][] getMainAppendedDerivativeDownColumnV2(float[][] data, float scaleDerivFactor, float threshold) {
 
         int numColumns = data[0].length;
-        float[][] derivative = getRelevantDerivative(data, scaleDerivFactor, threshold);
+        float[][] derivative = getRelevantDerivative(data, 1, threshold);
         float[][] appendedDerivative = new float[data.length][numColumns + derivative[0].length];
         for (int i = 0; i < data.length; i++) {
             System.arraycopy(data[i], 0, appendedDerivative[i], 0, numColumns);
@@ -445,7 +463,7 @@ public class FloatMatrixTools {
     public static float[][] getMainAppendedDerivativeDownColumn(float[][] data, float scaleDerivFactor, float threshold) {
 
         int numColumns = data[0].length;
-        float[][] derivative = getRelevantDerivative(data, scaleDerivFactor, threshold);
+        float[][] derivative = getRelevantDerivative(data, 1, threshold);
         float[][] appendedDerivative = new float[data.length][numColumns + derivative[0].length];
         for (int i = 0; i < data.length; i++) {
             System.arraycopy(data[i], 0, appendedDerivative[i], 0, numColumns);

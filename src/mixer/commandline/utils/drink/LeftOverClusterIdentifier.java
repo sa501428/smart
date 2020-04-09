@@ -25,6 +25,7 @@
 package mixer.commandline.utils.drink;
 
 import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
@@ -51,7 +52,7 @@ public class LeftOverClusterIdentifier {
             float[][] allDataForRegion = null;
             try {
                 RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution,
-                        norm, threshold, ExtractingOEDataUtils.ThresholdType.LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, true);
+                        norm, threshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_PLUS_AVG_BOUNDED, true);
                 allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -70,6 +71,8 @@ public class LeftOverClusterIdentifier {
                     }
                 }
             }
+
+            allDataForRegion = FloatMatrixTools.getWithAppendedDerivative(allDataForRegion);
 
             List<SubcompartmentInterval> preIntervals = preSubcompartments.getFeatures("" + chr1.getIndex());
             List<Integer> indicesMissing = new ArrayList<>();

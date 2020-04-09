@@ -53,7 +53,7 @@ public class Drink extends MixerCLT {
     private Dataset ds;
     private File outputDirectory;
     private final int numIntraIters = 3;
-    private int numIntraClusters = 6;
+    private int[] numIntraClusters = new int[]{6, 6, 6};
     private final int whichApproachtoUse = 0;
     private final List<Dataset> datasetList = new ArrayList<>();
     private List<String> inputHicFilePaths = new ArrayList<>();
@@ -119,7 +119,7 @@ public class Drink extends MixerCLT {
     private void determineNumClusters(CommandLineParserForMixer mixerParser) {
         int n = mixerParser.getMatrixSizeOption();
         if (n > 1) {
-            numIntraClusters = n;
+            numIntraClusters = new int[]{n, n, n};
         }
     }
 

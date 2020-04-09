@@ -60,7 +60,7 @@ public class InitialClusterer {
     private final NormalizationType norm;
     private final double logThreshold;
     private final long[] randomSeeds;
-    private final int numClusters;
+    private final int[] numClusters;
     private final List<Map<Chromosome, Map<Integer, List<Integer>>>> mapPosIndexToCluster = new ArrayList<>();
     private final List<GenomeWideList<SubcompartmentInterval>> comparativeSubcompartments = new ArrayList<>();
     private Map<Integer, float[]> idToCentroidMap = new HashMap<>();
@@ -68,7 +68,7 @@ public class InitialClusterer {
     private final boolean useStackingAlongRow;
 
     public InitialClusterer(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                            int numClusters, Random generator, float logThreshold, double[] convolution1d, int numIters, boolean useStackingAlongRow) {
+                            int[] numClusters, Random generator, float logThreshold, double[] convolution1d, int numIters, boolean useStackingAlongRow) {
         this.datasets = datasets;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -125,13 +125,14 @@ public class InitialClusterer {
         // each ds will need a respective list of assigned subcompartments
 
         Map<Chromosome, DataCleanerV2> dataCleanerV2MapForChrom = getCleanedDatasets(outputDirectory);
-        for (long seed : randomSeeds) {
+        for (int q = 0; q < randomSeeds.length; q++) {
+            long seed = randomSeeds[q];
             if (MixerGlobals.printVerboseComments) {
                 System.out.println("** Cluster with seed " + seed);
             }
             for (Chromosome chromosome : dataCleanerV2MapForChrom.keySet()) {
                 DataCleanerV2 cleanedData = dataCleanerV2MapForChrom.get(chromosome);
-                launchKMeansClustering(chromosome, cleanedData, seed);
+                launchKMeansClustering(chromosome, cleanedData, numClusters[q], seed);
             }
             waitWhileCodeRuns();
         }
@@ -144,7 +145,7 @@ public class InitialClusterer {
     }
 
 
-    private void launchKMeansClustering(Chromosome chromosome, DataCleanerV2 dataCleaner, long randomSeed) {
+    private void launchKMeansClustering(Chromosome chromosome, DataCleanerV2 dataCleaner, int numClusters, long randomSeed) {
         ConcurrentKMeans kMeans = new ConcurrentKMeans(dataCleaner.getCleanedData(), numClusters,
                 maxIters, randomSeed);
 
@@ -223,7 +224,7 @@ public class InitialClusterer {
 
                 for (Dataset ds : datasets) {
                     RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
-                            norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_PLUS1_BOUNDED, true);
+                            norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_PLUS_AVG_BOUNDED, true);
                     if (localizedRegionData != null) {
                         matrices.add(localizedRegionData.getData());
                         if (MixerGlobals.printVerboseComments) {
