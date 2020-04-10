@@ -45,9 +45,9 @@ public class FullGenomeOEWithinClusters {
     private final int resolution;
     private final NormalizationType norm;
     private final GenomeWideList<SubcompartmentInterval> origIntraSubcompartments;
-    private final int numRounds = 15;
-    private final int minIntervalSizeAllowed = 5;
-    private final int numAttemptsForKMeans = 10;
+    private final int numRounds = 10;
+    private final int minIntervalSizeAllowed = 3; // 1
+    private final int numAttemptsForKMeans = 5;
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
 
@@ -115,7 +115,7 @@ public class FullGenomeOEWithinClusters {
             ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs);
         }
 
-        if (minIntervalSizeAllowed > 0) {
+        if (minIntervalSizeAllowed > 1) {
             LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults, origIntraSubcompartments, minIntervalSizeAllowed, oeThreshold);
         }
 

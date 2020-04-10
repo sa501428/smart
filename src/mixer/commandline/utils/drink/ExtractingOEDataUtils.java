@@ -48,7 +48,7 @@ public class ExtractingOEDataUtils {
         List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, binXStart, binXEnd, binYStart, binYEnd, normalizationType, isIntraFillUnderDiagonal);
         RealMatrix data = RealMatrixTools.cleanArray2DMatrix(numRows, numCols);
 
-        double averageCount = zd.getAverageCount();
+        double averageCount = zd.getAverageCount() / 4;
         if (blocks.size() > 0) {
             for (Block b : blocks) {
                 if (b != null) {

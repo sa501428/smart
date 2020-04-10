@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DrinkUtils {
 
@@ -226,4 +227,22 @@ public class DrinkUtils {
         return new ArrayList<>(anchors);
     }
 
+    public static GenomeWideList<SubcompartmentInterval> redoAllIds(GenomeWideList<SubcompartmentInterval> intraSubcompartments) {
+        AtomicInteger newIds = new AtomicInteger(1);
+        intraSubcompartments.filterLists(new FeatureFilter<SubcompartmentInterval>() {
+            @Override
+            public List<SubcompartmentInterval> filter(String chr, List<SubcompartmentInterval> featureList) {
+                List<SubcompartmentInterval> newIdIntervals = new ArrayList<>();
+
+                for (SubcompartmentInterval interval : featureList) {
+                    SubcompartmentInterval interval2 = (SubcompartmentInterval) interval.deepClone();
+                    interval2.setClusterID(newIds.getAndIncrement());
+                    newIdIntervals.add(interval2);
+                }
+
+                return newIdIntervals;
+            }
+        });
+        return intraSubcompartments;
+    }
 }

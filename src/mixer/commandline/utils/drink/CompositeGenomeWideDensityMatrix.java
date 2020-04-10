@@ -51,14 +51,14 @@ public class CompositeGenomeWideDensityMatrix {
     private final Chromosome[] chromosomes;
     private final float threshold;
     private final int minIntervalSizeAllowed;
-    private final int OFFSET = 1;
+    private final int OFFSET = 0;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                             GenomeWideList<SubcompartmentInterval> intraSubcompartments, float oeThreshold, int minIntervalSizeAllowed) {
         this.minIntervalSizeAllowed = minIntervalSizeAllowed;
         this.norm = norm;
         this.resolution = resolution;
-        this.intraSubcompartments = intraSubcompartments;
+        this.intraSubcompartments = DrinkUtils.redoAllIds(intraSubcompartments);
         threshold = oeThreshold;
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         float[][] tempCleanData = makeCleanScaledInterMatrix(ds);
@@ -83,7 +83,7 @@ public class CompositeGenomeWideDensityMatrix {
             }
         }
         */
-        gwCleanMatrix = FloatMatrixTools.getMainAppendedDerivativeDownColumn(tempCleanData, threshold, threshold);
+        gwCleanMatrix = FloatMatrixTools.getFullMatrixWithAppendedDerivative(tempCleanData, threshold, threshold);
         //gwCleanMatrix = FloatMatrixTools.inPlaceZscoreDownRows(FloatMatrixTools.getRelevantDerivative(tempCleanData, 1, 3), 3);
 
         //gwCleanMatrix = FloatMatrixTools.getSimpleAppendedDerivativeDownColumn(tempCleanData, 6);

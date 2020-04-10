@@ -53,12 +53,12 @@ public class Drink extends MixerCLT {
     private Dataset ds;
     private File outputDirectory;
     private final int numIntraIters = 3;
-    private int[] numIntraClusters = new int[]{6, 6, 6};
+    private final float oeThreshold = 3f;
     private final int whichApproachtoUse = 0;
     private final List<Dataset> datasetList = new ArrayList<>();
     private List<String> inputHicFilePaths = new ArrayList<>();
     private final boolean compareOnlyNotSubcompartment;
-    private final float oeThreshold = 2f;
+    private int[] numIntraClusters = new int[]{10, 10, 10};
     private double[] convolution1d = null;
     private Random generator = new Random(22871L);
     private int derivativeStatus = 0;
