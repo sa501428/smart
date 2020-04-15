@@ -59,6 +59,7 @@ public class FullGenomeOEWithinClusters {
         this.norm = norm;
         this.oeThreshold = oeThreshold;
         DrinkUtils.collapseGWList(origIntraSubcompartments);
+        origIntraSubcompartments = DrinkUtils.redoAllIds(origIntraSubcompartments);
         this.origIntraSubcompartments = origIntraSubcompartments;
 
         interMatrix = new CompositeGenomeWideDensityMatrix(
