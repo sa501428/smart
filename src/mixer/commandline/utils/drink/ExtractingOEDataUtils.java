@@ -55,9 +55,18 @@ public class ExtractingOEDataUtils {
                     for (ContactRecord rec : b.getContactRecords()) {
                         double expected = getExpected(rec, df, chrIndex, isIntraFillUnderDiagonal, averageCount);
                         double oeVal = rec.getCounts();
-                        if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
+
+                        if (thresholdType.equals(ThresholdType.LOGEO)) {
+                            oeVal = (Math.log(oeVal + 1) / Math.log(expected + 1));
+                            if (Double.isNaN(oeVal) || Double.isInfinite(oeVal)) {
+                                oeVal = 0;
+                            }
+                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+                        } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
                             oeVal = Math.log(oeVal / expected);
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+                        } else if (thresholdType.equals(ThresholdType.TRUE_OE)) {
+                            oeVal = oeVal / expected;
                         } else if (thresholdType.equals(ThresholdType.LOG_OE_PLUS_AVG_BOUNDED)) {
                             oeVal = Math.log((oeVal + averageCount) / (expected + averageCount));
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
@@ -171,7 +180,8 @@ public class ExtractingOEDataUtils {
     }
 
     public enum ThresholdType {
-        LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE,
+        LOGEO,
+        LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, TRUE_OE,
         LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LOG_OE_PLUS_AVG_BOUNDED, LOG_OE_PLUS_AVG_BOUNDED_MADE_POS
     }
 }

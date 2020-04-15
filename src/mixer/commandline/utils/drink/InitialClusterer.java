@@ -224,7 +224,10 @@ public class InitialClusterer {
 
                 for (Dataset ds : datasets) {
                     RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
-                            norm, logThreshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_PLUS_AVG_BOUNDED, true);
+                            norm, logThreshold,
+                            ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                            //ExtractingOEDataUtils.ThresholdType.LOGEO, //
+                            true);
                     if (localizedRegionData != null) {
                         matrices.add(localizedRegionData.getData());
                         if (MixerGlobals.printVerboseComments) {

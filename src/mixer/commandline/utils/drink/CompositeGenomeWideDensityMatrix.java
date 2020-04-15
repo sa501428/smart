@@ -83,10 +83,11 @@ public class CompositeGenomeWideDensityMatrix {
             }
         }
         */
-        gwCleanMatrix = FloatMatrixTools.getFullMatrixWithAppendedDerivative(tempCleanData, threshold, threshold);
-        //gwCleanMatrix = FloatMatrixTools.inPlaceZscoreDownRows(FloatMatrixTools.getRelevantDerivative(tempCleanData, 1, 3), 3);
+        gwCleanMatrix = FloatMatrixTools.getTrimmedMatrix(tempCleanData);
+        //gwCleanMatrix = FloatMatrixTools.getFullMatrixWithAppendedDerivative(tempCleanData, threshold, threshold);
+        //gwCleanMatrix = FloatMatrixTools.onlyGetRelevantDerivative(tempCleanData, 1, threshold);
 
-        //gwCleanMatrix = FloatMatrixTools.getSimpleAppendedDerivativeDownColumn(tempCleanData, 6);
+        //gwCleanMatrix = FloatMatrixTools.getTrimmedMatrixWithAppendedDerivativeDownColumn(tempCleanData, threshold);
 
     }
 
@@ -157,11 +158,15 @@ public class CompositeGenomeWideDensityMatrix {
         float[][] allDataForRegion = null;
         try {
             if (isIntra) {
-                RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution, norm, threshold, ExtractingOEDataUtils.ThresholdType.LOG_OE_PLUS_AVG_BOUNDED_MADE_POS, true);
+                RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution, norm, threshold,
+                        ExtractingOEDataUtils.ThresholdType.LOGEO, //LOG_OE_PLUS_AVG_BOUNDED_MADE_POS
+                        true);
                 allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
             } else {
-                RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0, lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, isIntra);
+                RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0,
+                        lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, isIntra);
                 allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
+                allDataForRegion = FloatMatrixTools.logOEP1(allDataForRegion, zd.getAverageCount());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,6 +245,10 @@ public class CompositeGenomeWideDensityMatrix {
             totalCounts += contacts.get(key);
             totalArea += area.get(key);
         }
+
+        return density;
+
+        /*
         float avgDensity = (float) (totalCounts / totalArea);
 
         double stdDev = 0;
@@ -257,6 +266,7 @@ public class CompositeGenomeWideDensityMatrix {
         }
 
         return zScores;
+         */
     }
 
     private void updateMasterMatrixWithRegionalDensities(float[][] matrix, float density,

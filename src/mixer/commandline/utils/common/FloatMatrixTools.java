@@ -113,6 +113,27 @@ public class FloatMatrixTools {
         return (float) Math.sqrt(stddev);
     }
 
+    public static float[][] log(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = (float) Math.log(matrix[i][j]);
+            }
+        }
+
+        return matrix;
+    }
+
+    public static float[][] logOEP1(float[][] matrix, double averageCount) {
+        double denom = Math.log(averageCount + 1);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = (float) (Math.log(matrix[i][j] + 1) / denom);
+            }
+        }
+
+        return matrix;
+    }
+
     public float standardDeviation(float[][] data, float mean) {
         double stddev = 0;
 
@@ -418,7 +439,23 @@ public class FloatMatrixTools {
         return appendedDerivative;
     }
 
-    public static float[][] getSimpleAppendedDerivativeDownColumn(float[][] data, float threshold) {
+    public static float[][] getTrimmedMatrix(float[][] data) {
+        List<Integer> indicesToUse = getImportantIndices(data);
+        int n = indicesToUse.size();
+
+        float[][] mainData = new float[data.length][n];
+
+        for (int i = 0; i < data.length; i++) {
+            for (int k = 0; k < n; k++) {
+                int indexToUse = indicesToUse.get(k);
+                mainData[i][k] = data[i][indexToUse];
+            }
+        }
+
+        return mainData;
+    }
+
+    public static float[][] getTrimmedMatrixWithAppendedDerivativeDownColumn(float[][] data, float threshold) {
         List<Integer> indicesToUse = getImportantIndices(data);
         int n = indicesToUse.size();
 

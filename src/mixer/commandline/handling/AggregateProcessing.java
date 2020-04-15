@@ -45,9 +45,16 @@ class AggregateProcessing {
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
         strings = new String[]{"drinks", "-r", "100000", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                , "/Users/muhammad/Desktop/drinks/zscore_squared_new_deriv_v0"};
+                , "/Users/muhammad/Desktop/drinks/tang0_splitIDs_3f_noZ_real_new_real_mini_0"};
 
         MixerTools.main(strings);
+
+        //System.gc();
+
+        strings = new String[]{"drinks", "-r", "100000", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
+                , "/Users/muhammad/Desktop/drinks/tang0_splitIDs_3f_noZ_real_new_real_trim_0"};
+
+        //MixerTools.main(strings);
 
         // load the model
 
