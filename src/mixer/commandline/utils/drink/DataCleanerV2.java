@@ -25,6 +25,8 @@
 package mixer.commandline.utils.drink;
 
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
+import mixer.data.feature.GenomeWideList;
+import org.broad.igv.feature.Chromosome;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,5 +84,63 @@ public class DataCleanerV2 extends DataCleaner {
         }
 
         return mapPosIndexToCluster;
+    }
+
+    public void postProcessSplitting(Chromosome chromosome, List<int[]> memberIndices,
+                                     List<GenomeWideList<SubcompartmentInterval>> subcompartmentIntervals) {
+
+        List<Map<Integer, Integer>> finalMemberIndices = verifyFinalMemberIndices(memberIndices, numDatasets);
+
+        for (int mIdx = 0; mIdx < numDatasets; mIdx++) {
+            Map<Integer, Integer> startAndEndMap = finalMemberIndices.get(mIdx);
+            List<SubcompartmentInterval> intervals = new ArrayList<>();
+            for (Integer start : startAndEndMap.keySet()) {
+                Integer end = startAndEndMap.get(start);
+                int metaID = initialClusterID.getAndIncrement();
+                intervals.add(new SubcompartmentInterval(chromosome.getIndex(),
+                        chromosome.getName(), start * getResolution(), end * getResolution(), metaID));
+            }
+            subcompartmentIntervals.get(mIdx).addAll(intervals);
+        }
+    }
+
+    private List<Map<Integer, Integer>> verifyFinalMemberIndices(List<int[]> memberIndices, int numDatasets) {
+
+        List<Map<Integer, Integer>> regionsForDataset = new ArrayList<>();
+        for (int k = 0; k < numDatasets; k++) {
+            regionsForDataset.add(new HashMap<Integer, Integer>());
+        }
+
+        for (int[] indices : memberIndices) {
+            int xIndex1 = getOriginalIndexRow(indices[0]);
+            int datasetIndex1 = determineWhichDatasetThisBelongsTo(xIndex1);
+            xIndex1 = xIndex1 - dataSetSeparatingIndices.get(datasetIndex1);
+
+            //int currIdx = xIndex;
+            //int currDataset = datasetIndx;
+            int datasetIndex2, xIndex2;
+            int currXIdx = xIndex1;
+
+            for (int k = 1; k < indices.length; k++) {
+                xIndex2 = getOriginalIndexRow(indices[k]);
+                datasetIndex2 = determineWhichDatasetThisBelongsTo(xIndex2);
+                xIndex2 = xIndex2 - dataSetSeparatingIndices.get(datasetIndex2);
+
+                if (datasetIndex1 == datasetIndex2 && currXIdx + 1 == xIndex2) {
+                    // continuous
+                    currXIdx = xIndex2;
+                } else {
+                    // break - shouldn't happen often
+                    regionsForDataset.get(datasetIndex1).put(xIndex1, currXIdx + 1);
+
+                    datasetIndex1 = datasetIndex2;
+                    xIndex1 = xIndex2;
+                    currXIdx = xIndex2;
+                }
+            }
+            regionsForDataset.get(datasetIndex1).put(xIndex1, currXIdx + 1);
+        }
+
+        return regionsForDataset;
     }
 }

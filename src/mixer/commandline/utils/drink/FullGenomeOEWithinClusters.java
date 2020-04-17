@@ -34,10 +34,7 @@ import mixer.data.feature.GenomeWideList;
 import mixer.windowui.NormalizationType;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class FullGenomeOEWithinClusters {
     private final Dataset ds;
@@ -46,13 +43,13 @@ public class FullGenomeOEWithinClusters {
     private final NormalizationType norm;
     private final GenomeWideList<SubcompartmentInterval> origIntraSubcompartments;
     private final int numRounds = 10;
-    private final int minIntervalSizeAllowed = 3; // 1
+    private int minIntervalSizeAllowed; // 1
     private final int numAttemptsForKMeans = 5;
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
 
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold) {
+                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold, int minIntervalSizeAllowed) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -61,6 +58,7 @@ public class FullGenomeOEWithinClusters {
         DrinkUtils.collapseGWList(origIntraSubcompartments);
         origIntraSubcompartments = DrinkUtils.redoAllIds(origIntraSubcompartments);
         this.origIntraSubcompartments = origIntraSubcompartments;
+        this.minIntervalSizeAllowed = minIntervalSizeAllowed;
 
         interMatrix = new CompositeGenomeWideDensityMatrix(
                 chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed);
@@ -76,7 +74,7 @@ public class FullGenomeOEWithinClusters {
         interMatrix.appendDataAlongExistingRows(additionalData);
     }
 
-    public Map<Integer, GenomeWideList<SubcompartmentInterval>> extractFinalGWSubcompartments(File outputDirectory, Random generator) {
+    public void extractFinalGWSubcompartments(File outputDirectory, Random generator, List<String> inputHicFilePaths, String prefix, int index) {
 
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
 
@@ -122,7 +120,13 @@ public class FullGenomeOEWithinClusters {
 
         DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
 
-        return numItersToResults;
+        String hicFileName = DrinkUtils.cleanUpPath(inputHicFilePaths.get(index));
+        for (Integer key : numItersToResults.keySet()) {
+            GenomeWideList<SubcompartmentInterval> gwList = numItersToResults.get(key);
+            DrinkUtils.collapseGWList(gwList);
+            File outBedFile = new File(outputDirectory, prefix + key + "_clusters_" + hicFileName + ".subcompartment.bed");
+            gwList.simpleExport(outBedFile);
+        }
     }
 
     private void setMseAicBicValues(int z, double[][] iterToWcssAicBic, int numClusters, double sumOfSquares) {

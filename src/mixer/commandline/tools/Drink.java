@@ -64,6 +64,8 @@ public class Drink extends MixerCLT {
     private int derivativeStatus = 0;
     private boolean useNormalizationOfRows = false;
     private boolean useStackingAlongRow = false;
+    private int minIntervalSizeAllowed = 3; // 1
+    private String prefix = "";
 
     public Drink(String command) {
         super("drink [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] <input1.hic+input2.hic+input3.hic...> <output_file>");
@@ -74,7 +76,7 @@ public class Drink extends MixerCLT {
 
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
-        if (args.length != 3) {
+        if (args.length != 4) {
             printUsageAndExit();
         }
 
@@ -93,6 +95,7 @@ public class Drink extends MixerCLT {
             ds = HiCFileTools.extractDatasetForCLT(Arrays.asList(args[1].split("\\+")), true);
         }
         outputDirectory = HiCFileTools.createValidDirectory(args[2]);
+        prefix = args[3];
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null) norm = preferredNorm;
@@ -109,6 +112,11 @@ public class Drink extends MixerCLT {
             for (long seed : possibleSeeds) {
                 generator.setSeed(seed);
             }
+        }
+
+        int minSize = mixerParser.getAPAWindowSizeOption();
+        if (minSize > 0) {
+            minIntervalSizeAllowed = minSize;
         }
 
         convolution1d = mixerParser.getConvolutionOption();
@@ -132,18 +140,20 @@ public class Drink extends MixerCLT {
 
         if (datasetList.size() < 1) return;
 
-        InitialClusterer clusterer = new InitialClusterer(datasetList, chromosomeHandler, resolution, norm, numIntraClusters, generator, oeThreshold, convolution1d, numIntraIters, useStackingAlongRow);
+        File initialClusteringOutDir = new File(outputDirectory, "initial_clustering");
+        UNIXTools.makeDir(initialClusteringOutDir);
 
-        File initialClusteringOut = new File(outputDirectory, "initial_clustering");
-        UNIXTools.makeDir(initialClusteringOut);
-        Pair<List<GenomeWideList<SubcompartmentInterval>>, Map<Integer, float[]>> initialClustering = clusterer.extractAllComparativeIntraSubcompartmentsTo(initialClusteringOut);
-        System.out.println("\nInitial clustering done");
-
-        for (int i = 0; i < datasetList.size(); i++) {
-            initialClustering.getFirst().get(i).simpleExport(new File(initialClusteringOut, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.bed"));
-        }
 
         if (compareOnlyNotSubcompartment) {
+            InitialClusterer clusterer = new InitialClusterer(datasetList, chromosomeHandler, resolution, norm,
+                    numIntraClusters, generator, oeThreshold, convolution1d, numIntraIters, useStackingAlongRow);
+
+            Pair<List<GenomeWideList<SubcompartmentInterval>>, Map<Integer, float[]>> initialClustering =
+                    clusterer.extractIntraSubcompartmentsTo(initialClusteringOutDir);
+            for (int i = 0; i < datasetList.size(); i++) {
+                initialClustering.getFirst().get(i).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.bed"));
+            }
+
             ComparativeSubcompartmentsProcessor processor = new ComparativeSubcompartmentsProcessor(initialClustering,
                     chromosomeHandler, resolution);
 
@@ -156,7 +166,25 @@ public class Drink extends MixerCLT {
             processor.writeFinalSubcompartmentsToFiles(outputDirectory, inputHicFilePaths);
         } else {
 
+            /*
+            DistanceSplitter splitter = new DistanceSplitter(datasetList, chromosomeHandler, resolution, norm, oeThreshold, useStackingAlongRow);
+            List<GenomeWideList<SubcompartmentInterval>> initialSplit = splitter.extractIntraSubcompartmentsTo(initialClusteringOutDir);
+             */
+
+            InitialClusterer clusterer = new InitialClusterer(datasetList, chromosomeHandler, resolution, norm,
+                    numIntraClusters, generator, oeThreshold, convolution1d, numIntraIters, useStackingAlongRow);
+
+            List<GenomeWideList<SubcompartmentInterval>> initialSplit =
+                    clusterer.extractIntraSubcompartmentsTo(initialClusteringOutDir).getFirst();
+            for (int i = 0; i < datasetList.size(); i++) {
+                GenomeWideList<SubcompartmentInterval> temp = initialSplit.get(i);
+                DrinkUtils.collapseGWList(temp);
+                temp.simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.bed"));
+            }
+
             if (useStackingAlongRow) {
+
+                initialSplit.get(0).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(0)) + ".init.split.bed"));
                 /*
                 FullGenomeOEWithinClusters withinClusters = new StackedFullGenomeOEWithinClusters(datasetList,
                         chromosomeHandler, resolution, norm, initialClustering.getFirst().get(0), oeThreshold, derivativeStatus, useNormalizationOfRows);
@@ -171,17 +199,16 @@ public class Drink extends MixerCLT {
 
                  */
             } else {
+
+                for (int i = 0; i < datasetList.size(); i++) {
+                    initialSplit.get(i).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.split.bed"));
+                }
+
                 for (int i = 0; i < datasetList.size(); i++) {
                     FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                            chromosomeHandler, resolution, norm, initialClustering.getFirst().get(i), oeThreshold);
+                            chromosomeHandler, resolution, norm, initialSplit.get(i), oeThreshold, minIntervalSizeAllowed);
 
-                    Map<Integer, GenomeWideList<SubcompartmentInterval>> gwListMap = withinClusters.extractFinalGWSubcompartments(outputDirectory, generator);
-
-                    for (Integer key : gwListMap.keySet()) {
-                        GenomeWideList<SubcompartmentInterval> gwList = gwListMap.get(key);
-                        DrinkUtils.collapseGWList(gwList);
-                        gwList.simpleExport(new File(outputDirectory, "gw_full_" + key + "_clusters_" + DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + ".subcompartment.bed"));
-                    }
+                    withinClusters.extractFinalGWSubcompartments(outputDirectory, generator, inputHicFilePaths, prefix, i);
                 }
                 System.out.println("\nClustering complete");
             }

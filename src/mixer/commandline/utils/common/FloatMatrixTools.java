@@ -123,17 +123,6 @@ public class FloatMatrixTools {
         return matrix;
     }
 
-    public static float[][] logOEP1(float[][] matrix, double averageCount) {
-        double denom = Math.log(averageCount + 1);
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                matrix[i][j] = (float) (Math.log(matrix[i][j] + 1) / denom);
-            }
-        }
-
-        return matrix;
-    }
-
     public float standardDeviation(float[][] data, float mean) {
         double stddev = 0;
 

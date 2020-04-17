@@ -54,6 +54,7 @@ public class LeftOverClusterIdentifier {
                 RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution,
                         norm, threshold,
                         ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                        //ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED,
                         //ExtractingOEDataUtils.ThresholdType.LOGEO,
                         true);
                 allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());

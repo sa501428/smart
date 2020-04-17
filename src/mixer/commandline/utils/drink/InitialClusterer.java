@@ -120,7 +120,7 @@ public class InitialClusterer {
         return metaIDToCentroidMap;
     }
 
-    public Pair<List<GenomeWideList<SubcompartmentInterval>>, Map<Integer, float[]>> extractAllComparativeIntraSubcompartmentsTo(File outputDirectory) {
+    public Pair<List<GenomeWideList<SubcompartmentInterval>>, Map<Integer, float[]>> extractIntraSubcompartmentsTo(File outputDirectory) {
 
         // each ds will need a respective list of assigned subcompartments
 
@@ -132,7 +132,7 @@ public class InitialClusterer {
             }
             for (Chromosome chromosome : dataCleanerV2MapForChrom.keySet()) {
                 DataCleanerV2 cleanedData = dataCleanerV2MapForChrom.get(chromosome);
-                launchKMeansClustering(chromosome, cleanedData, numClusters[q], seed);
+                launchKMeansClustering(chromosome, cleanedData, numClusters[q], seed); //chromosome.getLength()/5000000
             }
             waitWhileCodeRuns();
         }

@@ -34,6 +34,18 @@ import java.util.List;
 
 public class ExtractingOEDataUtils {
 
+    private static final double e = Math.exp(1);
+
+    public static float[][] logOEP1(float[][] matrix, double averageCount) {
+        double denom = Math.log(averageCount + e);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = (float) (Math.log(matrix[i][j] + e) / denom);
+            }
+        }
+        return matrix;
+    }
+
     public static RealMatrix extractObsOverExpBoundedRegion(MatrixZoomData zd, int binXStart, int binXEnd,
                                                             int binYStart, int binYEnd, int numRows, int numCols,
                                                             NormalizationType normalizationType,
@@ -48,7 +60,7 @@ public class ExtractingOEDataUtils {
         List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, binXStart, binXEnd, binYStart, binYEnd, normalizationType, isIntraFillUnderDiagonal);
         RealMatrix data = RealMatrixTools.cleanArray2DMatrix(numRows, numCols);
 
-        double averageCount = zd.getAverageCount() / 4;
+        double averageCount = zd.getAverageCount() / 2;
         if (blocks.size() > 0) {
             for (Block b : blocks) {
                 if (b != null) {
@@ -57,36 +69,29 @@ public class ExtractingOEDataUtils {
                         double oeVal = rec.getCounts();
 
                         if (thresholdType.equals(ThresholdType.LOGEO)) {
-                            oeVal = (Math.log(oeVal + 1) / Math.log(expected + 1));
+
+                            // 3e
+                            oeVal = (Math.log(oeVal + e) / Math.log(expected + e));
+                            // cobra oeVal = ( (Math.log(oeVal + 1)+1) / (Math.log(expected + 1)+1));
+                            // cobra2 oeVal = Math.exp( (Math.log(oeVal + 1)+1) / (Math.log(expected + 1)+1));
+                            // eee oeVal = Math.exp(Math.log(oeVal + e) / Math.log(expected + e));
+                            //22 oeVal = log2(oeVal + 2) / log2(expected + 2);
+
                             if (Double.isNaN(oeVal) || Double.isInfinite(oeVal)) {
                                 oeVal = 0;
                             }
-                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
-                        } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
-                            oeVal = Math.log(oeVal / expected);
-                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+
+                            // todo remove
+                            // oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+
                         } else if (thresholdType.equals(ThresholdType.TRUE_OE)) {
-                            oeVal = oeVal / expected;
-                        } else if (thresholdType.equals(ThresholdType.LOG_OE_PLUS_AVG_BOUNDED)) {
-                            oeVal = Math.log((oeVal + averageCount) / (expected + averageCount));
+                            //oeVal = (oeVal+1) / (expected+1);
+                            oeVal = (oeVal + 1) / (expected + 1);
+                        } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
+                            oeVal = Math.log((oeVal + 1) / (expected + 1));
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
-                        } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_MADE_POS)) {
-                            oeVal = Math.log(oeVal / expected);
-                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold) + threshold;
-                        } else if (thresholdType.equals(ThresholdType.LOG_OE_PLUS_AVG_BOUNDED_MADE_POS)) {
-                            oeVal = Math.log((oeVal + averageCount) / (expected + averageCount));
-                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold) + threshold;
                         } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE)) {
                             oeVal = Math.log(oeVal / expected);
-                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
-                            oeVal = (oeVal + threshold) / (2 * threshold);
-                        } else if (thresholdType.equals(ThresholdType.LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE)) {
-                            oeVal = oeVal / expected;
-                            if (oeVal < 1) {
-                                oeVal = 1 - 1 / oeVal;
-                            } else {
-                                oeVal -= 1;
-                            }
                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
                             oeVal = (oeVal + threshold) / (2 * threshold);
                         }
@@ -96,7 +101,7 @@ public class ExtractingOEDataUtils {
             }
         }
         // force cleanup
-        System.gc();
+        blocks = null;
         return data;
     }
 
@@ -146,42 +151,35 @@ public class ExtractingOEDataUtils {
         return expected;
     }
 
-    public static double extractAveragedOEFromRegion(RealMatrix matrix, int binXStart, int binXEnd,
-                                                     int binYStart, int binYEnd, double threshold, boolean isIntra) {
-
-        double[][] allDataForRegion = matrix.getData();
-
-        int totalNumInclZero = (binXEnd - binXStart) * (binYEnd - binYStart);
-        double total = 0;
-        for (int i = binXStart; i < binXEnd; i++) {
-            for (int j = binYStart; j < binYEnd; j++) {
-                try {
-                    if (!Double.isNaN(allDataForRegion[i][j])) {
-                        total += allDataForRegion[i][j];
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println(i + "-" + j);
-                    System.exit(94);
-                }
-            }
-        }
-
-        if (Double.isNaN(total)) total = 0;
-        double average = total / totalNumInclZero;
-        if (!isIntra) {
-            //intra is already log value so don't repeat for those
-            average = Math.log(average);
-        }
-        average = Math.max(Math.min(average, threshold), -threshold);
-        if (Double.isNaN(average)) average = 0;
-
-        return average;
-    }
-
     public enum ThresholdType {
-        LOGEO,
-        LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, TRUE_OE,
-        LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LOG_OE_PLUS_AVG_BOUNDED, LOG_OE_PLUS_AVG_BOUNDED_MADE_POS
+        LOGEO, LOG_OE_BOUNDED, TRUE_OE, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE,
+        //, LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS,
+        //LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LOG_OE_PLUS_AVG_BOUNDED, LOG_OE_PLUS_AVG_BOUNDED_MADE_POS
+
     }
+
+    /**
+     * } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
+     *                             oeVal = Math.log(oeVal / expected);
+     *                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+     *                         } else if (thresholdType.equals(ThresholdType.LOG_OE_PLUS_AVG_BOUNDED)) {
+     *                             oeVal = Math.log((oeVal + averageCount) / (expected + averageCount));
+     *                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+     *                         } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_MADE_POS)) {
+     *                             oeVal = Math.log(oeVal / expected);
+     *                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold) + threshold;
+     *                         } else if (thresholdType.equals(ThresholdType.LOG_OE_PLUS_AVG_BOUNDED_MADE_POS)) {
+     *                             oeVal = Math.log((oeVal + averageCount) / (expected + averageCount));
+     *                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold) + threshold;
+     *                         } else if (thresholdType.equals(ThresholdType.LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE)) {
+     *                             oeVal = oeVal / expected;
+     *                             if (oeVal < 1) {
+     *                                 oeVal = 1 - 1 / oeVal;
+     *                             } else {
+     *                                 oeVal -= 1;
+     *                             }
+     *                             oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+     *                             oeVal = (oeVal + threshold) / (2 * threshold);
+     *                         }
+     */
 }
