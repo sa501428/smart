@@ -44,36 +44,11 @@ class AggregateProcessing {
                         "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_replicate_30.hic",
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
-        strings = new String[]{"drinks", "-r", "100000", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                , "/Users/muhammad/Desktop/drinks/tang0_splitIDs_3f_noZ_real_new_real_mini_0"};
+        strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
+                , "/Users/muhammad/Desktop/drinks/determine9_L1_logeo", "l1_d9_"};
 
+        System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
-
-        //System.gc();
-
-        strings = new String[]{"drinks", "-r", "100000", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                , "/Users/muhammad/Desktop/drinks/tang0_splitIDs_3f_noZ_real_new_real_trim_0"};
-
-        //MixerTools.main(strings);
-
-        // load the model
-
-        /*
-        String simpleMlp = "/Users/muhammad/Desktop/deeplearning/models/Clean64DistortionDiffHalfLocalizerV0BinCross.h5";
-        MultiLayerNetwork model = KerasModelImport.importKerasSequentialModelAndWeights(simpleMlp);
-
-
-        // make a random sample
-        int inputs = 10;
-        INDArray features = Nd4j.zeros(inputs);
-        for (int i=0; i<inputs; i++) {
-            features.putScalar(new int[]{i}, Math.random() < 0.5 ? 0 : 1);
-        }
-// get the prediction
-        //double prediction = model.output(features).getDouble(0);
-
-         */
-
 
 
     }

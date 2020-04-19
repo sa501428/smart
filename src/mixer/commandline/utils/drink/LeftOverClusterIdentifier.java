@@ -25,7 +25,6 @@
 package mixer.commandline.utils.drink;
 
 import mixer.commandline.utils.common.DoubleMatrixTools;
-import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
@@ -43,7 +42,9 @@ import java.util.Map;
 
 public class LeftOverClusterIdentifier {
     public static void identify(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                Map<Integer, GenomeWideList<SubcompartmentInterval>> results, GenomeWideList<SubcompartmentInterval> preSubcompartments, int minIntervalSizeAllowed, float threshold) {
+                                Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
+                                GenomeWideList<SubcompartmentInterval> preSubcompartments, int minIntervalSizeAllowed,
+                                float threshold, double[] convolution) {
 
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr1, resolution);
@@ -57,7 +58,10 @@ public class LeftOverClusterIdentifier {
                         //ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED,
                         //ExtractingOEDataUtils.ThresholdType.LOGEO,
                         true);
-                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
+
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
+                        DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(
+                                DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()), convolution));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(99);
@@ -67,16 +71,6 @@ public class LeftOverClusterIdentifier {
                 System.err.println("Missing Data " + zd.getKey());
                 return;
             }
-
-            for (int i = 0; i < allDataForRegion.length; i++) {
-                for (int j = 0; j < allDataForRegion[0].length; j++) {
-                    if (Float.isNaN(allDataForRegion[i][j]) || Float.isInfinite(allDataForRegion[i][j]) || Math.abs(allDataForRegion[i][j]) < 1E-30) {
-                        allDataForRegion[i][j] = 0;
-                    }
-                }
-            }
-
-            allDataForRegion = FloatMatrixTools.getWithAppendedDerivative(allDataForRegion);
 
             List<SubcompartmentInterval> preIntervals = preSubcompartments.getFeatures("" + chr1.getIndex());
             List<Integer> indicesMissing = new ArrayList<>();
@@ -139,7 +133,6 @@ public class LeftOverClusterIdentifier {
             cIDToCenter.put(key, ClusterTools.normalize(cIDToCenter.get(key), cIDToSize.get(key)));
         }
 
-
         return cIDToCenter;
     }
 
@@ -167,6 +160,7 @@ public class LeftOverClusterIdentifier {
 
         for (Integer key : cIDToCenter.keySet()) {
             double newDistance = ClusterTools.getDistance(cIDToCenter.get(key), vector);
+            //double newDistance = ClusterTools.getL1Distance(cIDToCenter.get(key), vector);
             if (newDistance < overallDistance) {
                 overallDistance = newDistance;
                 currID = key;
@@ -174,10 +168,8 @@ public class LeftOverClusterIdentifier {
             }
         }
         if (nothingChanged) {
-            System.err.println(" - WTF " + overallDistance + " - " + cIDToCenter.keySet());
+            System.err.println("Error 787 " + overallDistance + " - " + cIDToCenter.keySet());
         }
         return currID;
     }
-
-
 }

@@ -168,7 +168,7 @@ public class Drink extends MixerCLT {
 
             /*
             DistanceSplitter splitter = new DistanceSplitter(datasetList, chromosomeHandler, resolution, norm, oeThreshold, useStackingAlongRow);
-            List<GenomeWideList<SubcompartmentInterval>> initialSplit = splitter.extractIntraSubcompartmentsTo(initialClusteringOutDir);
+            List<GenomeWideList<SubcompartmentInterval>> initialSplit = splitter.extractIntraSubcompartmentsTo(initialClusteringOutDir, convolution1d);
              */
 
             InitialClusterer clusterer = new InitialClusterer(datasetList, chromosomeHandler, resolution, norm,
@@ -176,15 +176,22 @@ public class Drink extends MixerCLT {
 
             List<GenomeWideList<SubcompartmentInterval>> initialSplit =
                     clusterer.extractIntraSubcompartmentsTo(initialClusteringOutDir).getFirst();
+
+            List<GenomeWideList<SubcompartmentInterval>> postSplit = new ArrayList<>();
+            // split up regions; only keep continuous ones together
             for (int i = 0; i < datasetList.size(); i++) {
                 GenomeWideList<SubcompartmentInterval> temp = initialSplit.get(i);
                 DrinkUtils.collapseGWList(temp);
-                temp.simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.bed"));
+                temp = DrinkUtils.redoAllIds(temp);
+                temp.simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.split.bed"));
+                postSplit.add(temp);
             }
+
+            initialSplit = null;
 
             if (useStackingAlongRow) {
 
-                initialSplit.get(0).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(0)) + ".init.split.bed"));
+                //postSplit.get(0).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(0)) + ".init.split.bed"));
                 /*
                 FullGenomeOEWithinClusters withinClusters = new StackedFullGenomeOEWithinClusters(datasetList,
                         chromosomeHandler, resolution, norm, initialClustering.getFirst().get(0), oeThreshold, derivativeStatus, useNormalizationOfRows);
@@ -199,16 +206,12 @@ public class Drink extends MixerCLT {
 
                  */
             } else {
-
-                for (int i = 0; i < datasetList.size(); i++) {
-                    initialSplit.get(i).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.split.bed"));
-                }
-
                 for (int i = 0; i < datasetList.size(); i++) {
                     FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                            chromosomeHandler, resolution, norm, initialSplit.get(i), oeThreshold, minIntervalSizeAllowed);
+                            chromosomeHandler, resolution, norm, postSplit.get(i), oeThreshold, minIntervalSizeAllowed);
 
-                    withinClusters.extractFinalGWSubcompartments(outputDirectory, generator, inputHicFilePaths, prefix, i);
+                    withinClusters.extractFinalGWSubcompartments(outputDirectory, generator,
+                            inputHicFilePaths, prefix, i, convolution1d);
                 }
                 System.out.println("\nClustering complete");
             }

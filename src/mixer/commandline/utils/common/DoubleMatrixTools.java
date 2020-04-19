@@ -123,14 +123,15 @@ public class DoubleMatrixTools {
     }
 
 
-    public static void cleanUpNaNs(double[][] matrix) {
+    public static double[][] cleanUpMatrix(double[][] matrix) {
         for (int r = 0; r < matrix.length; r++) {
             for (int c = 0; c < matrix[r].length; c++) {
-                if (Double.isNaN(matrix[r][c])) {
+                if (Double.isNaN(matrix[r][c]) || Double.isInfinite(matrix[r][c]) || Math.abs(matrix[r][c]) < 1E-30) {
                     matrix[r][c] = 0;
                 }
             }
         }
+        return matrix;
     }
 
 

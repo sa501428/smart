@@ -245,5 +245,15 @@ public class ClusterTools {
 
         return clone;
     }
+
+    public static double getL1Distance(float[] obsArray, float[] expectedArray) {
+        double val = 0;
+
+        for (int k = 0; k < obsArray.length; k++) {
+            val += Math.abs(expectedArray[k] - obsArray[k]);
+        }
+
+        return val;
+    }
 }
 

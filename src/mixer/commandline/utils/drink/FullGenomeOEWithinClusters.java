@@ -56,7 +56,6 @@ public class FullGenomeOEWithinClusters {
         this.norm = norm;
         this.oeThreshold = oeThreshold;
         DrinkUtils.collapseGWList(origIntraSubcompartments);
-        origIntraSubcompartments = DrinkUtils.redoAllIds(origIntraSubcompartments);
         this.origIntraSubcompartments = origIntraSubcompartments;
         this.minIntervalSizeAllowed = minIntervalSizeAllowed;
 
@@ -74,7 +73,8 @@ public class FullGenomeOEWithinClusters {
         interMatrix.appendDataAlongExistingRows(additionalData);
     }
 
-    public void extractFinalGWSubcompartments(File outputDirectory, Random generator, List<String> inputHicFilePaths, String prefix, int index) {
+    public void extractFinalGWSubcompartments(File outputDirectory, Random generator, List<String> inputHicFilePaths,
+                                              String prefix, int index, double[] convolution) {
 
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
 
@@ -82,7 +82,7 @@ public class FullGenomeOEWithinClusters {
             interMatrix.exportData(outputDirectory);
         }
 
-        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix, generator);
+        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);
 
         double[][] iterToWcssAicBic = new double[4][numRounds];
         Arrays.fill(iterToWcssAicBic[1], Double.MAX_VALUE);
@@ -98,7 +98,7 @@ public class FullGenomeOEWithinClusters {
             for (int p = 0; p < numAttemptsForKMeans; p++) {
 
                 kmeansRunner.prepareForNewRun(k);
-                kmeansRunner.launchKmeansGWMatrix();
+                kmeansRunner.launchKmeansGWMatrix(generator.nextLong());
 
                 int numActualClustersThisAttempt = kmeansRunner.getNumActualClusters();
                 double wcss = kmeansRunner.getWithinClusterSumOfSquares();
@@ -115,7 +115,8 @@ public class FullGenomeOEWithinClusters {
         }
 
         if (minIntervalSizeAllowed > 1) {
-            LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults, origIntraSubcompartments, minIntervalSizeAllowed, oeThreshold);
+            LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults,
+                    origIntraSubcompartments, minIntervalSizeAllowed, oeThreshold, convolution);
         }
 
         DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);

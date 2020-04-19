@@ -35,7 +35,6 @@ import mixer.data.feature.GenomeWideList;
 import org.broad.igv.util.Pair;
 
 import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -46,7 +45,6 @@ public class GenomeWideKmeansRunner {
 
     private final CompositeGenomeWideDensityMatrix matrix;
     private final ChromosomeHandler chromosomeHandler;
-    private final Random generator;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private final AtomicDouble withinClusterSumOfSquaresForRun = new AtomicDouble(0);
     private final int maxIters = 20000;
@@ -55,9 +53,8 @@ public class GenomeWideKmeansRunner {
     private GenomeWideList<SubcompartmentInterval> finalCompartments;
     private int numClusters = 0;
 
-    public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideDensityMatrix interMatrix, Random generator) {
+    public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideDensityMatrix interMatrix) {
         matrix = interMatrix;
-        this.generator = generator;
         this.chromosomeHandler = chromosomeHandler;
     }
 
@@ -70,11 +67,15 @@ public class GenomeWideKmeansRunner {
         finalCompartments = new GenomeWideList<>(chromosomeHandler);
     }
 
-    public void launchKmeansGWMatrix() {
+    public void launchKmeansGWMatrix(long seed) {
 
         if (matrix.getLength() > 0 && matrix.getWidth() > 0) {
 
-            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix.getCleanedData(), numClusters, maxIters, generator.nextLong());
+            if (MixerGlobals.printVerboseComments) {
+                System.out.println("Using seed " + seed);
+            }
+
+            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix.getCleanedData(), numClusters, maxIters, seed);
 
             KMeansListener kMeansListener = new KMeansListener() {
                 @Override

@@ -48,7 +48,6 @@ public class DataCleaner {
         this.resolution = resolution;
         this.maxPercentAllowedToBeZeroThreshold = maxPercentAllowedToBeZeroThreshold;
         cleanData = cleanUpData(DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(data, convolution1d));
-        System.gc();
     }
 
     private float[][] cleanUpData(double[][] originalData) {

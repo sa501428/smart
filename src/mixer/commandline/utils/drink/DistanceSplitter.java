@@ -84,7 +84,7 @@ public class DistanceSplitter {
                 .toArray();
     }
 
-    public List<GenomeWideList<SubcompartmentInterval>> extractIntraSubcompartmentsTo(File outdir) {
+    public List<GenomeWideList<SubcompartmentInterval>> extractIntraSubcompartmentsTo(File outdir, double[] convolution) {
 
         for (final Chromosome chromosome : chromosomeHandler.getAutosomalChromosomesArray()) {
             try {
@@ -115,7 +115,8 @@ public class DistanceSplitter {
                     collapsedMatrix = DoubleMatrixTools.stitchMultipleMatricesTogetherByRowDim(matrices);
                 }
 
-                DataCleanerV2 dataCleaner = new DataCleanerV2(matrices, collapsedMatrix, numDatasets, maxPercentAllowBeZero, resolution, null);
+                DataCleanerV2 dataCleaner = new DataCleanerV2(matrices, collapsedMatrix, numDatasets,
+                        maxPercentAllowBeZero, resolution, convolution);
 
                 List<int[]> memberIndices = getGroupedRegions(dataCleaner);
                 dataCleaner.postProcessSplitting(chromosome, memberIndices, comparativeSubcompartments);
@@ -173,7 +174,8 @@ public class DistanceSplitter {
         Set<Integer> newStartPoints = new HashSet<>();
         newStartPoints.add(0); // first node
         for (int i = 1; i < minIndices.length; i++) {
-            boolean connectedToPrev = indexIsContainedIn(i, minIndices[i - 1]) || indexIsContainedIn(i - 1, minIndices[i]);
+            boolean connectedToPrev = indexIsContainedInOrNear(i, i - 1, minIndices)
+                    || indexIsContainedInOrNear(i - 1, i, minIndices);
             if (!connectedToPrev) {
                 newStartPoints.add(i);
             }
@@ -185,10 +187,16 @@ public class DistanceSplitter {
         return sortedPoints;
     }
 
-    private boolean indexIsContainedIn(int k, int[] values) {
-        for (int k2 : values) {
-            if (k == k2) {
+    // secondary contact
+    private boolean indexIsContainedInOrNear(int node, int neighbor, int[][] minIndices) {
+        for (int node2 : minIndices[neighbor]) {
+            if (node == node2) {
                 return true;
+            }
+            for (int node3 : minIndices[node2]) {
+                if (node == node3) {
+                    return true;
+                }
             }
         }
         return false;
@@ -207,6 +215,7 @@ public class DistanceSplitter {
             for (int j = i + 1; j < numVectors; j++) {
 
                 double val = ClusterTools.getDistance(data[i], data[j]);
+                //double val = ClusterTools.getL1Distance(data[i], data[j]);
                 distances[i][j] = val;
                 distances[j][i] = val;
             }
