@@ -24,6 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
+import mixer.commandline.handling.AggregateProcessing;
 import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
 import mixer.data.ChromosomeHandler;
@@ -54,14 +55,18 @@ public class LeftOverClusterIdentifier {
             try {
                 RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution,
                         norm, threshold,
-                        ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                        //ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED,
-                        //ExtractingOEDataUtils.ThresholdType.LOGEO,
+                        AggregateProcessing.thresholdType,
                         true);
 
-                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
-                        DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(
-                                DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()), convolution));
+                if (AggregateProcessing.useDerivative) {
+                    allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
+                            DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(
+                                    DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()), convolution));
+                } else {
+                    allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
+                            DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(99);
@@ -159,8 +164,13 @@ public class LeftOverClusterIdentifier {
         boolean nothingChanged = true;
 
         for (Integer key : cIDToCenter.keySet()) {
-            double newDistance = ClusterTools.getDistance(cIDToCenter.get(key), vector);
-            //double newDistance = ClusterTools.getL1Distance(cIDToCenter.get(key), vector);
+            double newDistance;
+            if (AggregateProcessing.useL1Norm) {
+                newDistance = ClusterTools.getL1Distance(cIDToCenter.get(key), vector);
+            } else {
+                newDistance = ClusterTools.getDistance(cIDToCenter.get(key), vector);
+            }
+
             if (newDistance < overallDistance) {
                 overallDistance = newDistance;
                 currID = key;

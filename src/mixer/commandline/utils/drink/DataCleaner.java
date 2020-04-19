@@ -24,6 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
+import mixer.commandline.handling.AggregateProcessing;
 import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.data.feature.GenomeWideList;
@@ -47,7 +48,12 @@ public class DataCleaner {
     public DataCleaner(double[][] data, double maxPercentAllowedToBeZeroThreshold, int resolution, double[] convolution1d) {
         this.resolution = resolution;
         this.maxPercentAllowedToBeZeroThreshold = maxPercentAllowedToBeZeroThreshold;
-        cleanData = cleanUpData(DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(data, convolution1d));
+        if (AggregateProcessing.useDerivative) {
+            cleanData = cleanUpData(DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(data, convolution1d));
+        } else {
+            cleanData = cleanUpData(data);
+        }
+
     }
 
     private float[][] cleanUpData(double[][] originalData) {

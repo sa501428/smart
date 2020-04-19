@@ -25,14 +25,19 @@
 package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
-
+import mixer.commandline.utils.drink.ExtractingOEDataUtils;
 
 
 /**
  * Created for testing multiple CLTs at once
  * Basically scratch space
  */
-class AggregateProcessing {
+public class AggregateProcessing {
+
+
+    public static ExtractingOEDataUtils.ThresholdType thresholdType = ExtractingOEDataUtils.ThresholdType.TRUE_OE;
+    public static boolean useDerivative = false;
+    public static boolean useL1Norm = false;
 
 
     public static void main(String[] argv) throws Exception {
@@ -44,12 +49,34 @@ class AggregateProcessing {
                         "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_replicate_30.hic",
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
-        strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                , "/Users/muhammad/Desktop/drinks/determine9_L1_logeo", "l1_d9_"};
 
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        /*
+        +/- OE vs logeo
+        +/- deriv
+        +/- L1
+        +/- clean diagonal
+         */
 
+        for (ExtractingOEDataUtils.ThresholdType type : new ExtractingOEDataUtils.ThresholdType[]{
+                ExtractingOEDataUtils.ThresholdType.TRUE_OE, ExtractingOEDataUtils.ThresholdType.LOGEO}) {
+            thresholdType = type;
+            for (boolean useDeriv : new boolean[]{true, false}) {
+                useDerivative = useDeriv;
+                for (boolean useL1 : new boolean[]{true, false}) {
+                    useL1Norm = useL1;
+                    for (boolean cleanDiag : new boolean[]{false}) {
 
+                        String folder = "delta_" + type + "_" + useDeriv + "_" + useL1 + "_" + cleanDiag;
+                        String prefix = folder + "_";
+
+                        strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
+                                , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
+                        System.out.println("-----------------------------------------------------");
+                        MixerTools.main(strings);
+                        System.gc();
+                    }
+                }
+            }
+        }
     }
 }

@@ -25,6 +25,7 @@
 package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
+import mixer.commandline.handling.AggregateProcessing;
 import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.commandline.utils.drink.kmeansfloat.ConcurrentKMeans;
@@ -225,8 +226,7 @@ public class InitialClusterer {
                 for (Dataset ds : datasets) {
                     RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, chromosome, resolution,
                             norm, logThreshold,
-                            ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                            //ExtractingOEDataUtils.ThresholdType.LOGEO, //
+                            AggregateProcessing.thresholdType,
                             true);
                     if (localizedRegionData != null) {
                         matrices.add(localizedRegionData.getData());
