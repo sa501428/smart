@@ -35,9 +35,12 @@ import mixer.commandline.utils.drink.ExtractingOEDataUtils;
 public class AggregateProcessing {
 
 
-    public static ExtractingOEDataUtils.ThresholdType thresholdType = ExtractingOEDataUtils.ThresholdType.TRUE_OE;
+    public static ExtractingOEDataUtils.ThresholdType beforeThresholdType = ExtractingOEDataUtils.ThresholdType.TRUE_OE;
+    public static ExtractingOEDataUtils.ThresholdType afterThresholdType = ExtractingOEDataUtils.ThresholdType.TRUE_OE;
     public static boolean useDerivative = false;
     public static boolean useL1Norm = false;
+
+    public static double scalar = 0;
 
 
     public static void main(String[] argv) throws Exception {
@@ -51,32 +54,33 @@ public class AggregateProcessing {
 
 
         /*
-        +/- OE vs logeo
-        +/- deriv
-        +/- L1
+        +/- OE vs logeo   - rreal oe
+        +/- deriv              no
+        +/- L1                 no
+        log vs linear vs real before  real before
+        log vs linear vs real after   real after
+
+
         +/- clean diagonal
+        new tests
+        more initial clusters for intra
+        try log(o+1/e+1) for deterministic splitter
          */
 
-        for (ExtractingOEDataUtils.ThresholdType type : new ExtractingOEDataUtils.ThresholdType[]{
-                ExtractingOEDataUtils.ThresholdType.TRUE_OE, ExtractingOEDataUtils.ThresholdType.LOGEO}) {
-            thresholdType = type;
-            for (boolean useDeriv : new boolean[]{true, false}) {
-                useDerivative = useDeriv;
-                for (boolean useL1 : new boolean[]{true, false}) {
-                    useL1Norm = useL1;
-                    for (boolean cleanDiag : new boolean[]{false}) {
 
-                        String folder = "delta_" + type + "_" + useDeriv + "_" + useL1 + "_" + cleanDiag;
-                        String prefix = folder + "_";
+        for (int i = 7; i < 15; i += 5) {
 
-                        strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                                , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
-                        System.out.println("-----------------------------------------------------");
-                        MixerTools.main(strings);
-                        System.gc();
-                    }
-                }
-            }
+            scalar = 1. / i;
+
+            String folder = "jackal_" + i;
+            String prefix = folder + "_";
+
+            strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
+                    , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+
+            System.gc();
         }
     }
 }

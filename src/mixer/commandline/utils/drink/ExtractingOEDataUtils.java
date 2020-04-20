@@ -84,6 +84,17 @@ public class ExtractingOEDataUtils {
                             // todo remove
                             // oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
 
+                        } else if (thresholdType.equals(ThresholdType.TRUE_OE_LOG)) {
+                            //oeVal = (oeVal+1) / (expected+1);
+                            oeVal = Math.log((oeVal + 1) / (expected + 1));
+                        } else if (thresholdType.equals(ThresholdType.TRUE_OE_LINEAR)) {
+                            //oeVal = (oeVal+1) / (expected+1);
+                            oeVal = (oeVal + 1) / (expected + 1);
+                            if (oeVal < 1) {
+                                oeVal = 1 - 1 / oeVal;
+                            } else {
+                                oeVal -= 1;
+                            }
                         } else if (thresholdType.equals(ThresholdType.TRUE_OE)) {
                             //oeVal = (oeVal+1) / (expected+1);
                             oeVal = (oeVal + 1) / (expected + 1);
@@ -152,7 +163,7 @@ public class ExtractingOEDataUtils {
     }
 
     public enum ThresholdType {
-        LOGEO, LOG_OE_BOUNDED, TRUE_OE, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE,
+        LOGEO, LOG_OE_BOUNDED, TRUE_OE, TRUE_OE_LOG, TRUE_OE_LINEAR, LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE,
         //, LOG_OE_BOUNDED, LOG_OE_BOUNDED_MADE_POS,
         //LINEAR_INVERSE_OE_BOUNDED_SCALED_BTWN_ZERO_ONE, LOG_OE_PLUS_AVG_BOUNDED, LOG_OE_PLUS_AVG_BOUNDED_MADE_POS
 
