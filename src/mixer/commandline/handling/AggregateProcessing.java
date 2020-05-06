@@ -65,17 +65,46 @@ public class AggregateProcessing {
         new tests
         more initial clusters for intra
         try log(o+1/e+1) for deterministic splitter
+
+
+
+
+
+        Lessons learned
+
+don't use L1 norm before/after
+don't use LOGEO before/after (REAL_OE+1 woks better)
+don't use derivative before/after
+log vs linear vs real before  - real works
+log vs linear vs real after  - rela works
+more initial clusters for intra - unequal verrsion doesn't work
+
+***** zebrra offset helped a little +
+
+try log(o+1/e+1) for deterministic splitter
+
+
+
+
+
+(length/1,000,000  -- failed
+
+
+post cleanuper?
+
+
+
+
+try log rround?
+
          */
 
-
-        for (int i = 7; i < 15; i += 5) {
-
-            scalar = 1. / i;
-
-            String folder = "jackal_" + i;
+        {
+            String folder = "anubis_reset2";//""one_round_log_2r";
             String prefix = folder + "_";
 
-            strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose", "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
+            strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose",
+                    "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
                     , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
             System.out.println("-----------------------------------------------------");
             MixerTools.main(strings);

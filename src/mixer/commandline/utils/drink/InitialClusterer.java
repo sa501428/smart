@@ -133,7 +133,7 @@ public class InitialClusterer {
             }
             for (Chromosome chromosome : dataCleanerV2MapForChrom.keySet()) {
                 DataCleanerV2 cleanedData = dataCleanerV2MapForChrom.get(chromosome);
-                launchKMeansClustering(chromosome, cleanedData, numClusters[q], seed); //chromosome.getLength()/5000000
+                launchKMeansClustering(chromosome, cleanedData, numClusters[q], seed, q, randomSeeds.length); //chromosome.getLength()/5000000
             }
             waitWhileCodeRuns();
         }
@@ -146,9 +146,24 @@ public class InitialClusterer {
     }
 
 
-    private void launchKMeansClustering(Chromosome chromosome, DataCleanerV2 dataCleaner, int numClusters, long randomSeed) {
-        ConcurrentKMeans kMeans = new ConcurrentKMeans(dataCleaner.getCleanedData(), numClusters,
-                maxIters, randomSeed);
+    private void launchKMeansClustering(Chromosome chromosome, DataCleanerV2 dataCleaner, int numClusters, long randomSeed, int modIndx, int base) {
+        ConcurrentKMeans kMeans;
+
+        /*
+            kMeans = new ConcurrentKMeans(
+                    //dataCleaner.getMatrixModIndicesOfColumns(modIndx, base),
+                    dataCleaner.getHalfOfMatrix(false),
+                    numClusters, maxIters, randomSeed);
+
+                    kMeans = new ConcurrentKMeans(
+                    //dataCleaner.getMatrixModIndicesOfColumns(modIndx, base),
+                    FloatMatrixTools.getRoundedLog(dataCleaner.getCleanedData()), numClusters, maxIters, randomSeed);
+
+         */
+
+        kMeans = new ConcurrentKMeans(
+                //dataCleaner.getMatrixModIndicesOfColumns(modIndx, base),
+                dataCleaner.getCleanedData(), numClusters, maxIters, randomSeed);
 
         numRunsToExpect.incrementAndGet();
         KMeansListener kMeansListener = new KMeansListener() {

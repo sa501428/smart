@@ -151,7 +151,7 @@ public class Drink extends MixerCLT {
             Pair<List<GenomeWideList<SubcompartmentInterval>>, Map<Integer, float[]>> initialClustering =
                     clusterer.extractIntraSubcompartmentsTo(initialClusteringOutDir);
             for (int i = 0; i < datasetList.size(); i++) {
-                initialClustering.getFirst().get(i).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.bed"));
+                initialClustering.getFirst().get(i).simpleExport(new File(initialClusteringOutDir, prefix + DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.bed"));
             }
 
             ComparativeSubcompartmentsProcessor processor = new ComparativeSubcompartmentsProcessor(initialClustering,
@@ -159,7 +159,7 @@ public class Drink extends MixerCLT {
 
             // process differences for diff vector
             processor.writeDiffVectorsRelativeToBaselineToFiles(outputDirectory, inputHicFilePaths,
-                    "drink_r_" + resolution + "_k_" + numIntraClusters + "_diffs");
+                    prefix + "drink_r_" + resolution + "_k_" + numIntraClusters + "_diffs");
 
             processor.writeConsensusSubcompartmentsToFile(outputDirectory);
 
@@ -183,35 +183,23 @@ public class Drink extends MixerCLT {
                 GenomeWideList<SubcompartmentInterval> temp = initialSplit.get(i);
                 DrinkUtils.collapseGWList(temp);
                 temp = DrinkUtils.redoAllIds(temp);
-                temp.simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.split.bed"));
+                temp.simpleExport(new File(initialClusteringOutDir, prefix + DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + "." + i + ".init.split.bed"));
                 postSplit.add(temp);
             }
 
             initialSplit = null;
-
             if (useStackingAlongRow) {
-
-                //postSplit.get(0).simpleExport(new File(initialClusteringOutDir, DrinkUtils.cleanUpPath(inputHicFilePaths.get(0)) + ".init.split.bed"));
-                /*
-                FullGenomeOEWithinClusters withinClusters = new StackedFullGenomeOEWithinClusters(datasetList,
-                        chromosomeHandler, resolution, norm, initialClustering.getFirst().get(0), oeThreshold, derivativeStatus, useNormalizationOfRows);
-
-                Map<Integer, GenomeWideList<SubcompartmentInterval>> gwListMap = withinClusters.extractFinalGWSubcompartments(outputDirectory, generator);
-
-                for (Integer key : gwListMap.keySet()) {
-                    GenomeWideList<SubcompartmentInterval> gwList = gwListMap.get(key);
-                    DrinkUtils.collapseGWList(gwList);
-                    gwList.simpleExport(new File(outputDirectory, "gw_full_" + key + "_clusters_" + DrinkUtils.cleanUpPath(inputHicFilePaths.get(i)) + ".subcompartment.bed"));
+                FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(0),
+                        chromosomeHandler, resolution, norm, postSplit.get(0), oeThreshold, minIntervalSizeAllowed);
+                for (int i = 1; i < datasetList.size(); i++) {
+                    withinClusters.appendGWDataFromAdditionalDataset(datasetList.get(i));
                 }
-
-                 */
+                withinClusters.extractFinalGWSubcompartments(outputDirectory, generator, inputHicFilePaths, prefix, 0, convolution1d);
             } else {
                 for (int i = 0; i < datasetList.size(); i++) {
                     FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
                             chromosomeHandler, resolution, norm, postSplit.get(i), oeThreshold, minIntervalSizeAllowed);
-
-                    withinClusters.extractFinalGWSubcompartments(outputDirectory, generator,
-                            inputHicFilePaths, prefix, i, convolution1d);
+                    withinClusters.extractFinalGWSubcompartments(outputDirectory, generator, inputHicFilePaths, prefix, i, convolution1d);
                 }
                 System.out.println("\nClustering complete");
             }

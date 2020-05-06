@@ -123,6 +123,53 @@ public class FloatMatrixTools {
         return matrix;
     }
 
+    public static float[][] getMatrixModIndicesOfColumns(float[][] originalData, int modIndx, int base) {
+        int numOrigColumns = originalData[0].length;
+        int numModColumns = numOrigColumns / base + (numOrigColumns % base);
+        float[][] modData = new float[originalData.length][numModColumns];
+
+        for (int i = 0; i < originalData.length; i++) {
+            int counter = 0;
+            for (int j = modIndx; j < numOrigColumns; j += base) {
+                modData[i][counter] = originalData[i][j];
+                counter++;
+            }
+        }
+        return modData;
+    }
+
+    public static float[][] getHalfOfMatrix(float[][] originalData, boolean getFirstHalf) {
+        int numNewColumns = originalData[0].length / 2;
+        float[][] modData = new float[originalData.length][numNewColumns];
+
+        int offset = numNewColumns;
+        if (getFirstHalf) {
+            offset = 0;
+        }
+
+        for (int i = 0; i < originalData.length; i++) {
+            for (int j = 0; j < numNewColumns; j++) {
+                modData[i][j] = originalData[i][j + offset];
+            }
+        }
+        return modData;
+    }
+
+    public static float[][] getRoundedLog(float[][] matrix) {
+        float[][] matrix2 = new float[matrix.length][matrix[0].length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = (float) Math.round((float) 10 * Math.log(matrix[i][j])) / 10f;
+                if (Float.isInfinite(val) || Float.isNaN(val)) {
+                    val = 0;
+                }
+                matrix2[i][j] = val;
+            }
+        }
+        return matrix2;
+    }
+
     public float standardDeviation(float[][] data, float mean) {
         double stddev = 0;
 
