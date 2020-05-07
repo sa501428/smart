@@ -25,7 +25,6 @@
 package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
-import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
@@ -35,7 +34,6 @@ import mixer.data.HiCFileTools;
 import mixer.data.MatrixZoomData;
 import mixer.data.feature.GenomeWideList;
 import mixer.windowui.NormalizationType;
-import org.apache.commons.math.linear.RealMatrix;
 import org.broad.igv.feature.Chromosome;
 import org.broad.igv.util.Pair;
 
@@ -47,7 +45,7 @@ public class CompositeGenomeWideDensityMatrix {
     private final int resolution;
     private final GenomeWideList<SubcompartmentInterval> intraSubcompartments;
     private final float[][] gwCleanMatrix;
-    private final Map<Integer, SubcompartmentInterval> indexToIntervalMap = new HashMap<>();
+    private final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     private final Chromosome[] chromosomes;
     private final float threshold;
     private final int minIntervalSizeAllowed;
@@ -67,10 +65,12 @@ public class CompositeGenomeWideDensityMatrix {
 
         // height/weight chromosomes
         Map<Integer, Integer> indexToFilteredLength = calculateActualLengthForChromosomes(chromosomes, intraSubcompartments);
+        Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(chromosomes, intraSubcompartments);
 
         Pair<Integer, int[]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
+        Pair<Integer, int[]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
 
-        float[][] interMatrix = new float[dimensions.getFirst()][dimensions.getFirst()];
+        float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
         for (int i = 0; i < chromosomes.length; i++) {
             Chromosome chr1 = chromosomes[i];
 
@@ -78,9 +78,8 @@ public class CompositeGenomeWideDensityMatrix {
                 Chromosome chr2 = chromosomes[j];
 
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
-                if (zd == null) continue;
 
-                fillInChromosomeRegion(interMatrix, ds, zd, chr1, dimensions.getSecond()[i], chr2, dimensions.getSecond()[j], i == j);
+                fillInChromosomeRegion(interMatrix, ds, zd, chr1, dimensions.getSecond()[i], compressedDimensions.getSecond()[i], chr2, dimensions.getSecond()[j], compressedDimensions.getSecond()[j], i == j);
             }
         }
 
@@ -104,6 +103,23 @@ public class CompositeGenomeWideDensityMatrix {
         return indexToFilteredLength;
     }
 
+    private Map<Integer, Integer> calculateCompressedLengthForChromosomes(Chromosome[] chromosomes, GenomeWideList<SubcompartmentInterval> intraSubcompartments) {
+        Map<Integer, Integer> indexToCompressedLength = new HashMap<>();
+        for (Chromosome chrom : chromosomes) {
+            int val = 0;
+            List<SubcompartmentInterval> intervals = intraSubcompartments.getFeatures("" + chrom.getIndex());
+            for (SubcompartmentInterval interval : intervals) {
+                int numCols = interval.getWidthForResolution(resolution);
+                if (numCols >= minIntervalSizeAllowed) {
+                    val += 1;
+                }
+            }
+            indexToCompressedLength.put(chrom.getIndex(), val);
+        }
+
+        return indexToCompressedLength;
+    }
+
     private Pair<Integer, int[]> calculateDimensionInterMatrix(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {
         int total = 0;
         int[] indices = new int[chromosomes.length];
@@ -118,31 +134,37 @@ public class CompositeGenomeWideDensityMatrix {
         return new Pair<>(total, indices);
     }
 
-    private void fillInChromosomeRegion(float[][] matrix, Dataset ds, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
-                                        Chromosome chr2, int offsetIndex2, boolean isIntra) {
+    private void fillInChromosomeRegion(float[][] matrix, Dataset ds, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
+                                        Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2, boolean isIntra) {
 
         int lengthChr1 = chr1.getLength() / resolution + 1;
         int lengthChr2 = chr2.getLength() / resolution + 1;
         List<SubcompartmentInterval> intervals1 = intraSubcompartments.getFeatures("" + chr1.getIndex());
         List<SubcompartmentInterval> intervals2 = intraSubcompartments.getFeatures("" + chr2.getIndex());
 
-        if (intervals1.size() == 0 || intervals2.size() == 0) return;
+        if (intervals1.size() == 0 || intervals2.size() == 0) {
+            System.err.println("Missing interval data " + zd.getKey());
+            System.exit(97);
+        }
         float[][] allDataForRegion = null;
         try {
             if (isIntra) {
-                RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution, norm, threshold,
+                allDataForRegion = HiCFileTools.getRealOEMatrixForChromosomeFloatMatrix(ds, zd, chr1, resolution, norm, threshold,
                         ExtractingOEDataUtils.ThresholdType.LOGEO, //LOG_OE_PLUS_AVG_BOUNDED_MADE_POS
                         true);
-                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(localizedRegionData.getData());
             } else {
-                RealMatrix allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegion(zd, 0,
+                float[][] allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegioFloatMatrix(zd, 0,
                         lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, isIntra);
-                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(allDataForRegionMatrix.getData());
-                allDataForRegion = ExtractingOEDataUtils.logOEP1(allDataForRegion, zd.getAverageCount());
+                allDataForRegion = ExtractingOEDataUtils.logOEP1(allDataForRegionMatrix, zd.getAverageCount());
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(99);
+        }
+
+        if (allDataForRegion == null) {
+            System.err.println("Missing Interchromosomal Data " + zd.getKey());
+            System.exit(98);
         }
 
         for (int i = 0; i < allDataForRegion.length; i++) {
@@ -151,11 +173,6 @@ public class CompositeGenomeWideDensityMatrix {
                     allDataForRegion[i][j] = 0;
                 }
             }
-        }
-
-        if (allDataForRegion == null) {
-            System.err.println("Missing Interchromosomal Data " + zd.getKey());
-            return;
         }
 
         Map<String, Integer> allAreaBetweenClusters = new HashMap<>();
@@ -187,22 +204,27 @@ public class CompositeGenomeWideDensityMatrix {
         Map<String, Float> densityBetweenClusters = getContactDensity(allContactsBetweenClusters, allAreaBetweenClusters);
 
         int internalOffset1 = offsetIndex1;
+        int internalCompressedOffset1 = compressedOffsetIndex1;
         for (SubcompartmentInterval interv1 : intervals1) {
             Integer id1 = interv1.getClusterID();
             int numRows = interv1.getWidthForResolution(resolution);
             if (numRows >= minIntervalSizeAllowed) {
                 int internalOffset2 = offsetIndex2;
+                int internalCompressedOffset2 = compressedOffsetIndex2;
                 for (SubcompartmentInterval interv2 : intervals2) {
                     Integer id2 = interv2.getClusterID();
                     int numCols = interv2.getWidthForResolution(resolution);
                     if (numCols >= minIntervalSizeAllowed) {
                         String regionKey = id1 + "-" + id2;
                         float density = densityBetweenClusters.get(regionKey);
-                        updateMasterMatrixWithRegionalDensities(matrix, density, interv1, internalOffset1, numRows, interv2, internalOffset2, numCols, isIntra);
+                        //updateMasterMatrixWithRegionalDensities(matrix, density, interv1, internalOffset1, numRows, interv2, internalOffset2, numCols, isIntra);
+                        updateMasterMatrixWithRegionalDensitiesCompressed(matrix, density, interv1, internalOffset1, internalCompressedOffset1, numRows, interv2, internalOffset2, internalCompressedOffset2, numCols, isIntra);
                         internalOffset2 += numCols;
+                        internalCompressedOffset2 += 1;
                     }
                 }
                 internalOffset1 += numRows;
+                internalCompressedOffset1 += 1;
             }
         }
     }
@@ -222,8 +244,8 @@ public class CompositeGenomeWideDensityMatrix {
                                                          SubcompartmentInterval interv2, int offsetIndex2, int numCols, boolean isIntra) {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                indexToIntervalMap.put(offsetIndex1 + i, interv1);
-                indexToIntervalMap.put(offsetIndex2 + j, interv2);
+                rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
+                rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
                 matrix[offsetIndex1 + i][offsetIndex2 + j] = density;
             }
         }
@@ -233,6 +255,24 @@ public class CompositeGenomeWideDensityMatrix {
                 for (int j = 0; j < numCols; j++) {
                     matrix[offsetIndex2 + j][offsetIndex1 + i] = density;
                 }
+            }
+        }
+    }
+
+    private void updateMasterMatrixWithRegionalDensitiesCompressed(float[][] matrix, float density,
+                                                                   SubcompartmentInterval interv1, int offsetIndex1, int offsetCompressedIndex1, int numRows,
+                                                                   SubcompartmentInterval interv2, int offsetIndex2, int offsetCompressedIndex2, int numCols, boolean isIntra) {
+        double scalar = Math.sqrt(numCols);
+        for (int i = 0; i < numRows; i++) {
+            rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
+            matrix[offsetIndex1 + i][offsetCompressedIndex2] = (float) (density * scalar);
+        }
+
+        if (!isIntra) {
+            scalar = Math.sqrt(numRows);
+            for (int j = 0; j < numCols; j++) {
+                rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
+                matrix[offsetIndex2 + j][offsetCompressedIndex1] = (float) (density * scalar);
             }
         }
     }
@@ -292,8 +332,8 @@ public class CompositeGenomeWideDensityMatrix {
                 try {
                     SubcompartmentInterval interv;
 
-                    if (indexToIntervalMap.containsKey(i)) {
-                        interv = indexToIntervalMap.get(i);
+                    if (rowIndexToIntervalMap.containsKey(i)) {
+                        interv = rowIndexToIntervalMap.get(i);
                         if (interv == null) continue; // probably a zero row
 
                         int chrIndex = interv.getChrIndex();

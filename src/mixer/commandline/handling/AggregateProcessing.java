@@ -100,7 +100,7 @@ try log rround?
          */
 
         {
-            String folder = "anubis_reset2";//""one_round_log_2r";
+            String folder = "anubis_compressed8F";//""one_round_log_2r";
             String prefix = folder + "_";
 
             strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose",

@@ -116,6 +116,76 @@ public class ExtractingOEDataUtils {
         return data;
     }
 
+    public static float[][] extractObsOverExpBoundedRegionFloatMatrix(MatrixZoomData zd, int binXStart, int binXEnd,
+                                                                      int binYStart, int binYEnd, int numRows, int numCols,
+                                                                      NormalizationType normalizationType,
+                                                                      ExpectedValueFunction df, int chrIndex, double threshold,
+                                                                      boolean isIntraFillUnderDiagonal, ThresholdType thresholdType) throws IOException {
+        if (isIntraFillUnderDiagonal && df == null) {
+            System.err.println("DF is null");
+            return null;
+        }
+        // numRows/numCols is just to ensure a set size in case bounds are approximate
+        // left upper corner is reference for 0,0
+        List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, binXStart, binXEnd, binYStart, binYEnd, normalizationType, isIntraFillUnderDiagonal);
+        float[][] data = new float[numRows][numCols];
+
+        double averageCount = zd.getAverageCount() / 2;
+        if (blocks.size() > 0) {
+            for (Block b : blocks) {
+                if (b != null) {
+                    for (ContactRecord rec : b.getContactRecords()) {
+                        double expected = getExpected(rec, df, chrIndex, isIntraFillUnderDiagonal, averageCount);
+                        double oeVal = rec.getCounts();
+
+                        if (thresholdType.equals(ThresholdType.LOGEO)) {
+
+                            // 3e
+                            oeVal = (Math.log(oeVal + e) / Math.log(expected + e));
+                            // cobra oeVal = ( (Math.log(oeVal + 1)+1) / (Math.log(expected + 1)+1));
+                            // cobra2 oeVal = Math.exp( (Math.log(oeVal + 1)+1) / (Math.log(expected + 1)+1));
+                            // eee oeVal = Math.exp(Math.log(oeVal + e) / Math.log(expected + e));
+                            //22 oeVal = log2(oeVal + 2) / log2(expected + 2);
+
+                            if (Double.isNaN(oeVal) || Double.isInfinite(oeVal)) {
+                                oeVal = 0;
+                            }
+
+                            // todo remove
+                            // oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+
+                        } else if (thresholdType.equals(ThresholdType.TRUE_OE_LOG)) {
+                            //oeVal = (oeVal+1) / (expected+1);
+                            oeVal = Math.log((oeVal + 1) / (expected + 1));
+                        } else if (thresholdType.equals(ThresholdType.TRUE_OE_LINEAR)) {
+                            //oeVal = (oeVal+1) / (expected+1);
+                            oeVal = (oeVal + 1) / (expected + 1);
+                            if (oeVal < 1) {
+                                oeVal = 1 - 1 / oeVal;
+                            } else {
+                                oeVal -= 1;
+                            }
+                        } else if (thresholdType.equals(ThresholdType.TRUE_OE)) {
+                            //oeVal = (oeVal+1) / (expected+1);
+                            oeVal = (oeVal + 1) / (expected + 1);
+                        } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED)) {
+                            oeVal = Math.log((oeVal + 1) / (expected + 1));
+                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+                        } else if (thresholdType.equals(ThresholdType.LOG_OE_BOUNDED_SCALED_BTWN_ZERO_ONE)) {
+                            oeVal = Math.log(oeVal / expected);
+                            oeVal = Math.min(Math.max(-threshold, oeVal), threshold);
+                            oeVal = (oeVal + threshold) / (2 * threshold);
+                        }
+                        placeOEValInRelativePosition(oeVal, rec, binXStart, binYStart, numRows, numCols, data, isIntraFillUnderDiagonal);
+                    }
+                }
+            }
+        }
+        // force cleanup
+        blocks = null;
+        return data;
+    }
+
     /**
      * place oe value in relative position
      *
@@ -144,6 +214,28 @@ public class ExtractingOEDataUtils {
             if (relativeX >= 0 && relativeX < numRows) {
                 if (relativeY >= 0 && relativeY < numCols) {
                     data.addToEntry(relativeX, relativeY, oeVal);
+                }
+            }
+        }
+    }
+
+    private static void placeOEValInRelativePosition(double oeVal, ContactRecord rec, int binXStart, int binYStart,
+                                                     int numRows, int numCols, float[][] data, boolean isIntra) {
+        int relativeX = rec.getBinX() - binXStart;
+        int relativeY = rec.getBinY() - binYStart;
+        if (relativeX >= 0 && relativeX < numRows) {
+            if (relativeY >= 0 && relativeY < numCols) {
+                data[relativeX][relativeY] = (float) oeVal;
+            }
+        }
+
+        if (isIntra) {
+            // check if the other half of matrix should also be displayed/passed in
+            relativeX = rec.getBinY() - binXStart;
+            relativeY = rec.getBinX() - binYStart;
+            if (relativeX >= 0 && relativeX < numRows) {
+                if (relativeY >= 0 && relativeY < numCols) {
+                    data[relativeX][relativeY] = (float) oeVal;
                 }
             }
         }

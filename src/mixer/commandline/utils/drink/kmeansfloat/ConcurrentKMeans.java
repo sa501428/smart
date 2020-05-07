@@ -879,8 +879,25 @@ public class ConcurrentKMeans implements KMeans {
          */
         void shutdown() {
             if (mExecutor instanceof ThreadPoolExecutor) {
-                // This terminates the threads in the thread pool.
-                ((ThreadPoolExecutor) mExecutor).shutdownNow();
+                shutdownAndAwaitTermination((ThreadPoolExecutor) mExecutor);
+            }
+        }
+
+        private void shutdownAndAwaitTermination(ExecutorService pool) {
+            pool.shutdown(); // Disable new tasks from being submitted
+            try {
+                // Wait a while for existing tasks to terminate
+                if (!pool.awaitTermination(10, TimeUnit.MINUTES)) {
+                    pool.shutdownNow(); // Cancel currently executing tasks
+                    // Wait a while for tasks to respond to being cancelled
+                    if (!pool.awaitTermination(10, TimeUnit.MINUTES))
+                        System.err.println("Pool did not terminate");
+                }
+            } catch (InterruptedException ie) {
+                System.err.println("Thread Interruption");
+                pool.shutdownNow();
+                // Preserve interrupt status
+                Thread.currentThread().interrupt();
             }
         }
 

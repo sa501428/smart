@@ -370,6 +370,51 @@ public class HiCFileTools {
         return data;
     }
 
+    public static float[][] extractLocalBoundedRegioFloatMatrix(MatrixZoomData zd, int binXStart, int binXEnd,
+                                                                int binYStart, int binYEnd, int numRows, int numCols,
+                                                                NormalizationType normalizationType, boolean fillUnderDiagonal) throws IOException {
+
+        // numRows/numCols is just to ensure a set size in case bounds are approximate
+        // left upper corner is reference for 0,0
+        List<Block> blocks = getAllRegionBlocks(zd, binXStart, binXEnd, binYStart, binYEnd, normalizationType, fillUnderDiagonal);
+
+        float[][] data = new float[numRows][numCols];
+
+        if (blocks.size() > 0) {
+            for (Block b : blocks) {
+                if (b != null) {
+                    for (ContactRecord rec : b.getContactRecords()) {
+
+                        int relativeX = rec.getBinX() - binXStart;
+                        int relativeY = rec.getBinY() - binYStart;
+
+                        if (relativeX >= 0 && relativeX < numRows) {
+                            if (relativeY >= 0 && relativeY < numCols) {
+                                data[relativeX][relativeY] = rec.getCounts();
+                            }
+                        }
+
+                        if (fillUnderDiagonal) {
+                            relativeX = rec.getBinY() - binXStart;
+                            relativeY = rec.getBinX() - binYStart;
+
+                            if (relativeX >= 0 && relativeX < numRows) {
+                                if (relativeY >= 0 && relativeY < numCols) {
+                                    data[relativeX][relativeY] = rec.getCounts();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // force cleanup
+        blocks = null;
+        //System.gc();
+
+        return data;
+    }
+
     public static List<Block> getAllRegionBlocks(MatrixZoomData zd, int binXStart, int binXEnd,
                                                  int binYStart, int binYEnd,
                                                  NormalizationType normalizationType, boolean fillUnderDiagonal) throws IOException {
@@ -473,6 +518,21 @@ public class HiCFileTools {
         int maxSize = maxBin;
 
         return ExtractingOEDataUtils.extractObsOverExpBoundedRegion(zd, 0, maxBin,
+                0, maxBin, maxSize, maxSize, norm, df, chromosome.getIndex(), logThreshold,
+                fillUnderDiagonal, thresholdType);
+
+    }
+
+    public static float[][] getRealOEMatrixForChromosomeFloatMatrix(Dataset ds, MatrixZoomData zd, Chromosome chromosome,
+                                                                    int resolution, NormalizationType norm, double logThreshold,
+                                                                    ExtractingOEDataUtils.ThresholdType thresholdType, boolean fillUnderDiagonal) throws IOException {
+
+        ExpectedValueFunction df = ds.getExpectedValuesOrExit(zd.getZoom(), norm, chromosome, true);
+
+        int maxBin = chromosome.getLength() / resolution + 1;
+        int maxSize = maxBin;
+
+        return ExtractingOEDataUtils.extractObsOverExpBoundedRegionFloatMatrix(zd, 0, maxBin,
                 0, maxBin, maxSize, maxSize, norm, df, chromosome.getIndex(), logThreshold,
                 fillUnderDiagonal, thresholdType);
 

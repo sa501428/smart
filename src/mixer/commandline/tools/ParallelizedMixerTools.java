@@ -26,6 +26,7 @@ package mixer.commandline.tools;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ParallelizedMixerTools {
 
@@ -48,6 +49,24 @@ public class ParallelizedMixerTools {
 
         // Wait until all threads finish
         while (!executor.isTerminated()) {
+        }
+    }
+
+    private void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!pool.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES)) {
+                pool.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!pool.awaitTermination(10, TimeUnit.MINUTES))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            System.err.println("Thread Interruption");
+            pool.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
         }
     }
 }

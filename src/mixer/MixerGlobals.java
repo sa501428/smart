@@ -30,12 +30,12 @@ package mixer;
  */
 public class MixerGlobals {
 
-    public static final String versionNum = "2.05.04";
+    public static final String versionNum = "2.06.01";
     public static final int minVersion = 6;
     public static final int bufferSize = 2097152;
 
     // whether MatrixZoomData should cache or not
-    public static boolean useCache = true;
+    public static boolean useCache = false;
     public static boolean printVerboseComments = false;
 
     // whether instance was linked before mouse press or not

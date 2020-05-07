@@ -302,17 +302,7 @@ public class MatrixZoomData {
         }
 
         // done submitting all jobs
-        service.shutdown();
-
-        // wait for all to finish
-        try {
-            service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            System.err.println("Error loading mzd data " + e.getLocalizedMessage());
-            if (MixerGlobals.printVerboseComments) {
-                e.printStackTrace();
-            }
-        }
+        shutdownAndAwaitTermination(service);
 
         // error printing
         if (errorCounter.get() > 0) {
@@ -353,17 +343,7 @@ public class MatrixZoomData {
         }
 
         // done submitting all jobs
-        service.shutdown();
-
-        // wait for all to finish
-        try {
-            service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            System.err.println("Error loading mzd data " + e.getLocalizedMessage());
-            if (MixerGlobals.printVerboseComments) {
-                e.printStackTrace();
-            }
-        }
+        shutdownAndAwaitTermination(service);
 
         // error printing
         if (errorCounter.get() > 0) {
@@ -371,71 +351,23 @@ public class MatrixZoomData {
         }
     }
 
-
-    /**
-     * Return the observed value at the specified location. Supports tooltip text
-     * This implementation is naive, but might get away with it for tooltip.
-     *
-     * @param binX              X bin
-     * @param binY              Y bin
-     * @param normalizationType Normalization type
-     */
-    public float getObservedValue(int binX, int binY, NormalizationType normalizationType) {
-
-        // Intra stores only lower diagonal
-        if (chr1 == chr2) {
-            if (binX > binY) {
-                int tmp = binX;
-                //noinspection SuspiciousNameCombination
-                binX = binY;
-                binY = tmp;
+    private void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!pool.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES)) {
+                pool.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!pool.awaitTermination(10, TimeUnit.MINUTES))
+                    System.err.println("Pool did not terminate");
             }
+        } catch (InterruptedException ie) {
+            System.err.println("Thread Interruption");
+            pool.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
         }
-
-        List<Block> blocks = getNormalizedBlocksOverlapping(binX, binY, binX, binY, normalizationType, false, false);
-        if (blocks == null) return 0;
-        for (Block b : blocks) {
-            for (ContactRecord rec : b.getContactRecords()) {
-                if (rec.getBinX() == binX && rec.getBinY() == binY) {
-                    return rec.getCounts();
-                }
-            }
-        }
-        // No record found for this bin
-        return 0;
     }
-
-//    /**
-//     * Return a slice of the matrix at the specified Y been as a list of wiggle scores
-//     *
-//     * @param binY
-//     */
-//    public List<BasicScore> getSlice(int startBinX, int endBinX, int binY, NormalizationType normalizationType) {
-//
-//        // Intra stores only lower diagonal
-//        if (chr1 == chr2) {
-//            if (binX > binY) {
-//                int tmp = binX;
-//                binX = binY;
-//                binY = tmp;
-//
-//            }
-//        }
-//
-//        List<Block> blocks = getNormalizedBlocksOverlapping(binX, binY, binX, binY, normalizationType);
-//        if (blocks == null) return 0;
-//        for (Block b : blocks) {
-//            for (ContactRecord rec : b.getContactRecords()) {
-//                if (rec.getBinX() == binX && rec.getBinY() == binY) {
-//                    return rec.getCounts();
-//                }
-//            }
-//        }
-//        // No record found for this bin
-//        return 0;
-//    }
-
-
 
     /**
      * Utility for printing description of this matrix.
