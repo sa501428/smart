@@ -49,13 +49,16 @@ public class CompositeGenomeWideDensityMatrix {
     private final Chromosome[] chromosomes;
     private final float threshold;
     private final int minIntervalSizeAllowed;
+    private final File outputDirectory;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                            GenomeWideList<SubcompartmentInterval> intraSubcompartments, float oeThreshold, int minIntervalSizeAllowed) {
+                                            GenomeWideList<SubcompartmentInterval> intraSubcompartments, float oeThreshold,
+                                            int minIntervalSizeAllowed, File outputDirectory) {
         this.minIntervalSizeAllowed = minIntervalSizeAllowed;
         this.norm = norm;
         this.resolution = resolution;
         this.intraSubcompartments = intraSubcompartments;
+        this.outputDirectory = outputDirectory;
         threshold = oeThreshold;
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
@@ -376,7 +379,7 @@ public class CompositeGenomeWideDensityMatrix {
         return gwCleanMatrix[0].length;
     }
 
-    public void exportData(File outputDirectory) {
+    public void exportData() {
         System.out.println(getLength() + " -v- " + getWidth());
         FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
     }

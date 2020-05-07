@@ -190,16 +190,16 @@ public class Drink extends MixerCLT {
             initialSplit = null;
             if (useStackingAlongRow) {
                 FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(0),
-                        chromosomeHandler, resolution, norm, postSplit.get(0), oeThreshold, minIntervalSizeAllowed);
+                        chromosomeHandler, resolution, norm, postSplit.get(0), oeThreshold, minIntervalSizeAllowed, outputDirectory);
                 for (int i = 1; i < datasetList.size(); i++) {
                     withinClusters.appendGWDataFromAdditionalDataset(datasetList.get(i));
                 }
-                withinClusters.extractFinalGWSubcompartments(outputDirectory, generator, inputHicFilePaths, prefix, 0, convolution1d);
+                withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, 0, convolution1d);
             } else {
                 for (int i = 0; i < datasetList.size(); i++) {
                     FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                            chromosomeHandler, resolution, norm, postSplit.get(i), oeThreshold, minIntervalSizeAllowed);
-                    withinClusters.extractFinalGWSubcompartments(outputDirectory, generator, inputHicFilePaths, prefix, i, convolution1d);
+                            chromosomeHandler, resolution, norm, postSplit.get(i), oeThreshold, minIntervalSizeAllowed, outputDirectory);
+                    withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, i, convolution1d);
                 }
                 System.out.println("\nClustering complete");
             }

@@ -174,24 +174,6 @@ public class MatrixZoomData {
         return getKey(chr1, chr2) + "_" + blockNumber + "_" + no;
     }
 
-    /**
-     * Return the blocks of normalized, observed values overlapping the rectangular region specified.
-     * The units are "bins"
-     *
-     * @param binY1 leftmost position in "bins"
-     * @param binX2 rightmost position in "bins"
-     * @param binY2 bottom position in "bins"
-     * @param no    normalization type
-     * @param isImportant used for debugging
-     * @return List of overlapping blocks, normalized
-     */
-    public List<Block> getNormalizedBlocksOverlapping(int binX1, int binY1, int binX2, int binY2, final NormalizationType no,
-                                                      boolean isImportant, boolean fillUnderDiagonal) {
-        final List<Block> blockList = new ArrayList<>();
-        Block b = new Block(1, getBlockKey(1, no));
-        return addNormalizedBlocksToList(blockList, binX1, binY1, binX2, binY2, no, fillUnderDiagonal);
-    }
-
     private void populateBlocksToLoad(int r, int c, NormalizationType no, List<Block> blockList, Set<Integer> blocksToLoad) {
         int blockNumber = r * getBlockColumnCount() + c;
         String key = getBlockKey(blockNumber, no);
@@ -206,18 +188,21 @@ public class MatrixZoomData {
 
     /**
      * Return the blocks of normalized, observed values overlapping the rectangular region specified.
+     * The units are "bins"
      *
-     * @param binY1 leftmost position in "bins"
-     * @param binX2 rightmost position in "bins"
-     * @param binY2 bottom position in "bins"
-     * @param no    normalization type
+     * @param binY1       leftmost position in "bins"
+     * @param binX2       rightmost position in "bins"
+     * @param binY2       bottom position in "bins"
+     * @param no          normalization type
+     * @param isImportant used for debugging
      * @return List of overlapping blocks, normalized
      */
-    private List<Block> addNormalizedBlocksToList(final List<Block> blockList, int binX1, int binY1, int binX2, int binY2,
-                                                  final NormalizationType no, boolean getBelowDiagonal) {
+    public List<Block> getNormalizedBlocksOverlapping(int binX1, int binY1, int binX2, int binY2, final NormalizationType no,
+                                                      boolean isImportant, boolean getBelowDiagonal) {
 
+        List<Block> blockList = new ArrayList<>();
         Set<Integer> blocksToLoad = new HashSet<>();
-      
+
         // have to do this regardless (just in case)
         int col1 = binX1 / blockBinCount;
         int row1 = binY1 / blockBinCount;
@@ -238,44 +223,19 @@ public class MatrixZoomData {
             }
         }
 
-        actuallyLoadGivenBlocks(blockList, blocksToLoad, no);
+        List<Block> newlyLoadedBlockList = actuallyLoadGivenBlocks(blocksToLoad, no);
+        blockList.addAll(newlyLoadedBlockList);
 
         return new ArrayList<>(new HashSet<>(blockList));
     }
 
-    private List<Block> addNormalizedBlocksToList(final List<Block> blockList, int binX1, int binY1, int binX2, int binY2,
-                                                  final NormalizationType no, int chr1, int chr2) {
+    private List<Block> actuallyLoadGivenBlocks(Set<Integer> blocksToLoad,
+                                                final NormalizationType no) {
 
-        Set<Integer> blocksToLoad = new HashSet<>();
-
-        // have to do this regardless (just in case)
-        int col1 = binX1 / blockBinCount;
-        int row1 = binY1 / blockBinCount;
-        int col2 = binX2 / blockBinCount;
-        int row2 = binY2 / blockBinCount;
-
-        for (int r = row1; r <= row2; r++) {
-            for (int c = col1; c <= col2; c++) {
-                populateBlocksToLoad(r, c, no, blockList, blocksToLoad);
-            }
-        }
-
-        actuallyLoadGivenBlocks(blockList, blocksToLoad, no, chr1, chr2);
-        System.out.println("I am block size: " + blockList.size());
-        System.out.println("I am first block: " + blockList.get(0).getNumber());
-        return new ArrayList<>(new HashSet<>(blockList));
-    }
-
-
-    private void actuallyLoadGivenBlocks(final List<Block> blockList, Set<Integer> blocksToLoad,
-                                         final NormalizationType no) {
+        final List<Block> blockList = Collections.synchronizedList(new ArrayList<Block>());
         final AtomicInteger errorCounter = new AtomicInteger();
 
         ExecutorService service = Executors.newFixedThreadPool(200);
-
-        final int binSize = getBinSize();
-        final int chr1Index = chr1.getIndex();
-        final int chr2Index = chr2.getIndex();
 
         for (final int blockNumber : blocksToLoad) {
             Runnable loader = new Runnable() {
@@ -289,7 +249,9 @@ public class MatrixZoomData {
                         }
                         //Run out of memory if do it here
                         if (MixerGlobals.useCache) {
-                            blockCache.put(key, b);
+                            synchronized (blockCache) {
+                                blockCache.put(key, b);
+                            }
                         }
                         blockList.add(b);
                     } catch (IOException e) {
@@ -308,47 +270,7 @@ public class MatrixZoomData {
         if (errorCounter.get() > 0) {
             System.err.println(errorCounter.get() + " errors while reading blocks");
         }
-    }
-
-    private void actuallyLoadGivenBlocks(final List<Block> blockList, Set<Integer> blocksToLoad,
-                                         final NormalizationType no, final int chr1Id, final int chr2Id) {
-        final AtomicInteger errorCounter = new AtomicInteger();
-
-        ExecutorService service = Executors.newFixedThreadPool(200);
-
-        final int binSize = getBinSize();
-
-        for (final int blockNumber : blocksToLoad) {
-            Runnable loader = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        String key = getBlockKey(blockNumber, no, chr1Id, chr2Id);
-                        Block b = reader.readNormalizedBlock(blockNumber, MatrixZoomData.this, no);
-                        if (b == null) {
-                            b = new Block(blockNumber, key);   // An empty block
-                        }
-                        //Run out of memory if do it here
-                        if (MixerGlobals.useCache) {
-                            blockCache.put(key, b);
-                        }
-                        blockList.add(b);
-                    } catch (IOException e) {
-                        errorCounter.incrementAndGet();
-                    }
-                }
-            };
-
-            service.submit(loader);
-        }
-
-        // done submitting all jobs
-        shutdownAndAwaitTermination(service);
-
-        // error printing
-        if (errorCounter.get() > 0) {
-            System.err.println(errorCounter.get() + " errors while reading blocks");
-        }
+        return blockList;
     }
 
     private void shutdownAndAwaitTermination(ExecutorService pool) {

@@ -47,9 +47,11 @@ public class FullGenomeOEWithinClusters {
     private final int numAttemptsForKMeans = 5;
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
+    private final File outputDirectory;
 
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold, int minIntervalSizeAllowed) {
+                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold,
+                                      int minIntervalSizeAllowed, File outputDirectory) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -58,9 +60,10 @@ public class FullGenomeOEWithinClusters {
         DrinkUtils.collapseGWList(origIntraSubcompartments);
         this.origIntraSubcompartments = origIntraSubcompartments;
         this.minIntervalSizeAllowed = minIntervalSizeAllowed;
+        this.outputDirectory = outputDirectory;
 
         interMatrix = new CompositeGenomeWideDensityMatrix(
-                chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed);
+                chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory);
 
         System.gc();
     }
@@ -68,18 +71,18 @@ public class FullGenomeOEWithinClusters {
     public void appendGWDataFromAdditionalDataset(Dataset ds2) {
 
         CompositeGenomeWideDensityMatrix additionalData = new CompositeGenomeWideDensityMatrix(
-                chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed);
+                chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory);
 
         interMatrix.appendDataAlongExistingRows(additionalData);
     }
 
-    public void extractFinalGWSubcompartments(File outputDirectory, Random generator, List<String> inputHicFilePaths,
+    public void extractFinalGWSubcompartments(Random generator, List<String> inputHicFilePaths,
                                               String prefix, int index, double[] convolution) {
 
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
 
         if (MixerGlobals.printVerboseComments) {
-            interMatrix.exportData(outputDirectory);
+            interMatrix.exportData();
         }
 
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);

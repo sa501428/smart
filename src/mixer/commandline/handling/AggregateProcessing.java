@@ -99,8 +99,8 @@ try log rround?
 
          */
 
-        {
-            String folder = "anubis_compressed8F";//""one_round_log_2r";
+        for (int y = 0; y < 20; y++) {
+            String folder = "anubis_compressed_" + y + "F6";//""one_round_log_2r";
             String prefix = folder + "_";
 
             strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose",
