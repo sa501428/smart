@@ -101,6 +101,19 @@ public class FloatMatrixTools {
         return matrix;
     }
 
+    private static float getStdDev(float[] data, float mean, int[] counts, int totalNumEntries) {
+        double stddev = 0;
+
+        for (int i = 0; i < data.length; i++) {
+            float val = data[i];
+            float diff = val - mean;
+            stddev += counts[i] * diff * diff;
+        }
+        stddev = (stddev / totalNumEntries);
+
+        return (float) Math.sqrt(stddev);
+    }
+
     private static float getStdDev(float[] data, float mean) {
         double stddev = 0;
 
@@ -169,6 +182,44 @@ public class FloatMatrixTools {
         }
         return matrix2;
     }
+
+    public static void scaleValuesByCount(float[][] matrix, int[] counts) {
+        double[] countsSqrt = DoubleMatrixTools.sqrt(counts);
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < countsSqrt.length; j++) {
+                matrix[i][j] = (float) (matrix[i][j] * countsSqrt[j]);
+            }
+        }
+    }
+
+    public static void scaleValuesInPlaceByCountAndZscore(float[][] matrix, int[] counts) {
+
+        int numTotalEntries = 0;
+        for (int val : counts) {
+            numTotalEntries += val;
+        }
+
+        float[] rowMeans = getRowMeans(matrix, counts, numTotalEntries);
+        float[] rowStdDevs = getRowStandardDeviations(matrix, rowMeans, counts, numTotalEntries);
+        double[] countsSqrt = DoubleMatrixTools.sqrt(counts);
+
+        // zscore   (x-mu)/std
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = (float) (countsSqrt[j] * ((matrix[i][j] - rowMeans[i]) / rowStdDevs[i]));
+            }
+        }
+    }
+
+    private static float[] getRowStandardDeviations(float[][] matrix, float[] rowMeans, int[] counts, int numTotalEntries) {
+        float[] rowStdDevs = new float[matrix.length];
+        for (int k = 0; k < matrix.length; k++) {
+            rowStdDevs[k] = getStdDev(matrix[k], rowMeans[k], counts, numTotalEntries);
+        }
+        return rowStdDevs;
+    }
+
 
     public float standardDeviation(float[][] data, float mean) {
         double stddev = 0;
@@ -269,13 +320,25 @@ public class FloatMatrixTools {
     }
 
 
-
     public static float[] getRowSums(float[][] matrix) {
         float[] rowSum = new float[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             for (float val : matrix[i]) {
                 rowSum[i] += val;
             }
+        }
+        return rowSum;
+    }
+
+    public static float[] getRowMeans(float[][] matrix, int[] colCounts, int numTotalCounts) {
+        float[] rowSum = new float[matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < colCounts.length; j++) {
+                rowSum[i] += (matrix[i][j] * colCounts[j]);
+            }
+        }
+        for (int k = 0; k < rowSum.length; k++) {
+            rowSum[k] = rowSum[k] / numTotalCounts;
         }
         return rowSum;
     }

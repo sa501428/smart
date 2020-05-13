@@ -74,6 +74,7 @@ public class CompositeGenomeWideDensityMatrix {
         Pair<Integer, int[]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
 
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
+        int[] numCountsForCol = new int[compressedDimensions.getFirst()];
         for (int i = 0; i < chromosomes.length; i++) {
             Chromosome chr1 = chromosomes[i];
 
@@ -82,9 +83,12 @@ public class CompositeGenomeWideDensityMatrix {
 
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
 
-                fillInChromosomeRegion(interMatrix, ds, zd, chr1, dimensions.getSecond()[i], compressedDimensions.getSecond()[i], chr2, dimensions.getSecond()[j], compressedDimensions.getSecond()[j], i == j);
+                fillInChromosomeRegion(interMatrix, numCountsForCol, ds, zd, chr1, dimensions.getSecond()[i], compressedDimensions.getSecond()[i], chr2, dimensions.getSecond()[j], compressedDimensions.getSecond()[j], i == j);
             }
         }
+
+        FloatMatrixTools.scaleValuesByCount(interMatrix, numCountsForCol);
+        //FloatMatrixTools.scaleValuesInPlaceByCountAndZscore(interMatrix, numCountsForCol);
 
         return interMatrix;
     }
@@ -137,7 +141,7 @@ public class CompositeGenomeWideDensityMatrix {
         return new Pair<>(total, indices);
     }
 
-    private void fillInChromosomeRegion(float[][] matrix, Dataset ds, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
+    private void fillInChromosomeRegion(float[][] matrix, int[] numCountsForCol, Dataset ds, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
                                         Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2, boolean isIntra) {
 
         int lengthChr1 = chr1.getLength() / resolution + 1;
@@ -225,7 +229,7 @@ public class CompositeGenomeWideDensityMatrix {
                         String regionKey = id1 + "-" + id2;
                         float density = densityBetweenClusters.get(regionKey);
                         //updateMasterMatrixWithRegionalDensities(matrix, density, interv1, internalOffset1, numRows, interv2, internalOffset2, numCols, isIntra);
-                        updateMasterMatrixWithRegionalDensitiesCompressed(matrix, density, interv1, internalOffset1, internalCompressedOffset1, numRows, interv2, internalOffset2, internalCompressedOffset2, numCols, isIntra);
+                        updateMasterMatrixWithRegionalDensitiesCompressed(matrix, numCountsForCol, density, interv1, internalOffset1, internalCompressedOffset1, numRows, interv2, internalOffset2, internalCompressedOffset2, numCols, isIntra);
                         internalOffset2 += numCols;
                         internalCompressedOffset2 += 1;
                     }
@@ -266,20 +270,22 @@ public class CompositeGenomeWideDensityMatrix {
         }
     }
 
-    private void updateMasterMatrixWithRegionalDensitiesCompressed(float[][] matrix, float density,
+    private void updateMasterMatrixWithRegionalDensitiesCompressed(float[][] matrix, int[] numCountsForCol, float density,
                                                                    SubcompartmentInterval interv1, int offsetIndex1, int offsetCompressedIndex1, int numRows,
                                                                    SubcompartmentInterval interv2, int offsetIndex2, int offsetCompressedIndex2, int numCols, boolean isIntra) {
-        double scalar = Math.sqrt(numCols);
+        numCountsForCol[offsetCompressedIndex2] = numCols;
+        //double scalar = Math.sqrt(numCols);
         for (int i = 0; i < numRows; i++) {
             rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
-            matrix[offsetIndex1 + i][offsetCompressedIndex2] = (float) (density * scalar);
+            matrix[offsetIndex1 + i][offsetCompressedIndex2] = density;
         }
 
         if (!isIntra) {
-            scalar = Math.sqrt(numRows);
+            numCountsForCol[offsetCompressedIndex1] = numRows;
+            //scalar = Math.sqrt(numRows);
             for (int j = 0; j < numCols; j++) {
                 rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
-                matrix[offsetIndex2 + j][offsetCompressedIndex1] = (float) (density * scalar);
+                matrix[offsetIndex2 + j][offsetCompressedIndex1] = density;
             }
         }
     }

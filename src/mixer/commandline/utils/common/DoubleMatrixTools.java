@@ -370,4 +370,11 @@ public class DoubleMatrixTools {
         return derivative;
     }
 
+    public static double[] sqrt(int[] array) {
+        double[] sqrts = new double[array.length];
+        for (int j = 0; j < array.length; j++) {
+            sqrts[j] = Math.sqrt(array[j]);
+        }
+        return sqrts;
+    }
 }
