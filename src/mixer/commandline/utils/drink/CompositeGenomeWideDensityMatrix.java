@@ -204,6 +204,10 @@ public class CompositeGenomeWideDensityMatrix {
             }
         }
 
+
+        allDataForRegion = null;
+        System.gc();
+
         Map<String, Float> densityBetweenClusters = getContactDensity(allContactsBetweenClusters, allAreaBetweenClusters);
 
         int internalOffset1 = offsetIndex1;

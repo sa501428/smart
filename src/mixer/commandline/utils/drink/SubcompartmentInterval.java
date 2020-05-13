@@ -27,6 +27,8 @@ package mixer.commandline.utils.drink;
 import mixer.data.feature.Feature;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SubcompartmentInterval extends SimpleInterval {
 
@@ -34,8 +36,17 @@ public class SubcompartmentInterval extends SimpleInterval {
     private double differenceFromControl = 0;
 
     private static final Color[] colors = new Color[]{
-            new Color(255, 0, 0),
+            new Color(0, 0, 0),
+
+            new Color(34, 139, 34),
+            new Color(152, 251, 152),
+            new Color(220, 20, 60),
             new Color(255, 255, 0),
+            new Color(112, 128, 144),
+            new Color(75, 0, 130),
+
+            new Color(255, 255, 0),
+            new Color(255, 0, 0),
             new Color(0, 234, 255),
             new Color(170, 0, 255),
             new Color(255, 127, 0),
@@ -55,7 +66,7 @@ public class SubcompartmentInterval extends SimpleInterval {
             new Color(143, 106, 35),
             new Color(107, 35, 143),
             new Color(79, 143, 35),
-            new Color(0, 0, 0),
+
             new Color(115, 115, 115),
             new Color(204, 204, 204)
     };
@@ -100,5 +111,15 @@ public class SubcompartmentInterval extends SimpleInterval {
     @Override
     public Feature deepClone() {
         return new SubcompartmentInterval(getChrIndex(), getChrName(), getX1(), getX2(), clusterID);
+    }
+
+    public List<SubcompartmentInterval> splitByWidth(int width) {
+        List<SubcompartmentInterval> splitList = new ArrayList<>();
+
+        for (int i = getX1(); i < getX2(); i += width) {
+            splitList.add(new SubcompartmentInterval(getChrIndex(), getChrName(), i, i + width, clusterID));
+        }
+
+        return splitList;
     }
 }

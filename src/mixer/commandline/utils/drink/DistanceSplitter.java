@@ -53,7 +53,7 @@ public class DistanceSplitter {
     private final List<GenomeWideList<SubcompartmentInterval>> comparativeSubcompartments = new ArrayList<>();
     private final boolean useStackingAlongRow;
     private final float threshold;
-    int numNeighbors = 3;
+    int numNeighbors = 2;
 
     public DistanceSplitter(List<Dataset> datasetList, ChromosomeHandler chromosomeHandler,
                             int resolution, NormalizationType norm, float oeThreshold, boolean useStackingAlongRow) {
@@ -95,7 +95,9 @@ public class DistanceSplitter {
                             norm, threshold,
                             //ExtractingOEDataUtils.ThresholdType.LOG_OE_BOUNDED,
                             //ExtractingOEDataUtils.ThresholdType.LOGEO, //
-                            ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                            //ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                            ExtractingOEDataUtils.ThresholdType.TRUE_OE_LOG,
+                            //AggregateProcessing.afterThresholdType,
                             true);
                     if (localizedRegionData != null) {
                         matrices.add(localizedRegionData.getData());
@@ -193,11 +195,13 @@ public class DistanceSplitter {
             if (node == node2) {
                 return true;
             }
+            /*
             for (int node3 : minIndices[node2]) {
                 if (node == node3) {
                     return true;
                 }
             }
+             */
         }
         return false;
     }
@@ -213,9 +217,8 @@ public class DistanceSplitter {
 
         for (int i = 0; i < numVectors; i++) {
             for (int j = i + 1; j < numVectors; j++) {
-
-                double val = ClusterTools.getDistance(data[i], data[j]);
-                //double val = ClusterTools.getL1Distance(data[i], data[j]);
+                //double val = ClusterTools.getMinModDistance(data[i], data[j]);
+                double val = ClusterTools.getL1Distance(data[i], data[j]); //todo?
                 distances[i][j] = val;
                 distances[j][i] = val;
             }

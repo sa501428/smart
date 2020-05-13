@@ -167,8 +167,11 @@ public class Drink extends MixerCLT {
         } else {
 
             /*
+
             DistanceSplitter splitter = new DistanceSplitter(datasetList, chromosomeHandler, resolution, norm, oeThreshold, useStackingAlongRow);
             List<GenomeWideList<SubcompartmentInterval>> initialSplit = splitter.extractIntraSubcompartmentsTo(initialClusteringOutDir, convolution1d);
+
+
              */
 
             InitialClusterer clusterer = new InitialClusterer(datasetList, chromosomeHandler, resolution, norm,
@@ -176,6 +179,7 @@ public class Drink extends MixerCLT {
 
             List<GenomeWideList<SubcompartmentInterval>> initialSplit =
                     clusterer.extractIntraSubcompartmentsTo(initialClusteringOutDir).getFirst();
+
 
             List<GenomeWideList<SubcompartmentInterval>> postSplit = new ArrayList<>();
             // split up regions; only keep continuous ones together
