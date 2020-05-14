@@ -182,7 +182,7 @@ public class CompositeGenomeWideDensityMatrix {
             }
         }
 
-        Map<String, Integer> allAreaBetweenClusters = new HashMap<>();
+        Map<String, Float> allAreaBetweenClusters = new HashMap<>();
         Map<String, Float> allContactsBetweenClusters = new HashMap<>();
 
         for (SubcompartmentInterval interv1 : intervals1) {
@@ -193,16 +193,9 @@ public class CompositeGenomeWideDensityMatrix {
                         Integer id2 = interv2.getClusterID();
                         String regionKey = id1 + "-" + id2;
 
-                        float countsBetweenClusters = getSumTotalCounts(allDataForRegion, interv1, interv2);
-                        int areaBetweenClusters = interv1.getWidthForResolution(resolution) * interv2.getWidthForResolution(resolution);
+                        //updateCountsAndArea(allDataForRegion, interv1, interv2, regionKey, allContactsBetweenClusters, allAreaBetweenClusters);
+                        updateNonZeroCountsAndArea(allDataForRegion, interv1, interv2, regionKey, allContactsBetweenClusters, allAreaBetweenClusters);
 
-                        if (allAreaBetweenClusters.containsKey(regionKey)) {
-                            allAreaBetweenClusters.put(regionKey, allAreaBetweenClusters.get(regionKey) + areaBetweenClusters);
-                            allContactsBetweenClusters.put(regionKey, allContactsBetweenClusters.get(regionKey) + countsBetweenClusters);
-                        } else {
-                            allAreaBetweenClusters.put(regionKey, areaBetweenClusters);
-                            allContactsBetweenClusters.put(regionKey, countsBetweenClusters);
-                        }
                     }
                 }
             }
@@ -240,7 +233,36 @@ public class CompositeGenomeWideDensityMatrix {
         }
     }
 
-    private Map<String, Float> getContactDensity(Map<String, Float> contacts, Map<String, Integer> area) {
+    private void updateCountsAndArea(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2,
+                                     String regionKey, Map<String, Float> allContactsBetweenClusters, Map<String, Float> allAreaBetweenClusters) {
+        float countsBetweenClusters = getSumTotalCounts(allDataForRegion, interv1, interv2);
+        float areaBetweenClusters = interv1.getWidthForResolution(resolution) * interv2.getWidthForResolution(resolution);
+
+        if (allAreaBetweenClusters.containsKey(regionKey)) {
+            allAreaBetweenClusters.put(regionKey, allAreaBetweenClusters.get(regionKey) + areaBetweenClusters);
+            allContactsBetweenClusters.put(regionKey, allContactsBetweenClusters.get(regionKey) + countsBetweenClusters);
+        } else {
+            allAreaBetweenClusters.put(regionKey, areaBetweenClusters);
+            allContactsBetweenClusters.put(regionKey, countsBetweenClusters);
+        }
+    }
+
+    private void updateNonZeroCountsAndArea(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2,
+                                            String regionKey, Map<String, Float> allContactsBetweenClusters, Map<String, Float> allAreaBetweenClusters) {
+        //float countsBetweenClusters = getSumTotalCounts(allDataForRegion, interv1, interv2);
+        //int areaBetweenClusters = interv1.getWidthForResolution(resolution) * interv2.getWidthForResolution(resolution);
+        Pair<Float, Float> areaAndCounts = getTotalNonZeroCounts(allDataForRegion, interv1, interv2);
+
+        if (allAreaBetweenClusters.containsKey(regionKey)) {
+            allAreaBetweenClusters.put(regionKey, allAreaBetweenClusters.get(regionKey) + areaAndCounts.getFirst());
+            allContactsBetweenClusters.put(regionKey, allContactsBetweenClusters.get(regionKey) + areaAndCounts.getSecond());
+        } else {
+            allAreaBetweenClusters.put(regionKey, areaAndCounts.getFirst());
+            allContactsBetweenClusters.put(regionKey, areaAndCounts.getSecond());
+        }
+    }
+
+    private Map<String, Float> getContactDensity(Map<String, Float> contacts, Map<String, Float> area) {
 
         Map<String, Float> density = new HashMap<>();
         for (String key : area.keySet()) {
@@ -290,6 +312,63 @@ public class CompositeGenomeWideDensityMatrix {
         }
     }
 
+    private Pair<Float, Float> getTotalNonZeroCounts(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2) {
+        int numNonZero = 0;
+        float total = 0;
+        int binXStart = interv1.getX1() / resolution;
+        int binXEnd = interv1.getX2() / resolution;
+
+        int binYStart = interv2.getX1() / resolution;
+        int binYEnd = interv2.getX2() / resolution;
+
+        //List<Float> values = new ArrayList<>();
+
+        for (int i = binXStart; i < binXEnd; i++) {
+            for (int j = binYStart; j < binYEnd; j++) {
+                float val = allDataForRegion[i][j];
+                if (val > 0) {
+                    total += val;
+                    numNonZero++;
+                    //values.add(val);
+                }
+                //if(val > maxVal){
+                //    maxVal = val;
+                //}
+            }
+        }
+
+        // try new scaling
+        numNonZero = Math.max(1, numNonZero);
+        float baseArea = (binXEnd - binXStart) * (binYEnd - binYStart);
+        float area = (float) Math.sqrt(numNonZero * baseArea);
+        return new Pair<>(area, total);
+
+        //return new Pair<>((float)numNonZero, total);
+        /*
+        float medianVal = getMedian(values);
+        //return new Pair<>(1f, medianVal);
+
+        return new Pair<>(baseArea, numNonZero*medianVal);
+
+         */
+    }
+
+    private float getMedian(List<Float> values) {
+        if (values.size() > 0) {
+            Collections.sort(values);
+            int midpoint = values.size() / 2;
+            if (values.size() % 2 == 0) {
+                // even number of elements
+                return (values.get(midpoint - 1) + values.get(midpoint)) / 2;
+            } else {
+                // odd number of elements
+                return values.get(midpoint);
+            }
+        }
+
+        return 0;
+    }
+
     private float getSumTotalCounts(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2) {
         float total = 0;
         int binXStart = interv1.getX1() / resolution;
@@ -300,19 +379,7 @@ public class CompositeGenomeWideDensityMatrix {
 
         for (int i = binXStart; i < binXEnd; i++) {
             for (int j = binYStart; j < binYEnd; j++) {
-                try {
-                    if (!Float.isNaN(allDataForRegion[i][j])) {
-                        total += allDataForRegion[i][j];
-                    }
-                } catch (Exception e) {
-                    System.err.println(binXStart + " - " + binXEnd);
-
-                    System.err.println(binYStart + " - " + binYEnd);
-                    System.err.println(i + " - " + j);
-                    System.err.println(interv1.getChrIndex() + " - " + interv2.getChrIndex());
-                    e.printStackTrace();
-                    System.exit(-1);
-                }
+                total += allDataForRegion[i][j];
             }
         }
         return total;

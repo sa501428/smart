@@ -37,10 +37,10 @@ public class ExtractingOEDataUtils {
     private static final double e = Math.exp(1);
 
     public static float[][] logOEP1(float[][] matrix, double averageCount) {
-        double denom = Math.log(averageCount + e);
+        double denom = averageCount;
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                matrix[i][j] = (float) (Math.log(matrix[i][j] + e) / denom);
+                matrix[i][j] = (float) Math.log(1 + ((matrix[i][j] + 1) / (denom + 1)));
             }
         }
         return matrix;
@@ -70,12 +70,9 @@ public class ExtractingOEDataUtils {
 
                         if (thresholdType.equals(ThresholdType.LOGEO)) {
 
-                            // 3e
-                            oeVal = (Math.log(oeVal + e) / Math.log(expected + e));
-                            // cobra oeVal = ( (Math.log(oeVal + 1)+1) / (Math.log(expected + 1)+1));
-                            // cobra2 oeVal = Math.exp( (Math.log(oeVal + 1)+1) / (Math.log(expected + 1)+1));
-                            // eee oeVal = Math.exp(Math.log(oeVal + e) / Math.log(expected + e));
-                            //22 oeVal = log2(oeVal + 2) / log2(expected + 2);
+                            // previous
+                            //oeVal = (Math.log(oeVal + e) / Math.log(expected + e));
+                            oeVal = Math.log(((oeVal + 1) / (expected + 1)) + 1);
 
                             if (Double.isNaN(oeVal) || Double.isInfinite(oeVal)) {
                                 oeVal = 0;
