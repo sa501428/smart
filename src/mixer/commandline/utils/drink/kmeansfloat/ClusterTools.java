@@ -175,6 +175,26 @@ public class ClusterTools {
         return val;
     }
 
+    public static double getPositiveVectorMSEDifference(float[] center, float[] obsArray) {
+
+        double val = 0;
+        int numNonZero = 0;
+
+        for (int k = 0; k < obsArray.length; k++) {
+            if (!Float.isNaN(obsArray[k])) {
+                double v = center[k] - obsArray[k];
+                val += v * v;
+                numNonZero++;
+            }
+        }
+
+        numNonZero = Math.max(numNonZero, 1);
+
+        double diff = (center.length * (Math.sqrt(val) / numNonZero));
+
+        return diff * diff;
+    }
+
     public static float[] normalize(float[] vector, Integer total) {
         float[] newVector = new float[vector.length];
         for (int k = 0; k < vector.length; k++) {

@@ -42,16 +42,17 @@ public class FullGenomeOEWithinClusters {
     private final int resolution;
     private final NormalizationType norm;
     private final GenomeWideList<SubcompartmentInterval> origIntraSubcompartments;
-    private final int numRounds = 10;
+    private final int numRounds = 6;//10
     private int minIntervalSizeAllowed; // 1
-    private final int numAttemptsForKMeans = 5;
+    private final int numAttemptsForKMeans = 3;//5
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
     private final File outputDirectory;
+    private final Random generator;
 
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
                                       GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold,
-                                      int minIntervalSizeAllowed, File outputDirectory) {
+                                      int minIntervalSizeAllowed, File outputDirectory, Random generator) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -61,9 +62,10 @@ public class FullGenomeOEWithinClusters {
         this.origIntraSubcompartments = origIntraSubcompartments;
         this.minIntervalSizeAllowed = minIntervalSizeAllowed;
         this.outputDirectory = outputDirectory;
+        this.generator = generator;
 
         interMatrix = new CompositeGenomeWideDensityMatrix(
-                chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory);
+                chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator);
 
         System.gc();
     }
@@ -71,7 +73,7 @@ public class FullGenomeOEWithinClusters {
     public void appendGWDataFromAdditionalDataset(Dataset ds2) {
 
         CompositeGenomeWideDensityMatrix additionalData = new CompositeGenomeWideDensityMatrix(
-                chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory);
+                chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator);
 
         interMatrix.appendDataAlongExistingRows(additionalData);
     }
@@ -84,6 +86,8 @@ public class FullGenomeOEWithinClusters {
         if (MixerGlobals.printVerboseComments) {
             interMatrix.exportData();
         }
+
+        MixerGlobals.usePositiveDiffKmeans = true;
 
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);
 
@@ -116,6 +120,8 @@ public class FullGenomeOEWithinClusters {
 
             ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs);
         }
+
+        MixerGlobals.usePositiveDiffKmeans = false;
 
         if (minIntervalSizeAllowed > 1) {
             LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults,

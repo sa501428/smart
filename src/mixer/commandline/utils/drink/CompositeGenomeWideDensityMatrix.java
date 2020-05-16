@@ -50,15 +50,17 @@ public class CompositeGenomeWideDensityMatrix {
     private final float threshold;
     private final int minIntervalSizeAllowed;
     private final File outputDirectory;
+    private final Random generator;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                             GenomeWideList<SubcompartmentInterval> intraSubcompartments, float oeThreshold,
-                                            int minIntervalSizeAllowed, File outputDirectory) {
+                                            int minIntervalSizeAllowed, File outputDirectory, Random generator) {
         this.minIntervalSizeAllowed = minIntervalSizeAllowed;
         this.norm = norm;
         this.resolution = resolution;
         this.intraSubcompartments = intraSubcompartments;
         this.outputDirectory = outputDirectory;
+        this.generator = generator;
         threshold = oeThreshold;
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
@@ -73,7 +75,9 @@ public class CompositeGenomeWideDensityMatrix {
         Pair<Integer, int[]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         Pair<Integer, int[]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
 
-        float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
+        //float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
+        float[][] interMatrix = new float[dimensions.getFirst()][dimensions.getFirst()];
+
         int[] numCountsForCol = new int[compressedDimensions.getFirst()];
         for (int i = 0; i < chromosomes.length; i++) {
             Chromosome chr1 = chromosomes[i];
@@ -87,7 +91,19 @@ public class CompositeGenomeWideDensityMatrix {
             }
         }
 
-        FloatMatrixTools.scaleValuesByCount(interMatrix, numCountsForCol);
+        interMatrix = ExtractingOEDataUtils.simpleLog(interMatrix);
+
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[0].length; j++) {
+                if (Float.isInfinite(interMatrix[i][j]) || Math.abs(interMatrix[i][j]) < 1E-10) {
+                    interMatrix[i][j] = 0;
+                }
+            }
+        }
+
+        FloatMatrixTools.inPlaceZscoreDownCols(interMatrix);
+
+        //FloatMatrixTools.scaleValuesByCount(interMatrix, numCountsForCol);
         //FloatMatrixTools.scaleValuesInPlaceByCountAndZscore(interMatrix, numCountsForCol);
 
         return interMatrix;
@@ -155,234 +171,179 @@ public class CompositeGenomeWideDensityMatrix {
         }
         float[][] allDataForRegion = null;
         try {
-            if (isIntra) {
-                allDataForRegion = HiCFileTools.getRealOEMatrixForChromosomeFloatMatrix(ds, zd, chr1, resolution, norm, threshold,
-                        ExtractingOEDataUtils.ThresholdType.LOGEO, //LOG_OE_PLUS_AVG_BOUNDED_MADE_POS
-                        true);
-            } else {
-                float[][] allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegioFloatMatrix(zd, 0,
+
+            if (!isIntra) {
+                allDataForRegion = HiCFileTools.extractLocalBoundedRegioFloatMatrix(zd, 0,
                         lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, isIntra);
-                allDataForRegion = ExtractingOEDataUtils.logOEP1(allDataForRegionMatrix, zd.getAverageCount());
+
+                if (allDataForRegion == null) {
+                    System.err.println("Missing Interchromosomal Data " + zd.getKey());
+                    System.exit(98);
+                }
+
+                for (int i = 0; i < allDataForRegion.length; i++) {
+                    for (int j = 0; j < allDataForRegion[0].length; j++) {
+                        if (Float.isNaN(allDataForRegion[i][j]) || Float.isInfinite(allDataForRegion[i][j]) || Math.abs(allDataForRegion[i][j]) < 1E-30) {
+                            allDataForRegion[i][j] = 0;
+                        }
+                    }
+                }
+
+                for (SubcompartmentInterval interv1 : intervals1) {
+                    int numRows = interv1.getWidthForResolution(resolution);
+                    if (numRows >= minIntervalSizeAllowed) {
+                        augmentRow(allDataForRegion, interv1, numRows);
+                    }
+                }
+
+                allDataForRegion = FloatMatrixTools.transpose(allDataForRegion);
+
+                for (SubcompartmentInterval interv2 : intervals2) {
+                    int numRows = interv2.getWidthForResolution(resolution);
+                    if (numRows >= minIntervalSizeAllowed) {
+                        augmentRow(allDataForRegion, interv2, numRows);
+                    }
+                }
+
+                allDataForRegion = FloatMatrixTools.transpose(allDataForRegion);
+
+
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(99);
         }
 
-        if (allDataForRegion == null) {
-            System.err.println("Missing Interchromosomal Data " + zd.getKey());
-            System.exit(98);
-        }
-
-        for (int i = 0; i < allDataForRegion.length; i++) {
-            for (int j = 0; j < allDataForRegion[0].length; j++) {
-                if (Float.isNaN(allDataForRegion[i][j]) || Float.isInfinite(allDataForRegion[i][j]) || Math.abs(allDataForRegion[i][j]) < 1E-30) {
-                    allDataForRegion[i][j] = 0;
-                }
-            }
-        }
-
-        Map<String, Float> allAreaBetweenClusters = new HashMap<>();
-        Map<String, Float> allContactsBetweenClusters = new HashMap<>();
-
-        for (SubcompartmentInterval interv1 : intervals1) {
-            if (interv1.getWidthForResolution(resolution) >= minIntervalSizeAllowed) {
-                Integer id1 = interv1.getClusterID();
-                for (SubcompartmentInterval interv2 : intervals2) {
-                    if (interv2.getWidthForResolution(resolution) >= minIntervalSizeAllowed) {
-                        Integer id2 = interv2.getClusterID();
-                        String regionKey = id1 + "-" + id2;
-
-                        //updateCountsAndArea(allDataForRegion, interv1, interv2, regionKey, allContactsBetweenClusters, allAreaBetweenClusters);
-                        updateNonZeroCountsAndArea(allDataForRegion, interv1, interv2, regionKey, allContactsBetweenClusters, allAreaBetweenClusters);
-
-                    }
-                }
-            }
-        }
-
-
-        allDataForRegion = null;
-        System.gc();
-
-        Map<String, Float> densityBetweenClusters = getContactDensity(allContactsBetweenClusters, allAreaBetweenClusters);
-
         int internalOffset1 = offsetIndex1;
-        int internalCompressedOffset1 = compressedOffsetIndex1;
         for (SubcompartmentInterval interv1 : intervals1) {
-            Integer id1 = interv1.getClusterID();
             int numRows = interv1.getWidthForResolution(resolution);
             if (numRows >= minIntervalSizeAllowed) {
                 int internalOffset2 = offsetIndex2;
-                int internalCompressedOffset2 = compressedOffsetIndex2;
                 for (SubcompartmentInterval interv2 : intervals2) {
-                    Integer id2 = interv2.getClusterID();
                     int numCols = interv2.getWidthForResolution(resolution);
                     if (numCols >= minIntervalSizeAllowed) {
-                        String regionKey = id1 + "-" + id2;
-                        float density = densityBetweenClusters.get(regionKey);
-                        //updateMasterMatrixWithRegionalDensities(matrix, density, interv1, internalOffset1, numRows, interv2, internalOffset2, numCols, isIntra);
-                        updateMasterMatrixWithRegionalDensitiesCompressed(matrix, numCountsForCol, density, interv1, internalOffset1, internalCompressedOffset1, numRows, interv2, internalOffset2, internalCompressedOffset2, numCols, isIntra);
+                        copyValuesToArea(matrix, interv1, internalOffset1, numRows, interv2, internalOffset2, numCols, isIntra, allDataForRegion);
+                        //updateMasterMatrixWithRegionalDensities(matrix, interv1, internalOffset1, numRows, interv2, internalOffset2, numCols, isIntra, allDataForRegion);
                         internalOffset2 += numCols;
-                        internalCompressedOffset2 += 1;
                     }
                 }
                 internalOffset1 += numRows;
-                internalCompressedOffset1 += 1;
             }
         }
     }
 
-    private void updateCountsAndArea(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2,
-                                     String regionKey, Map<String, Float> allContactsBetweenClusters, Map<String, Float> allAreaBetweenClusters) {
-        float countsBetweenClusters = getSumTotalCounts(allDataForRegion, interv1, interv2);
-        float areaBetweenClusters = interv1.getWidthForResolution(resolution) * interv2.getWidthForResolution(resolution);
+    private void augmentRow(float[][] allDataForRegion, SubcompartmentInterval interv1, int numRows) {
 
-        if (allAreaBetweenClusters.containsKey(regionKey)) {
-            allAreaBetweenClusters.put(regionKey, allAreaBetweenClusters.get(regionKey) + areaBetweenClusters);
-            allContactsBetweenClusters.put(regionKey, allContactsBetweenClusters.get(regionKey) + countsBetweenClusters);
-        } else {
-            allAreaBetweenClusters.put(regionKey, areaBetweenClusters);
-            allContactsBetweenClusters.put(regionKey, countsBetweenClusters);
-        }
-    }
+        int binXStart = interv1.getX1() / resolution;
+        int binXEnd = interv1.getX2() / resolution;
 
-    private void updateNonZeroCountsAndArea(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2,
-                                            String regionKey, Map<String, Float> allContactsBetweenClusters, Map<String, Float> allAreaBetweenClusters) {
-        //float countsBetweenClusters = getSumTotalCounts(allDataForRegion, interv1, interv2);
-        //int areaBetweenClusters = interv1.getWidthForResolution(resolution) * interv2.getWidthForResolution(resolution);
-        Pair<Float, Float> areaAndCounts = getTotalNonZeroCounts(allDataForRegion, interv1, interv2);
+        // get percent non zeros
+        float[] percentNonZero = new float[numRows];
+        int numCols = allDataForRegion[0].length;
 
-        if (allAreaBetweenClusters.containsKey(regionKey)) {
-            allAreaBetweenClusters.put(regionKey, allAreaBetweenClusters.get(regionKey) + areaAndCounts.getFirst());
-            allContactsBetweenClusters.put(regionKey, allContactsBetweenClusters.get(regionKey) + areaAndCounts.getSecond());
-        } else {
-            allAreaBetweenClusters.put(regionKey, areaAndCounts.getFirst());
-            allContactsBetweenClusters.put(regionKey, areaAndCounts.getSecond());
-        }
-    }
-
-    private Map<String, Float> getContactDensity(Map<String, Float> contacts, Map<String, Float> area) {
-
-        Map<String, Float> density = new HashMap<>();
-        for (String key : area.keySet()) {
-            density.put(key, contacts.get(key) / area.get(key));
-        }
-
-        return density;
-    }
-
-    private void updateMasterMatrixWithRegionalDensities(float[][] matrix, float density,
-                                                         SubcompartmentInterval interv1, int offsetIndex1, int numRows,
-                                                         SubcompartmentInterval interv2, int offsetIndex2, int numCols, boolean isIntra) {
-        for (int i = 0; i < numRows; i++) {
+        for (int i = binXStart; i < binXEnd; i++) {
             for (int j = 0; j < numCols; j++) {
-                rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
-                rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
-                matrix[offsetIndex1 + i][offsetIndex2 + j] = density;
+                if (allDataForRegion[i][j] > 0) {
+                    percentNonZero[i - binXStart] += 1;
+                }
             }
         }
 
-        if (!isIntra) {
+        // find out who needs to be augmented
+        List<Integer> indicesToAugment = new ArrayList<>();
+        List<Integer> goodIndices = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            percentNonZero[i] = percentNonZero[i] / numCols;
+            if (percentNonZero[i] < .05) {
+                indicesToAugment.add(i);
+            } else {
+                goodIndices.add(i);
+            }
+        }
+
+        // actually do the augmenting
+        if (indicesToAugment.size() > 0) {
+            if (goodIndices.size() == 0) {
+                System.err.println("No good indices - Houston we have a problem :(");
+                System.exit(98234);
+            }
+
+            float[] avgNonZeroVector;
+            if (goodIndices.size() == 1) {
+                avgNonZeroVector = allDataForRegion[binXStart + goodIndices.get(0)];
+            } else {
+                avgNonZeroVector = new float[numCols];
+                int[] numNonZeroPerCol = new int[numCols];
+                for (int goodIdx : goodIndices) {
+                    for (int j = 0; j < numCols; j++) {
+                        float val = allDataForRegion[binXStart + goodIdx][j];
+                        if (val > 0) {
+                            avgNonZeroVector[j] += val;
+                            numNonZeroPerCol[j] += 1;
+                        }
+                    }
+                }
+
+                for (int k = 0; k < numCols; k++) {
+                    avgNonZeroVector[k] = avgNonZeroVector[k] / Math.max(1, numNonZeroPerCol[k]);
+                }
+            }
+
+            for (int badRowIndx : indicesToAugment) {
+                for (int j = 0; j < numCols; j++) {
+                    allDataForRegion[binXStart + badRowIndx][j] = (.75f + .25f * generator.nextFloat()) * avgNonZeroVector[j];
+                }
+            }
+        }
+    }
+
+    private void copyValuesToArea(float[][] matrix, SubcompartmentInterval interv1, int offsetIndex1, int numRows,
+                                  SubcompartmentInterval interv2, int offsetIndex2, int numCols, boolean isIntra, float[][] allDataForRegion) {
+
+        int binXStart = interv1.getX1() / resolution;
+        int binXEnd = interv1.getX2() / resolution;
+
+        int binYStart = interv2.getX1() / resolution;
+        int binYEnd = interv2.getX2() / resolution;
+
+        /*
+        float[][] tempCopy = new float[numRows][numCols];
+
+        float total = 0;
+
+
+        for (int i = binXStart; i < binXEnd; i++) {
+            for (int j = binYStart; j < binYEnd; j++) {
+                tempCopy[i-binXStart][j-binYStart] = allDataForRegion[i][j];
+            }
+        }
+        */
+
+        if (isIntra) {
             for (int i = 0; i < numRows; i++) {
                 for (int j = 0; j < numCols; j++) {
-                    matrix[offsetIndex2 + j][offsetIndex1 + i] = density;
+                    rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
+                    rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
+
+                    matrix[offsetIndex1 + i][offsetIndex2 + j] = Float.NaN;
+                }
+            }
+        } else {
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
+                    rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
+
+                    matrix[offsetIndex1 + i][offsetIndex2 + j] = allDataForRegion[i + binXStart][j + binYStart];
+                }
+            }
+
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    matrix[offsetIndex2 + j][offsetIndex1 + i] = allDataForRegion[i + binXStart][j + binYStart];
                 }
             }
         }
-    }
-
-    private void updateMasterMatrixWithRegionalDensitiesCompressed(float[][] matrix, int[] numCountsForCol, float density,
-                                                                   SubcompartmentInterval interv1, int offsetIndex1, int offsetCompressedIndex1, int numRows,
-                                                                   SubcompartmentInterval interv2, int offsetIndex2, int offsetCompressedIndex2, int numCols, boolean isIntra) {
-        numCountsForCol[offsetCompressedIndex2] = numCols;
-        //double scalar = Math.sqrt(numCols);
-        for (int i = 0; i < numRows; i++) {
-            rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
-            matrix[offsetIndex1 + i][offsetCompressedIndex2] = density;
-        }
-
-        if (!isIntra) {
-            numCountsForCol[offsetCompressedIndex1] = numRows;
-            //scalar = Math.sqrt(numRows);
-            for (int j = 0; j < numCols; j++) {
-                rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
-                matrix[offsetIndex2 + j][offsetCompressedIndex1] = density;
-            }
-        }
-    }
-
-    private Pair<Float, Float> getTotalNonZeroCounts(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2) {
-        int numNonZero = 0;
-        float total = 0;
-        int binXStart = interv1.getX1() / resolution;
-        int binXEnd = interv1.getX2() / resolution;
-
-        int binYStart = interv2.getX1() / resolution;
-        int binYEnd = interv2.getX2() / resolution;
-
-        //List<Float> values = new ArrayList<>();
-
-        for (int i = binXStart; i < binXEnd; i++) {
-            for (int j = binYStart; j < binYEnd; j++) {
-                float val = allDataForRegion[i][j];
-                if (val > 0) {
-                    total += val;
-                    numNonZero++;
-                    //values.add(val);
-                }
-                //if(val > maxVal){
-                //    maxVal = val;
-                //}
-            }
-        }
-
-        // try new scaling
-        numNonZero = Math.max(1, numNonZero);
-        float baseArea = (binXEnd - binXStart) * (binYEnd - binYStart);
-        float area = (float) Math.sqrt(numNonZero * baseArea);
-        return new Pair<>(area, total);
-
-        //return new Pair<>((float)numNonZero, total);
-        /*
-        float medianVal = getMedian(values);
-        //return new Pair<>(1f, medianVal);
-
-        return new Pair<>(baseArea, numNonZero*medianVal);
-
-         */
-    }
-
-    private float getMedian(List<Float> values) {
-        if (values.size() > 0) {
-            Collections.sort(values);
-            int midpoint = values.size() / 2;
-            if (values.size() % 2 == 0) {
-                // even number of elements
-                return (values.get(midpoint - 1) + values.get(midpoint)) / 2;
-            } else {
-                // odd number of elements
-                return values.get(midpoint);
-            }
-        }
-
-        return 0;
-    }
-
-    private float getSumTotalCounts(float[][] allDataForRegion, SubcompartmentInterval interv1, SubcompartmentInterval interv2) {
-        float total = 0;
-        int binXStart = interv1.getX1() / resolution;
-        int binXEnd = interv1.getX2() / resolution;
-
-        int binYStart = interv2.getX1() / resolution;
-        int binYEnd = interv2.getX2() / resolution;
-
-        for (int i = binXStart; i < binXEnd; i++) {
-            for (int j = binYStart; j < binYEnd; j++) {
-                total += allDataForRegion[i][j];
-            }
-        }
-        return total;
     }
 
     public synchronized Pair<Double, int[]> processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
@@ -407,7 +368,7 @@ public class CompositeGenomeWideDensityMatrix {
 
             for (int i : cluster.getMemberIndexes()) {
 
-                withinClusterSumOfSquares += ClusterTools.getVectorMSEDifference(cluster.getCenter(), gwCleanMatrix[i]);
+                withinClusterSumOfSquares += ClusterTools.getPositiveVectorMSEDifference(cluster.getCenter(), gwCleanMatrix[i]);
 
                 try {
                     SubcompartmentInterval interv;

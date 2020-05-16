@@ -36,11 +36,13 @@ public class ExtractingOEDataUtils {
 
     private static final double e = Math.exp(1);
 
-    public static float[][] logOEP1(float[][] matrix, double averageCount) {
-        double denom = averageCount;
+    public static float[][] simpleLog(float[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                matrix[i][j] = (float) Math.log(1 + ((matrix[i][j] + 1) / (denom + 1)));
+                float val = matrix[i][j];
+                if (!Float.isNaN(val) && val > 0) {
+                    matrix[i][j] = (float) Math.log(val);//(Math.log(e + matrix[i][j]) / denom) ;
+                }
             }
         }
         return matrix;
@@ -72,7 +74,7 @@ public class ExtractingOEDataUtils {
 
                             // previous
                             //oeVal = (Math.log(oeVal + e) / Math.log(expected + e));
-                            oeVal = Math.log(((oeVal + 1) / (expected + 1)) + 1);
+                            oeVal = (Math.log(oeVal + e) / Math.log(expected + e));
 
                             if (Double.isNaN(oeVal) || Double.isInfinite(oeVal)) {
                                 oeVal = 0;

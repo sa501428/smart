@@ -99,17 +99,29 @@ try log rround?
 
          */
 
-        for (int y = 0; y < 20; y++) {
-            String folder = "anubis_compressed_" + y + "F6";//""one_round_log_2r";
-            String prefix = folder + "_";
 
-            strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose",
-                    "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                    , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
-            System.out.println("-----------------------------------------------------");
-            MixerTools.main(strings);
+        String folder = "canyon_0_reboot_mega42_again_with_augment3";//""one_round_log_2r";
+        String prefix = folder + "_";
 
-            System.gc();
-        }
+        strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose",
+                //"/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic"
+                , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+
+        System.gc();
+
+
+        /*
+
+
+        DrinkUtils.createUnanimousList(
+                "/Users/muhammad/Desktop/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed",
+                "/Users/muhammad/Desktop/drinks/existingmethods/SNIPER_GM12878_track_hg19.bed",
+                        "/Users/muhammad/Desktop/drinks/existingmethods/SCI_GM12878_SCI_sub_compartments.bed");
+
+ */
+
     }
 }

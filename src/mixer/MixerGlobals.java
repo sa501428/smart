@@ -30,7 +30,7 @@ package mixer;
  */
 public class MixerGlobals {
 
-    public static final String versionNum = "2.06.05";
+    public static final String versionNum = "2.07.01";
     public static final int minVersion = 6;
     public static final int bufferSize = 2097152;
 
@@ -40,6 +40,7 @@ public class MixerGlobals {
 
     // whether instance was linked before mouse press or not
     public static boolean isLegacyOutputPrintingEnabled = false;
+    public static boolean usePositiveDiffKmeans = false;
 
     public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
         if (version < minVersion) {
