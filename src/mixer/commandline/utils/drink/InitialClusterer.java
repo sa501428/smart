@@ -248,6 +248,9 @@ public class InitialClusterer {
                         if (MixerGlobals.printVerboseComments) {
                             DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, chromosome.getName() + "_matrix.npy").getAbsolutePath(), localizedRegionData.getData());
                         }
+                    } else {
+                        System.err.println("Null matrix error");
+                        System.exit(293);
                     }
                 }
 

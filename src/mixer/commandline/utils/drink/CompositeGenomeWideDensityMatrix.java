@@ -46,6 +46,8 @@ public class CompositeGenomeWideDensityMatrix {
     private final GenomeWideList<SubcompartmentInterval> intraSubcompartments;
     private final float[][] gwCleanMatrix;
     private final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
+    private final Map<Integer, Map<Integer, Integer>> chrIndxTorowIndexToGoldIDMap, chrIndxTorowIndexToSilverIDMap;
+
     private final Chromosome[] chromosomes;
     private final float threshold;
     private final int minIntervalSizeAllowed;
@@ -62,6 +64,10 @@ public class CompositeGenomeWideDensityMatrix {
         this.outputDirectory = outputDirectory;
         this.generator = generator;
         threshold = oeThreshold;
+
+        chrIndxTorowIndexToGoldIDMap = DrinkUtils.createGoldStandardLookup("/Users/muhammad/Desktop/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed");
+        chrIndxTorowIndexToSilverIDMap = DrinkUtils.createGoldStandardLookup("/Users/muhammad/Desktop/drinks/existingmethods/SCI_GM12878_SCI_sub_compartments.bed");
+
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
     }
@@ -183,30 +189,11 @@ public class CompositeGenomeWideDensityMatrix {
 
                 for (int i = 0; i < allDataForRegion.length; i++) {
                     for (int j = 0; j < allDataForRegion[0].length; j++) {
-                        if (Float.isNaN(allDataForRegion[i][j]) || Float.isInfinite(allDataForRegion[i][j]) || Math.abs(allDataForRegion[i][j]) < 1E-30) {
+                        if (Float.isNaN(allDataForRegion[i][j]) || Float.isInfinite(allDataForRegion[i][j]) || allDataForRegion[i][j] < 1E-10) {
                             allDataForRegion[i][j] = 0;
                         }
                     }
                 }
-
-                for (SubcompartmentInterval interv1 : intervals1) {
-                    int numRows = interv1.getWidthForResolution(resolution);
-                    if (numRows >= minIntervalSizeAllowed) {
-                        augmentRow(allDataForRegion, interv1, numRows);
-                    }
-                }
-
-                allDataForRegion = FloatMatrixTools.transpose(allDataForRegion);
-
-                for (SubcompartmentInterval interv2 : intervals2) {
-                    int numRows = interv2.getWidthForResolution(resolution);
-                    if (numRows >= minIntervalSizeAllowed) {
-                        augmentRow(allDataForRegion, interv2, numRows);
-                    }
-                }
-
-                allDataForRegion = FloatMatrixTools.transpose(allDataForRegion);
-
 
             }
         } catch (Exception e) {
@@ -232,71 +219,6 @@ public class CompositeGenomeWideDensityMatrix {
         }
     }
 
-    private void augmentRow(float[][] allDataForRegion, SubcompartmentInterval interv1, int numRows) {
-
-        int binXStart = interv1.getX1() / resolution;
-        int binXEnd = interv1.getX2() / resolution;
-
-        // get percent non zeros
-        float[] percentNonZero = new float[numRows];
-        int numCols = allDataForRegion[0].length;
-
-        for (int i = binXStart; i < binXEnd; i++) {
-            for (int j = 0; j < numCols; j++) {
-                if (allDataForRegion[i][j] > 0) {
-                    percentNonZero[i - binXStart] += 1;
-                }
-            }
-        }
-
-        // find out who needs to be augmented
-        List<Integer> indicesToAugment = new ArrayList<>();
-        List<Integer> goodIndices = new ArrayList<>();
-        for (int i = 0; i < numRows; i++) {
-            percentNonZero[i] = percentNonZero[i] / numCols;
-            if (percentNonZero[i] < .05) {
-                indicesToAugment.add(i);
-            } else {
-                goodIndices.add(i);
-            }
-        }
-
-        // actually do the augmenting
-        if (indicesToAugment.size() > 0) {
-            if (goodIndices.size() == 0) {
-                System.err.println("No good indices - Houston we have a problem :(");
-                System.exit(98234);
-            }
-
-            float[] avgNonZeroVector;
-            if (goodIndices.size() == 1) {
-                avgNonZeroVector = allDataForRegion[binXStart + goodIndices.get(0)];
-            } else {
-                avgNonZeroVector = new float[numCols];
-                int[] numNonZeroPerCol = new int[numCols];
-                for (int goodIdx : goodIndices) {
-                    for (int j = 0; j < numCols; j++) {
-                        float val = allDataForRegion[binXStart + goodIdx][j];
-                        if (val > 0) {
-                            avgNonZeroVector[j] += val;
-                            numNonZeroPerCol[j] += 1;
-                        }
-                    }
-                }
-
-                for (int k = 0; k < numCols; k++) {
-                    avgNonZeroVector[k] = avgNonZeroVector[k] / Math.max(1, numNonZeroPerCol[k]);
-                }
-            }
-
-            for (int badRowIndx : indicesToAugment) {
-                for (int j = 0; j < numCols; j++) {
-                    allDataForRegion[binXStart + badRowIndx][j] = (.75f + .25f * generator.nextFloat()) * avgNonZeroVector[j];
-                }
-            }
-        }
-    }
-
     private void copyValuesToArea(float[][] matrix, SubcompartmentInterval interv1, int offsetIndex1, int numRows,
                                   SubcompartmentInterval interv2, int offsetIndex2, int numCols, boolean isIntra, float[][] allDataForRegion) {
 
@@ -306,47 +228,112 @@ public class CompositeGenomeWideDensityMatrix {
         int binYStart = interv2.getX1() / resolution;
         int binYEnd = interv2.getX2() / resolution;
 
-        /*
-        float[][] tempCopy = new float[numRows][numCols];
-
-        float total = 0;
-
-
-        for (int i = binXStart; i < binXEnd; i++) {
-            for (int j = binYStart; j < binYEnd; j++) {
-                tempCopy[i-binXStart][j-binYStart] = allDataForRegion[i][j];
-            }
-        }
-        */
-
         if (isIntra) {
             for (int i = 0; i < numRows; i++) {
+                int newX1 = (binXStart + i) * resolution;
+                SubcompartmentInterval newRInterval = new SubcompartmentInterval(interv1.getChrIndex(), interv1.getChrName(), newX1, newX1 + resolution, interv1.getClusterID());
+                rowIndexToIntervalMap.put(offsetIndex1 + i, newRInterval);
                 for (int j = 0; j < numCols; j++) {
-                    rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
-                    rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
+                    int newY1 = (binYStart + i) * resolution;
+                    SubcompartmentInterval newCInterval = new SubcompartmentInterval(interv2.getChrIndex(), interv2.getChrName(), newY1, newY1 + resolution, interv1.getClusterID());
+                    rowIndexToIntervalMap.put(offsetIndex2 + j, newCInterval);
 
                     matrix[offsetIndex1 + i][offsetIndex2 + j] = Float.NaN;
                 }
             }
         } else {
-            for (int i = 0; i < numRows; i++) {
-                for (int j = 0; j < numCols; j++) {
-                    rowIndexToIntervalMap.put(offsetIndex1 + i, interv1);
-                    rowIndexToIntervalMap.put(offsetIndex2 + j, interv2);
+            float[][] tempCopy = new float[numRows][numCols];
+            for (int i = binXStart; i < binXEnd; i++) {
+                for (int j = binYStart; j < binYEnd; j++) {
+                    tempCopy[i - binXStart][j - binYStart] = allDataForRegion[i][j];
+                }
+            }
 
-                    matrix[offsetIndex1 + i][offsetIndex2 + j] = allDataForRegion[i + binXStart][j + binYStart];
+            //tempCopy = augmentMatrixRegion(tempCopy);
+
+            for (int i = 0; i < numRows; i++) {
+                int newX1 = (binXStart + i) * resolution;
+                SubcompartmentInterval newRInterval = new SubcompartmentInterval(interv1.getChrIndex(), interv1.getChrName(), newX1, newX1 + resolution, interv1.getClusterID());
+                rowIndexToIntervalMap.put(offsetIndex1 + i, newRInterval);
+                for (int j = 0; j < numCols; j++) {
+                    int newY1 = (binYStart + i) * resolution;
+                    SubcompartmentInterval newCInterval = new SubcompartmentInterval(interv2.getChrIndex(), interv2.getChrName(), newY1, newY1 + resolution, interv1.getClusterID());
+                    rowIndexToIntervalMap.put(offsetIndex2 + j, newCInterval);
+
+                    matrix[offsetIndex1 + i][offsetIndex2 + j] = tempCopy[i][j];
                 }
             }
 
             for (int i = 0; i < numRows; i++) {
                 for (int j = 0; j < numCols; j++) {
-                    matrix[offsetIndex2 + j][offsetIndex1 + i] = allDataForRegion[i + binXStart][j + binYStart];
+                    matrix[offsetIndex2 + j][offsetIndex1 + i] = tempCopy[i][j];
                 }
             }
         }
     }
 
-    public synchronized Pair<Double, int[]> processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
+    private float[][] augmentMatrixRegion(float[][] input) {
+
+        List<Float> values = new ArrayList<>();
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[i].length; j++) {
+                float val = input[i][j];
+                if (val > 0) {
+                    values.add(val);
+                }
+            }
+        }
+
+        int numNonZero = values.size();
+        float percentFilled = numNonZero / ((float) (input.length * input[0].length));
+
+        if (numNonZero > 3 && percentFilled > .3) {
+            Collections.sort(values);
+            if (values.get(values.size() - 1) - values.get(0) < .01) {
+                System.err.println("Weird - not enhancing");
+            } else {
+                float[][] output = new float[input.length][input[0].length];
+                float mean = getMean(values);
+                float stdDev = getSampleStdDev(values, mean);
+
+                for (int i = 0; i < input.length; i++) {
+                    for (int j = 0; j < input[i].length; j++) {
+                        float val = input[i][j];
+                        if (val < 1e-3) {
+                            input[i][j] = getNewRandVal(mean, stdDev);
+                        }
+                    }
+                }
+            }
+        }
+
+        return input;
+    }
+
+    private float getNewRandVal(float mean, float stdDev) {
+        float zVal = 2 * generator.nextFloat() - 1;
+        return mean + stdDev * zVal;
+    }
+
+    private float getMean(List<Float> values) {
+        float total = 0;
+        for (Float val : values) {
+            total += val;
+        }
+        return total / values.size();
+    }
+
+    private float getSampleStdDev(List<Float> values, float mean) {
+        double total = 0;
+        for (Float val : values) {
+            float diff = val - mean;
+            total += (diff * diff);
+        }
+        return (float) (total / (values.size() - 1));
+    }
+
+
+    public synchronized Pair<Double, List<int[][]>> processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
@@ -356,18 +343,22 @@ public class CompositeGenomeWideDensityMatrix {
         double withinClusterSumOfSquares = 0;
         int genomewideCompartmentID = 0;
 
-        int[] ids = new int[clusters.length];
+        int[][] ids = new int[1][clusters.length];
+        int[][] idsForIndex = new int[3][gwCleanMatrix.length];
+        Arrays.fill(idsForIndex[0], -1);
+        Arrays.fill(idsForIndex[1], -1);
+        Arrays.fill(idsForIndex[2], -1);
+
         for (int z = 0; z < clusters.length; z++) {
             Cluster cluster = clusters[z];
             int currentClusterID = ++genomewideCompartmentID;
-            ids[z] = currentClusterID;
+            ids[0][z] = currentClusterID;
 
             if (MixerGlobals.printVerboseComments) {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
             }
 
             for (int i : cluster.getMemberIndexes()) {
-
                 withinClusterSumOfSquares += ClusterTools.getPositiveVectorMSEDifference(cluster.getCenter(), gwCleanMatrix[i]);
 
                 try {
@@ -384,8 +375,23 @@ public class CompositeGenomeWideDensityMatrix {
 
                         subcompartmentIntervals.add(
                                 new SubcompartmentInterval(chrIndex, chrName, x1, x2, currentClusterID));
+
+                        idsForIndex[2][i] = currentClusterID;
+
+                        if (chrIndxTorowIndexToGoldIDMap.containsKey(chrIndex)) {
+                            if (chrIndxTorowIndexToGoldIDMap.get(chrIndex).containsKey(x1)) {
+                                idsForIndex[0][i] = chrIndxTorowIndexToGoldIDMap.get(chrIndex).get(x1);
+                            }
+                        }
+
+                        if (chrIndxTorowIndexToSilverIDMap.containsKey(chrIndex)) {
+                            if (chrIndxTorowIndexToSilverIDMap.get(chrIndex).containsKey(x1)) {
+                                idsForIndex[1][i] = chrIndxTorowIndexToSilverIDMap.get(chrIndex).get(x1);
+                            }
+                        }
+
                     } else {
-                        System.err.println("is weird error?");
+                        System.err.println("********* is weird error?");
                     }
 
                 } catch (Exception e) {
@@ -402,7 +408,11 @@ public class CompositeGenomeWideDensityMatrix {
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         DrinkUtils.reSort(subcompartments);
 
-        return new Pair<>(withinClusterSumOfSquares, ids);
+        List<int[][]> outputs = new ArrayList<>();
+        outputs.add(ids);
+        outputs.add(idsForIndex);
+
+        return new Pair<>(withinClusterSumOfSquares, outputs);
     }
 
     public float[][] getCleanedData() {

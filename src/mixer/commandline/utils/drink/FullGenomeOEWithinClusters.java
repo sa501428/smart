@@ -26,6 +26,7 @@ package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
 import mixer.commandline.utils.common.DoubleMatrixTools;
+import mixer.commandline.utils.common.IntMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
 import mixer.commandline.utils.drink.kmeansfloat.ClusterTools;
 import mixer.data.ChromosomeHandler;
@@ -101,6 +102,7 @@ public class FullGenomeOEWithinClusters {
             int k = z + 2;
             Cluster[] bestClusters = null;
             int[] bestIDs = null;
+            int[][] novelIDsForIndx = null;
 
             for (int p = 0; p < numAttemptsForKMeans; p++) {
 
@@ -115,10 +117,12 @@ public class FullGenomeOEWithinClusters {
                     numItersToResults.put(k, kmeansRunner.getFinalCompartments());
                     bestClusters = kmeansRunner.getRecentClustersClone();
                     bestIDs = kmeansRunner.getRecentIDsClone();
+                    novelIDsForIndx = kmeansRunner.getRecentIDsForIndex();
                 }
             }
 
             ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs);
+            IntMatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
         }
 
         MixerGlobals.usePositiveDiffKmeans = false;

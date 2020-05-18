@@ -83,7 +83,10 @@ public class FloatMatrixTools {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
-                    matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+                    float newVal = (val - colMeans[j]) / colStdDevs[j];
+                    newVal = Math.min(5, newVal);
+                    newVal = Math.max(-5, newVal);
+                    matrix[i][j] = newVal;
                 }
             }
         }
