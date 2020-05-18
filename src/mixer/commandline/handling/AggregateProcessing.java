@@ -53,59 +53,13 @@ public class AggregateProcessing {
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
 
-        /*
-        +/- OE vs logeo   - rreal oe
-        +/- deriv              no
-        +/- L1                 no
-        log vs linear vs real before  real before
-        log vs linear vs real after   real after
-
-
-        +/- clean diagonal
-        new tests
-        more initial clusters for intra
-        try log(o+1/e+1) for deterministic splitter
-
-
-
-
-
-        Lessons learned
-
-don't use L1 norm before/after
-don't use LOGEO before/after (REAL_OE+1 woks better)
-don't use derivative before/after
-log vs linear vs real before  - real works
-log vs linear vs real after  - rela works
-more initial clusters for intra - unequal verrsion doesn't work
-
-***** zebrra offset helped a little +
-
-try log(o+1/e+1) for deterministic splitter
-
-
-
-
-
-(length/1,000,000  -- failed
-
-
-post cleanuper?
-
-
-
-
-try log rround?
-
-         */
-
-
-        String folder = "canyon_0_reboot_mega42_again_with_augment3";//""one_round_log_2r";
+        String folder = "thunder_mega19_plain_w1_with_augment_try1";//""one_round_log_2r";
         String prefix = folder + "_";
 
-        strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose",
+        strings = new String[]{"drinks", "-r", "100000", "-w", "1", "--verbose",
                 //"/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic"
+                //"/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic"
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM_2019_mega_30.hic"
                 , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
