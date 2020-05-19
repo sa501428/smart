@@ -287,6 +287,16 @@ public class FloatMatrixTools {
         return allDataForRegion;
     }
 
+    public static void cleanUpNansInfinitesNegatives(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (Float.isNaN(matrix[i][j]) || Float.isInfinite(matrix[i][j]) || matrix[i][j] < 1E-10) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+    }
+
 
     public float standardDeviation(float[][] data, float mean) {
         double stddev = 0;

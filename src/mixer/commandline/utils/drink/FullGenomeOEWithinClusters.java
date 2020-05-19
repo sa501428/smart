@@ -50,10 +50,11 @@ public class FullGenomeOEWithinClusters {
     private final float oeThreshold;
     private final File outputDirectory;
     private final Random generator;
+    private final boolean useLink;
 
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
                                       GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold,
-                                      int minIntervalSizeAllowed, File outputDirectory, Random generator) {
+                                      int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] referenceBedFiles, boolean useLink) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -64,17 +65,30 @@ public class FullGenomeOEWithinClusters {
         this.minIntervalSizeAllowed = minIntervalSizeAllowed;
         this.outputDirectory = outputDirectory;
         this.generator = generator;
+        this.useLink = useLink;
 
-        interMatrix = new CompositeGenomeWideDensityMatrix(
-                chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator);
+        if (useLink) {
+            interMatrix = new LinksMatrix(
+                    chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+        } else {
+            interMatrix = new DrinksMatrix(
+                    chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+        }
+
 
         System.gc();
     }
 
     public void appendGWDataFromAdditionalDataset(Dataset ds2) {
 
-        CompositeGenomeWideDensityMatrix additionalData = new CompositeGenomeWideDensityMatrix(
-                chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator);
+        CompositeGenomeWideDensityMatrix additionalData;
+        if (useLink) {
+            additionalData = new LinksMatrix(
+                    chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, new String[]{});
+        } else {
+            additionalData = new DrinksMatrix(
+                    chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, new String[]{});
+        }
 
         interMatrix.appendDataAlongExistingRows(additionalData);
     }
