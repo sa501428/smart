@@ -53,63 +53,54 @@ public class AggregateProcessing {
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
 
-        /*
-        +/- OE vs logeo   - rreal oe
-        +/- deriv              no
-        +/- L1                 no
-        log vs linear vs real before  real before
-        log vs linear vs real after   real after
+        String[] files = new String[]{
+                "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM_2019_mega_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_replicate_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_DpnII_combined_30.hic"
+        };
 
+        String[] tags = new String[]{
+                "gm2014",
+                "gm2019",
+                "replicate",
+                "dpn2"
+        };
 
-        +/- clean diagonal
-        new tests
-        more initial clusters for intra
-        try log(o+1/e+1) for deterministic splitter
+        String[] types = new String[]{
+                "drinks",
+                "links"
+        };
 
+        for (int i = 0; i < files.length; i++) {
+            for (String type : types) {
+                for (int w = 1; w < 4; w++) {
 
+                    String folder = "khorasan_" + tags[i] + "_" + type + "_" + w;//""one_round_log_2r";
+                    String prefix = folder + "_";
 
+                    strings = new String[]{type, "-r", "100000", "-w", "" + w,
+                            //"--verbose",
+                            files[i],
+                            "/Users/muhammad/Desktop/drinks/Samarqand/" + folder, prefix};
+                    System.out.println("-----------------------------------------------------");
+                    MixerTools.main(strings);
 
-
-        Lessons learned
-
-don't use L1 norm before/after
-don't use LOGEO before/after (REAL_OE+1 woks better)
-don't use derivative before/after
-log vs linear vs real before  - real works
-log vs linear vs real after  - rela works
-more initial clusters for intra - unequal verrsion doesn't work
-
-***** zebrra offset helped a little +
-
-try log(o+1/e+1) for deterministic splitter
-
-
-
-
-
-(length/1,000,000  -- failed
-
-
-post cleanuper?
-
-
-
-
-try log rround?
-
-         */
-
-        for (int y = 0; y < 20; y++) {
-            String folder = "anubis_compressed_" + y + "F6";//""one_round_log_2r";
-            String prefix = folder + "_";
-
-            strings = new String[]{"drinks", "-r", "100000", "-w", "3", "--verbose",
-                    "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                    , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
-            System.out.println("-----------------------------------------------------");
-            MixerTools.main(strings);
-
-            System.gc();
+                    System.gc();
+                }
+            }
         }
+
+
+        /*
+
+
+        DrinkUtils.createUnanimousList(
+                "/Users/muhammad/Desktop/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed",
+                "/Users/muhammad/Desktop/drinks/existingmethods/SNIPER_GM12878_track_hg19.bed",
+                        "/Users/muhammad/Desktop/drinks/existingmethods/SCI_GM12878_SCI_sub_compartments.bed");
+
+ */
+
     }
 }

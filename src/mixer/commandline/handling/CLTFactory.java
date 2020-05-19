@@ -62,7 +62,7 @@ public class CLTFactory {
             return new Shuffle();
         } else if (cmd.equals("loop_domains")) {
             return new LoopDomains();
-        } else if (cmd.startsWith("drink")) {
+        } else if (cmd.startsWith("drink") || cmd.startsWith("link")) {
             return new Drink(cmd);
         } else if (cmd.equals("grind")) {
             return new Grind();

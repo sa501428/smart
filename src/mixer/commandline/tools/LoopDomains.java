@@ -81,7 +81,7 @@ public class LoopDomains extends MixerCLT {
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
 
         if (args.length != 4 && args.length != 5) {
-            printUsageAndExit();
+            printUsageAndExit(7);
         }
 
         genomeID = args[1];

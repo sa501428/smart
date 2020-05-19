@@ -24,6 +24,8 @@
 
 package mixer.commandline.utils.drink.kmeansfloat;
 
+import mixer.MixerGlobals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -120,13 +122,29 @@ public class ConcurrentKMeans implements KMeans {
      * Compute the euclidean distance between the two arguments.
      */
     private static float distanceL2Norm(float[] coord, float[] center) {
-        int len = coord.length;
-        float sumSquared = 0f;
-        for (int i = 0; i < len; i++) {
-            float v = coord[i] - center[i];
-            sumSquared += (v * v);
+
+        if (MixerGlobals.usePositiveDiffKmeans) {
+            double sumSquared = 0;
+            int numDiffs = 0;
+            for (int i = 0; i < coord.length; i++) {
+                if (!Float.isNaN(coord[i]) && !Float.isNaN(center[i])) {
+                    double v = coord[i] - center[i];
+                    sumSquared += (v * v);
+                    numDiffs++;
+                }
+            }
+            numDiffs = Math.max(numDiffs, 1);
+            float dist = (float) (coord.length * (Math.sqrt(sumSquared) / numDiffs));
+            return dist;
+        } else {
+
+            double sumSquared = 0;
+            for (int i = 0; i < coord.length; i++) {
+                float v = coord[i] - center[i];
+                sumSquared += (v * v);
+            }
+            return (float) Math.sqrt(sumSquared);
         }
-        return (float) Math.sqrt(sumSquared);
     }
 
     /**
@@ -653,15 +671,37 @@ public class ConcurrentKMeans implements KMeans {
          */
         void updateCenter(float[][] coordinates) {
             Arrays.fill(mCenter, 0f);
-            if (mCurrentSize > 0) {
-                for (int i = 0; i < mCurrentSize; i++) {
-                    float[] coord = coordinates[mCurrentMembership[i]];
-                    for (int j = 0; j < coord.length; j++) {
-                        mCenter[j] += coord[j];
+
+            if (MixerGlobals.usePositiveDiffKmeans) {
+                if (mCurrentSize > 0) {
+                    int coordLen = coordinates[mCurrentMembership[0]].length;
+                    int[] mCurrentSizeForIndex = new int[coordLen];
+
+                    for (int i = 0; i < mCurrentSize; i++) {
+                        float[] coord = coordinates[mCurrentMembership[i]];
+                        for (int j = 0; j < coord.length; j++) {
+                            if (!Float.isNaN(coord[j])) {
+                                mCenter[j] += coord[j];
+                                mCurrentSizeForIndex[j]++;
+                            }
+                        }
+                    }
+                    for (int i = 0; i < mCenter.length; i++) {
+                        mCenter[i] /= Math.max(mCurrentSizeForIndex[i], 1);
                     }
                 }
-                for (int i = 0; i < mCenter.length; i++) {
-                    mCenter[i] /= mCurrentSize;
+            } else {
+
+                if (mCurrentSize > 0) {
+                    for (int i = 0; i < mCurrentSize; i++) {
+                        float[] coord = coordinates[mCurrentMembership[i]];
+                        for (int j = 0; j < coord.length; j++) {
+                            mCenter[j] += coord[j];
+                        }
+                    }
+                    for (int i = 0; i < mCenter.length; i++) {
+                        mCenter[i] /= mCurrentSize;
+                    }
                 }
             }
         }

@@ -60,7 +60,7 @@ public class Grind extends MixerCLT {
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 5) {
-            printUsageAndExit();
+            printUsageAndExit(6);
         }
 
         container.ds = HiCFileTools.

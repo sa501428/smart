@@ -75,6 +75,66 @@ public class FloatMatrixTools {
         return answer;
     }
 
+    public static void inPlaceZscoreDownCols(float[][] matrix) {
+        float[] colMeans = getColMeansNonNan(matrix);
+        float[] colStdDevs = getColStdDevNonNans(matrix, colMeans);
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    float newVal = (val - colMeans[j]) / colStdDevs[j];
+                    newVal = Math.min(5, newVal);
+                    newVal = Math.max(-5, newVal);
+                    matrix[i][j] = newVal;
+                }
+            }
+        }
+    }
+
+    private static float[] getColStdDevNonNans(float[][] matrix, float[] means) {
+
+        float[] stdDevs = new float[means.length];
+        int[] colNonNans = new int[means.length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    float diff = val - means[j];
+                    stdDevs[j] += diff * diff;
+                    colNonNans[j] += 1;
+                }
+            }
+        }
+
+        for (int k = 0; k < stdDevs.length; k++) {
+            stdDevs[k] = (float) Math.sqrt(stdDevs[k] / Math.max(colNonNans[k], 1));
+        }
+
+        return stdDevs;
+    }
+
+    private static float[] getColMeansNonNan(float[][] matrix) {
+        float[] colMeans = new float[matrix[0].length];
+        int[] colNonNans = new int[matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    colMeans[j] += val;
+                    colNonNans[j] += 1;
+                }
+            }
+        }
+
+        for (int k = 0; k < colMeans.length; k++) {
+            colMeans[k] = colMeans[k] / Math.max(colNonNans[k], 1);
+        }
+
+        return colMeans;
+    }
+
     public static float[][] inPlaceZscoreDownRows(float[][] matrix, float threshold) {
         float[] rowMeans = getRowSums(matrix);
         for (int k = 0; k < rowMeans.length; k++) {
@@ -218,6 +278,23 @@ public class FloatMatrixTools {
             rowStdDevs[k] = getStdDev(matrix[k], rowMeans[k], counts, numTotalEntries);
         }
         return rowStdDevs;
+    }
+
+    public static float[][] fill(float[][] allDataForRegion, float val) {
+        for (int i = 0; i < allDataForRegion.length; i++) {
+            Arrays.fill(allDataForRegion[i], val);
+        }
+        return allDataForRegion;
+    }
+
+    public static void cleanUpNansInfinitesNegatives(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (Float.isNaN(matrix[i][j]) || Float.isInfinite(matrix[i][j]) || matrix[i][j] < 1E-10) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
     }
 
 

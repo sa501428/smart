@@ -28,6 +28,7 @@ import mixer.MixerGlobals;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
 import mixer.data.feature.FeatureFilter;
+import mixer.data.feature.FeatureFunction;
 import mixer.data.feature.GenomeWideList;
 import org.broad.igv.Globals;
 import org.broad.igv.feature.Chromosome;
@@ -525,5 +526,29 @@ public class DrinkUtils {
             }
         });
         return intraSubcompartments;
+    }
+
+    public static Map<Integer, Map<Integer, Integer>> createGoldStandardLookup(String locationHuntley) {
+        Map<Integer, Map<Integer, Integer>> goldenMap = new HashMap<>();
+        int resolution = 100000;
+
+        ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
+        GenomeWideList<SubcompartmentInterval> subcHuntley = loadFromSubcompartmentBEDFile(handler, locationHuntley);
+        splitGWList(subcHuntley, resolution);
+
+        subcHuntley.processLists(new FeatureFunction<SubcompartmentInterval>() {
+            @Override
+            public void process(String chr, List<SubcompartmentInterval> featureList) {
+                if (featureList.size() > 0) {
+                    int chrIndex = featureList.get(0).getChrIndex();
+                    Map<Integer, Integer> indxToId = new HashMap<>();
+                    for (SubcompartmentInterval interval : featureList) {
+                        indxToId.put(interval.getX1(), interval.getClusterID());
+                    }
+                    goldenMap.put(chrIndex, indxToId);
+                }
+            }
+        });
+        return goldenMap;
     }
 }

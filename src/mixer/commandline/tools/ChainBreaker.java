@@ -48,7 +48,7 @@ public class ChainBreaker extends MixerCLT {
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 4) {
-            printUsageAndExit();  // this will exit
+            printUsageAndExit(2);  // this will exit
         }
 
         ds = HiCFileTools.extractDatasetForCLT(Arrays.asList(args[1].split("\\+")), true);

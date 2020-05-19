@@ -34,14 +34,15 @@ import mixer.data.ChromosomeHandler;
 import mixer.data.feature.GenomeWideList;
 import org.broad.igv.util.Pair;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GenomeWideKmeansRunner {
 
     private static Cluster[] recentClusters;
-    private static int[] recentIDs;
+    private int[][] recentIDs;
+    private int[][] recentIDsForIndex;
 
     private final CompositeGenomeWideDensityMatrix matrix;
     private final ChromosomeHandler chromosomeHandler;
@@ -91,9 +92,10 @@ public class GenomeWideKmeansRunner {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
 
                     System.out.print(".");
-                    Pair<Double, int[]> wcssAndIds = matrix.processGWKmeansResult(clusters, finalCompartments);
+                    Pair<Double, List<int[][]>> wcssAndIds = matrix.processGWKmeansResult(clusters, finalCompartments);
                     recentClusters = ClusterTools.clone(clusters);
-                    recentIDs = wcssAndIds.getSecond();
+                    recentIDs = wcssAndIds.getSecond().get(0);
+                    recentIDsForIndex = wcssAndIds.getSecond().get(1);
                     numActualClusters.set(clusters.length);
                     withinClusterSumOfSquaresForRun.set(wcssAndIds.getFirst());
                 }
@@ -136,7 +138,18 @@ public class GenomeWideKmeansRunner {
     }
 
     public int[] getRecentIDsClone() {
-        return Arrays.copyOf(recentIDs, recentIDs.length);
+        int[] temp = new int[recentIDs[0].length];
+        System.arraycopy(recentIDs[0], 0, temp, 0, temp.length);
+        return temp;
+    }
+
+    public int[][] getRecentIDsForIndex() {
+        int[][] temp = new int[recentIDsForIndex.length][recentIDsForIndex[0].length];
+        for (int k = 0; k < temp.length; k++) {
+            System.arraycopy(recentIDsForIndex[k], 0, temp[k], 0, temp[k].length);
+        }
+
+        return temp;
     }
 
     public GenomeWideList<SubcompartmentInterval> getFinalCompartments() {

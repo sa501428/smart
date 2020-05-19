@@ -59,7 +59,7 @@ public class Distortion extends MixerCLT {
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 4) {
-            printUsageAndExit();
+            printUsageAndExit(4);
         }
 
         String[] files = args[1].split("\\+");
