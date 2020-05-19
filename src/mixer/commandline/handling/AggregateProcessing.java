@@ -53,18 +53,43 @@ public class AggregateProcessing {
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
 
-        String folder = "thunder_mega19_plain_w1_with_augment_try1";//""one_round_log_2r";
-        String prefix = folder + "_";
+        String[] files = new String[]{
+                "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM_2019_mega_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_replicate_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_DpnII_combined_30.hic"
+        };
 
-        strings = new String[]{"drinks", "-r", "100000", "-w", "1", "--verbose",
-                //"/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic"
-                //"/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic"
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM_2019_mega_30.hic"
-                , "/Users/muhammad/Desktop/drinks/" + folder, prefix};
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        String[] tags = new String[]{
+                "gm2014",
+                "gm2019",
+                "replicate",
+                "dpn2"
+        };
 
-        System.gc();
+        String[] types = new String[]{
+                "drinks",
+                "links"
+        };
+
+        for (int i = 0; i < files.length; i++) {
+            for (String type : types) {
+                for (int w = 1; w < 4; w++) {
+
+                    String folder = "khorasan_" + tags[i] + "_" + type + "_" + w;//""one_round_log_2r";
+                    String prefix = folder + "_";
+
+                    strings = new String[]{type, "-r", "100000", "-w", "" + w,
+                            //"--verbose",
+                            files[i],
+                            "/Users/muhammad/Desktop/drinks/Samarqand/" + folder, prefix};
+                    System.out.println("-----------------------------------------------------");
+                    MixerTools.main(strings);
+
+                    System.gc();
+                }
+            }
+        }
 
 
         /*

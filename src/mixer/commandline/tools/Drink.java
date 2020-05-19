@@ -64,7 +64,7 @@ public class Drink extends MixerCLT {
     private int derivativeStatus = 0;
     private boolean useNormalizationOfRows = false;
     private boolean useStackingAlongRow = false;
-    private int minIntervalSizeAllowed = 3; // 1
+    private int minIntervalSizeAllowed = 2; // 1
     private String prefix = "";
     private boolean useLink = false;
     private String[] referenceBedFiles;
@@ -79,8 +79,8 @@ public class Drink extends MixerCLT {
 
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
-        if (args.length != 4 || args.length != 5) {
-            printUsageAndExit();
+        if (args.length != 4 && args.length != 5) {
+            printUsageAndExit(5);
         }
 
         determineNumClusters(mixerParser);

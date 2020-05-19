@@ -57,6 +57,8 @@ public class DrinksMatrix extends CompositeGenomeWideDensityMatrix {
         Pair<Integer, int[]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         Pair<Integer, int[]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
 
+        System.out.println(".");
+
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
         int[] numCountsForCol = new int[compressedDimensions.getFirst()];
         for (int i = 0; i < chromosomes.length; i++) {
@@ -68,8 +70,10 @@ public class DrinksMatrix extends CompositeGenomeWideDensityMatrix {
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
 
                 fillInChromosomeRegion(interMatrix, numCountsForCol, ds, zd, chr1, dimensions.getSecond()[i], compressedDimensions.getSecond()[i], chr2, dimensions.getSecond()[j], compressedDimensions.getSecond()[j], i == j);
+                System.out.print(".");
             }
         }
+        System.out.println(".");
 
         FloatMatrixTools.scaleValuesByCount(interMatrix, numCountsForCol);
 

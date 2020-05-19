@@ -98,11 +98,6 @@ public abstract class MixerCLT {
         usage = newUsage;
     }
 
-    public void printUsageAndExit() {
-        System.out.println("Usage:   mixer_tools " + usage);
-        System.exit(0);
-    }
-
     public void printUsageAndExit(int exitcode) {
         System.out.println("Usage:   mixer_tools " + usage);
         System.exit(exitcode);

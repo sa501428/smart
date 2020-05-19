@@ -111,6 +111,7 @@ public class FullGenomeOEWithinClusters {
         Arrays.fill(iterToWcssAicBic[2], Double.MAX_VALUE);
         Arrays.fill(iterToWcssAicBic[3], Double.MAX_VALUE);
 
+        System.out.println("Genomewide clustering");
         for (int z = 0; z < numRounds; z++) {
 
             int k = z + 2;
@@ -133,15 +134,18 @@ public class FullGenomeOEWithinClusters {
                     bestIDs = kmeansRunner.getRecentIDsClone();
                     novelIDsForIndx = kmeansRunner.getRecentIDsForIndex();
                 }
+                System.out.print(".");
             }
 
             ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs);
             IntMatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
         }
+        System.out.println(".");
 
         MixerGlobals.usePositiveDiffKmeans = false;
 
         if (minIntervalSizeAllowed > 1) {
+            System.out.println("Post processing");
             LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults,
                     origIntraSubcompartments, minIntervalSizeAllowed, oeThreshold, convolution);
         }

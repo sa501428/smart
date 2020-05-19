@@ -48,6 +48,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
         Pair<Integer, int[]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         float[][] interMatrix = new float[dimensions.getFirst()][dimensions.getFirst()];
 
+        System.out.println(".");
         for (int i = 0; i < chromosomes.length; i++) {
             Chromosome chr1 = chromosomes[i];
 
@@ -57,6 +58,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
 
                 fillInChromosomeRegion(interMatrix, zd, chr1, dimensions.getSecond()[i], chr2, dimensions.getSecond()[j], i == j);
+                System.out.print(".");
             }
         }
 
@@ -69,6 +71,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
                 }
             }
         }
+        System.out.println(".");
 
         FloatMatrixTools.inPlaceZscoreDownCols(interMatrix);
 

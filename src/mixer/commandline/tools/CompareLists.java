@@ -63,7 +63,7 @@ public class CompareLists extends MixerCLT {
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 5 && args.length != 6) {
-            printUsageAndExit();
+            printUsageAndExit(3);
         }
 
         compareTypeID = Integer.parseInt(args[1]);

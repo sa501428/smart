@@ -73,7 +73,7 @@ public class MixerTools {
                 System.out.println("Mixer tools version " + MixerGlobals.versionNum);
             }
             if (args.length == 1 || help) {
-                instanceOfCLT.printUsageAndExit();
+                instanceOfCLT.printUsageAndExit(1);
             }
 
             instanceOfCLT.readArguments(args, parser);

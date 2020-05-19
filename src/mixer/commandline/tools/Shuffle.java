@@ -93,7 +93,7 @@ public class Shuffle extends MixerCLT {
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 4) {
             // 3 - standard, 5 - when list/control provided
-            printUsageAndExit();  // this will exit
+            printUsageAndExit(8);  // this will exit
         }
 
         ds = HiCFileTools.extractDatasetForCLT(Arrays.asList(args[1].split("\\+")), true);

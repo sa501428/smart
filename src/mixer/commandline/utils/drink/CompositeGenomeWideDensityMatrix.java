@@ -61,8 +61,10 @@ public abstract class CompositeGenomeWideDensityMatrix {
         this.generator = generator;
 
         chrIndxTorowIndexToGoldIDMapList.clear();
-        for (String filename : relativeTestFiles) {
-            chrIndxTorowIndexToGoldIDMapList.add(DrinkUtils.createGoldStandardLookup(filename));
+        if (relativeTestFiles != null) {
+            for (String filename : relativeTestFiles) {
+                chrIndxTorowIndexToGoldIDMapList.add(DrinkUtils.createGoldStandardLookup(filename));
+            }
         }
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();

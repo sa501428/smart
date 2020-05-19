@@ -101,7 +101,9 @@ public class LeftOverClusterIdentifier {
 
                 results.put(key, listForKey);
             }
+            System.out.print(".");
         }
+        System.out.println(".");
     }
 
     private static Map<Integer, float[]> getClusterCenters(float[][] allDataForRegion, List<SubcompartmentInterval> intervals, int resolution) {
