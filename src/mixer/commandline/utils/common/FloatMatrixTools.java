@@ -75,7 +75,7 @@ public class FloatMatrixTools {
         return answer;
     }
 
-    public static void inPlaceZscoreDownCols(float[][] matrix) {
+    public static void inPlaceZscoreDownCols(float[][] matrix, float threshold) {
         float[] colMeans = getColMeansNonNan(matrix);
         float[] colStdDevs = getColStdDevNonNans(matrix, colMeans);
 
@@ -84,9 +84,26 @@ public class FloatMatrixTools {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
                     float newVal = (val - colMeans[j]) / colStdDevs[j];
-                    newVal = Math.min(5, newVal);
-                    newVal = Math.max(-5, newVal);
+                    newVal = Math.min(threshold, newVal);
+                    newVal = Math.max(-threshold, newVal);
                     matrix[i][j] = newVal;
+                }
+            }
+        }
+    }
+
+    public static void inPlaceZscoreThresholdToNan(float[][] matrix, float threshold) {
+        float[] colMeans = getColMeansNonNan(matrix);
+        float[] colStdDevs = getColStdDevNonNans(matrix, colMeans);
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    float newVal = (val - colMeans[j]) / colStdDevs[j];
+                    if (newVal > threshold || newVal < -threshold) {
+                        matrix[i][j] = Float.NaN;
+                    }
                 }
             }
         }

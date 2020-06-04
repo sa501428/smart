@@ -75,6 +75,7 @@ public class DrinksMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
 
+        //FloatMatrixTools.inPlaceZscoreDownCols(interMatrix);
         FloatMatrixTools.scaleValuesByCount(interMatrix, numCountsForCol);
 
         return interMatrix;

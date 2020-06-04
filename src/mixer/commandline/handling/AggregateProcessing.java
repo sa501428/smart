@@ -53,43 +53,49 @@ public class AggregateProcessing {
                 "200,20,100", "/Users/muhammad/Desktop/findsv/train_set_2_250kb_m200_full_minus_6_11"};
 
 
-        String[] files = new String[]{
-                "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM_2019_mega_30.hic",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_replicate_30.hic",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GSE63525_GM12878_insitu_DpnII_combined_30.hic"
-        };
+        String folder = "p4_determine_for_most";
+        String prefix = folder + "_";
 
-        String[] tags = new String[]{
-                "gm2014",
-                "gm2019",
-                "replicate",
-                "dpn2"
-        };
+        strings = new String[]{"links", "-r", "100000", "-w", "1",
+                "--verbose",
+                "-c", "2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic",
+                //    "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k.hic",
+                "/Users/muhammad/Desktop/drinks/ultra42/" + folder, prefix};
 
-        String[] types = new String[]{
-                "drinks",
-                "links"
-        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
 
-        for (int i = 0; i < files.length; i++) {
-            for (String type : types) {
-                for (int w = 1; w < 4; w++) {
+        System.gc();
 
-                    String folder = "khorasan_" + tags[i] + "_" + type + "_" + w;//""one_round_log_2r";
-                    String prefix = folder + "_";
+        folder = "p4_determine_for_1";
+        prefix = folder + "_";
 
-                    strings = new String[]{type, "-r", "100000", "-w", "" + w,
-                            //"--verbose",
-                            files[i],
-                            "/Users/muhammad/Desktop/drinks/Samarqand/" + folder, prefix};
-                    System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+        strings = new String[]{"links", "-r", "100000", "-w", "1",
+                "--verbose",
+                "-c", "1,2,4,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21,22",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic",
+                "/Users/muhammad/Desktop/drinks/ultra42/" + folder, prefix};
 
-                    System.gc();
-                }
-            }
-        }
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+
+
+        System.gc();
+
+        folder = "p4_determine_for_5";
+        prefix = folder + "_";
+
+        strings = new String[]{"links", "-r", "100000", "-w", "1",
+                "--verbose",
+                "-c", "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic",
+                "/Users/muhammad/Desktop/drinks/ultra42/" + folder, prefix};
+
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+
+        System.gc();
 
 
         /*

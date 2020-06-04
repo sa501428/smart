@@ -40,8 +40,8 @@ public class ExtractingOEDataUtils {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
-                if (!Float.isNaN(val) && val > 0) {
-                    matrix[i][j] = (float) Math.log(val);
+                if (!Float.isNaN(val)) { // && val > 0
+                    matrix[i][j] = (float) Math.log(val + 1);
                 }
             }
         }
