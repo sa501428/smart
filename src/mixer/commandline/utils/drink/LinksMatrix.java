@@ -77,9 +77,9 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
         System.out.println(".");
 
         FloatMatrixTools.inPlaceZscoreThresholdToNan(interMatrix, 5f);
-        FloatMatrixTools.inPlaceZscoreDownCols(interMatrix, 5f);
+        //FloatMatrixTools.inPlaceZscoreDownCols(interMatrix, 5f);
 
-        return interMatrix;
+        return FloatMatrixTools.inPlaceDerivAndZscoreDownCols(interMatrix, 5f);
     }
 
 

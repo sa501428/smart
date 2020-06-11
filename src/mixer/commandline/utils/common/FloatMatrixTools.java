@@ -75,6 +75,29 @@ public class FloatMatrixTools {
         return answer;
     }
 
+    public static float[][] inPlaceDerivAndZscoreDownCols(float[][] matrix, float threshold) {
+        float[][] concatenatedMatrix = getFullMatrixWithAppendedSmoothDerivative(matrix);
+        inPlaceZscoreDownCols(concatenatedMatrix, threshold);
+        return concatenatedMatrix;
+    }
+
+    public static float[][] getFullMatrixWithAppendedSmoothDerivative(float[][] data) {
+
+        int numColumns = data[0].length;
+        float[][] appendedDerivative = new float[data.length][2 * numColumns - 3];
+        for (int i = 0; i < data.length; i++) {
+            System.arraycopy(data[i], 0, appendedDerivative[i], 0, numColumns);
+        }
+
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < numColumns - 3; j++) {
+                appendedDerivative[i][numColumns + j] = data[i][j] + data[i][j + 1] - data[i][j + 2] - data[i][j + 3];
+            }
+        }
+
+        return appendedDerivative;
+    }
+
     public static void inPlaceZscoreDownCols(float[][] matrix, float threshold) {
         float[] colMeans = getColMeansNonNan(matrix);
         float[] colStdDevs = getColStdDevNonNans(matrix, colMeans);
