@@ -75,9 +75,9 @@ public class FloatMatrixTools {
         return answer;
     }
 
-    public static float[][] inPlaceDerivAndZscoreDownCols(float[][] matrix, float threshold) {
+    public static float[][] inPlaceDerivAndThresholdDownCols(float[][] matrix, float threshold) {
         float[][] concatenatedMatrix = getFullMatrixWithAppendedSmoothDerivative(matrix);
-        inPlaceZscoreDownCols(concatenatedMatrix, threshold);
+        thresholdInPlaceByZscoreDownCols(concatenatedMatrix, threshold);
         return concatenatedMatrix;
     }
 
@@ -98,24 +98,7 @@ public class FloatMatrixTools {
         return appendedDerivative;
     }
 
-    public static void inPlaceZscoreDownCols(float[][] matrix, float threshold) {
-        float[] colMeans = getColMeansNonNan(matrix);
-        float[] colStdDevs = getColStdDevNonNans(matrix, colMeans);
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
-                    float newVal = (val - colMeans[j]) / colStdDevs[j];
-                    newVal = Math.min(threshold, newVal);
-                    newVal = Math.max(-threshold, newVal);
-                    matrix[i][j] = newVal;
-                }
-            }
-        }
-    }
-
-    public static void inPlaceZscoreThresholdToNan(float[][] matrix, float threshold) {
+    public static void thresholdInPlaceByZscoreDownCols(float[][] matrix, float threshold) {
         float[] colMeans = getColMeansNonNan(matrix);
         float[] colStdDevs = getColStdDevNonNans(matrix, colMeans);
 
@@ -132,7 +115,21 @@ public class FloatMatrixTools {
         }
     }
 
-    private static float[] getColStdDevNonNans(float[][] matrix, float[] means) {
+    public static void inPlaceZscoreDownColsNoNan(float[][] matrix) {
+        float[] colMeans = getColMeansNonNan(matrix);
+        float[] colStdDevs = getColStdDevNonNans(matrix, colMeans);
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+                }
+            }
+        }
+    }
+
+    public static float[] getColStdDevNonNans(float[][] matrix, float[] means) {
 
         float[] stdDevs = new float[means.length];
         int[] colNonNans = new int[means.length];
@@ -155,7 +152,7 @@ public class FloatMatrixTools {
         return stdDevs;
     }
 
-    private static float[] getColMeansNonNan(float[][] matrix) {
+    public static float[] getColMeansNonNan(float[][] matrix) {
         float[] colMeans = new float[matrix[0].length];
         int[] colNonNans = new int[matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
@@ -337,6 +334,17 @@ public class FloatMatrixTools {
         }
     }
 
+    public static void clearAndFillInSmoothDeriv(float[][] destination, float[][] input) {
+        int[] factors = new int[]{1, 1, -1, -1};
+        fill(destination, 0);
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[i].length - factors.length + 1; j++) {
+                for (int k = 0; k < factors.length; k++) {
+                    destination[i][j] += factors[k] * input[i][j + k];
+                }
+            }
+        }
+    }
 
     public float standardDeviation(float[][] data, float mean) {
         double stddev = 0;
@@ -360,6 +368,21 @@ public class FloatMatrixTools {
                 data[i][j] = (data[i][j] - mean) / stddev;
             }
         }
+    }
+
+    public static float[] getRowMajorOrderFlattendedSectionFromMatrix(float[][] matrix, String filename, int numCols) {
+        int m = matrix.length - numCols;
+        int n = numCols;
+
+        int numElements = m * n;
+        float[] flattenedMatrix = new float[numElements];
+
+        int index = 0;
+        for (int i = numCols; i < m; i++) {
+            System.arraycopy(matrix[i], 0, flattenedMatrix, index, numCols);
+            index += n;
+        }
+        return flattenedMatrix;
     }
 
     public static float[] flattenedRowMajorOrderMatrix(float[][] matrix) {
@@ -490,9 +513,6 @@ public class FloatMatrixTools {
         }
     }
 
-
-
-
     public static void saveMatrixTextV2(String filename, float[][] matrix) {
         Writer writer = null;
         try {
@@ -514,11 +534,29 @@ public class FloatMatrixTools {
         }
     }
 
+    public static void saveMatrixTextNumpy(String filename, float[][] matrix, int[][] breakpoints) {
+        saveMatrixTextNumpy(filename, matrix, breakpoints[0]);
+    }
+
+    public static void saveMatrixTextNumpy(String filename, float[][] matrix, int[] breakpoints) {
+        long totalNum = ((long) matrix.length) * ((long) matrix[0].length);
+        if (totalNum >= Integer.MAX_VALUE / 2) {
+            for (int k = 2; k < breakpoints.length - 2; k *= 2) {
+                System.gc();
+                int numCols = breakpoints[k];
+                float[] flattenedArray = FloatMatrixTools.getRowMajorOrderFlattendedSectionFromMatrix(matrix, filename, numCols);
+                NpyFile.write(Paths.get(filename + "_" + numCols + ".npy"), flattenedArray, new int[]{flattenedArray.length / numCols, numCols});
+            }
+        } else {
+            saveMatrixTextNumpy(filename, matrix);
+        }
+        System.gc();
+    }
+
     public static void saveMatrixTextNumpy(String filename, float[][] matrix) {
         int numRows = matrix.length;
         int numCols = matrix[0].length;
         float[] flattenedArray = FloatMatrixTools.flattenedRowMajorOrderMatrix(matrix);
-
         NpyFile.write(Paths.get(filename), flattenedArray, new int[]{numRows, numCols});
     }
 

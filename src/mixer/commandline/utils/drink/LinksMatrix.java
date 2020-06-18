@@ -24,6 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
+import mixer.MixerGlobals;
 import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
@@ -35,12 +36,10 @@ import org.broad.igv.feature.Chromosome;
 import org.broad.igv.util.Pair;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
+
     public LinksMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution, GenomeWideList<SubcompartmentInterval> intraSubcompartments, int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] referenceBedFiles) {
         super(chromosomeHandler, ds, norm, resolution, intraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
     }
@@ -48,7 +47,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
     float[][] makeCleanScaledInterMatrix(Dataset ds) {
 
         Map<Integer, Integer> indexToFilteredLength = calculateActualLengthForChromosomes(chromosomes, intraSubcompartments);
-        Pair<Integer, int[]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
+        Pair<Integer, int[][]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         float[][] interMatrix = new float[dimensions.getFirst()][dimensions.getFirst()];
 
         System.out.println(".");
@@ -60,7 +59,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
 
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
 
-                fillInChromosomeRegion(interMatrix, zd, chr1, dimensions.getSecond()[i], chr2, dimensions.getSecond()[j], i == j);
+                fillInChromosomeRegion(interMatrix, zd, chr1, dimensions.getSecond()[0][i], chr2, dimensions.getSecond()[0][j], i == j);
                 System.out.print(".");
             }
         }
@@ -76,10 +75,20 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
 
-        FloatMatrixTools.inPlaceZscoreThresholdToNan(interMatrix, 5f);
+        //FloatMatrixTools.inPlaceZscoreThresholdToNan(interMatrix, 5f);
         //FloatMatrixTools.inPlaceZscoreDownCols(interMatrix, 5f);
+        //interMatrix = FloatMatrixTools.inPlaceDerivAndZscoreDownCols(interMatrix, 5f);
+        if (MixerGlobals.printVerboseComments) {
+            //FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix, dimensions.getSecond());
+        }
 
-        return FloatMatrixTools.inPlaceDerivAndZscoreDownCols(interMatrix, 5f);
+        MatrixCleanupReduction matrixCleanupReduction = new MatrixCleanupReduction(interMatrix, generator.nextLong(), outputDirectory);
+
+        return matrixCleanupReduction.getCleanedMatrix(rowIndexToIntervalMap, dimensions.getSecond());
+    }
+
+    private float[][] filterDownMatrix(float[][] interMatrix, Set<Integer> badIndices) {
+        return new float[0][];
     }
 
 

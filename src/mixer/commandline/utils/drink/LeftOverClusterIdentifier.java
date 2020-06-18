@@ -36,10 +36,7 @@ import mixer.windowui.NormalizationType;
 import org.apache.commons.math.linear.RealMatrix;
 import org.broad.igv.feature.Chromosome;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LeftOverClusterIdentifier {
     public static void identify(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
@@ -77,29 +74,38 @@ public class LeftOverClusterIdentifier {
                 return;
             }
 
-            List<SubcompartmentInterval> preIntervals = preSubcompartments.getFeatures("" + chr1.getIndex());
-            List<Integer> indicesMissing = new ArrayList<>();
+            Set<Integer> indicesMissing = new HashSet<>();
 
-            for (SubcompartmentInterval preInterv : preIntervals) {
-                if (preInterv.getWidthForResolution(resolution) < minIntervalSizeAllowed) {
-                    int binXStart = preInterv.getX1() / resolution;
-                    int binXEnd = preInterv.getX2() / resolution;
+            for (SubcompartmentInterval preInterv : preSubcompartments.getFeatures("" + chr1.getIndex())) {
+                int binXStart = preInterv.getX1() / resolution;
+                int binXEnd = preInterv.getX2() / resolution;
 
-                    for (int j = binXStart; j < binXEnd; j++) {
-                        indicesMissing.add(j);
-                    }
+                for (int j = binXStart; j < binXEnd; j++) {
+                    indicesMissing.add(j);
                 }
             }
 
-            for (Integer key : results.keySet()) {
-                GenomeWideList<SubcompartmentInterval> listForKey = results.get(key);
-                Map<Integer, float[]> cIDToCenter = getClusterCenters(allDataForRegion, listForKey.getFeatures("" + chr1.getIndex()), resolution);
+            // do it this way because of additional internal filter
+            for (SubcompartmentInterval handledInterval : results.get(2).getFeatures("" + chr1.getIndex())) {
+                int binXStart = handledInterval.getX1() / resolution;
+                int binXEnd = handledInterval.getX2() / resolution;
 
-                List<SubcompartmentInterval> newlyAssignedSubcompartments = getNewlyAssignedCompartments(chr1, cIDToCenter, indicesMissing, allDataForRegion, resolution);
+                for (int j = binXStart; j < binXEnd; j++) {
+                    indicesMissing.remove(j);
+                }
+            }
 
-                listForKey.addAll(newlyAssignedSubcompartments);
+            if (indicesMissing.size() > 0) {
+                for (Integer key : results.keySet()) {
+                    GenomeWideList<SubcompartmentInterval> listForKey = results.get(key);
+                    Map<Integer, float[]> cIDToCenter = getClusterCenters(allDataForRegion, listForKey.getFeatures("" + chr1.getIndex()), resolution);
 
-                results.put(key, listForKey);
+                    List<SubcompartmentInterval> newlyAssignedSubcompartments = getNewlyAssignedCompartments(chr1, cIDToCenter, indicesMissing, allDataForRegion, resolution);
+
+                    listForKey.addAll(newlyAssignedSubcompartments);
+
+                    results.put(key, listForKey);
+                }
             }
             System.out.print(".");
         }
@@ -144,7 +150,8 @@ public class LeftOverClusterIdentifier {
     }
 
 
-    private static List<SubcompartmentInterval> getNewlyAssignedCompartments(Chromosome chromosome, Map<Integer, float[]> cIDToCenter, List<Integer> indicesMissing, float[][] allDataForRegion, int resolution) {
+    private static List<SubcompartmentInterval> getNewlyAssignedCompartments(Chromosome chromosome, Map<Integer, float[]> cIDToCenter,
+                                                                             Set<Integer> indicesMissing, float[][] allDataForRegion, int resolution) {
 
         List<SubcompartmentInterval> intervals = new ArrayList<>();
 

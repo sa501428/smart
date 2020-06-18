@@ -528,9 +528,8 @@ public class DrinkUtils {
         return intraSubcompartments;
     }
 
-    public static Map<Integer, Map<Integer, Integer>> createGoldStandardLookup(String locationHuntley) {
+    public static Map<Integer, Map<Integer, Integer>> createGoldStandardLookup(String locationHuntley, int resolution) {
         Map<Integer, Map<Integer, Integer>> goldenMap = new HashMap<>();
-        int resolution = 100000;
 
         ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
         GenomeWideList<SubcompartmentInterval> subcHuntley = loadFromSubcompartmentBEDFile(handler, locationHuntley);

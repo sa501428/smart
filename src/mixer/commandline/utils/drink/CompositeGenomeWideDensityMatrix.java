@@ -47,7 +47,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
     protected final Chromosome[] chromosomes;
     protected final int minIntervalSizeAllowed;
     protected final Random generator;
-    private final File outputDirectory;
+    protected final File outputDirectory;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
@@ -63,7 +63,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         chrIndxTorowIndexToGoldIDMapList.clear();
         if (relativeTestFiles != null) {
             for (String filename : relativeTestFiles) {
-                chrIndxTorowIndexToGoldIDMapList.add(DrinkUtils.createGoldStandardLookup(filename));
+                chrIndxTorowIndexToGoldIDMapList.add(DrinkUtils.createGoldStandardLookup(filename, resolution));
             }
         }
 
@@ -152,15 +152,17 @@ public abstract class CompositeGenomeWideDensityMatrix {
         return new Pair<>(withinClusterSumOfSquares, outputs);
     }
 
-    protected Pair<Integer, int[]> calculateDimensionInterMatrix(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {
+    protected Pair<Integer, int[][]> calculateDimensionInterMatrix(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {
         int total = 0;
-        int[] indices = new int[chromosomes.length];
+        int[][] indices = new int[2][chromosomes.length];
 
         for (int i = 0; i < chromosomes.length; i++) {
-            total += indexToFilteredLength.get(chromosomes[i].getIndex());
+            int val = indexToFilteredLength.get(chromosomes[i].getIndex());
+            total += val;
             if (i < chromosomes.length - 1) {
-                indices[i + 1] = total;
+                indices[0][i + 1] = total;
             }
+            indices[1][i] = val;
         }
 
         return new Pair<>(total, indices);
