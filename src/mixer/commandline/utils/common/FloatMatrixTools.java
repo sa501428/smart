@@ -370,17 +370,16 @@ public class FloatMatrixTools {
         }
     }
 
-    public static float[] getRowMajorOrderFlattendedSectionFromMatrix(float[][] matrix, String filename, int numCols) {
-        int m = matrix.length - numCols;
-        int n = numCols;
+    public static float[] getRowMajorOrderFlattendedSectionFromMatrix(float[][] matrix, int numCols) {
+        int numRows = matrix.length - numCols;
 
-        int numElements = m * n;
+        int numElements = numRows * numCols;
         float[] flattenedMatrix = new float[numElements];
 
         int index = 0;
-        for (int i = numCols; i < m; i++) {
+        for (int i = numCols; i < numRows; i++) {
             System.arraycopy(matrix[i], 0, flattenedMatrix, index, numCols);
-            index += n;
+            index += numCols;
         }
         return flattenedMatrix;
     }
@@ -544,7 +543,7 @@ public class FloatMatrixTools {
             for (int k = 2; k < breakpoints.length - 2; k *= 2) {
                 System.gc();
                 int numCols = breakpoints[k];
-                float[] flattenedArray = FloatMatrixTools.getRowMajorOrderFlattendedSectionFromMatrix(matrix, filename, numCols);
+                float[] flattenedArray = FloatMatrixTools.getRowMajorOrderFlattendedSectionFromMatrix(matrix, numCols);
                 NpyFile.write(Paths.get(filename + "_" + numCols + ".npy"), flattenedArray, new int[]{flattenedArray.length / numCols, numCols});
             }
         } else {

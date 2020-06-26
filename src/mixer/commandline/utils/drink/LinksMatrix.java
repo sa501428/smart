@@ -79,7 +79,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
         //FloatMatrixTools.inPlaceZscoreDownCols(interMatrix, 5f);
         //interMatrix = FloatMatrixTools.inPlaceDerivAndZscoreDownCols(interMatrix, 5f);
         if (MixerGlobals.printVerboseComments) {
-            //FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix, dimensions.getSecond());
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix, dimensions.getSecond());
         }
 
         MatrixCleanupReduction matrixCleanupReduction = new MatrixCleanupReduction(interMatrix, generator.nextLong(), outputDirectory);
