@@ -26,7 +26,7 @@ package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
-import mixer.commandline.utils.drink.MatrixCleanupReduction;
+import mixer.commandline.utils.drink.SliceMatrix;
 
 
 /**
@@ -42,25 +42,88 @@ public class AggregateProcessing {
     public static boolean useL1Norm = false;
 
     public static void main(String[] argv) throws Exception {
-
-
+    
+    
         String[] strings;
+        String refs = "/Users/muhammad/Desktop/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed" + "+" +
+                "/Users/muhammad/Desktop/drinks/existingmethods/ultra_res_100k_default_clean_outliers.bed" + "+" +
+                "/Users/muhammad/Desktop/drinks/existingmethods/New_STRICT_gold_standard.bed";
+        String file42 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic";
+        String file14 = "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic";
+        String folder;
+    
+        String file1B = "/Users/muhammad/Desktop/local_hic_files/sub1bil.hic";
+    
+        for (int w = 3; w < 10; w++) {
+            SliceMatrix.USE_DERIV = true;
+            folder = "redo_slice_14w" + w + "_deriv";
+            strings = new String[]{"slice", "-r", "100000", "-w", "" + w, //"--verbose",
+                    file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        
+            SliceMatrix.USE_DERIV = false;
+            folder = "redo_slice_14w" + w + "";
+            strings = new String[]{"slice", "-r", "100000", "-w", "" + w, //"--verbose",
+                    file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
+        
+        
+        /*
+        
+        SliceMatrix.USE_DERIV = true;
+        folder = "redo_slice_14_july12_deriv";
+        strings = new String[]{"slice", "-r", "100000", "-w", "2", "--verbose",
+                file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+        
+        SliceMatrix.USE_DERIV = false;
+        folder = "redo_slice_14_july12";
+        strings = new String[]{"slice", "-r", "100000", "-w", "2", "--verbose",
+                file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+        
+        
+        SliceMatrix.USE_DERIV = false;
+        folder = "redo_slice_42_july12";
+        strings = new String[]{"slice", "-r", "100000", "-w", "2", "--verbose",
+                file42, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+    
+        
+        SliceMatrix.USE_DERIV = true;
+        folder = "redo_slice_42_july12_deriv";
+        strings = new String[]{"slice", "-r", "100000", "-w", "2", "--verbose",
+                file42, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+        
+/*
+        int num = 10;//50;
 
-
-        int num = 50;
-
-        String folder = "subc50k_v_" + num + "_42_repeatmore_stupidfix";
+        String folder = "digest_" + num + "_42_july7";
         String prefix = folder + "_";
         MatrixCleanupReduction.USE_DERIV = false;
         MatrixCleanupReduction.DERIV_THEN_ZSCORE = false;
         MatrixCleanupReduction.USE_RANDOM3_TYPE = true;
         MatrixCleanupReduction.reductionScalar = num;
 
-        strings = new String[]{"links", "-r", "50000", "-w", "4",
+        strings = new String[]{"links", "-r", "100000", "-w", "1",
                 "--verbose",
                 "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic",
                 //"/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic",
-                "/Users/muhammad/Desktop/drinks/fifty/" + folder, prefix,
+                "/Users/muhammad/Desktop/drinks/hundred/" + folder, prefix,
                 "/Users/muhammad/Desktop/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed" + "+" +
                         "/Users/muhammad/Desktop/drinks/existingmethods/ultra_res_100k_default_clean_outliers.bed" + "+" +
                         "/Users/muhammad/Desktop/drinks/existingmethods/New_STRICT_gold_standard.bed"};

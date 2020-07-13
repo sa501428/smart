@@ -52,7 +52,7 @@ public class InitialClusterer {
      */
     private final AtomicInteger numRunsToExpect = new AtomicInteger();
     private final AtomicInteger numRunsDone = new AtomicInteger();
-    private final double maxPercentAllowBeZero = 0.75;
+    private final double maxPercentAllowBeZero = 0.7;
     private final int maxIters = 20000;
     private final List<Dataset> datasets;
     private final int numDatasets;

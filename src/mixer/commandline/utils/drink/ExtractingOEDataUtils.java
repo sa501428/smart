@@ -33,9 +33,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class ExtractingOEDataUtils {
-
+    
     private static final double e = Math.exp(1);
-
+    
     public static float[][] simpleLog(float[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -47,7 +47,19 @@ public class ExtractingOEDataUtils {
         }
         return matrix;
     }
-
+    
+    public static float[][] simpleLogWithCleanup(float[][] matrix) {
+        matrix = simpleLog(matrix);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (Float.isInfinite(matrix[i][j]) || Math.abs(matrix[i][j]) < 1E-10) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        return matrix;
+    }
+    
     public static float[][] logOEP1(float[][] matrix, double averageCount) {
         double denom = Math.log(averageCount + e);
         for (int i = 0; i < matrix.length; i++) {

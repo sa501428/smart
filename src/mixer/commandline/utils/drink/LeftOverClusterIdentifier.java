@@ -41,13 +41,13 @@ import java.util.*;
 public class LeftOverClusterIdentifier {
     public static void identify(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
-                                GenomeWideList<SubcompartmentInterval> preSubcompartments, int minIntervalSizeAllowed,
+                                GenomewideBadIndexFinder badIndexFinder,
                                 float threshold, double[] convolution) {
-
+    
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr1, resolution);
             if (zd == null) continue;
-
+        
             float[][] allDataForRegion = null;
             try {
                 RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution,
@@ -63,28 +63,29 @@ public class LeftOverClusterIdentifier {
                     allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
                             DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
                 }
-
+            
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(99);
             }
-
+        
             if (allDataForRegion == null) {
                 System.err.println("Missing Data " + zd.getKey());
                 return;
             }
-
+        
+            Set<Integer> worstIndices = badIndexFinder.getWorstIndices(chr1);
             Set<Integer> indicesMissing = new HashSet<>();
-
-            for (SubcompartmentInterval preInterv : preSubcompartments.getFeatures("" + chr1.getIndex())) {
-                int binXStart = preInterv.getX1() / resolution;
-                int binXEnd = preInterv.getX2() / resolution;
-
-                for (int j = binXStart; j < binXEnd; j++) {
-                    indicesMissing.add(j);
+        
+        
+            for (int k = 0; k < chr1.getLength() / resolution + 1; k++) {
+                if (worstIndices.contains(k)) {
+                    continue;
                 }
+            
+                indicesMissing.add(k);
             }
-
+        
             // do it this way because of additional internal filter
             for (SubcompartmentInterval handledInterval : results.get(2).getFeatures("" + chr1.getIndex())) {
                 int binXStart = handledInterval.getX1() / resolution;

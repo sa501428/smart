@@ -25,13 +25,14 @@
 package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
+import mixer.commandline.utils.common.FloatMatrixDerivativeTools;
 import mixer.commandline.utils.common.FloatMatrixTools;
 import org.broad.igv.util.Pair;
 
 import java.io.File;
 import java.util.*;
 
-public class MatrixCleanupReduction {
+public class MatrixCleanup {
     private final static float sqrt3 = (float) Math.sqrt(3);
     private final static float cutoff_2_3 = 2f / 3f;
     private final static float cutoff_5_6 = 5f / 6f;
@@ -43,14 +44,17 @@ public class MatrixCleanupReduction {
     private File outputDirectory;
     private float[][] data;
     private Random generator;
-
-    public MatrixCleanupReduction(float[][] interMatrix, long seed, File outputDirectory) {
+    
+    private final static float PERCENT_NAN_ALLOWED = .5f;
+    private final static float PERCENT_ZERO_ALLOWED = .7f;
+    
+    public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory) {
         data = interMatrix;
         System.out.println("matrix size " + data.length + " x " + data[0].length);
         generator = new Random(seed);
         this.outputDirectory = outputDirectory;
     }
-
+    
     public static void thresholdByZscoreToNanDownColumn(float[][] matrix, float threshold) {
         float[] colMeans = FloatMatrixTools.getColMeansNonNan(matrix);
         float[] colStdDevs = FloatMatrixTools.getColStdDevNonNans(matrix, colMeans);
@@ -80,81 +84,16 @@ public class MatrixCleanupReduction {
 
         for (int i = 0; i < numNans.length; i++) {
             numNonNan[i] = n - numNans[i];
-            if (((float) numNans[i]) / ((float) n) > .5f) {
+            if (((float) numNans[i]) / ((float) n) > PERCENT_NAN_ALLOWED) {
                 badIndices.add(i);
             }
-
-            if (((float) numZerosNotNans[i]) / ((float) numNonNan[i]) > .7f) {
-                badIndices.add(i);
-            }
-        }
-
-        return badIndices;
-    }
-
-    public static Set<Integer> getStatistics(float[][] matrix) {
-
-        Set<Integer> badIndices = new HashSet<>();
-
-        int[] numNans = getNumberOfNansInRow(matrix);
-        int[] numZerosNotNans = getNumberZerosNotNansInRow(matrix);
-
-        int[] numNonNan = new int[numNans.length];
-        int n = matrix[0].length;
-        float[] percentNan = new float[numNans.length];
-        float[] percentZero = new float[numNans.length];
-
-        int numBadNanRows = 0;
-        int numBadZeroRows = 0;
-
-        for (int i = 0; i < numNans.length; i++) {
-            numNonNan[i] = n - numNans[i];
-            percentNan[i] = ((float) numNans[i]) / ((float) n);
-            if (percentNan[i] > .5f) {
-                numBadNanRows++;
-                badIndices.add(i);
-            }
-            percentZero[i] = ((float) numZerosNotNans[i]) / ((float) numNonNan[i]);
-
-            if (percentZero[i] > .7f) {
-                numBadZeroRows++;
+    
+            if (((float) numZerosNotNans[i]) / ((float) numNonNan[i]) > PERCENT_ZERO_ALLOWED) {
                 badIndices.add(i);
             }
         }
 
         return badIndices;
-    }
-
-    private static float[][] cloneAndMovAvgOnMatrix(float[][] matrix) {
-        float[][] smoothClone = new float[matrix.length][matrix[0].length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-
-                if (Float.isNaN(matrix[i][j])) {
-                    smoothClone[i][j] = Float.NaN;
-                } else {
-                    int kStart = -1, kEnd = 2;
-                    if (j == 0) {
-                        kStart = 0;
-                    } else if (j == matrix[i].length - 1) {
-                        kEnd = 1;
-                    }
-
-                    int divisor = 0;
-                    for (int k = kStart; k < kEnd; k++) {
-                        float val = matrix[i][j + k];
-                        if (!Float.isNaN(val)) {
-                            divisor++;
-                            smoothClone[i][j] += val;
-                        }
-                    }
-
-                    smoothClone[i][j] /= divisor;
-                }
-            }
-        }
-
-        return smoothClone;
     }
 
     private static void movAvgOnMatrix(float[][] data) {
@@ -219,7 +158,7 @@ public class MatrixCleanupReduction {
         int[] numZeros = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (!Float.isNaN(matrix[i][j]) && Math.abs(matrix[i][j]) < 1e-5) {
+                if (!Float.isNaN(matrix[i][j]) && matrix[i][j] < 1e-5) {
                     numZeros[i]++;
                 }
             }
@@ -294,7 +233,7 @@ public class MatrixCleanupReduction {
 
         return randDerivMatrix;
     }
-
+    
     private static void inPlaceMatrixMultiplication(float[][] inputMatrix, float[][] randomMatrix, float[][] resultMatrix,
                                                     int resultColOffset, int inputColOffset) {
         for (int i = 0; i < inputMatrix.length; i++) {
@@ -305,11 +244,40 @@ public class MatrixCleanupReduction {
             }
         }
     }
-
+    
+    public static float[][] filterOutColumnsAndRowsNonSymmetricMatrix(float[][] interMatrix, Set<Integer> badIndices, Map<Integer, SubcompartmentInterval> original) {
+        int[] newIndexToOrigIndex = new int[interMatrix.length - badIndices.size()];
+        System.out.println("interMatrix.length " + interMatrix.length + " badIndices.size() " + badIndices.size());
+        float[][] newMatrix = new float[newIndexToOrigIndex.length][interMatrix[0].length];
+        
+        int counter = 0;
+        for (int i = 0; i < interMatrix.length; i++) {
+            if (!badIndices.contains(i)) {
+                newIndexToOrigIndex[counter++] = i;
+            }
+        }
+        
+        for (int i = 0; i < newMatrix.length; i++) {
+            for (int j = 0; j < newMatrix[0].length; j++) {
+                newMatrix[i][j] = interMatrix[newIndexToOrigIndex[i]][j];
+            }
+        }
+        
+        Map<Integer, SubcompartmentInterval> newRowIndexToIntervalMap = new HashMap<>();
+        for (int i = 0; i < newIndexToOrigIndex.length; i++) {
+            newRowIndexToIntervalMap.put(i, (SubcompartmentInterval) original.get(newIndexToOrigIndex[i]).deepClone());
+        }
+        
+        original.clear();
+        original.putAll(newRowIndexToIntervalMap);
+        
+        return newMatrix;
+    }
+    
     public static float[][] filterOutColumnsAndRows(float[][] interMatrix, Set<Integer> badIndices, Map<Integer, SubcompartmentInterval> original) {
         int[] newIndexToOrigIndex = new int[interMatrix.length - badIndices.size()];
         float[][] newMatrix = new float[newIndexToOrigIndex.length][newIndexToOrigIndex.length];
-
+        
         int counter = 0;
         for (int i = 0; i < interMatrix.length; i++) {
             if (!badIndices.contains(i)) {
@@ -322,26 +290,42 @@ public class MatrixCleanupReduction {
                 newMatrix[i][j] = interMatrix[newIndexToOrigIndex[i]][newIndexToOrigIndex[j]];
             }
         }
-
+        
         Map<Integer, SubcompartmentInterval> newRowIndexToIntervalMap = new HashMap<>();
         for (int i = 0; i < newIndexToOrigIndex.length; i++) {
             newRowIndexToIntervalMap.put(i, (SubcompartmentInterval) original.get(newIndexToOrigIndex[i]).deepClone());
         }
-
+        
         original.clear();
         original.putAll(newRowIndexToIntervalMap);
-
+        
         return newMatrix;
     }
-
+    
+    public float[][] getSimpleCleaningOfMatrixAppendDeriv(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[][] origDimensions, boolean useDerivative) {
+        thresholdByZscoreToNanDownColumn(data, zScoreThreshold);
+        Set<Integer> badIndices = getBadIndices(data);
+        data = filterOutColumnsAndRowsNonSymmetricMatrix(data, badIndices, rowIndexToIntervalMap);
+        System.out.println("matrix size " + data.length + " x " + data[0].length);
+        
+        if (useDerivative) {
+            data = FloatMatrixDerivativeTools.getWithAppendedNonNanDerivative(data);
+        }
+        
+        FloatMatrixTools.inPlaceZscoreDownColsNoNan(data);
+        return data;
+    }
+    
     public float[][] getCleanedMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[][] origDimensions) {
+        
         thresholdByZscoreToNanDownColumn(data, zScoreThreshold);
         Set<Integer> badIndices = getBadIndices(data);
         data = filterOutColumnsAndRows(data, badIndices, rowIndexToIntervalMap);
         System.out.println("matrix size " + data.length + " x " + data[0].length);
+        
         Pair<int[], int[]> dimensionParams = fixDimensions(origDimensions, badIndices);
         if (MixerGlobals.printVerboseComments) {
-            //FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "post_filter_data_matrix.npy").getAbsolutePath(), data, dimensionParams.getFirst());
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "post_filter_data_matrix.npy").getAbsolutePath(), data, dimensionParams.getFirst());
         }
 
         return randomProjection(data, dimensionParams, USE_DERIV, generator); // dimensions.getSecond()

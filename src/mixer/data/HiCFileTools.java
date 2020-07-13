@@ -366,20 +366,20 @@ public class HiCFileTools {
         // force cleanup
         blocks = null;
         //System.gc();
-
+    
         return data;
     }
-
-    public static float[][] extractLocalBoundedRegioFloatMatrix(MatrixZoomData zd, int binXStart, int binXEnd,
-                                                                int binYStart, int binYEnd, int numRows, int numCols,
-                                                                NormalizationType normalizationType, boolean fillUnderDiagonal) throws IOException {
-
+    
+    public static float[][] extractLocalBoundedRegionFloatMatrix(MatrixZoomData zd, int binXStart, int binXEnd,
+                                                                 int binYStart, int binYEnd, int numRows, int numCols,
+                                                                 NormalizationType normalizationType, boolean fillUnderDiagonal) throws IOException {
+        
         // numRows/numCols is just to ensure a set size in case bounds are approximate
         // left upper corner is reference for 0,0
         List<Block> blocks = getAllRegionBlocks(zd, binXStart, binXEnd, binYStart, binYEnd, normalizationType, fillUnderDiagonal);
-
+        
         float[][] data = new float[numRows][numCols];
-
+        
         if (blocks.size() > 0) {
             for (Block b : blocks) {
                 if (b != null) {
