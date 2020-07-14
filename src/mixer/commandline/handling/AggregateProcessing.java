@@ -26,6 +26,7 @@ package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
+import mixer.commandline.utils.drink.GenomewideBadIndexFinder;
 import mixer.commandline.utils.drink.SliceMatrix;
 
 
@@ -54,24 +55,34 @@ public class AggregateProcessing {
     
         String file1B = "/Users/muhammad/Desktop/local_hic_files/sub1bil.hic";
     
-        for (int w = 3; w < 10; w++) {
+        for (int w = 3; w < 3.1; w++) {
             SliceMatrix.USE_DERIV = true;
-            folder = "redo_slice_14w" + w + "_deriv";
+            folder = "redo_sparseV_slice_14w" + w + "_deriv";
             strings = new String[]{"slice", "-r", "100000", "-w", "" + w, //"--verbose",
                     file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
             System.out.println("-----------------------------------------------------");
-            MixerTools.main(strings);
+            //MixerTools.main(strings);
             System.gc();
         
             SliceMatrix.USE_DERIV = false;
-            folder = "redo_slice_14w" + w + "";
+            folder = "redo_sparseV_slice_14w" + w + "";
             strings = new String[]{"slice", "-r", "100000", "-w", "" + w, //"--verbose",
                     file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
             System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+    
+        for (float dd = -3f; dd < -2.9f; dd += 0.5f) {
+            SliceMatrix.USE_DERIV = false;
+            GenomewideBadIndexFinder.ZSCORE_THRESHOLD_HIGHER = dd;
+            folder = "redo_slice_14_d_" + dd + "_SPARSE";
+            strings = new String[]{"slice", "-r", "100000", "-w", "4", //"--verbose",
+                    file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+            System.out.println("----------------------------------------------------");
             MixerTools.main(strings);
             System.gc();
         }
-        
         
         /*
         

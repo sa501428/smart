@@ -26,19 +26,13 @@ package mixer.commandline.utils.drink;
 
 import mixer.MixerGlobals;
 import mixer.commandline.utils.common.FloatMatrixTools;
-import mixer.data.ChromosomeHandler;
-import mixer.data.Dataset;
-import mixer.data.HiCFileTools;
-import mixer.data.MatrixZoomData;
+import mixer.data.*;
 import mixer.windowui.NormalizationType;
 import org.broad.igv.feature.Chromosome;
 import org.broad.igv.util.Pair;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     
@@ -136,44 +130,40 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
      */
     private void fillInChromosomeRegion(float[][] matrix, GenomewideBadIndexFinder badIndices, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
                                         Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2, boolean isIntra) {
-        
+    
         int lengthChr1 = chr1.getLength() / resolution + 1;
         int lengthChr2 = chr2.getLength() / resolution + 1;
-        
-        float[][] allDataForRegion = null;
+    
+        List<Block> blocks = null;
         try {
             if (!isIntra) {
-                allDataForRegion = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0,
-                        lengthChr1, 0, lengthChr2, lengthChr1, lengthChr2, norm, isIntra);
-                
-                if (allDataForRegion == null) {
+                blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, isIntra);
+            
+                if (blocks == null || blocks.size() < 1) {
                     System.err.println("Missing Interchromosomal Data " + zd.getKey());
                     System.exit(98);
                 }
-                
-                FloatMatrixTools.cleanUpNansInfinitesNegatives(allDataForRegion);
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(99);
         }
-        
+    
         Map<Integer, Integer> genomePosToLocal1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, 1);
         Map<Integer, Integer> genomePosToLocal2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), offsetIndex2, 1);
         Map<Integer, Integer> genomePosToCompressed1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1, numColumnsToPutTogether);
         Map<Integer, Integer> genomePosToCompressed2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2, numColumnsToPutTogether);
-        
+    
         if (isIntra) {
             updateSubcompartmentMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, rowIndexToIntervalMap);
         }
-        
-        copyValuesToArea(matrix, allDataForRegion,
-                genomePosToLocal1, genomePosToCompressed1,
-                genomePosToLocal2, genomePosToCompressed2, isIntra);
+    
+        copyValuesToArea(matrix, blocks,
+                genomePosToLocal1, genomePosToCompressed1, genomePosToLocal2, genomePosToCompressed2, isIntra);
     }
     
     
-    private void copyValuesToArea(float[][] matrix, float[][] dataForRegion,
+    private void copyValuesToArea(float[][] matrix, List<Block> blocks,
                                   Map<Integer, Integer> genomePosToLocal1, Map<Integer, Integer> genomePosToCompressed1,
                                   Map<Integer, Integer> genomePosToLocal2, Map<Integer, Integer> genomePosToCompressed2, boolean isIntra) {
         if (isIntra) {
@@ -183,10 +173,22 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                 }
             }
         } else {
-            for (int binX : genomePosToLocal1.keySet()) {
-                for (int binY : genomePosToLocal2.keySet()) {
-                    matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += dataForRegion[binX][binY];
-                    matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += dataForRegion[binX][binY];
+            for (Block b : blocks) {
+                if (b != null) {
+                    for (ContactRecord cr : b.getContactRecords()) {
+                        float val = cr.getCounts();
+                        if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
+                            continue;
+                        }
+                        
+                        int binX = cr.getBinX();
+                        int binY = cr.getBinY();
+                        
+                        if (genomePosToLocal1.containsKey(binX) && genomePosToLocal2.containsKey(binY)) {
+                            matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val;
+                            matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val;
+                        }
+                    }
                 }
             }
         }
