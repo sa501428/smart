@@ -104,7 +104,7 @@ public class GrindUtils {
      * @param compositeMatrix
      */
     public static void cleanUpLabelsMatrixBasedOnData(float[][] labelsMatrix, float[][] compositeMatrix) {
-        float[] rowSums = FloatMatrixTools.getRowSums(compositeMatrix);
+        float[] rowSums = GrindFloatMatrixTools.getRowSums(compositeMatrix);
         zeroOutLabelsBasedOnNeighboringRowSums(labelsMatrix, rowSums);
     }
 
@@ -172,7 +172,7 @@ public class GrindUtils {
     public static void saveGrindMatrixDataToFile(String fileName, String path, float[][] data, boolean useTxtInsteadOfNPY) throws IOException {
         if (useTxtInsteadOfNPY) {
             String txtFileName = fileName + ".txt";
-            FloatMatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
+            GrindFloatMatrixTools.saveMatrixTextV2(path + "/" + txtFileName, data);
         } else {
             String npyFileName = fileName + ".npy";
             FloatMatrixTools.saveMatrixTextNumpy(path + "/" + npyFileName, data);
@@ -266,12 +266,12 @@ public class GrindUtils {
 
     private static float[][] invertMatrixRegion(float[][] data, Pair<Integer, Integer> boundaries) {
         float[][] transformedData = flipRowsInBoundaries(data, boundaries);
-        transformedData = FloatMatrixTools.transpose(transformedData);
+        transformedData = GrindFloatMatrixTools.transpose(transformedData);
         return flipRowsInBoundaries(transformedData, boundaries);
     }
 
     private static float[][] flipRowsInBoundaries(float[][] data, Pair<Integer, Integer> boundaries) {
-        float[][] transformedRegion = FloatMatrixTools.deepClone(data);
+        float[][] transformedRegion = GrindFloatMatrixTools.deepClone(data);
         for (int i = boundaries.getFirst(); i <= boundaries.getSecond(); i++) {
             int copyIndex = boundaries.getSecond() - i + boundaries.getFirst();
             System.arraycopy(data[i], 0, transformedRegion[copyIndex], 0, data[i].length);
@@ -281,7 +281,7 @@ public class GrindUtils {
 
     private static float[][] translocateMatrixRegion(float[][] data, Pair<Integer, Integer> boundaries, int newIndex) {
         float[][] transformedData = translateRowsInBoundaries(data, boundaries, newIndex);
-        transformedData = FloatMatrixTools.transpose(transformedData);
+        transformedData = GrindFloatMatrixTools.transpose(transformedData);
         return translateRowsInBoundaries(transformedData, boundaries, newIndex);
     }
 
@@ -350,8 +350,8 @@ public class GrindUtils {
     }
 
     public static boolean isTooEmpty(float[][] compositeMatrix) {
-
-        float[] rowSums = FloatMatrixTools.getRowSums(compositeMatrix);
+    
+        float[] rowSums = GrindFloatMatrixTools.getRowSums(compositeMatrix);
         int numZeros = 0;
 
         // if n rows in a row totally empty, let's skip
@@ -365,8 +365,8 @@ public class GrindUtils {
     }
 
     public static boolean isJustEmptyEnough(float[][] compositeMatrix) {
-
-        float[] rowSums = FloatMatrixTools.getRowSums(compositeMatrix);
+    
+        float[] rowSums = GrindFloatMatrixTools.getRowSums(compositeMatrix);
         int numZeros = 0;
 
         // if n rows in a row totally empty, let's skip

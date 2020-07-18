@@ -38,6 +38,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     
     public static int numColumnsToPutTogether = 2;
     public static boolean USE_DERIV = false;
+    private double globalInterPostFilterSumTotal = 0;
+    private long globalInterPostFilterCountTotal = 0;
     
     /**
      * for SLICE, minIntervalSize become how many bins to collapse together (e.g. 5 means 5 bins together)
@@ -80,8 +82,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             }
         }
         System.out.println(".");
-        
-        interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix);
+    
+        //interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix);
         System.out.println(".");
         
         if (MixerGlobals.printVerboseComments) {
@@ -158,12 +160,12 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             updateSubcompartmentMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, rowIndexToIntervalMap);
         }
     
-        copyValuesToArea(matrix, blocks,
+        copyValuesToArea(matrix, blocks, badIndices,
                 genomePosToLocal1, genomePosToCompressed1, genomePosToLocal2, genomePosToCompressed2, isIntra);
     }
     
     
-    private void copyValuesToArea(float[][] matrix, List<Block> blocks,
+    private void copyValuesToArea(float[][] matrix, List<Block> blocks, GenomewideBadIndexFinder badIndices,
                                   Map<Integer, Integer> genomePosToLocal1, Map<Integer, Integer> genomePosToCompressed1,
                                   Map<Integer, Integer> genomePosToLocal2, Map<Integer, Integer> genomePosToCompressed2, boolean isIntra) {
         if (isIntra) {
@@ -176,14 +178,22 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             for (Block b : blocks) {
                 if (b != null) {
                     for (ContactRecord cr : b.getContactRecords()) {
-                        float val = cr.getCounts();
+                        float val0 = cr.getCounts();
+                        float val = (float) Math.log(val0 + 1);
                         if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
                             continue;
                         }
-                        
+    
+                        if (badIndices.getExceedsAllowedGlobalZscore(val)) {
+                            val = Float.NaN;
+                        } else {
+                            globalInterPostFilterSumTotal += val0;
+                            globalInterPostFilterCountTotal += 1;
+                        }
+    
                         int binX = cr.getBinX();
                         int binY = cr.getBinY();
-                        
+    
                         if (genomePosToLocal1.containsKey(binX) && genomePosToLocal2.containsKey(binY)) {
                             matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val;
                             matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val;

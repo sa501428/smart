@@ -24,9 +24,9 @@
 
 package mixer.commandline.utils.mixer;
 
-import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.common.RealMatrixTools;
 import mixer.commandline.utils.common.UNIXTools;
+import mixer.commandline.utils.grind.GrindFloatMatrixTools;
 import mixer.commandline.utils.grind.GrindUtils;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -40,7 +40,7 @@ import java.io.File;
 import java.util.Random;
 
 public class DistortionMixedGenerator {
-
+    
     private final int specificResolution;
     private final String prefixString = System.currentTimeMillis() + "_";
     private final Chromosome chromI, chromJ;
@@ -48,11 +48,14 @@ public class DistortionMixedGenerator {
     private final NormalizationType norm;
     private final File outFolder;
     private final Random generator = new Random(0);
-    private Integer imgSliceWidth, imgHalfSliceWidth;
-    private Integer numManipulations, numExamplesPerRegion;
+    private final Integer imgSliceWidth;
+    private final Integer imgHalfSliceWidth;
+    private final Integer numManipulations;
+    private final Integer numExamplesPerRegion;
     private String negPath, posPath;
-    private int counter = 0, stride;
-
+    private final int stride;
+    private int counter = 0;
+    
     // grind -k KR -r 5000,10000,25000,100000 --stride 3 -c 1,2,3 --dense-labels --distort <hic file> null <128,4,1000> <directory>
     public DistortionMixedGenerator(Dataset ds, Dataset ds2, Pair<Chromosome, Chromosome> chromosomePair, int x, int y, int z, int resolution, NormalizationType norm, int stride, File outputDirectory) {
         this.imgSliceWidth = x;
@@ -232,30 +235,30 @@ public class DistortionMixedGenerator {
             float[][] compositeMatrixB = generateCompositeMatrixWithNansCleanedFromZDS(zdB1, zdB2, zdB12,
                     box1RectUL, box1RectLR, box2RectUL, box2RectLR, imgHalfSliceWidth, norm);
             if (compositeMatrixA == null || compositeMatrixB == null) return false;
-
+    
             //if (!GrindUtils.isJustEmptyEnough(compositeMatrix)) return false;
-
+    
             float[][] labelsMatrixA = GrindUtils.generateDefaultDistortionLabelsFile(compositeMatrixA.length, 4, isContinuousRegion);
             float[][] labelsMatrixB = GrindUtils.generateDefaultDistortionLabelsFile(compositeMatrixB.length, 4, isContinuousRegion);
             //GrindUtils.cleanUpLabelsMatrixBasedOnData(labelsMatrix, compositeMatrix);
-
-
-            float[][] compositeMatrixAB = FloatMatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
-            float[][] labelsMatrixAB = FloatMatrixTools.max(labelsMatrixA, labelsMatrixB);
-
+    
+    
+            float[][] compositeMatrixAB = GrindFloatMatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
+            float[][] labelsMatrixAB = GrindFloatMatrixTools.max(labelsMatrixA, labelsMatrixB);
+    
             String filePrefix = prefixString + "orig_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_matrix";
             GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrixAB, false);
             GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", negPath, labelsMatrixAB, false);
-
+    
             for (int k = 0; k < numManipulations; k++) {
                 Pair<float[][], float[][]> alteredMatrices = GrindUtils.randomlyManipulateMatrix(compositeMatrixB, labelsMatrixB, generator);
                 compositeMatrixB = alteredMatrices.getFirst();
                 labelsMatrixB = alteredMatrices.getSecond();
 
                 if (k == 0 || k == (numManipulations - 1) || generator.nextBoolean()) {
-                    compositeMatrixAB = FloatMatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
-                    labelsMatrixAB = FloatMatrixTools.max(labelsMatrixA, labelsMatrixB);
-
+                    compositeMatrixAB = GrindFloatMatrixTools.add(compositeMatrixA, compositeMatrixB, 1f, getRandScale());
+                    labelsMatrixAB = GrindFloatMatrixTools.max(labelsMatrixA, labelsMatrixB);
+    
                     filePrefix = prefixString + "dstrt_" + chrom1Name + "_" + box1XIndex + "_" + chrom2Name + "_" + box2XIndex + "_" + k + "_matrix";
                     GrindUtils.saveGrindMatrixDataToFile(filePrefix, posPath, compositeMatrixAB, false);
                     GrindUtils.saveGrindMatrixDataToFile(filePrefix + "_labels", posPath, labelsMatrixAB, false);

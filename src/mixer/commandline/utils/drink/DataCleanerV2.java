@@ -24,8 +24,8 @@
 
 package mixer.commandline.utils.drink;
 
-import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
+import mixer.commandline.utils.drink.obsolete.OldTools;
 import mixer.data.feature.GenomeWideList;
 import org.broad.igv.feature.Chromosome;
 
@@ -146,10 +146,10 @@ public class DataCleanerV2 extends DataCleaner {
     }
 
     public float[][] getMatrixModIndicesOfColumns(int modIndx, int base) {
-        return FloatMatrixTools.getMatrixModIndicesOfColumns(getCleanedData(), modIndx, base);
+        return OldTools.getMatrixModIndicesOfColumns(getCleanedData(), modIndx, base);
     }
 
     public float[][] getHalfOfMatrix(boolean getFirstHalf) {
-        return FloatMatrixTools.getHalfOfMatrix(getCleanedData(), getFirstHalf);
+        return OldTools.getHalfOfMatrix(getCleanedData(), getFirstHalf);
     }
 }

@@ -25,7 +25,7 @@
 package mixer.commandline.tools;
 
 import mixer.MixerGlobals;
-import mixer.commandline.utils.common.FloatMatrixTools;
+import mixer.commandline.utils.drink.obsolete.OldTools;
 import mixer.data.ContactRecord;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -105,8 +105,8 @@ public class ChromosomeCalculation {
             for (int idx : dataMapForChromosome.keySet()) {
                 values[idx] = dataMapForChromosome.get(idx);
             }
-
-            float[] newAvgAfterSliding = FloatMatrixTools.runSlidingAverageOnArray(slidingWindow, values);
+    
+            float[] newAvgAfterSliding = OldTools.runSlidingAverageOnArray(slidingWindow, values);
 
             for (int idx : dataMapForChromosome.keySet()) {
                 if (values[idx] > 0) {
