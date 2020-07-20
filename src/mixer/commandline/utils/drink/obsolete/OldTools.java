@@ -35,7 +35,7 @@ public class OldTools {
 	
 	public static float[][] inPlaceDerivAndThresholdDownCols(float[][] matrix, float threshold) {
 		float[][] concatenatedMatrix = getFullMatrixWithAppendedSmoothDerivative(matrix);
-		FloatMatrixTools.thresholdInPlaceByZscoreDownCols(concatenatedMatrix, threshold, 1);
+		thresholdInPlaceByZscoreDownCols(concatenatedMatrix, threshold, 1);
 		return concatenatedMatrix;
 	}
 	
@@ -70,6 +70,23 @@ public class OldTools {
 		}
 	}
 	
+	public static void thresholdInPlaceByZscoreDownCols(float[][] matrix, float threshold, int batchSize) {
+		float[] colMeans = FloatMatrixTools.getColMeansNonNan(matrix, batchSize);
+		float[] colStdDevs = FloatMatrixTools.getColStdDevNonNans(matrix, colMeans, batchSize);
+		
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				float val = matrix[i][j];
+				if (!Float.isNaN(val)) {
+					int newJ = j / batchSize;
+					float newVal = (val - colMeans[newJ]) / colStdDevs[newJ];
+					if (newVal > threshold || newVal < -threshold) {
+						matrix[i][j] = Float.NaN;
+					}
+				}
+			}
+		}
+	}
 	
 	public static float[][] inPlaceZscoreDownRows(float[][] matrix, float threshold) {
 		float[] rowMeans = GrindFloatMatrixTools.getRowSums(matrix);

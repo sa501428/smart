@@ -35,17 +35,17 @@ import java.util.Arrays;
  */
 public class FloatMatrixTools {
     
-    public static void thresholdInPlaceByZscoreDownCols(float[][] matrix, float threshold, int batchSize) {
+    public static void thresholdByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
         float[] colMeans = getColMeansNonNan(matrix, batchSize);
         float[] colStdDevs = getColStdDevNonNans(matrix, colMeans, batchSize);
-        
+    
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
                     int newJ = j / batchSize;
                     float newVal = (val - colMeans[newJ]) / colStdDevs[newJ];
-                    if (newVal > threshold || newVal < -threshold) {
+                    if (newVal > threshold || newVal < -threshold || val < 1e-10) {
                         matrix[i][j] = Float.NaN;
                     }
                 }

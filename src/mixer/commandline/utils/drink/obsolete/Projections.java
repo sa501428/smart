@@ -202,7 +202,7 @@ public class Projections extends MatrixCleanup {
 	
 	public float[][] getCleanedMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[][] origDimensions) {
 		
-		thresholdByZscoreToNanDownColumn(data, zScoreThreshold, 1);
+		FloatMatrixTools.thresholdByZscoreToNanDownColumn(data, zScoreThreshold, 1);
 		Set<Integer> badIndices = getBadIndices(data);
 		data = filterOutColumnsAndRows(data, badIndices, rowIndexToIntervalMap);
 		System.out.println("matrix size " + data.length + " x " + data[0].length);
@@ -237,7 +237,7 @@ public class Projections extends MatrixCleanup {
 		// clone original matrix
 		//float[][] clone = cloneAndMovAvgOnMatrix(interMatrix);
 		//interMatrix = null;
-		FloatMatrixTools.thresholdInPlaceByZscoreDownCols(interMatrix, zScoreThreshold, 1);
+		OldTools.thresholdInPlaceByZscoreDownCols(interMatrix, zScoreThreshold, 1);
 		movAvgOnMatrix(interMatrix);
 		
 		if (MixerGlobals.printVerboseComments) {

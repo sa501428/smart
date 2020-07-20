@@ -26,6 +26,7 @@ package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
+import mixer.commandline.utils.drink.MatrixCleanup;
 
 
 /**
@@ -49,31 +50,28 @@ public class AggregateProcessing {
                 "/Users/muhammad/Desktop/drinks/existingmethods/New_STRICT_gold_standard.bed";
         String file42 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic";
         String file14 = "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic";
+        String file15B = "/Users/muhammad/Desktop/GM12878_insitu_combined_15B_30.hic";
         String folder;
     
-        String file1B = "/Users/muhammad/Desktop/local_hic_files/sub1bil.hic";
     
-        folder = "slice_gm14_ColZ_kr_25k_40";
-        strings = new String[]{"slice", "-r", "25000", "-k", "GW_KR", "-w", "40", //"--verbose",
-                file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+        for (int batch_size : new int[]{5, 10}) {
+            folder = "slice_gm14_nZr_" + batch_size;
+            MatrixCleanup.BATCHED_NUM_ROWS = batch_size;
+            strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "4", //"--verbose",
+                    file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
+    
+    
+        folder = "slice_gm15B_noZero";
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "4", //"--verbose",
+                file15B, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
         System.out.println("-----------------------------------------------------");
         //MixerTools.main(strings);
         System.gc();
     
-    
-        folder = "slice_gm42_ColZ_kr_25k_40";
-        strings = new String[]{"slice", "-r", "25000", "-k", "KR", "-w", "40", //"--verbose",
-                file42, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
-    
-        folder = "slice_gm42_ColZ_kr_10k_100";
-        strings = new String[]{"slice", "-r", "10000", "-k", "KR", "-w", "100", //"--verbose",
-                file42, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
         
         /*
         for (int w = 3; w < 3.1; w++) {

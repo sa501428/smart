@@ -32,7 +32,7 @@ import java.util.*;
 public class MatrixCleanup {
     private final static float PERCENT_ZERO_ALLOWED = .5f;
     protected static float zScoreThreshold = 3f;
-    private final int BATCHED_NUM_ROWS = 1;
+    public static int BATCHED_NUM_ROWS = 10;
     protected File outputDirectory;
     protected Random generator;
     
@@ -46,36 +46,20 @@ public class MatrixCleanup {
         this.outputDirectory = outputDirectory;
     }
     
-    public static void thresholdByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
-        float[] colMeans = FloatMatrixTools.getColMeansNonNan(matrix, batchSize);
-        float[] colStdDevs = FloatMatrixTools.getColStdDevNonNans(matrix, colMeans, batchSize);
-        
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
-                    int newJ = j / batchSize;
-                    float newVal = (val - colMeans[newJ]) / colStdDevs[newJ];
-                    if (newVal > threshold || newVal < -threshold) {
-                        matrix[i][j] = Float.NaN;
-                    }
-                }
-            }
-        }
-    }
-    
     public float[][] getSimpleCleaningOfMatrixAppendDeriv(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[][] origDimensions, boolean useDerivative) {
-        thresholdByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
+        FloatMatrixTools.thresholdByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
         Set<Integer> badIndices = getBadIndices(data);
-        data = filterOutColumnsAndRowsNonSymmetricMatrix(data, badIndices, rowIndexToIntervalMap);
+        if (badIndices.size() > 0) {
+            data = filterOutColumnsAndRowsNonSymmetricMatrix(data, badIndices, rowIndexToIntervalMap);
+        }
         System.out.println("matrix size " + data.length + " x " + data[0].length);
-        
+    
         //if (useDerivative) {
         //    data = FloatMatrixDerivativeTools.getWithAppendedNonNanDerivative(data);
         //}
-        
+    
         FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
-        
+    
         // no zscore!!
         //FloatMatrixTools.inPlaceZscoreDownRowsNoNan(data);
         return data;
