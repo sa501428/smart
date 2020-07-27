@@ -26,7 +26,6 @@ package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
-import mixer.commandline.utils.drink.MatrixCleanup;
 
 
 /**
@@ -54,24 +53,12 @@ public class AggregateProcessing {
         String folder;
     
     
-        for (int batch_size : new int[]{5, 10}) {
-            folder = "slice_gm14_nZr_" + batch_size;
-            MatrixCleanup.BATCHED_NUM_ROWS = batch_size;
-            strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "4", //"--verbose",
-                    file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
-            System.out.println("-----------------------------------------------------");
-            MixerTools.main(strings);
-            System.gc();
-        }
-    
-    
-        folder = "slice_gm15B_noZero";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "4", //"--verbose",
-                file15B, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+        folder = "restore_w1";
+        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "1", //"--verbose",
+                file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
         System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
-    
         
         /*
         for (int w = 3; w < 3.1; w++) {

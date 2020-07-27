@@ -53,7 +53,7 @@ public class ExtractingOEDataUtils {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 if (Float.isInfinite(matrix[i][j]) || Math.abs(matrix[i][j]) < 1E-10) {
-                    matrix[i][j] = 0;
+                    matrix[i][j] = Float.NaN;
                 }
             }
         }

@@ -181,7 +181,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                         float val0 = cr.getCounts();
                         float val = (float) Math.log(val0 + 1);
                         if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
-                            continue;
+                            val = Float.NaN;
                         }
     
                         if (badIndices.getExceedsAllowedGlobalZscore(val)) {
