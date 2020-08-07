@@ -68,6 +68,8 @@ public class CLTFactory {
             return new Grind();
         } else if (cmd.equals("distort")) {
             return new Distortion();
+        } else if (cmd.equals("walk")) {
+            return new ChromosomeWalker();
         }
 
         return null;
