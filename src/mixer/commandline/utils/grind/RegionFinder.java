@@ -28,7 +28,7 @@ import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.common.IntMatrixTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
 import mixer.data.*;
-import mixer.mapcolorui.Feature2DHandler;
+import mixer.track.Feature2DHandler;
 import mixer.track.feature.Feature2D;
 import mixer.track.feature.Feature2DList;
 import mixer.windowui.NormalizationType;

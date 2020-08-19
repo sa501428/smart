@@ -42,7 +42,7 @@ public class LeftOverClusterIdentifier {
     public static void identify(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
                                 GenomewideBadIndexFinder badIndexFinder,
-                                float threshold, double[] convolution) {
+                                float threshold) {
     
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr1, resolution);
@@ -54,15 +54,9 @@ public class LeftOverClusterIdentifier {
                         norm, threshold,
                         AggregateProcessing.afterThresholdType,
                         true);
-
-                if (AggregateProcessing.useDerivative) {
-                    allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
-                            DoubleMatrixTools.smoothAndAppendDerivativeDownColumn(
-                                    DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()), convolution));
-                } else {
-                    allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
-                            DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
-                }
+            
+                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
+                        DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
             
             } catch (Exception e) {
                 e.printStackTrace();

@@ -37,7 +37,7 @@ import java.util.*;
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     
     public static int numColumnsToPutTogether = 2;
-    public static boolean USE_DERIV = false;
+    public static boolean USE_CORRELATION = false;
     private double globalInterPostFilterSumTotal = 0;
     private long globalInterPostFilterCountTotal = 0;
     
@@ -91,8 +91,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
         
         MatrixCleanup matrixCleanupReduction = new MatrixCleanup(interMatrix, generator.nextLong(), outputDirectory);
-        
-        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendDeriv(rowIndexToIntervalMap, dimensions.getSecond(), USE_DERIV);
+    
+        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendDeriv(rowIndexToIntervalMap, dimensions.getSecond(), USE_CORRELATION);
     }
     
     protected Map<Integer, Integer> calculateActualLengthForChromosomes(Chromosome[] chromosomes) {
@@ -112,7 +112,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         Map<Integer, Integer> indexToCompressedLength = new HashMap<>();
         for (Integer key : initialMap.keySet()) {
             int val = (int) Math.ceil((double) initialMap.get(key) / numColumnsToPutTogether);
-            System.out.println("size of " + key + " " + val + " was (" + initialMap.get(key) + ") num cols " + numColumnsToPutTogether);
+            //System.out.println("size of " + key + " " + val + " was (" + initialMap.get(key) + ") num cols " + numColumnsToPutTogether);
             indexToCompressedLength.put(key, val);
         }
         

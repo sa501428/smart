@@ -29,7 +29,7 @@ import mixer.commandline.utils.common.UNIXTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.HiCFileTools;
 import mixer.data.MatrixZoomData;
-import mixer.mapcolorui.Feature2DHandler;
+import mixer.track.Feature2DHandler;
 import mixer.track.feature.Feature2D;
 import mixer.track.feature.FeatureFunction;
 import org.apache.commons.math.linear.RealMatrix;

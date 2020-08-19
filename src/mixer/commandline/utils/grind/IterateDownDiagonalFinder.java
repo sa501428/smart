@@ -27,7 +27,7 @@ package mixer.commandline.utils.grind;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.data.HiCFileTools;
 import mixer.data.MatrixZoomData;
-import mixer.mapcolorui.Feature2DHandler;
+import mixer.track.Feature2DHandler;
 import org.broad.igv.feature.Chromosome;
 
 import java.io.*;

@@ -26,6 +26,7 @@ package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
 import mixer.commandline.utils.drink.ExtractingOEDataUtils;
+import mixer.commandline.utils.drink.SliceMatrix;
 
 
 /**
@@ -49,16 +50,28 @@ public class AggregateProcessing {
                 "/Users/muhammad/Desktop/drinks/existingmethods/New_STRICT_gold_standard.bed";
         String file42 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic";
         String file14 = "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic";
-        String file15B = "/Users/muhammad/Desktop/GM12878_insitu_combined_15B_30.hic";
+        String file15B = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic";
         String folder;
     
+        SliceMatrix.USE_CORRELATION = false;
     
-        folder = "restore_w1";
-        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "1", //"--verbose",
-                file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
+        for (int k = 1; k <= 512; k *= 2) {
+            folder = "slice_14_t2_w" + k + "_test";
+            strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "" + k, //"--verbose",
+                    file14, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
+    
+        for (int k = 1; k <= 512; k *= 2) {
+            folder = "slice_15B_w" + k + "_test";
+            strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "" + k, //"--verbose",
+                    file15B, "/Users/muhammad/Desktop/slice/" + folder, folder + "_", refs};
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
         
         /*
         for (int w = 3; w < 3.1; w++) {

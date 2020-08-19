@@ -53,17 +53,15 @@ public class Drink extends MixerCLT {
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    private final int numIntraIters = 1;
+    //private final int numIntraIters = 1;
     private final float oeThreshold = 3f;
     private final int whichApproachtoUse = 0;
     private final List<Dataset> datasetList = new ArrayList<>();
-    private List<String> inputHicFilePaths = new ArrayList<>();
+    private final List<String> inputHicFilePaths = new ArrayList<>();
     private final boolean compareOnlyNotSubcompartment;
-    private int[] numIntraClusters = new int[]{5, 5, 5};
-    private double[] convolution1d = null;
-    private Random generator = new Random(22871L);
-    private int derivativeStatus = 0;
-    private boolean useNormalizationOfRows = false;
+    //private int[] numIntraClusters = new int[]{5, 5, 5};
+    //private double[] convolution1d = null;
+    private final Random generator = new Random(22871L);
     private boolean useStackingAlongRow = false;
     private int minIntervalSizeAllowed = 1; // 1
     private String prefix = "";
@@ -85,8 +83,6 @@ public class Drink extends MixerCLT {
         if (args.length != 4 && args.length != 5) {
             printUsageAndExit(5);
         }
-        
-        determineNumClusters(mixerParser);
         
         if (whichApproachtoUse == 0) {
             for (String path : args[1].split("\\+")) {
@@ -119,25 +115,18 @@ public class Drink extends MixerCLT {
                 generator.setSeed(seed);
             }
         }
-        
+    
         int minSize = mixerParser.getAPAWindowSizeOption();
         if (minSize > 0) {
             minIntervalSizeAllowed = minSize;
         }
-        
-        convolution1d = mixerParser.getConvolutionOption();
-        derivativeStatus = mixerParser.getUsingDerivativeStatus();
-        useNormalizationOfRows = mixerParser.getUsingRowNomalizationStatus();
-        
+    
+        //convolution1d = mixerParser.getConvolutionOption();
+        //derivativeStatus = mixerParser.getUsingDerivativeStatus();
+        //useNormalizationOfRows = mixerParser.getUsingRowNomalizationStatus();
+    
         if (args.length == 5) {
             referenceBedFiles = args[4].split("\\+");
-        }
-    }
-    
-    private void determineNumClusters(CommandLineParserForMixer mixerParser) {
-        int n = mixerParser.getMatrixSizeOption();
-        if (n > 1) {
-            numIntraClusters = new int[]{n, n, n};
         }
     }
     
@@ -155,16 +144,16 @@ public class Drink extends MixerCLT {
         
         if (useStackingAlongRow) {
             FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(0),
-                    chromosomeHandler, resolution, norm, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles, useLink);
+                    chromosomeHandler, resolution, norm, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
             for (int i = 1; i < datasetList.size(); i++) {
                 withinClusters.appendGWDataFromAdditionalDataset(datasetList.get(i));
             }
-            withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, 0, convolution1d);
+            withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, 0);
         } else {
             for (int i = 0; i < datasetList.size(); i++) {
                 FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                        chromosomeHandler, resolution, norm, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles, useLink);
-                withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, i, convolution1d);
+                        chromosomeHandler, resolution, norm, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+                withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, i);
             }
             System.out.println("\nClustering complete");
         }

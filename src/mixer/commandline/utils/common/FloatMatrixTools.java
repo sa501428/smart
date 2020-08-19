@@ -24,6 +24,7 @@
 
 package mixer.commandline.utils.common;
 
+import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.jetbrains.bio.npy.NpyFile;
 
 import java.nio.file.Paths;
@@ -35,10 +36,12 @@ import java.util.Arrays;
  */
 public class FloatMatrixTools {
     
+    private static final PearsonsCorrelation pearsonsCorrelation = new PearsonsCorrelation();
+    
     public static void thresholdByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
         float[] colMeans = getColMeansNonNan(matrix, batchSize);
         float[] colStdDevs = getColStdDevNonNans(matrix, colMeans, batchSize);
-    
+        
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
