@@ -24,6 +24,7 @@
 
 package mixer.commandline.utils.drink;
 
+import mixer.MixerGlobals;
 import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
@@ -38,6 +39,7 @@ import java.io.File;
 import java.util.*;
 
 public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
+
     public LinksMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution, GenomeWideList<SubcompartmentInterval> intraSubcompartments, int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] referenceBedFiles) {
         super(chromosomeHandler, ds, norm, resolution, intraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
     }
@@ -45,7 +47,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
     float[][] makeCleanScaledInterMatrix(Dataset ds) {
 
         Map<Integer, Integer> indexToFilteredLength = calculateActualLengthForChromosomes(chromosomes, intraSubcompartments);
-        Pair<Integer, int[]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
+        Pair<Integer, int[][]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         float[][] interMatrix = new float[dimensions.getFirst()][dimensions.getFirst()];
 
         System.out.println(".");
@@ -57,7 +59,7 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
 
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
 
-                fillInChromosomeRegion(interMatrix, zd, chr1, dimensions.getSecond()[i], chr2, dimensions.getSecond()[j], i == j);
+                fillInChromosomeRegion(interMatrix, zd, chr1, dimensions.getSecond()[0][i], chr2, dimensions.getSecond()[0][j], i == j);
                 System.out.print(".");
             }
         }
@@ -73,9 +75,20 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
 
-        FloatMatrixTools.inPlaceZscoreDownCols(interMatrix);
+        //FloatMatrixTools.inPlaceZscoreThresholdToNan(interMatrix, 5f);
+        //FloatMatrixTools.inPlaceZscoreDownCols(interMatrix, 5f);
+        //interMatrix = FloatMatrixTools.inPlaceDerivAndZscoreDownCols(interMatrix, 5f);
+        if (MixerGlobals.printVerboseComments) {
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix, dimensions.getSecond());
+        }
 
-        return interMatrix;
+        MatrixCleanupReduction matrixCleanupReduction = new MatrixCleanupReduction(interMatrix, generator.nextLong(), outputDirectory);
+
+        return matrixCleanupReduction.getCleanedMatrix(rowIndexToIntervalMap, dimensions.getSecond());
+    }
+
+    private float[][] filterDownMatrix(float[][] interMatrix, Set<Integer> badIndices) {
+        return new float[0][];
     }
 
 
@@ -184,63 +197,23 @@ public class LinksMatrix extends CompositeGenomeWideDensityMatrix {
 
     private float[][] augmentMatrixRegion(float[][] input) {
 
-        List<Float> values = new ArrayList<>();
+        float[][] output = new float[input.length][input[0].length];
+
+        float avg = 0;
         for (int i = 0; i < input.length; i++) {
             for (int j = 0; j < input[i].length; j++) {
-                float val = input[i][j];
-                if (val > 0) {
-                    values.add(val);
+                if (!Float.isNaN(input[i][j])) {
+                    avg += input[i][j];
                 }
             }
         }
 
-        int numNonZero = values.size();
-        float percentFilled = numNonZero / ((float) (input.length * input[0].length));
+        avg = avg / (input.length * input[0].length);
 
-        if (numNonZero > 3 && percentFilled > .3) {
-            Collections.sort(values);
-            if (values.get(values.size() - 1) - values.get(0) < .01) {
-                System.err.println("Weird - not enhancing");
-            } else {
-                float[][] output = new float[input.length][input[0].length];
-                float mean = getMean(values);
-                float stdDev = getSampleStdDev(values, mean);
-
-                for (int i = 0; i < input.length; i++) {
-                    for (int j = 0; j < input[i].length; j++) {
-                        float val = input[i][j];
-                        if (val < 1e-3) {
-                            input[i][j] = getNewRandVal(mean, stdDev);
-                        }
-                    }
-                }
-            }
+        for (float[] oRow : output) {
+            Arrays.fill(oRow, avg);
         }
 
-        return input;
+        return output;
     }
-
-    private float getNewRandVal(float mean, float stdDev) {
-        float zVal = 2 * generator.nextFloat() - 1;
-        return mean + stdDev * zVal;
-    }
-
-    private float getMean(List<Float> values) {
-        float total = 0;
-        for (Float val : values) {
-            total += val;
-        }
-        return total / values.size();
-    }
-
-    private float getSampleStdDev(List<Float> values, float mean) {
-        double total = 0;
-        for (Float val : values) {
-            float diff = val - mean;
-            total += (diff * diff);
-        }
-        return (float) (total / (values.size() - 1));
-    }
-
-
 }
