@@ -22,30 +22,25 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.commandline.utils.slice.kmeansfloat;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Exception thrown when insufficient memory is available to
+ * perform an operation.  Designed to be throw before doing
+ * something that would cause a <code>java.lang.OutOfMemoryError</code>.
  */
-public class MixerGlobals {
+class InsufficientMemoryException extends Exception {
 
-    public static final String versionNum = "3.00.01";
-    public static final int minVersion = 6;
-    public static final int bufferSize = 2097152;
+    private static final long serialVersionUID = 72138634L;
 
-    // whether MatrixZoomData should cache or not
-    public static boolean useCache = false;
-    public static boolean printVerboseComments = false;
-
-    // whether instance was linked before mouse press or not
-    public static boolean isLegacyOutputPrintingEnabled = false;
-    public static boolean usePositiveDiffKmeans = false;
-
-    public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
-        if (version < minVersion) {
-            throw new RuntimeException("This file is version " + version +
-                    ". Only versions " + minVersion + " and greater are supported at this time.");
-        }
+    /**
+     * Constructor.
+     *
+     * @param message an explanatory message.
+     */
+    public InsufficientMemoryException(String message) {
+        super(message);
     }
+
 }
+

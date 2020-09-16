@@ -22,30 +22,34 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.commandline.utils.slice.kmeansfloat;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Simple K-Means clustering interface.
  */
-public class MixerGlobals {
+interface KMeans extends Runnable {
 
-    public static final String versionNum = "3.00.01";
-    public static final int minVersion = 6;
-    public static final int bufferSize = 2097152;
+    /**
+     * Adds a KMeansListener to be notified of significant happenings.
+     *
+     * @param l the listener to be added.
+     */
+    void addKMeansListener(KMeansListener l);
 
-    // whether MatrixZoomData should cache or not
-    public static boolean useCache = false;
-    public static boolean printVerboseComments = false;
+    /**
+     * Removes a KMeansListener from the listener list.
+     *
+     * @param l the listener to be removed.
+     */
+    void removeKMeansListener(KMeansListener l);
 
-    // whether instance was linked before mouse press or not
-    public static boolean isLegacyOutputPrintingEnabled = false;
-    public static boolean usePositiveDiffKmeans = false;
+    /**
+     * Get the clusters computed by the algorithm.  This method should
+     * not be called until clustering has completed successfully.
+     *
+     * @return an array of Cluster objects.
+     */
+    Cluster[] getClusters();
 
-    public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
-        if (version < minVersion) {
-            throw new RuntimeException("This file is version " + version +
-                    ". Only versions " + minVersion + " and greater are supported at this time.");
-        }
-    }
 }
+

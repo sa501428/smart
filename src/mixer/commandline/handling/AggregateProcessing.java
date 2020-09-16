@@ -25,8 +25,8 @@
 package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
-import mixer.commandline.utils.drink.ExtractingOEDataUtils;
-import mixer.commandline.utils.drink.SliceMatrix;
+import mixer.commandline.utils.slice.ExtractingOEDataUtils;
+import mixer.commandline.utils.slice.SliceMatrix;
 
 
 /**

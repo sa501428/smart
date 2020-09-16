@@ -22,30 +22,35 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.commandline.utils.slice.kmeansfloat;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Defines object which register with implementation of <code>KMeans</code>
+ * to be notified of significant events during clustering.
  */
-public class MixerGlobals {
+public interface KMeansListener {
 
-    public static final String versionNum = "3.00.01";
-    public static final int minVersion = 6;
-    public static final int bufferSize = 2097152;
+    /**
+     * A message has been received.
+     *
+     * @param message
+     */
+    void kmeansMessage(String message);
 
-    // whether MatrixZoomData should cache or not
-    public static boolean useCache = false;
-    public static boolean printVerboseComments = false;
+    /**
+     * KMeans is complete.
+     *
+     * @param clusters      the output of clustering.
+     * @param executionTime the time in milliseconds taken to cluster.
+     */
+    void kmeansComplete(Cluster[] clusters, long executionTime);
 
-    // whether instance was linked before mouse press or not
-    public static boolean isLegacyOutputPrintingEnabled = false;
-    public static boolean usePositiveDiffKmeans = false;
+    /**
+     * An error occurred during KMeans clustering.
+     *
+     * @param t
+     */
+    void kmeansError(Throwable t);
 
-    public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
-        if (version < minVersion) {
-            throw new RuntimeException("This file is version " + version +
-                    ". Only versions " + minVersion + " and greater are supported at this time.");
-        }
-    }
 }
+
