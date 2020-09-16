@@ -36,11 +36,8 @@ import java.util.*;
 
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     
-    public static boolean USE_TYPE2_LOG = true;
     public static int numColumnsToPutTogether = 2;
     public static boolean USE_CORRELATION = false;
-    private double globalInterPostFilterSumTotal = 0;
-    private long globalInterPostFilterCountTotal = 0;
     
     /**
      * for SLICE, minIntervalSize become how many bins to collapse together (e.g. 5 means 5 bins together)
@@ -84,9 +81,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
     
-        if (USE_TYPE2_LOG) {
-            interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix);
-        }
+        interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix);
     
         System.out.println(".");
     
@@ -184,30 +179,16 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                     for (ContactRecord cr : b.getContactRecords()) {
                         float val0 = cr.getCounts();
                         float val = (float) Math.log(val0 + 1);
-                        if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
-                            val = Float.NaN;
+                        if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val) || badIndices.getExceedsAllowedGlobalZscore(val)) {
                             val0 = Float.NaN;
-                        }
-    
-                        if (badIndices.getExceedsAllowedGlobalZscore(val)) {
-                            val = Float.NaN;
-                            val0 = Float.NaN;
-                        } else {
-                            globalInterPostFilterSumTotal += val0;
-                            globalInterPostFilterCountTotal += 1;
                         }
     
                         int binX = cr.getBinX();
                         int binY = cr.getBinY();
     
                         if (genomePosToLocal1.containsKey(binX) && genomePosToLocal2.containsKey(binY)) {
-                            if (USE_TYPE2_LOG) {
-                                matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val0;
-                                matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val0;
-                            } else {
-                                matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val;
-                                matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val;
-                            }
+                            matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val0;
+                            matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val0;
                         }
                     }
                 }
