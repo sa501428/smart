@@ -41,33 +41,30 @@ import java.util.*;
 public abstract class CompositeGenomeWideDensityMatrix {
     protected final NormalizationType norm;
     protected final int resolution;
-    protected final GenomeWideList<SubcompartmentInterval> intraSubcompartments;
     private final float[][] gwCleanMatrix;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
-    protected final int minIntervalSizeAllowed;
     protected final Random generator;
     protected final File outputDirectory;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
-
+    protected GenomewideBadIndexFinder badIndexLocations;
+    
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                            GenomeWideList<SubcompartmentInterval> intraSubcompartments,
-                                            int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] relativeTestFiles) {
-        this.minIntervalSizeAllowed = minIntervalSizeAllowed;
+                                            File outputDirectory, Random generator, String[] relativeTestFiles) {
         this.norm = norm;
         this.resolution = resolution;
-        this.intraSubcompartments = intraSubcompartments;
         this.outputDirectory = outputDirectory;
         this.generator = generator;
-
+        
         chrIndxTorowIndexToGoldIDMapList.clear();
         if (relativeTestFiles != null) {
             for (String filename : relativeTestFiles) {
                 chrIndxTorowIndexToGoldIDMapList.add(DrinkUtils.createGoldStandardLookup(filename, resolution));
             }
         }
-
+        
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
+        badIndexLocations = new GenomewideBadIndexFinder(ds, chromosomes, resolution, norm);
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
     }
 
@@ -99,7 +96,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
             }
 
             for (int i : cluster.getMemberIndexes()) {
-                withinClusterSumOfSquares += ClusterTools.getPositiveVectorMSEDifference(cluster.getCenter(), gwCleanMatrix[i]);
+                withinClusterSumOfSquares += ClusterTools.getNonNanVectorSumOfSquares(cluster.getCenter(), gwCleanMatrix[i]);
 
                 try {
                     SubcompartmentInterval interv;
@@ -168,23 +165,6 @@ public abstract class CompositeGenomeWideDensityMatrix {
         return new Pair<>(total, indices);
     }
 
-    protected Map<Integer, Integer> calculateActualLengthForChromosomes(Chromosome[] chromosomes, GenomeWideList<SubcompartmentInterval> intraSubcompartments) {
-        Map<Integer, Integer> indexToFilteredLength = new HashMap<>();
-        for (Chromosome chrom : chromosomes) {
-            int val = 0;
-            List<SubcompartmentInterval> intervals = intraSubcompartments.getFeatures("" + chrom.getIndex());
-            for (SubcompartmentInterval interval : intervals) {
-                int numCols = interval.getWidthForResolution(resolution);
-                if (numCols >= minIntervalSizeAllowed) {
-                    val += numCols;
-                }
-            }
-            indexToFilteredLength.put(chrom.getIndex(), val);
-        }
-
-        return indexToFilteredLength;
-    }
-
     public float[][] getCleanedData() {
         return gwCleanMatrix;
     }
@@ -201,13 +181,17 @@ public abstract class CompositeGenomeWideDensityMatrix {
         System.out.println(getLength() + " -v- " + getWidth());
         FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
     }
-
+    
     public void appendDataAlongExistingRows(CompositeGenomeWideDensityMatrix additionalData) {
         if (getLength() != additionalData.getLength()) {
             System.err.println("***************************************\n" +
                     "Dimension mismatch: " + getLength() + " != " + additionalData.getLength());
         } else {
-
+        
         }
+    }
+    
+    public GenomewideBadIndexFinder getBadIndices() {
+        return badIndexLocations;
     }
 }

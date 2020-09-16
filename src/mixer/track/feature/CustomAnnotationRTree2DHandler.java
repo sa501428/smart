@@ -24,7 +24,7 @@
 
 package mixer.track.feature;
 
-import mixer.mapcolorui.Feature2DHandler;
+import mixer.track.Feature2DHandler;
 
 import java.io.File;
 import java.io.PrintWriter;

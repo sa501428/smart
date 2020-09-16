@@ -22,12 +22,11 @@
  *  THE SOFTWARE.
  */
 
-package mixer.mapcolorui;
+package mixer.track;
 
 import gnu.trove.procedure.TIntProcedure;
 import mixer.data.ChromosomeHandler;
 import mixer.data.MatrixZoomData;
-import mixer.track.HiCGridAxis;
 import mixer.track.feature.Feature2D;
 import mixer.track.feature.Feature2DList;
 import mixer.track.feature.Feature2DParser;

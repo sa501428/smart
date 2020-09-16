@@ -84,7 +84,7 @@ public class ComparativeSubcompartmentsProcessor {
                 String key1 = getClusterPairID(indx1, indx2);
                 String key2 = getClusterPairID(indx2, indx1);
                 if (n1 == n2 && !indx1.equals(indx2) && !differences.containsKey(key1)) {
-                    double distance = ClusterTools.getDistance(idToCentroidMap.get(indx1), idToCentroidMap.get(indx2));
+                    double distance = ClusterTools.getL2Distance(idToCentroidMap.get(indx1), idToCentroidMap.get(indx2));
                     differences.put(key1, distance);
                     differences.put(key2, distance);
                 }

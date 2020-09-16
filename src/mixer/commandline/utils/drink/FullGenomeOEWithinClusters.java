@@ -42,68 +42,51 @@ public class FullGenomeOEWithinClusters {
     private final ChromosomeHandler chromosomeHandler;
     private final int resolution;
     private final NormalizationType norm;
-    private final GenomeWideList<SubcompartmentInterval> origIntraSubcompartments;
     protected final File outputDirectory;
-    private int minIntervalSizeAllowed; // 1
-    private final int numRounds = 10;//10
+    private final int numRounds = 2;//10
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
-    private final int numAttemptsForKMeans = 7;//5
+    private final int numAttemptsForKMeans = 5;//5 //7 //5
     private final Random generator;
-    private final boolean useLink;
-
+    
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      GenomeWideList<SubcompartmentInterval> origIntraSubcompartments, float oeThreshold,
-                                      int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] referenceBedFiles, boolean useLink) {
+                                      float oeThreshold, int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] referenceBedFiles) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
         this.norm = norm;
         this.oeThreshold = oeThreshold;
-        DrinkUtils.collapseGWList(origIntraSubcompartments);
-        this.origIntraSubcompartments = origIntraSubcompartments;
-        this.minIntervalSizeAllowed = minIntervalSizeAllowed;
         this.outputDirectory = outputDirectory;
         this.generator = generator;
-        this.useLink = useLink;
-
-        if (useLink) {
-            interMatrix = new LinksMatrix(
-                    chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+    
+        if (minIntervalSizeAllowed > 0) {
+            SliceMatrix.numColumnsToPutTogether = minIntervalSizeAllowed;
         } else {
-            interMatrix = new DrinksMatrix(
-                    chromosomeHandler, ds, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+            SliceMatrix.numColumnsToPutTogether = 200000 / resolution;
         }
-
-
+        interMatrix = new SliceMatrix(
+                chromosomeHandler, ds, norm, resolution, outputDirectory, generator, referenceBedFiles);
+        
         System.gc();
     }
 
     public void appendGWDataFromAdditionalDataset(Dataset ds2) {
-
         CompositeGenomeWideDensityMatrix additionalData;
-        if (useLink) {
-            additionalData = new LinksMatrix(
-                    chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, new String[]{});
-        } else {
-            additionalData = new DrinksMatrix(
-                    chromosomeHandler, ds2, norm, resolution, origIntraSubcompartments, minIntervalSizeAllowed, outputDirectory, generator, new String[]{});
-        }
-
+        additionalData = new SliceMatrix(chromosomeHandler, ds2, norm, resolution, outputDirectory, generator, new String[]{});
         interMatrix.appendDataAlongExistingRows(additionalData);
     }
-
+    
     public void extractFinalGWSubcompartments(Random generator, List<String> inputHicFilePaths,
-                                              String prefix, int index, double[] convolution) {
-
+                                              String prefix, int index) {
+        
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
-
+        
         if (MixerGlobals.printVerboseComments) {
             interMatrix.exportData();
         }
-
+        
         MixerGlobals.usePositiveDiffKmeans = true;
-
+        
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);
 
         double[][] iterToWcssAicBic = new double[4][numRounds];
@@ -113,8 +96,8 @@ public class FullGenomeOEWithinClusters {
 
         System.out.println("Genomewide clustering");
         for (int z = 0; z < numRounds; z++) {
-
-            int k = z + 2;
+    
+            int k = z + 5; //5
             Cluster[] bestClusters = null;
             int[] bestIDs = null;
             int[][] novelIDsForIndx = null;
@@ -143,10 +126,10 @@ public class FullGenomeOEWithinClusters {
         System.out.println(".");
 
         MixerGlobals.usePositiveDiffKmeans = false;
-
+        
         System.out.println("Post processing");
         LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults,
-                origIntraSubcompartments, minIntervalSizeAllowed, oeThreshold, convolution);
+                interMatrix.getBadIndices(), oeThreshold);
 
         DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
 

@@ -26,7 +26,6 @@ package mixer.commandline.utils.drink.kmeansfloat;
 
 import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.common.IntMatrixTools;
-import org.apache.commons.math.stat.inference.ChiSquareTest;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
 import java.io.File;
@@ -93,7 +92,7 @@ public class ClusterTools {
         for (int i = 0; i < n; i++) {
             Cluster expected = clusters[i];
             for (int j = 0; j < n; j++) {
-                distances[i][j] = getDistance(clusters[j], expected);
+                distances[i][j] = getL2Distance(clusters[j], expected);
                 distancesNormalized[i][j] = distances[i][j] / clusters[j].getCenter().length;
             }
         }
@@ -146,55 +145,41 @@ public class ClusterTools {
 
     private static void saveClusterSizes(File directory, String filename, Cluster[] clusters) {
         int n = clusters.length;
-
+    
         int[][] sizeClusters = new int[1][n];
         for (int i = 0; i < n; i++) {
             sizeClusters[0][i] = clusters[i].getMemberIndexes().length;
         }
-
+    
         IntMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
     }
-
-    public static double getDistance(Cluster observed, Cluster expected) {
-        return Math.sqrt(getVectorMSEDifference(expected.getCenter(), observed.getCenter()));
+    
+    public static double getL2Distance(Cluster observed, Cluster expected) {
+        return getL2Distance(observed.getCenter(), expected.getCenter());
     }
-
-    public static double getDistance(float[] expectedArray, float[] obsArray) {
-        return Math.sqrt(getVectorMSEDifference(expectedArray, obsArray));
+    
+    public static double getL2Distance(float[] expectedArray, float[] obsArray) {
+        return Math.sqrt(expectedArray.length * getNonNanMeanSquaredError(expectedArray, obsArray));
     }
-
-    public static double getVectorMSEDifference(float[] expectedArray, float[] obsArray) {
-
-        double val = 0;
-
-        for (int k = 0; k < obsArray.length; k++) {
-            double v = expectedArray[k] - obsArray[k];
-            val += v * v;
-        }
-
-        return val;
+    
+    public static double getNonNanVectorSumOfSquares(float[] center, float[] obsArray) {
+        return center.length * getNonNanMeanSquaredError(center, obsArray);
     }
-
-    public static double getPositiveVectorMSEDifference(float[] center, float[] obsArray) {
-
-        double val = 0;
-        int numNonZero = 0;
-
-        for (int k = 0; k < obsArray.length; k++) {
-            if (!Float.isNaN(obsArray[k])) {
-                double v = center[k] - obsArray[k];
-                val += v * v;
-                numNonZero++;
+    
+    public static double getNonNanMeanSquaredError(float[] array1, float[] array2) {
+        double sumSquared = 0;
+        int numDiffs = 0;
+        for (int i = 0; i < array1.length; i++) {
+            if (!Float.isNaN(array1[i]) && !Float.isNaN(array2[i])) {
+                double v = array1[i] - array2[i];
+                sumSquared += (v * v);
+                numDiffs++;
             }
         }
-
-        numNonZero = Math.max(numNonZero, 1);
-
-        double diff = (center.length * (Math.sqrt(val) / numNonZero));
-
-        return diff * diff;
+        numDiffs = Math.max(numDiffs, 1);
+        return sumSquared / numDiffs;
     }
-
+    
     public static float[] normalize(float[] vector, Integer total) {
         float[] newVector = new float[vector.length];
         for (int k = 0; k < vector.length; k++) {
@@ -204,18 +189,16 @@ public class ClusterTools {
     }
 
     private static double getValueChiSquared(Cluster observed, Cluster expected) {
-        ChiSquareTest test = new ChiSquareTestImpl();
         try {
-            return test.chiSquare(toHalfDoubleArray(expected), toHalfLongArray(observed));
+            return new ChiSquareTestImpl().chiSquare(toHalfDoubleArray(expected), toHalfLongArray(observed));
         } catch (Exception e) {
             return Double.NaN;
         }
     }
 
     private static double getPvalueChiSquared(Cluster observed, Cluster expected) {
-        ChiSquareTest test = new ChiSquareTestImpl();
         try {
-            return test.chiSquareTest(toHalfDoubleArray(expected), toHalfLongArray(observed));
+            return new ChiSquareTestImpl().chiSquareTest(toHalfDoubleArray(expected), toHalfLongArray(observed));
         } catch (Exception e) {
             return Double.NaN;
         }

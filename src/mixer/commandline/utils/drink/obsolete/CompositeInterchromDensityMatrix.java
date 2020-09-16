@@ -26,10 +26,10 @@ package mixer.commandline.utils.drink.obsolete;
 
 import mixer.MixerGlobals;
 import mixer.commandline.utils.common.DoubleMatrixTools;
-import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.drink.DrinkUtils;
 import mixer.commandline.utils.drink.SubcompartmentInterval;
 import mixer.commandline.utils.drink.kmeansfloat.Cluster;
+import mixer.commandline.utils.grind.GrindFloatMatrixTools;
 import mixer.data.ChromosomeHandler;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
@@ -81,9 +81,9 @@ public class CompositeInterchromDensityMatrix {
                 colsChromosomes = chromosomeHandler.extractOddOrEvenAutosomes(false);
                 break;
         }
-
+    
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
-        transposedGWCleanMatrix = FloatMatrixTools.transpose(gwCleanMatrix);
+        transposedGWCleanMatrix = GrindFloatMatrixTools.transpose(gwCleanMatrix);
     }
 
     private float[][] makeCleanScaledInterMatrix(Dataset ds) {

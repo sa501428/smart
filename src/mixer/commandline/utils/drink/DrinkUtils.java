@@ -407,8 +407,7 @@ public class DrinkUtils {
 
         try {
             //BufferedReader br = ParsingUtils.openBufferedReader(bedFilePath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(bedFilePath)), MixerGlobals.bufferSize);
-            anchors.addAll(parseSubcompartmentBEDFile(br, handler));
+            anchors.addAll(parseSubcompartmentBEDFile(bedFilePath, handler));
         } catch (IOException ec) {
             ec.printStackTrace();
         }
@@ -419,24 +418,26 @@ public class DrinkUtils {
     /**
      * Methods for handling BED Files
      */
-
+    
     /**
      * Helper function for actually parsing BED file
      * Ignores any attributes beyond the third column (i.e. just chr and positions are read)
      *
-     * @param bufferedReader
+     * @param bedFilePath
      * @param handler
      * @return list of motifs
      * @throws IOException
      */
-    private static List<SubcompartmentInterval> parseSubcompartmentBEDFile(BufferedReader bufferedReader, ChromosomeHandler handler) throws IOException {
+    private static List<SubcompartmentInterval> parseSubcompartmentBEDFile(String bedFilePath, ChromosomeHandler handler) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(bedFilePath)), MixerGlobals.bufferSize);
+        
         Set<SubcompartmentInterval> anchors = new HashSet<>();
         String nextLine;
-
+        
         Map<String, Integer> allIdsToIntId = new HashMap<>();
         // 1 - A1, 2 - A2, 3 - B1, 4 - B2, 5 - B3, 6 - B4
         int counter = 7;
-
+        
         int errorCount = 0;
         while ((nextLine = bufferedReader.readLine()) != null) {
             String[] tokens = Globals.tabPattern.split(nextLine);
@@ -458,7 +459,7 @@ public class DrinkUtils {
                         allIdsToIntId.put(id, newID);
                     } else {
                         allIdsToIntId.put(id, counter);
-                        System.out.println(id + "  " + counter);
+                        //System.out.println("re-map id " + id + " to " + counter + " for " +bedFilePath);
                         counter++;
                     }
                 }

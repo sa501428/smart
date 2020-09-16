@@ -28,10 +28,10 @@ import mixer.MixerGlobals;
 import mixer.commandline.handling.CommandLineParserForMixer;
 import mixer.commandline.handling.MixerCLT;
 import mixer.commandline.utils.common.DoubleMatrixTools;
-import mixer.commandline.utils.common.FloatMatrixTools;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.commandline.utils.dev.LocalGenomeRegion;
 import mixer.commandline.utils.grind.DistortionFinder;
+import mixer.commandline.utils.grind.GrindFloatMatrixTools;
 import mixer.commandline.utils.grind.GrindUtils;
 import mixer.data.*;
 import mixer.track.feature.Feature2D;
@@ -56,7 +56,7 @@ public class Shuffle extends MixerCLT {
     private int resolution = 25000;
     private int neuralNetSize = 500;
     private int highResolution = 1000;
-    private int numPixelOverlapWhileSliding = 5;
+    private final int numPixelOverlapWhileSliding = 5;
 
     public Shuffle() {
         super("shuffle [-r res1,res2] [-k normalization] [-w clique size] [-m matrixSizesForNeuralNet]" +
@@ -137,7 +137,7 @@ public class Shuffle extends MixerCLT {
             RealMatrix localizedRegionDataBox = HiCFileTools.extractLocalBoundedRegion(zd,
                     box1RectUL, box1RectLR, box1RectUL, box1RectLR, fullWidth, fullWidth, norm, true);
             float[][] compositeMatrix = DoubleMatrixTools.convertToFloatMatrix(localizedRegionDataBox.getData());
-            FloatMatrixTools.cleanUpNaNs(compositeMatrix);
+            GrindFloatMatrixTools.cleanUpNaNs(compositeMatrix);
 
             String filePrefix = "origDiag_" + chrom1Name + "_" + box1XIndex + "_" + chrom1Name + "_" + box1Mid + "_matrix";
             GrindUtils.saveGrindMatrixDataToFile(filePrefix, negPath, compositeMatrix, false);
