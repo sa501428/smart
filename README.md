@@ -2,6 +2,9 @@
 
 Machine Intelligence for Xtracting Essential Regions
 
+## SLICE
+Subcompartment Landscape Identification via Clustering Enrichments
+
 ## DRINKS
 Differentiating Ratios via INtra/INterchromosomal Kmeans for Subcompartments
 
