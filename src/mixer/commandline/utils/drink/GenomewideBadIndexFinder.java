@@ -34,9 +34,9 @@ import java.util.*;
 
 public class GenomewideBadIndexFinder {
 	
-	private static final float ZSCORE_MIN_THRESHOLD_LOWER_INTRA = -5; // 3 bottom 0.15% dropped
+	private static final float ZSCORE_MIN_SPARSE_THRESHOLD_LOWER_INTRA = -3;//-5; // 3 bottom 0.15% dropped
 	private static final float ZSCORE_MAX_ALLOWED_INTER = 3;
-	public static float ZSCORE_MIN_THRESHOLD_HIGHER = -1.28f; // bottom 10% dropped
+	public static float ZSCORE_MIN_SPARSE_THRESHOLD_INTER_HIGHER = -1;//-2; //-1.28f; // bottom 10% dropped
 	private final int resolution;
 	private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
 	private final Map<Integer, Set<Integer>> worstIndices = new HashMap<>();
@@ -141,13 +141,12 @@ public class GenomewideBadIndexFinder {
 			if (numNonZeros[k] > 0) {
 				float zval = (numNonZeros[k] - mean) / stdDev;
 				if (isIntra) {
-					if (zval < ZSCORE_MIN_THRESHOLD_LOWER_INTRA) {
+					if (zval < ZSCORE_MIN_SPARSE_THRESHOLD_LOWER_INTRA) {
 						worstIndices.get(chr1.getIndex()).add(k);
-					}
-				} else {
-					if (zval < ZSCORE_MIN_THRESHOLD_HIGHER) {
 						badIndices.get(chr1.getIndex()).add(k);
 					}
+				} else if (zval < ZSCORE_MIN_SPARSE_THRESHOLD_INTER_HIGHER) {
+					badIndices.get(chr1.getIndex()).add(k);
 				}
 			} else {
 				badIndices.get(chr1.getIndex()).add(k);

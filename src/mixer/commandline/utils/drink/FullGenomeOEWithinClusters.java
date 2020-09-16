@@ -43,10 +43,10 @@ public class FullGenomeOEWithinClusters {
     private final int resolution;
     private final NormalizationType norm;
     protected final File outputDirectory;
-    private final int numRounds = 5;//10
+    private final int numRounds = 2;//10
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
-    private final int numAttemptsForKMeans = 2;//5 //7
+    private final int numAttemptsForKMeans = 5;//5 //7 //5
     private final Random generator;
     
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
@@ -96,8 +96,8 @@ public class FullGenomeOEWithinClusters {
 
         System.out.println("Genomewide clustering");
         for (int z = 0; z < numRounds; z++) {
-
-            int k = z + 2;
+    
+            int k = z + 5; //5
             Cluster[] bestClusters = null;
             int[] bestIDs = null;
             int[][] novelIDsForIndx = null;

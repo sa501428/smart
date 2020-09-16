@@ -36,6 +36,7 @@ import java.util.*;
 
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     
+    public static boolean USE_TYPE2_LOG = true;
     public static int numColumnsToPutTogether = 2;
     public static boolean USE_CORRELATION = false;
     private double globalInterPostFilterSumTotal = 0;
@@ -73,9 +74,9 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             
             for (int j = i; j < chromosomes.length; j++) {
                 Chromosome chr2 = chromosomes[j];
-                
+    
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
-                
+    
                 fillInChromosomeRegion(interMatrix, badIndexLocations, zd, chr1, dimensions.getSecond()[0][i], compressedDimensions.getSecond()[0][i],
                         chr2, dimensions.getSecond()[0][j], compressedDimensions.getSecond()[0][j], i == j);
                 System.out.print(".");
@@ -83,13 +84,16 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
     
-        //interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix);
+        if (USE_TYPE2_LOG) {
+            interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix);
+        }
+    
         System.out.println(".");
-        
+    
         if (MixerGlobals.printVerboseComments) {
             FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix, dimensions.getSecond());
         }
-        
+    
         MatrixCleanup matrixCleanupReduction = new MatrixCleanup(interMatrix, generator.nextLong(), outputDirectory);
     
         return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendDeriv(rowIndexToIntervalMap, dimensions.getSecond(), USE_CORRELATION);
@@ -182,10 +186,12 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                         float val = (float) Math.log(val0 + 1);
                         if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
                             val = Float.NaN;
+                            val0 = Float.NaN;
                         }
     
                         if (badIndices.getExceedsAllowedGlobalZscore(val)) {
                             val = Float.NaN;
+                            val0 = Float.NaN;
                         } else {
                             globalInterPostFilterSumTotal += val0;
                             globalInterPostFilterCountTotal += 1;
@@ -195,8 +201,13 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                         int binY = cr.getBinY();
     
                         if (genomePosToLocal1.containsKey(binX) && genomePosToLocal2.containsKey(binY)) {
-                            matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val;
-                            matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val;
+                            if (USE_TYPE2_LOG) {
+                                matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val0;
+                                matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val0;
+                            } else {
+                                matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val;
+                                matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val;
+                            }
                         }
                     }
                 }
