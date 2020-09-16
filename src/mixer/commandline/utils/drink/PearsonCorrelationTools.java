@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.drink;
 
-import org.apache.commons.math3.stat.regression.SimpleRegression;
+import mixer.commandline.utils.common.FloatMatrixTools;
+import org.apache.commons.math.stat.regression.SimpleRegression;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,7 +54,7 @@ public class PearsonCorrelationTools {
 						for (int j = i; j < numRows; j++) {
 							if (j % rowNumDivisor == 0) {
 								if (j == i) {
-									result[i][j / rowNumDivisor] = 1;
+									result[i][j / rowNumDivisor] = Float.NaN;
 								} else {
 									float val = getNonNanPearsonCorrelation(matrix[i], matrix[j]);
 									//System.out.println(i+" - "+j+" "+rowNumDivisor+" "+numRows+" "+matrix[0].length);
@@ -99,5 +100,40 @@ public class PearsonCorrelationTools {
 	public static int[] getReSortedIndexOrder(float[][] matrix) {
 		CorrelationBlockBuilder builder = new CorrelationBlockBuilder(matrix);
 		return builder.getSortedIndexOrder();
+	}
+	
+	public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids) {
+		
+		float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids);
+		float[][] result = new float[matrix.length][numCentroids];
+		
+		int numCPUThreads = 10;
+		AtomicInteger currRowIndex = new AtomicInteger(0);
+		ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
+		for (int l = 0; l < numCPUThreads; l++) {
+			Runnable worker = new Runnable() {
+				@Override
+				public void run() {
+					int i = currRowIndex.getAndIncrement();
+					while (i < matrix.length) {
+						
+						for (int j = 0; j < numCentroids; j++) {
+							result[i][j] = getNonNanPearsonCorrelation(matrix[i], centroids[j]);
+						}
+						
+						i = currRowIndex.getAndIncrement();
+					}
+				}
+			};
+			executor.execute(worker);
+		}
+		executor.shutdown();
+		
+		// Wait until all threads finish
+		while (!executor.isTerminated()) {
+		}
+		
+		//FloatMatrixTools.inPlaceZscoreDownColsNoNan(result, 1);
+		return FloatMatrixTools.concatenate(matrix, result);
 	}
 }

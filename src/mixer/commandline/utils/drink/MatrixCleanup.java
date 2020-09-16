@@ -25,7 +25,6 @@
 package mixer.commandline.utils.drink;
 
 import mixer.commandline.utils.common.FloatMatrixTools;
-import mixer.commandline.utils.common.IntMatrixTools;
 
 import java.io.File;
 import java.util.*;
@@ -56,16 +55,15 @@ public class MatrixCleanup {
         System.out.println("matrix size " + data.length + " x " + data[0].length);
         
         //    data = FloatMatrixDerivativeTools.getWithAppendedNonNanDerivative(data);
+        FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
         
         if (useCorrelation) {
-            data = PearsonCorrelationTools.getNonNanPearsonCorrelationMatrix(data, 100); // (int)Math.ceil((1.0*data.length)/data[0].length)
+            //data = PearsonCorrelationTools.getNonNanPearsonCorrelationMatrix(data, 1); // (int)Math.ceil((1.0*data.length)/data[0].length)
+            data = PearsonCorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, 100);
             FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_matrix.npy").getAbsolutePath(), data);
-            
-            IntMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_reorder.npy").getAbsolutePath(),
-                    PearsonCorrelationTools.getReSortedIndexOrder(data));
+            //IntMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_reorder.npy").getAbsolutePath(),
+            //        PearsonCorrelationTools.getReSortedIndexOrder(data));
         } else {
-            FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
-            // no zscore!!
             //FloatMatrixTools.inPlaceZscoreDownRowsNoNan(data);
         }
         return data;

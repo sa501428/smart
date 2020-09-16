@@ -70,26 +70,27 @@ public class LeftOverClusterIdentifier {
         
             Set<Integer> worstIndices = badIndexFinder.getWorstIndices(chr1);
             Set<Integer> indicesMissing = new HashSet<>();
-        
-        
+    
+    
             for (int k = 0; k < chr1.getLength() / resolution + 1; k++) {
                 if (worstIndices.contains(k)) {
                     continue;
                 }
-            
+        
                 indicesMissing.add(k);
             }
-        
+    
             // do it this way because of additional internal filter
-            for (SubcompartmentInterval handledInterval : results.get(2).getFeatures("" + chr1.getIndex())) {
+            Integer firstEntryKey = (Integer) results.keySet().toArray()[0];
+            for (SubcompartmentInterval handledInterval : results.get(firstEntryKey).getFeatures("" + chr1.getIndex())) {
                 int binXStart = handledInterval.getX1() / resolution;
                 int binXEnd = handledInterval.getX2() / resolution;
-
+        
                 for (int j = binXStart; j < binXEnd; j++) {
                     indicesMissing.remove(j);
                 }
             }
-
+    
             if (indicesMissing.size() > 0) {
                 for (Integer key : results.keySet()) {
                     GenomeWideList<SubcompartmentInterval> listForKey = results.get(key);
@@ -172,7 +173,7 @@ public class LeftOverClusterIdentifier {
             if (AggregateProcessing.useL1Norm) {
                 newDistance = ClusterTools.getL1Distance(cIDToCenter.get(key), vector);
             } else {
-                newDistance = ClusterTools.getDistance(cIDToCenter.get(key), vector);
+                newDistance = ClusterTools.getL2Distance(cIDToCenter.get(key), vector);
             }
 
             if (newDistance < overallDistance) {

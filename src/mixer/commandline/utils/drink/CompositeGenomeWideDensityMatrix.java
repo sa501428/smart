@@ -96,7 +96,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
             }
 
             for (int i : cluster.getMemberIndexes()) {
-                withinClusterSumOfSquares += ClusterTools.getPositiveVectorMSEDifference(cluster.getCenter(), gwCleanMatrix[i]);
+                withinClusterSumOfSquares += ClusterTools.getNonNanVectorSumOfSquares(cluster.getCenter(), gwCleanMatrix[i]);
 
                 try {
                     SubcompartmentInterval interv;

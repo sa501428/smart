@@ -24,8 +24,6 @@
 
 package mixer.commandline.utils.drink.kmeansfloat;
 
-import mixer.MixerGlobals;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -122,29 +120,17 @@ public class ConcurrentKMeans implements KMeans {
      * Compute the euclidean distance between the two arguments.
      */
     private static float distanceL2Norm(float[] coord, float[] center) {
-
-        if (MixerGlobals.usePositiveDiffKmeans) {
-            double sumSquared = 0;
-            int numDiffs = 0;
-            for (int i = 0; i < coord.length; i++) {
-                if (!Float.isNaN(coord[i]) && !Float.isNaN(center[i])) {
-                    double v = coord[i] - center[i];
-                    sumSquared += (v * v);
-                    numDiffs++;
-                }
-            }
-            numDiffs = Math.max(numDiffs, 1);
-            float dist = (float) (coord.length * (Math.sqrt(sumSquared) / numDiffs));
-            return dist;
-        } else {
-
-            double sumSquared = 0;
-            for (int i = 0; i < coord.length; i++) {
-                float v = coord[i] - center[i];
+        double sumSquared = 0;
+        int numDiffs = 0;
+        for (int i = 0; i < coord.length; i++) {
+            if (!Float.isNaN(coord[i]) && !Float.isNaN(center[i])) {
+                double v = coord[i] - center[i];
                 sumSquared += (v * v);
+                numDiffs++;
             }
-            return (float) Math.sqrt(sumSquared);
         }
+        numDiffs = Math.max(numDiffs, 1);
+        return (float) Math.sqrt(coord.length * (sumSquared / numDiffs));
     }
 
     /**
@@ -671,37 +657,19 @@ public class ConcurrentKMeans implements KMeans {
          */
         void updateCenter(float[][] coordinates) {
             Arrays.fill(mCenter, 0f);
-
-            if (MixerGlobals.usePositiveDiffKmeans) {
-                if (mCurrentSize > 0) {
-                    int coordLen = coordinates[mCurrentMembership[0]].length;
-                    int[] mCurrentSizeForIndex = new int[coordLen];
-
-                    for (int i = 0; i < mCurrentSize; i++) {
-                        float[] coord = coordinates[mCurrentMembership[i]];
-                        for (int j = 0; j < coord.length; j++) {
-                            if (!Float.isNaN(coord[j])) {
-                                mCenter[j] += coord[j];
-                                mCurrentSizeForIndex[j]++;
-                            }
+            if (mCurrentSize > 0) {
+                int[] mCurrentSizeForIndex = new int[mCenter.length];
+                for (int i = 0; i < mCurrentSize; i++) {
+                    float[] coord = coordinates[mCurrentMembership[i]];
+                    for (int j = 0; j < coord.length; j++) {
+                        if (!Float.isNaN(coord[j])) {
+                            mCenter[j] += coord[j];
+                            mCurrentSizeForIndex[j]++;
                         }
-                    }
-                    for (int i = 0; i < mCenter.length; i++) {
-                        mCenter[i] /= Math.max(mCurrentSizeForIndex[i], 1);
                     }
                 }
-            } else {
-
-                if (mCurrentSize > 0) {
-                    for (int i = 0; i < mCurrentSize; i++) {
-                        float[] coord = coordinates[mCurrentMembership[i]];
-                        for (int j = 0; j < coord.length; j++) {
-                            mCenter[j] += coord[j];
-                        }
-                    }
-                    for (int i = 0; i < mCenter.length; i++) {
-                        mCenter[i] /= mCurrentSize;
-                    }
+                for (int i = 0; i < mCenter.length; i++) {
+                    mCenter[i] /= Math.max(mCurrentSizeForIndex[i], 1);
                 }
             }
         }
@@ -723,21 +691,21 @@ public class ConcurrentKMeans implements KMeans {
 
         // True if the at least one of the Workers is doing something.
         private boolean mWorking;
-
+    
         // The executor that runs the Workers.
         // When in multiple processor mode, this is a ThreadPoolExecutor
         // with a fixed number of threads. In single-processor mode, it's
         // a simple implementation that calls the single worker's run
         // method directly.
-        private Executor mExecutor;
+        private final Executor mExecutor;
 
         // A Barrier to wait on multiple Workers to finish up the current task.
         // In single-processor mode, there is no need for a barrier, so it
         // is not set.
         private CyclicBarrier mBarrier;
-
+    
         // The worker objects which implement Runnable.
-        private ConcurrentKMeans.SubtaskManager.Worker[] mWorkers;
+        private final ConcurrentKMeans.SubtaskManager.Worker[] mWorkers;
 
         /**
          * Constructor
