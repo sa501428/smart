@@ -49,13 +49,8 @@ public class CorrelationTools {
 		
 		float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids);
 		float[][] result = new float[matrix.length][numCentroids]; // *2
-		int weight = 1;//Math.max(1, (matrix[0].length/numCentroids)/25); // (matrix.length/numCentroids)/20);
-		System.out.println("Using weight " + weight);
-		/*for (int j = 0; j < centroids.length; j++) {
-			System.out.print(" "+QuickCentroids.getNumNonNanEntries(centroids[j])+"/"+centroids[j].length+ " ");
-		}*/
 		
-		int numCPUThreads = 10;
+		int numCPUThreads = 20;
 		AtomicInteger currRowIndex = new AtomicInteger(0);
 		ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
 		for (int l = 0; l < numCPUThreads; l++) {
@@ -66,8 +61,7 @@ public class CorrelationTools {
 					while (i < matrix.length) {
 						
 						for (int j = 0; j < centroids.length; j++) {
-							float val = getNonNanPearsonCorrelation(matrix[i], centroids[j]) * weight;
-							//result[i][j] = (float) Math.tanh(2 * val);
+							float val = getNonNanPearsonCorrelation(matrix[i], centroids[j]);
 							result[i][j] = arctanh(val);
 							
 							//result[i][centroids.length+j] = cosineSimilarity(matrix[i], centroids[j])*weight;
@@ -92,9 +86,13 @@ public class CorrelationTools {
 	}
 	
 	private static float arctanh(float x) {
-		float val = Math.max(x, -.95f);
-		val = Math.min(val, .95f);
-		return (float) (Math.log(1 + val) - Math.log(1 - val)) / 2;
+		float val = Math.max(x, -.99f);
+		val = Math.min(val, .99f);
+		val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2;
+		if (Float.isInfinite(val)) {
+			val = Float.NaN;
+		}
+		return val;
 	}
 	
 	private static float cosineSimilarity(float[] vectorA, float[] vectorB) {
