@@ -67,8 +67,8 @@ public class CorrelationTools {
 						
 						for (int j = 0; j < centroids.length; j++) {
 							float val = getNonNanPearsonCorrelation(matrix[i], centroids[j]) * weight;
-							result[i][j] = (float) Math.tanh(2 * val);
-							
+							//result[i][j] = (float) Math.tanh(2 * val);
+							result[i][j] = arctanh(val);
 							
 							//result[i][centroids.length+j] = cosineSimilarity(matrix[i], centroids[j])*weight;
 							//result[i][j] = cosineSimilarity(matrix[i], centroids[j]);
@@ -91,7 +91,7 @@ public class CorrelationTools {
 		//return result;
 	}
 	
-	private float arctanh(float x) {
+	private static float arctanh(float x) {
 		float val = Math.max(x, -.95f);
 		val = Math.min(val, .95f);
 		return (float) (Math.log(1 + val) - Math.log(1 - val)) / 2;
