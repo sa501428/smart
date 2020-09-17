@@ -32,7 +32,7 @@ import java.util.*;
 public class MatrixCleanup {
     private final static float PERCENT_ZERO_ALLOWED = .5f;
     protected static float zScoreThreshold = 3f;
-    public static int BATCHED_NUM_ROWS = 10;
+    public static int BATCHED_NUM_ROWS = 1; // 10
     protected File outputDirectory;
     protected Random generator;
     
@@ -59,7 +59,7 @@ public class MatrixCleanup {
         
         if (useCorrelation) {
             //data = PearsonCorrelationTools.getNonNanPearsonCorrelationMatrix(data, 1); // (int)Math.ceil((1.0*data.length)/data[0].length)
-            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, 100);
+            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, 500);
             FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_matrix.npy").getAbsolutePath(), data);
             //IntMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_reorder.npy").getAbsolutePath(),
             //        PearsonCorrelationTools.getReSortedIndexOrder(data));

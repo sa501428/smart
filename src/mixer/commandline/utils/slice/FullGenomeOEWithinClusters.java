@@ -46,7 +46,7 @@ public class FullGenomeOEWithinClusters {
     private final int numRounds = 2;//10
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final float oeThreshold;
-    private final int numAttemptsForKMeans = 5;//5 //7 //5
+    private final int numAttemptsForKMeans = 10;//5 //7 //5
     private final Random generator;
     
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,

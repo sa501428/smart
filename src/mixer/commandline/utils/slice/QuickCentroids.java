@@ -56,7 +56,11 @@ public class QuickCentroids {
 		
 		for (int i = 0; i < centroids.length; i++) {
 			for (int j = 0; j < centroids[i].length; j++) {
-				centroids[i][j] = (float) (centroidTotals[i][j] / Math.max(1, countsForCentroid[i][j]));
+				if (countsForCentroid[i][j] > 0) {
+					centroids[i][j] = (float) (centroidTotals[i][j] / countsForCentroid[i][j]);
+				} else {
+					centroids[i][j] = Float.NaN;
+				}
 			}
 		}
 		
@@ -121,7 +125,7 @@ public class QuickCentroids {
 		return getIndexOfMaxVal(numNonNans);
 	}
 	
-	private static int getNumNonNanEntries(float[] row) {
+	public static int getNumNonNanEntries(float[] row) {
 		int numNanEntries = 0;
 		for (float val : row) {
 			if (Float.isNaN(val)) {

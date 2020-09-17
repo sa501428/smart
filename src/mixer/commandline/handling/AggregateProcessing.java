@@ -55,9 +55,9 @@ public class AggregateProcessing {
         String primary14 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/CELL2014/GSE63525_GM12878_insitu_primary_30.hic";
         String replicate14 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/CELL2014/GSE63525_GM12878_insitu_replicate_30.hic";
     
-        SliceMatrix.USE_CORRELATION = false;
+        SliceMatrix.USE_CORRELATION = true;
     
-        folder = "CleanReboot2Slice_14B_100k_w2";
+        folder = "ComboPTanh500_4_COMBO_14B_100k_w2";
         strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2", //"--verbose",
                 file14, "/Users/muhammad/Desktop/research/slice/" + folder, folder + "_", refs};
         System.out.println("-----------------------------------------------------");

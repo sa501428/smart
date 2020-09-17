@@ -248,15 +248,29 @@ public class ClusterTools {
 
         return clone;
     }
-
+    
     public static double getL1Distance(float[] obsArray, float[] expectedArray) {
         double val = 0;
-
+        
         for (int k = 0; k < obsArray.length; k++) {
             val += Math.abs(expectedArray[k] - obsArray[k]);
         }
-
+        
         return val;
+    }
+    
+    public static double getNonNanMeanAbsoluteError(float[] array1, float[] array2) {
+        double sumAbsError = 0;
+        int numDiffs = 0;
+        for (int i = 0; i < array1.length; i++) {
+            if (!Float.isNaN(array1[i]) && !Float.isNaN(array2[i])) {
+                double v = array1[i] - array2[i];
+                sumAbsError += Math.abs(v);
+                numDiffs++;
+            }
+        }
+        numDiffs = Math.max(numDiffs, 1);
+        return sumAbsError / numDiffs;
     }
 }
 
