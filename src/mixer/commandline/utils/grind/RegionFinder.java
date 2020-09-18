@@ -26,7 +26,7 @@ package mixer.commandline.utils.grind;
 
 import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.common.IntMatrixTools;
-import mixer.commandline.utils.drink.ExtractingOEDataUtils;
+import mixer.commandline.utils.slice.ExtractingOEDataUtils;
 import mixer.data.*;
 import mixer.track.Feature2DHandler;
 import mixer.track.feature.Feature2D;

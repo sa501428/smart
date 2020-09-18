@@ -27,7 +27,7 @@ package mixer.data;
 import mixer.MixerGlobals;
 import mixer.commandline.chrom.sizes.ChromosomeSizes;
 import mixer.commandline.utils.common.RealMatrixTools;
-import mixer.commandline.utils.drink.ExtractingOEDataUtils;
+import mixer.commandline.utils.slice.ExtractingOEDataUtils;
 import mixer.windowui.HiCZoom;
 import mixer.windowui.NormalizationType;
 import org.apache.commons.math.linear.RealMatrix;

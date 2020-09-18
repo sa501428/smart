@@ -25,8 +25,8 @@
 package mixer.commandline.handling;
 
 import jargs.gnu.CmdLineParser;
-import mixer.commandline.tools.Drink;
 import mixer.commandline.tools.Grind;
+import mixer.commandline.tools.Slice;
 import mixer.windowui.NormalizationHandler;
 import mixer.windowui.NormalizationType;
 
@@ -120,9 +120,9 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public int getUsingDerivativeStatus() {
         Object opt = getOptionValue(useDerivativeOption);
-        if (opt != null) return Drink.USE_ONLY_DERIVATIVE;
+        if (opt != null) return Slice.USE_ONLY_DERIVATIVE;
         opt = getOptionValue(ignoreDerivativeOption);
-        if (opt != null) return Drink.IGNORE_DERIVATIVE;
+        if (opt != null) return Slice.IGNORE_DERIVATIVE;
         return 0;
     }
 

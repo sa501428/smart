@@ -25,7 +25,7 @@
 package mixer.commandline.tools;
 
 import mixer.MixerGlobals;
-import mixer.commandline.utils.drink.obsolete.OldTools;
+import mixer.commandline.utils.slice.obsolete.OldTools;
 import mixer.data.ContactRecord;
 import mixer.data.Dataset;
 import mixer.data.HiCFileTools;
