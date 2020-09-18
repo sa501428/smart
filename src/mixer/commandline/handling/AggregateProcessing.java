@@ -57,12 +57,28 @@ public class AggregateProcessing {
     
         SliceMatrix.USE_CORRELATION = true;
     
-        folder = "ComboPTanh500_4_COMBO_14B_100k_w2";
+        folder = "ComboPArcTanhD20_5_14B_100k_w2";
         strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2", //"--verbose",
                 file14, "/Users/muhammad/Desktop/research/slice/" + folder, folder + "_", refs};
         System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        //MixerTools.main(strings);
         System.gc();
+    
+        String[] prefixes = new String[]{"Primary", "Replicate", "RH14"};
+        String[] files = new String[]{primary14, replicate14, file14};
+    
+        for (int i = 0; i < prefixes.length; i++) {
+            String myfile = files[i];
+            String myprefix = prefixes[i];
+            for (int width : new int[]{4, 8}) {
+                folder = "Delphi_" + myprefix + "_50k_KR_w" + width;
+                strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "" + width, //"--verbose",
+                        myfile, "/Users/muhammad/Desktop/research/slice/" + folder, folder + "_", refs};
+                System.out.println("-----------------------------------------------------");
+                MixerTools.main(strings);
+                System.gc();
+            }
+        }
     
     }
 }
