@@ -24,12 +24,11 @@
 
 package mixer.commandline.utils.common;
 
-import mixer.data.ContactRecord;
-import org.jetbrains.bio.npy.NpyFile;
+import javastraw.reader.basics.ContactRecord;
+import javastraw.tools.MatrixTools;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -236,11 +235,7 @@ public class DoubleMatrixTools {
     }
 
     public static void saveMatrixTextNumpy(String filename, double[][] matrix) {
-        int numRows = matrix.length;
-        int numCols = matrix[0].length;
-        double[] flattenedArray = flattenedRowMajorOrderMatrix(matrix);
-
-        NpyFile.write(Paths.get(filename), flattenedArray, new int[]{numRows, numCols});
+        MatrixTools.saveMatrixTextNumpy(filename, matrix);
     }
 
     public static double[][] deepClone(double[][] data) {
@@ -249,49 +244,6 @@ public class DoubleMatrixTools {
             System.arraycopy(data[i], 0, copy[i], 0, data[i].length);
         }
         return copy;
-    }
-
-
-    // column length assumed identical and kept the same
-    public static double[][] stitchMultipleMatricesTogetherByRowDim(List<double[][]> data) {
-        if (data.size() == 1) return data.get(0);
-
-        int colNums = data.get(0)[0].length;
-        int rowNums = 0;
-        for (double[][] mtrx : data) {
-            rowNums += mtrx.length;
-        }
-
-        double[][] aggregate = new double[rowNums][colNums];
-
-        int rowOffSet = 0;
-        for (double[][] region : data) {
-            copyFromAToBRegion(region, aggregate, rowOffSet, 0);
-            rowOffSet += region.length;
-        }
-
-        return aggregate;
-    }
-
-    // column length assumed identical and kept the same
-    public static double[][] stitchMultipleMatricesTogetherByColDim(List<double[][]> data) {
-        if (data.size() == 1) return data.get(0);
-
-        int rowNums = data.get(0).length;
-        int colNums = 0;
-        for (double[][] mtrx : data) {
-            colNums += mtrx[0].length;
-        }
-
-        double[][] aggregate = new double[rowNums][colNums];
-
-        int colOffSet = 0;
-        for (double[][] region : data) {
-            copyFromAToBRegion(region, aggregate, 0, colOffSet);
-            colOffSet += region[0].length;
-        }
-
-        return aggregate;
     }
 
 

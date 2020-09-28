@@ -24,7 +24,7 @@
 
 package mixer.commandline.utils.slice;
 
-import mixer.data.feature.Feature;
+import javastraw.featurelist.Feature;
 
 import java.awt.*;
 import java.util.ArrayList;

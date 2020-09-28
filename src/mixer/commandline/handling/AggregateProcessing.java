@@ -25,7 +25,6 @@
 package mixer.commandline.handling;
 
 import mixer.commandline.MixerTools;
-import mixer.commandline.utils.slice.ExtractingOEDataUtils;
 import mixer.commandline.utils.slice.SliceMatrix;
 
 
@@ -35,9 +34,6 @@ import mixer.commandline.utils.slice.SliceMatrix;
  */
 public class AggregateProcessing {
 
-
-    public static ExtractingOEDataUtils.ThresholdType beforeThresholdType = ExtractingOEDataUtils.ThresholdType.TRUE_OE;
-    public static ExtractingOEDataUtils.ThresholdType afterThresholdType = ExtractingOEDataUtils.ThresholdType.TRUE_OE;
     public static boolean useDerivative = false;
     public static boolean useL1Norm = false;
 

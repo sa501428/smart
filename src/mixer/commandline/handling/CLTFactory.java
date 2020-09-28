@@ -25,7 +25,8 @@
 package mixer.commandline.handling;
 
 import mixer.MixerGlobals;
-import mixer.commandline.tools.*;
+import mixer.commandline.tools.ChromosomeWalker;
+import mixer.commandline.tools.Slice;
 
 
 /**
@@ -56,18 +57,8 @@ public class CLTFactory {
     public static MixerCLT getCLTCommand(String cmd) {
 
         cmd = cmd.toLowerCase();
-        if (cmd.equals("compare")) {
-            return new CompareLists();
-        } else if (cmd.equals("shuffle")) {
-            return new Shuffle();
-        } else if (cmd.equals("loop_domains")) {
-            return new LoopDomains();
-        } else if (cmd.startsWith("slice") || cmd.startsWith("drink") || cmd.startsWith("link")) {
+        if (cmd.startsWith("slice") || cmd.startsWith("drink") || cmd.startsWith("link")) {
             return new Slice(cmd);
-        } else if (cmd.equals("grind")) {
-            return new Grind();
-        } else if (cmd.equals("distort")) {
-            return new Distortion();
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();
         }

@@ -29,8 +29,6 @@ import mixer.MixerGlobals;
 import mixer.commandline.handling.CLTFactory;
 import mixer.commandline.handling.CommandLineParserForMixer;
 import mixer.commandline.handling.MixerCLT;
-import org.broad.igv.Globals;
-
 
 /**
  * Command line tool handling through factory model
@@ -41,7 +39,6 @@ import org.broad.igv.Globals;
 public class MixerTools {
 
     public static void main(String[] argv) throws CmdLineParser.UnknownOptionException, CmdLineParser.IllegalOptionValueException {
-        Globals.setHeadless(true);
 
         if (argv.length == 0 || argv[0].equals("-h") || argv[0].equals("--help") || argv[0].equals("-V") || argv[0].equals("--version")) {
             CLTFactory.generalUsage();

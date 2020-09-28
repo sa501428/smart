@@ -24,16 +24,15 @@
 
 package mixer.commandline.handling;
 
-import mixer.data.ChromosomeHandler;
-import mixer.data.Dataset;
-import mixer.data.HiCFileTools;
-import mixer.data.Matrix;
-import mixer.windowui.NormalizationHandler;
-import mixer.windowui.NormalizationType;
-import org.broad.igv.feature.Chromosome;
+import javastraw.reader.ChromosomeHandler;
+import javastraw.reader.Dataset;
+import javastraw.reader.HiCFileTools;
+import javastraw.reader.Matrix;
+import javastraw.reader.basics.Chromosome;
+import javastraw.type.NormalizationHandler;
+import javastraw.type.NormalizationType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -103,8 +102,8 @@ public abstract class MixerCLT {
         System.exit(exitcode);
     }
 
-    protected void setDatasetAndNorm(String files, String normType, boolean allowPrinting) {
-        dataset = HiCFileTools.extractDatasetForCLT(Arrays.asList(files.split("\\+")), allowPrinting);
+    protected void setDatasetAndNorm(String file, String normType, boolean allowPrinting) {
+        dataset = HiCFileTools.extractDatasetForCLT(file, allowPrinting);
 
         norm = dataset.getNormalizationHandler().getNormTypeFromString(normType);
         if (norm == null) {

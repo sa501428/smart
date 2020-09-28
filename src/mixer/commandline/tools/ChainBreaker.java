@@ -24,14 +24,13 @@
 
 package mixer.commandline.tools;
 
+import javastraw.reader.Dataset;
+import javastraw.reader.HiCFileTools;
+import javastraw.type.NormalizationType;
 import mixer.commandline.handling.CommandLineParserForMixer;
 import mixer.commandline.handling.MixerCLT;
-import mixer.data.Dataset;
-import mixer.data.HiCFileTools;
-import mixer.windowui.NormalizationType;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 public class ChainBreaker extends MixerCLT {
@@ -51,7 +50,7 @@ public class ChainBreaker extends MixerCLT {
             printUsageAndExit(2);  // this will exit
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(Arrays.asList(args[1].split("\\+")), true);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());

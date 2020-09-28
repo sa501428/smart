@@ -24,12 +24,14 @@
 
 package mixer.commandline.utils.slice;
 
+import javastraw.reader.*;
+import javastraw.reader.basics.Block;
+import javastraw.reader.basics.Chromosome;
+import javastraw.reader.basics.ContactRecord;
+import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.commandline.utils.common.FloatMatrixTools;
-import mixer.data.*;
-import mixer.windowui.NormalizationType;
-import org.broad.igv.feature.Chromosome;
-import org.broad.igv.util.Pair;
+import mixer.commandline.utils.common.Pair;
 
 import java.io.File;
 import java.util.*;
@@ -80,13 +82,13 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             }
         }
         System.out.println(".");
-    
-        interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix);
+
+        interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
     
         System.out.println(".");
     
         if (MixerGlobals.printVerboseComments) {
-            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix, dimensions.getSecond());
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix);
         }
     
         MatrixCleanup matrixCleanupReduction = new MatrixCleanup(interMatrix, generator.nextLong(), outputDirectory);
@@ -131,15 +133,15 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
      */
     private void fillInChromosomeRegion(float[][] matrix, GenomewideBadIndexFinder badIndices, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
                                         Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2, boolean isIntra) {
-    
-        int lengthChr1 = chr1.getLength() / resolution + 1;
-        int lengthChr2 = chr2.getLength() / resolution + 1;
-    
+
+        int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
+        int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
+
         List<Block> blocks = null;
         try {
             if (!isIntra) {
                 blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, isIntra);
-            
+
                 if (blocks == null || blocks.size() < 1) {
                     System.err.println("Missing Interchromosomal Data " + zd.getKey());
                     System.exit(98);
@@ -198,7 +200,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     
     private void updateSubcompartmentMap(Chromosome chromosome, Set<Integer> badIndices, int offsetIndex1, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
         int counter = 0;
-        int chrLength = chromosome.getLength() / resolution + 1;
+        int chrLength = (int) (chromosome.getLength() / resolution + 1);
         for (int i = 0; i < chrLength; i++) {
             if (badIndices.contains(i)) {
                 continue;
@@ -213,8 +215,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     private Map<Integer, Integer> makeLocalIndexMap(Chromosome chrom, Set<Integer> badIndices, int offsetIndex, int divisor) {
         Map<Integer, Integer> binToLocalMap = new HashMap<>();
         int counter = 0;
-        
-        int chrLength = chrom.getLength() / resolution + 1;
+
+        int chrLength = (int) (chrom.getLength() / resolution + 1);
         for (int i = 0; i < chrLength; i++) {
             if (badIndices.contains(i)) {
                 continue;

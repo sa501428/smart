@@ -24,10 +24,14 @@
 
 package mixer.commandline.utils.slice;
 
-import mixer.data.*;
-import mixer.windowui.NormalizationType;
-import org.broad.igv.feature.Chromosome;
-import org.broad.igv.util.Pair;
+import javastraw.reader.Dataset;
+import javastraw.reader.HiCFileTools;
+import javastraw.reader.MatrixZoomData;
+import javastraw.reader.basics.Block;
+import javastraw.reader.basics.Chromosome;
+import javastraw.reader.basics.ContactRecord;
+import javastraw.type.NormalizationType;
+import mixer.commandline.utils.common.Pair;
 
 import java.io.IOException;
 import java.util.*;
@@ -113,10 +117,10 @@ public class GenomewideBadIndexFinder {
 	}
 	
 	private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd, boolean isIntra) throws IOException {
-		
-		int lengthChr1 = chr1.getLength() / resolution + 1;
-		int lengthChr2 = chr2.getLength() / resolution + 1;
-		
+
+		int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
+		int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
+
 		determineBadIndicesForRegion(chr1, chr2,
 				HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, isIntra),
 				lengthChr1, lengthChr2, isIntra);

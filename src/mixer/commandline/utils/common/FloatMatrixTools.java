@@ -24,11 +24,11 @@
 
 package mixer.commandline.utils.common;
 
+import javastraw.tools.MatrixTools;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
-import org.jetbrains.bio.npy.NpyFile;
 
-import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -123,30 +123,8 @@ public class FloatMatrixTools {
         return allDataForRegion;
     }
     
-    public static void saveMatrixTextNumpy(String filename, float[][] matrix, int[][] breakpoints) {
-        saveMatrixTextNumpy(filename, matrix, breakpoints[0]);
-    }
-
-    public static void saveMatrixTextNumpy(String filename, float[][] matrix, int[] breakpoints) {
-        long totalNum = ((long) matrix.length) * ((long) matrix[0].length);
-        if (totalNum >= Integer.MAX_VALUE / 2) {
-            for (int k = 2; k < breakpoints.length - 2; k *= 2) {
-                System.gc();
-                int numCols = breakpoints[k];
-                float[] flattenedArray = FloatMatrixTools.getRowMajorOrderFlattendedSectionFromMatrix(matrix, numCols);
-                NpyFile.write(Paths.get(filename + "_" + numCols + ".npy"), flattenedArray, new int[]{flattenedArray.length / numCols, numCols});
-            }
-        } else {
-            saveMatrixTextNumpy(filename, matrix);
-        }
-        System.gc();
-    }
-    
     public static void saveMatrixTextNumpy(String filename, float[][] matrix) {
-        int numRows = matrix.length;
-        int numCols = matrix[0].length;
-        float[] flattenedArray = FloatMatrixTools.flattenedRowMajorOrderMatrix(matrix);
-        NpyFile.write(Paths.get(filename), flattenedArray, new int[]{numRows, numCols});
+        MatrixTools.saveMatrixTextNumpy(filename, matrix);
     }
     
     public static float[] flattenedRowMajorOrderMatrix(float[][] matrix) {
@@ -177,7 +155,7 @@ public class FloatMatrixTools {
         }
         return flattenedMatrix;
     }
-    
+
     public static float[][] concatenate(float[][] matrix1, float[][] matrix2) {
         float[][] combo = new float[matrix1.length][matrix1[0].length + matrix2[0].length];
         for (int i = 0; i < matrix1.length; i++) {
@@ -185,5 +163,63 @@ public class FloatMatrixTools {
             System.arraycopy(matrix2[i], 0, combo[i], matrix1[i].length, matrix2[i].length);
         }
         return combo;
+    }
+
+    public static float[][] transpose(float[][] matrix) {
+        float[][] result = new float[matrix[0].length][matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                result[j][i] = matrix[i][j];
+            }
+        }
+        return result;
+    }
+
+    // column length assumed identical and kept the same
+    public static float[][] stitchMultipleMatricesTogetherByRowDim(List<float[][]> data) {
+        if (data.size() == 1) return data.get(0);
+
+        int colNums = data.get(0)[0].length;
+        int rowNums = 0;
+        for (float[][] mtrx : data) {
+            rowNums += mtrx.length;
+        }
+
+        float[][] aggregate = new float[rowNums][colNums];
+
+        int rowOffSet = 0;
+        for (float[][] region : data) {
+            copyFromAToBRegion(region, aggregate, rowOffSet, 0);
+            rowOffSet += region.length;
+        }
+
+        return aggregate;
+    }
+
+    public static void copyFromAToBRegion(float[][] source, float[][] destination, int rowOffSet, int colOffSet) {
+        for (int i = 0; i < source.length; i++) {
+            System.arraycopy(source[i], 0, destination[i + rowOffSet], colOffSet, source[0].length);
+        }
+    }
+
+    // column length assumed identical and kept the same
+    public static float[][] stitchMultipleMatricesTogetherByColDim(List<float[][]> data) {
+        if (data.size() == 1) return data.get(0);
+
+        int rowNums = data.get(0).length;
+        int colNums = 0;
+        for (float[][] mtrx : data) {
+            colNums += mtrx[0].length;
+        }
+
+        float[][] aggregate = new float[rowNums][colNums];
+
+        int colOffSet = 0;
+        for (float[][] region : data) {
+            copyFromAToBRegion(region, aggregate, 0, colOffSet);
+            colOffSet += region[0].length;
+        }
+
+        return aggregate;
     }
 }

@@ -24,7 +24,8 @@
 
 package mixer.commandline.utils.slice;
 
-import mixer.data.feature.Feature;
+
+import javastraw.featurelist.Feature;
 
 public class SimpleInterval extends Feature implements Comparable<SimpleInterval> {
     private final Integer x1;

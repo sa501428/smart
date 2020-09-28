@@ -24,15 +24,15 @@
 
 package mixer.commandline.utils.slice;
 
+import javastraw.featurelist.GenomeWideList;
+import javastraw.reader.ChromosomeHandler;
+import javastraw.reader.Dataset;
+import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.common.IntMatrixTools;
 import mixer.commandline.utils.slice.kmeansfloat.Cluster;
 import mixer.commandline.utils.slice.kmeansfloat.ClusterTools;
-import mixer.data.ChromosomeHandler;
-import mixer.data.Dataset;
-import mixer.data.feature.GenomeWideList;
-import mixer.windowui.NormalizationType;
 
 import java.io.File;
 import java.util.*;

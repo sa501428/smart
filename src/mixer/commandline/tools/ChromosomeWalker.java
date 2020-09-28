@@ -24,18 +24,21 @@
 
 package mixer.commandline.tools;
 
+import javastraw.reader.Dataset;
+import javastraw.reader.HiCFileTools;
+import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.commandline.handling.CommandLineParserForMixer;
 import mixer.commandline.handling.MixerCLT;
 import mixer.commandline.utils.dev.LocalGenomeRegion;
-import mixer.data.Dataset;
-import mixer.data.HiCFileTools;
-import mixer.windowui.NormalizationType;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class ChromosomeWalker extends MixerCLT {
     
@@ -84,8 +87,8 @@ public class ChromosomeWalker extends MixerCLT {
             // 3 - standard, 5 - when list/control provided
             printUsageAndExit(8);  // this will exit
         }
-        
-        ds = HiCFileTools.extractDatasetForCLT(Arrays.asList(args[1].split("\\+")), true);
+
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         
         

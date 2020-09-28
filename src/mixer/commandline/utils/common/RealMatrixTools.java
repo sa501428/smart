@@ -24,7 +24,6 @@
 
 package mixer.commandline.utils.common;
 
-import mixer.commandline.utils.grind.GrindFloatMatrixTools;
 import org.apache.commons.math.linear.Array2DRowRealMatrix;
 import org.apache.commons.math.linear.RealMatrix;
 
@@ -317,16 +316,4 @@ public class RealMatrixTools {
             }
         }
     }
-
-    public static void saveMatrixTextV2(String filename, RealMatrix realMatrix) {
-        DoubleMatrixTools.saveMatrixTextV2(filename, realMatrix.getData());
-    }
-
-    public static float[][] generateCompositeMatrixWithNansCleaned(RealMatrix matrixDiag1, RealMatrix matrixDiag2, RealMatrix matrix1vs2) {
-        return GrindFloatMatrixTools.generateCompositeMatrixWithNansCleaned(
-                DoubleMatrixTools.convertToFloatMatrix(matrixDiag1.getData()),
-                DoubleMatrixTools.convertToFloatMatrix(matrixDiag2.getData()),
-                DoubleMatrixTools.convertToFloatMatrix(matrix1vs2.getData()));
-    }
-
 }

@@ -24,11 +24,10 @@
 
 package mixer.commandline.utils.common;
 
-import org.jetbrains.bio.npy.NpyFile;
+import javastraw.tools.MatrixTools;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class IntMatrixTools {
@@ -121,15 +120,11 @@ public class IntMatrixTools {
     }
 
     public static void saveMatrixTextNumpy(String filename, int[][] matrix) {
-        int numRows = matrix.length;
-        int numCols = matrix[0].length;
-        int[] flattenedArray = IntMatrixTools.flattenedRowMajorOrderMatrix(matrix);
-
-        NpyFile.write(Paths.get(filename), flattenedArray, new int[]{numRows, numCols});
+        MatrixTools.saveMatrixTextNumpy(filename, matrix);
     }
 
     public static void saveMatrixTextNumpy(String filename, int[] matrix) {
-        NpyFile.write(Paths.get(filename), matrix, new int[]{1, matrix.length});
+        MatrixTools.saveMatrixTextNumpy(filename, matrix);
     }
 
     public static void labelRegionWithOnes(int[][] labelsMatrix, int rowLength, int numRows, int colLength, int numCols, int startRowOf1, int startColOf1) {

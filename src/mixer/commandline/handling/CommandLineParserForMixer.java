@@ -25,10 +25,9 @@
 package mixer.commandline.handling;
 
 import jargs.gnu.CmdLineParser;
-import mixer.commandline.tools.Grind;
+import javastraw.type.NormalizationHandler;
+import javastraw.type.NormalizationType;
 import mixer.commandline.tools.Slice;
-import mixer.windowui.NormalizationHandler;
-import mixer.windowui.NormalizationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,18 +103,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
 
     public CommandLineParserForMixer() {
-    }
-
-    public int getGrindDataSliceOption() {
-        Object opt = getOptionValue(useListIterationOption);
-        if (opt != null) return Grind.LIST_ITERATION_OPTION;
-        opt = getOptionValue(useDomainOption);
-        if (opt != null) return Grind.DOMAIN_OPTION;
-        opt = getOptionValue(useIterationDownDiagonalOption);
-        if (opt != null) return Grind.DOWN_DIAGONAL_OPTION;
-        opt = getOptionValue(useDistortionOption);
-        if (opt != null) return Grind.DISTORTION_OPTION;
-        return 0;
     }
 
     public int getUsingDerivativeStatus() {

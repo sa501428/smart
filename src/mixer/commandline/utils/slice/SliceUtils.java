@@ -24,22 +24,20 @@
 
 package mixer.commandline.utils.slice;
 
+import javastraw.featurelist.FeatureFilter;
+import javastraw.featurelist.FeatureFunction;
+import javastraw.featurelist.GenomeWideList;
+import javastraw.reader.ChromosomeHandler;
+import javastraw.reader.basics.Chromosome;
 import mixer.MixerGlobals;
-import mixer.data.ChromosomeHandler;
-import mixer.data.HiCFileTools;
-import mixer.data.feature.FeatureFilter;
-import mixer.data.feature.FeatureFunction;
-import mixer.data.feature.GenomeWideList;
-import org.broad.igv.Globals;
-import org.broad.igv.feature.Chromosome;
-import org.broad.igv.util.ParsingUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 public class SliceUtils {
     
@@ -165,29 +163,26 @@ public class SliceUtils {
         mostFrequentSubcompartment.addAll(frequentFliers);
         */
 
-    public static void readInFileAndCollapse(String location) {
+    public static void readInFileAndCollapse(String location, ChromosomeHandler handler) {
 
-        ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
         GenomeWideList<SubcompartmentInterval> subc = loadFromSubcompartmentBEDFile(handler, location);
         SliceUtils.collapseGWList(subc);
         subc.simpleExport(new File(location + "_collapsed.bed"));
     }
 
 
-    public static void readInFileAndSplitByResolutionLevel(String location) {
+    public static void readInFileAndSplitByResolutionLevel(String location, ChromosomeHandler handler) {
 
-        ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
         GenomeWideList<SubcompartmentInterval> subc = loadFromSubcompartmentBEDFile(handler, location);
         SliceUtils.splitGWList(subc, 100000);
         subc.simpleExport(new File(location + "_split.bed"));
 
     }
 
-    public static void createCommonList(String locationHuntley, String locationSNIPER, String locationSCI) {
+    public static void createCommonList(String locationHuntley, String locationSNIPER, String locationSCI, ChromosomeHandler handler) {
 
         final int resolution = 100000;
 
-        ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
         GenomeWideList<SubcompartmentInterval> subcHuntley = loadFromSubcompartmentBEDFile(handler, locationHuntley);
         splitGWList(subcHuntley, resolution);
 
@@ -237,11 +232,10 @@ public class SliceUtils {
         resultList.simpleExport(new File(locationHuntley + "_New_gold_standard.bed"));
     }
 
-    public static void createUnanimousList(String locationHuntley, String locationSNIPER, String locationSCI) {
+    public static void createUnanimousList(String locationHuntley, String locationSNIPER, String locationSCI, ChromosomeHandler handler) {
 
         final int resolution = 100000;
 
-        ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
         GenomeWideList<SubcompartmentInterval> subcHuntley = loadFromSubcompartmentBEDFile(handler, locationHuntley);
         splitGWList(subcHuntley, resolution);
 
@@ -292,11 +286,10 @@ public class SliceUtils {
     }
 
 
-    public static void createCommonListType2(String locationHuntley, String locationSNIPER, String locationSCI) {
+    public static void createCommonListType2(String locationHuntley, String locationSNIPER, String locationSCI, ChromosomeHandler handler) {
 
         final int resolution = 100000;
 
-        ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
         GenomeWideList<SubcompartmentInterval> subcHuntley = loadFromSubcompartmentBEDFile(handler, locationHuntley);
         splitGWList(subcHuntley, resolution);
 
@@ -429,7 +422,7 @@ public class SliceUtils {
      * @throws IOException
      */
     private static List<SubcompartmentInterval> parseSubcompartmentBEDFile(String bedFilePath, ChromosomeHandler handler) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ParsingUtils.openInputStream(bedFilePath)), MixerGlobals.bufferSize);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(bedFilePath), MixerGlobals.bufferSize);
         
         Set<SubcompartmentInterval> anchors = new HashSet<>();
         String nextLine;
@@ -440,7 +433,7 @@ public class SliceUtils {
         
         int errorCount = 0;
         while ((nextLine = bufferedReader.readLine()) != null) {
-            String[] tokens = Globals.tabPattern.split(nextLine);
+            String[] tokens = Pattern.compile("\t").split(nextLine);
 
             if (tokens.length > 3 && tokens[3].equalsIgnoreCase("NA")) {
                 continue;
@@ -529,10 +522,9 @@ public class SliceUtils {
         return intraSubcompartments;
     }
 
-    public static Map<Integer, Map<Integer, Integer>> createGoldStandardLookup(String locationHuntley, int resolution) {
+    public static Map<Integer, Map<Integer, Integer>> createGoldStandardLookup(String locationHuntley, int resolution, ChromosomeHandler handler) {
         Map<Integer, Map<Integer, Integer>> goldenMap = new HashMap<>();
 
-        ChromosomeHandler handler = HiCFileTools.loadChromosomes("hg19");
         GenomeWideList<SubcompartmentInterval> subcHuntley = loadFromSubcompartmentBEDFile(handler, locationHuntley);
         splitGWList(subcHuntley, resolution);
 

@@ -25,14 +25,14 @@
 package mixer.commandline.utils.slice;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import javastraw.featurelist.GenomeWideList;
+import javastraw.reader.ChromosomeHandler;
 import mixer.MixerGlobals;
+import mixer.commandline.utils.common.Pair;
 import mixer.commandline.utils.slice.kmeansfloat.Cluster;
 import mixer.commandline.utils.slice.kmeansfloat.ClusterTools;
 import mixer.commandline.utils.slice.kmeansfloat.ConcurrentKMeans;
 import mixer.commandline.utils.slice.kmeansfloat.KMeansListener;
-import mixer.data.ChromosomeHandler;
-import mixer.data.feature.GenomeWideList;
-import org.broad.igv.util.Pair;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

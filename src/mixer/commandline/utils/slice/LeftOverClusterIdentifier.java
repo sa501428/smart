@@ -24,17 +24,12 @@
 
 package mixer.commandline.utils.slice;
 
+import javastraw.featurelist.GenomeWideList;
+import javastraw.reader.*;
+import javastraw.reader.basics.Chromosome;
+import javastraw.type.NormalizationType;
 import mixer.commandline.handling.AggregateProcessing;
-import mixer.commandline.utils.common.DoubleMatrixTools;
 import mixer.commandline.utils.slice.kmeansfloat.ClusterTools;
-import mixer.data.ChromosomeHandler;
-import mixer.data.Dataset;
-import mixer.data.HiCFileTools;
-import mixer.data.MatrixZoomData;
-import mixer.data.feature.GenomeWideList;
-import mixer.windowui.NormalizationType;
-import org.apache.commons.math.linear.RealMatrix;
-import org.broad.igv.feature.Chromosome;
 
 import java.util.*;
 
@@ -50,14 +45,12 @@ public class LeftOverClusterIdentifier {
         
             float[][] allDataForRegion = null;
             try {
-                RealMatrix localizedRegionData = HiCFileTools.getRealOEMatrixForChromosome(ds, zd, chr1, resolution,
-                        norm, threshold,
-                        AggregateProcessing.afterThresholdType,
-                        true);
+                allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
+                        norm, threshold, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                        true, 1, 0);
             
-                allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(
-                        DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
-            
+                //allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
+
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(99);

@@ -24,19 +24,18 @@
 
 package mixer.commandline.tools;
 
+import javastraw.reader.ChromosomeHandler;
+import javastraw.reader.Dataset;
+import javastraw.reader.HiCFileTools;
+import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.commandline.handling.CommandLineParserForMixer;
 import mixer.commandline.handling.MixerCLT;
 import mixer.commandline.utils.common.UNIXTools;
 import mixer.commandline.utils.slice.FullGenomeOEWithinClusters;
-import mixer.data.ChromosomeHandler;
-import mixer.data.Dataset;
-import mixer.data.HiCFileTools;
-import mixer.windowui.NormalizationType;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -88,13 +87,11 @@ public class Slice extends MixerCLT {
             for (String path : args[1].split("\\+")) {
                 System.out.println("Extracting " + path);
                 inputHicFilePaths.add(path);
-                List<String> tempList = new ArrayList<>();
-                tempList.add(path);
-                datasetList.add(HiCFileTools.extractDatasetForCLT(tempList, true));
+                datasetList.add(HiCFileTools.extractDatasetForCLT(path, true));
             }
             ds = datasetList.get(0);
         } else {
-            ds = HiCFileTools.extractDatasetForCLT(Arrays.asList(args[1].split("\\+")), true);
+            ds = HiCFileTools.extractDatasetForCLT(args[1], true);
         }
         outputDirectory = HiCFileTools.createValidDirectory(args[2]);
         prefix = args[3];
