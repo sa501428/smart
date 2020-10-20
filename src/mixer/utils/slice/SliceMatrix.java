@@ -37,10 +37,11 @@ import java.io.File;
 import java.util.*;
 
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
-    
+
+    private static final boolean REORDER_COLUMNS = true;
     public static int numColumnsToPutTogether = 2;
     public static boolean USE_CORRELATION = false;
-    
+
     /**
      * for SLICE, minIntervalSize become how many bins to collapse together (e.g. 5 means 5 bins together)
      *
@@ -57,27 +58,31 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     }
     
     float[][] makeCleanScaledInterMatrix(Dataset ds) {
-        
+
         // height/weight chromosomes
         Map<Integer, Integer> indexToFilteredLength = calculateActualLengthForChromosomes(chromosomes);
         Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(indexToFilteredLength);
-        
+
         Pair<Integer, int[][]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         Pair<Integer, int[][]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
-        
+
         System.out.println(dimensions.getFirst() + " by " + compressedDimensions.getFirst());
-        
+
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
+
+        IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
+                badIndexLocations);
+
         for (int i = 0; i < chromosomes.length; i++) {
             Chromosome chr1 = chromosomes[i];
-            
+
             for (int j = i; j < chromosomes.length; j++) {
                 Chromosome chr2 = chromosomes[j];
-    
+
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
-    
+
                 fillInChromosomeRegion(interMatrix, badIndexLocations, zd, chr1, dimensions.getSecond()[0][i], compressedDimensions.getSecond()[0][i],
-                        chr2, dimensions.getSecond()[0][j], compressedDimensions.getSecond()[0][j], i == j);
+                        chr2, dimensions.getSecond()[0][j], compressedDimensions.getSecond()[0][j], i == j, orderer);
                 System.out.print(".");
             }
         }
@@ -92,8 +97,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
     
         MatrixCleanup matrixCleanupReduction = new MatrixCleanup(interMatrix, generator.nextLong(), outputDirectory);
-    
-        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendDeriv(rowIndexToIntervalMap, dimensions.getSecond(), USE_CORRELATION);
+
+        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendCorr(rowIndexToIntervalMap, USE_CORRELATION);
     }
     
     protected Map<Integer, Integer> calculateActualLengthForChromosomes(Chromosome[] chromosomes) {
@@ -132,7 +137,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
      * @param isIntra
      */
     private void fillInChromosomeRegion(float[][] matrix, GenomewideBadIndexFinder badIndices, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
-                                        Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2, boolean isIntra) {
+                                        Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2, boolean isIntra,
+                                        IndexOrderer orderer) {
 
         int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
@@ -142,7 +148,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             if (!isIntra) {
                 blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, isIntra);
 
-                if (blocks == null || blocks.size() < 1) {
+                if (blocks.size() < 1) {
                     System.err.println("Missing Interchromosomal Data " + zd.getKey());
                     System.exit(98);
                 }
@@ -151,16 +157,25 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             e.printStackTrace();
             System.exit(99);
         }
-    
+
         Map<Integer, Integer> genomePosToLocal1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, 1);
         Map<Integer, Integer> genomePosToLocal2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), offsetIndex2, 1);
-        Map<Integer, Integer> genomePosToCompressed1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1, numColumnsToPutTogether);
-        Map<Integer, Integer> genomePosToCompressed2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2, numColumnsToPutTogether);
-    
+
+        Map<Integer, Integer> genomePosToCompressed1, genomePosToCompressed2;
+        if (REORDER_COLUMNS) {
+            genomePosToCompressed1 = makeLocalReorderedIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1,
+                    numColumnsToPutTogether, orderer.get(chr1));
+            genomePosToCompressed2 = makeLocalReorderedIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2,
+                    numColumnsToPutTogether, orderer.get(chr2));
+        } else {
+            genomePosToCompressed1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1, numColumnsToPutTogether);
+            genomePosToCompressed2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2, numColumnsToPutTogether);
+        }
+
         if (isIntra) {
             updateSubcompartmentMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, rowIndexToIntervalMap);
         }
-    
+
         copyValuesToArea(matrix, blocks, badIndices,
                 genomePosToLocal1, genomePosToCompressed1, genomePosToLocal2, genomePosToCompressed2, isIntra);
     }
@@ -179,18 +194,24 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             for (Block b : blocks) {
                 if (b != null) {
                     for (ContactRecord cr : b.getContactRecords()) {
-                        float val0 = cr.getCounts();
-                        float val = (float) Math.log(val0 + 1);
-                        if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val) || badIndices.getExceedsAllowedGlobalZscore(val)) {
-                            val0 = Float.NaN;
+                        float val = cr.getCounts();
+                        //float val = (float) Math.log(val0 + 1);
+                        //if (Float.isNaN(val) || Float.isInfinite(val) || badIndices.getExceedsAllowedGlobalZscore(val)) {
+                        // val < 1e-10 --> leave as zero, will get aggregated
+                        // val = 0 prob never even happens
+                        //    val0 = Float.NaN;
+                        //}
+
+                        if (badIndices.getExceedsAllowedGlobalValue(val)) {
+                            val = Float.NaN;
                         }
-    
+
                         int binX = cr.getBinX();
                         int binY = cr.getBinY();
-    
+
                         if (genomePosToLocal1.containsKey(binX) && genomePosToLocal2.containsKey(binY)) {
-                            matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val0;
-                            matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val0;
+                            matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val;
+                            matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val;
                         }
                     }
                 }
@@ -211,7 +232,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             counter++;
         }
     }
-    
+
     private Map<Integer, Integer> makeLocalIndexMap(Chromosome chrom, Set<Integer> badIndices, int offsetIndex, int divisor) {
         Map<Integer, Integer> binToLocalMap = new HashMap<>();
         int counter = 0;
@@ -221,11 +242,26 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             if (badIndices.contains(i)) {
                 continue;
             }
-            
+
             binToLocalMap.put(i, offsetIndex + (counter / divisor));
             counter++;
         }
-        
+
+        return binToLocalMap;
+    }
+
+    private Map<Integer, Integer> makeLocalReorderedIndexMap(Chromosome chrom, Set<Integer> badIndices, int offsetIndex, int divisor, int[] newOrder) {
+        Map<Integer, Integer> binToLocalMap = new HashMap<>();
+
+        int chrLength = (int) (chrom.getLength() / resolution + 1);
+        for (int i = 0; i < chrLength; i++) {
+            if (badIndices.contains(i)) {
+                continue;
+            }
+
+            binToLocalMap.put(i, offsetIndex + (newOrder[i] / divisor));
+        }
+
         return binToLocalMap;
     }
 }

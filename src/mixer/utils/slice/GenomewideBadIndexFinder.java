@@ -37,9 +37,10 @@ import java.io.IOException;
 import java.util.*;
 
 public class GenomewideBadIndexFinder {
-	
+
 	private static final float ZSCORE_MIN_SPARSE_THRESHOLD_LOWER_INTRA = -3;//-5; // 3 bottom 0.15% dropped
 	private static final float ZSCORE_MAX_ALLOWED_INTER = 3;
+	private final double GLOBAL_MAX_RAW_VALUE;
 	public static float ZSCORE_MIN_SPARSE_THRESHOLD_INTER_HIGHER = -1;//-2; //-1.28f; // bottom 10% dropped
 	private final int resolution;
 	private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
@@ -48,15 +49,16 @@ public class GenomewideBadIndexFinder {
 	private final float globalInterMean, globalInterStdDev;
 	private double globalSum = 0, globalSumOfSquares = 0;
 	private long globalCounts = 0;
-	
+
 	public GenomewideBadIndexFinder(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType norm) {
 		this.resolution = resolution;
 		this.norm = norm;
 		createInternalBadList(ds, chromosomes);
-		
+
 		globalInterMean = (float) (globalSum / globalCounts);
 		double variance = (globalSumOfSquares / globalCounts) - globalInterMean * globalInterMean;
 		globalInterStdDev = (float) Math.sqrt(variance);
+		GLOBAL_MAX_RAW_VALUE = Math.exp(ZSCORE_MAX_ALLOWED_INTER * globalInterStdDev + globalInterMean) - 1;
 	}
 	
 	private void createInternalBadList(Dataset ds, Chromosome[] chromosomes) {
@@ -187,16 +189,16 @@ public class GenomewideBadIndexFinder {
 		}
 		return total / count;
 	}
-	
+
 	public Set<Integer> getBadIndices(Chromosome chrom) {
 		return badIndices.get(chrom.getIndex());
 	}
-	
+
 	public Set<Integer> getWorstIndices(Chromosome chrom) {
 		return worstIndices.get(chrom.getIndex());
 	}
-	
-	public boolean getExceedsAllowedGlobalZscore(float val) {
-		return (val - globalInterMean) / globalInterStdDev > ZSCORE_MAX_ALLOWED_INTER;
+
+	public boolean getExceedsAllowedGlobalValue(float val) {
+		return val > GLOBAL_MAX_RAW_VALUE;
 	}
 }

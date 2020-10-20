@@ -27,13 +27,14 @@ package mixer.utils.slice;
 import mixer.utils.common.FloatMatrixTools;
 import org.apache.commons.math.stat.regression.SimpleRegression;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CorrelationTools {
-	
-	private static float getNonNanPearsonCorrelation(float[] array1, float[] array2) {
+
+	public static float getNonNanPearsonCorrelation(float[] array1, float[] array2) {
 		SimpleRegression regression = new SimpleRegression();
 		for (int i = 0; i < array1.length; i++) {
 			boolean entryIsBad = Float.isNaN(array1[i]) || Float.isNaN(array2[i]);
@@ -41,15 +42,15 @@ public class CorrelationTools {
 				regression.addData(array1[i], array2[i]);
 			}
 		}
-		
+
 		return (float) regression.getR();
 	}
-	
-	public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids) {
-		
+
+	public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids, File outputDirectory) {
+
 		float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids);
 		float[][] result = new float[matrix.length][numCentroids]; // *2
-		
+
 		int numCPUThreads = 20;
 		AtomicInteger currRowIndex = new AtomicInteger(0);
 		ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
@@ -75,12 +76,13 @@ public class CorrelationTools {
 			executor.execute(worker);
 		}
 		executor.shutdown();
-		
+
 		// Wait until all threads finish
 		while (!executor.isTerminated()) {
 		}
-		
+
 		//FloatMatrixTools.inPlaceZscoreDownColsNoNan(result, 1);
+		FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_matrix_vs_centroids.npy").getAbsolutePath(), result);
 		return FloatMatrixTools.concatenate(matrix, result);
 		//return result;
 	}

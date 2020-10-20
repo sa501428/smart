@@ -24,7 +24,6 @@
 
 package mixer.clt;
 
-import mixer.MixerTools;
 import mixer.utils.slice.SliceMatrix;
 
 
@@ -38,8 +37,8 @@ public class AggregateProcessing {
     public static boolean useL1Norm = false;
 
     public static void main(String[] argv) throws Exception {
-    
-    
+
+
         String[] strings;
         String refs = "/Users/muhammad/Desktop/research/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed" + "+" +
                 "/Users/muhammad/Desktop/research/drinks/existingmethods/ultra_res_100k_default_clean_outliers.bed" + "+" +
@@ -50,12 +49,14 @@ public class AggregateProcessing {
         String folder;
         String primary14 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/CELL2014/GSE63525_GM12878_insitu_primary_30.hic";
         String replicate14 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/CELL2014/GSE63525_GM12878_insitu_replicate_30.hic";
-    
+
+        file14 = "/Users/mss/Desktop/gm12878_rh14_30.hic";
+
         SliceMatrix.USE_CORRELATION = true;
-    
-        folder = "ComboPArcTanhD20_5_14B_100k_w2";
+
+        folder = "alpha_r100k_w2_gwkr";
         strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2", //"--verbose",
-                file14, "/Users/muhammad/Desktop/research/slice/" + folder, folder + "_", refs};
+                file14, "/Users/mss/Desktop/slice/" + folder, folder + "_", refs};
         System.out.println("-----------------------------------------------------");
         //MixerTools.main(strings);
         System.gc();
@@ -71,7 +72,7 @@ public class AggregateProcessing {
                 strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "" + width, //"--verbose",
                         myfile, "/Users/muhammad/Desktop/research/slice/" + folder, folder + "_", refs};
                 System.out.println("-----------------------------------------------------");
-                MixerTools.main(strings);
+                //MixerTools.main(strings);
                 System.gc();
             }
         }

@@ -31,40 +31,49 @@ import java.util.*;
 
 public class MatrixCleanup {
     private final static float PERCENT_ZERO_ALLOWED = .5f;
-    protected static float zScoreThreshold = 3f;
-    public static int BATCHED_NUM_ROWS = 1; // 10
-    protected File outputDirectory;
-    protected Random generator;
-    
+    public static final int BATCHED_NUM_ROWS = 1; // 10
+    protected static final float zScoreThreshold = 3f;
+    protected final File outputDirectory;
+    protected final Random generator;
+
     private final static float PERCENT_NAN_ALLOWED = .5f;
     protected float[][] data;
-    
+
     public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory) {
         data = interMatrix;
         System.out.println("matrix size " + data.length + " x " + data[0].length);
         generator = new Random(seed);
         this.outputDirectory = outputDirectory;
     }
-    
-    public float[][] getSimpleCleaningOfMatrixAppendDeriv(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[][] origDimensions, boolean useCorrelation) {
-        FloatMatrixTools.thresholdByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
-        Set<Integer> badIndices = getBadIndices(data);
-        if (badIndices.size() > 0) {
-            data = filterOutColumnsAndRowsNonSymmetricMatrix(data, badIndices, rowIndexToIntervalMap);
+
+    public static float[][] filterOutColumnsAndRowsNonSymmetricMatrix(float[][] interMatrix, Map<Integer, SubcompartmentInterval> original) {
+        Set<Integer> badIndices = getBadIndices(interMatrix);
+        if (badIndices.size() == 0) {
+            return interMatrix;
         }
-        System.out.println("matrix size " + data.length + " x " + data[0].length);
-        
-        //    data = FloatMatrixDerivativeTools.getWithAppendedNonNanDerivative(data);
-        FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
-        
-        if (useCorrelation) {
-            //data = PearsonCorrelationTools.getNonNanPearsonCorrelationMatrix(data, 1); // (int)Math.ceil((1.0*data.length)/data[0].length)
-            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, data[0].length / 20); // 500
-            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_matrix.npy").getAbsolutePath(), data);
-            //IntMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_reorder.npy").getAbsolutePath(),
-            //        PearsonCorrelationTools.getReSortedIndexOrder(data));
+
+        System.out.println("interMatrix.length " + interMatrix.length + " badIndices.size() " + badIndices.size());
+
+        int counter = 0;
+        int[] newIndexToOrigIndex = new int[interMatrix.length - badIndices.size()];
+        for (int i = 0; i < interMatrix.length; i++) {
+            if (!badIndices.contains(i)) {
+                newIndexToOrigIndex[counter++] = i;
+            }
         }
-        return data;
+
+        float[][] newMatrix = new float[newIndexToOrigIndex.length][interMatrix[0].length];
+        Map<Integer, SubcompartmentInterval> newRowIndexToIntervalMap = new HashMap<>();
+        for (int i = 0; i < newMatrix.length; i++) {
+            int tempI = newIndexToOrigIndex[i];
+            System.arraycopy(interMatrix[tempI], 0, newMatrix[i], 0, newMatrix[0].length);
+            newRowIndexToIntervalMap.put(i, (SubcompartmentInterval) original.get(newIndexToOrigIndex[i]).deepClone());
+        }
+
+        original.clear();
+        original.putAll(newRowIndexToIntervalMap);
+
+        return newMatrix;
     }
     
     public static Set<Integer> getBadIndices(float[][] matrix) {
@@ -114,33 +123,18 @@ public class MatrixCleanup {
         }
         return numNans;
     }
-    
-    public static float[][] filterOutColumnsAndRowsNonSymmetricMatrix(float[][] interMatrix, Set<Integer> badIndices, Map<Integer, SubcompartmentInterval> original) {
-        int[] newIndexToOrigIndex = new int[interMatrix.length - badIndices.size()];
-        System.out.println("interMatrix.length " + interMatrix.length + " badIndices.size() " + badIndices.size());
-        float[][] newMatrix = new float[newIndexToOrigIndex.length][interMatrix[0].length];
-        
-        int counter = 0;
-        for (int i = 0; i < interMatrix.length; i++) {
-            if (!badIndices.contains(i)) {
-                newIndexToOrigIndex[counter++] = i;
-            }
+
+    public float[][] getSimpleCleaningOfMatrixAppendCorr(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, boolean useCorrelation) {
+        FloatMatrixTools.thresholdByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
+
+        data = filterOutColumnsAndRowsNonSymmetricMatrix(data, rowIndexToIntervalMap);
+        System.out.println("matrix size " + data.length + " x " + data[0].length);
+
+        FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
+
+        if (useCorrelation) {
+            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, data[0].length / 20, outputDirectory);
         }
-        
-        for (int i = 0; i < newMatrix.length; i++) {
-            for (int j = 0; j < newMatrix[0].length; j++) {
-                newMatrix[i][j] = interMatrix[newIndexToOrigIndex[i]][j];
-            }
-        }
-        
-        Map<Integer, SubcompartmentInterval> newRowIndexToIntervalMap = new HashMap<>();
-        for (int i = 0; i < newIndexToOrigIndex.length; i++) {
-            newRowIndexToIntervalMap.put(i, (SubcompartmentInterval) original.get(newIndexToOrigIndex[i]).deepClone());
-        }
-        
-        original.clear();
-        original.putAll(newRowIndexToIntervalMap);
-        
-        return newMatrix;
+        return data;
     }
 }

@@ -106,7 +106,7 @@ public class QuickCentroids {
 	private static int getIndexOfMaxVal(float[] data) {
 		float max = data[0];
 		int index = 0;
-		
+
 		for (int i = 0; i < data.length; i++) {
 			if (data[i] > max) {
 				index = i;
@@ -115,16 +115,16 @@ public class QuickCentroids {
 		}
 		return index;
 	}
-	
-	private static int getMostDenseVectorIndex(float[][] matrix) {
+
+	public static int getMostDenseVectorIndex(float[][] matrix) {
 		float[] numNonNans = new float[matrix.length];
 		for (int i = 0; i < matrix.length; i++) {
 			numNonNans[i] = getNumNonNanEntries(matrix[i]);
 		}
-		
+
 		return getIndexOfMaxVal(numNonNans);
 	}
-	
+
 	public static int getNumNonNanEntries(float[] row) {
 		int numNanEntries = 0;
 		for (float val : row) {
