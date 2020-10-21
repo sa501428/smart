@@ -27,11 +27,10 @@ package mixer.algos;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
+import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
-import mixer.MixerGlobals;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.common.UNIXTools;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
 
 import java.io.File;
@@ -46,35 +45,21 @@ import java.util.Random;
  */
 public class Slice extends MixerCLT {
     
-    public static final int USE_ONLY_DERIVATIVE = 1;
-    public static final int IGNORE_DERIVATIVE = 2;
-    
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    //private final int numIntraIters = 1;
-    private final float oeThreshold = 3f;
-    private final int whichApproachtoUse = 0;
     private final List<Dataset> datasetList = new ArrayList<>();
     private final List<String> inputHicFilePaths = new ArrayList<>();
-    private final boolean compareOnlyNotSubcompartment;
-    //private int[] numIntraClusters = new int[]{5, 5, 5};
-    //private double[] convolution1d = null;
     private final Random generator = new Random(22871L);
     private boolean useStackingAlongRow = false;
     private int minIntervalSizeAllowed = 1; // 1
     private String prefix = "";
-    private boolean useLink = false;
     private String[] referenceBedFiles;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
-        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] <input1.hic+input2.hic+input3.hic...> <output file> <exp name> [reference.bed]");
-        //super("drink [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] <input1.hic+input2.hic+input3.hic...> <output file> <exp name> [reference.bed]");
-        //
-        MixerGlobals.useCache = false;
-        this.compareOnlyNotSubcompartment = command.equalsIgnoreCase("drink");
-        useLink = command.startsWith("link");
+        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] " +
+                "<input1.hic+input2.hic+input3.hic...> <output_file> <exp_name> [reference.bed]");
         useStackingAlongRow = command.contains("2");
     }
     
@@ -83,27 +68,23 @@ public class Slice extends MixerCLT {
         if (args.length != 4 && args.length != 5) {
             printUsageAndExit(5);
         }
-        
-        if (whichApproachtoUse == 0) {
-            for (String path : args[1].split("\\+")) {
-                System.out.println("Extracting " + path);
-                inputHicFilePaths.add(path);
-                datasetList.add(HiCFileTools.extractDatasetForCLT(path, true));
-            }
-            ds = datasetList.get(0);
-        } else {
-            ds = HiCFileTools.extractDatasetForCLT(args[1], true);
+
+        for (String path : args[1].split("\\+")) {
+            System.out.println("Extracting " + path);
+            inputHicFilePaths.add(path);
+            datasetList.add(HiCFileTools.extractDatasetForCLT(path, true, false));
         }
+        ds = datasetList.get(0);
         outputDirectory = HiCFileTools.createValidDirectory(args[2]);
         prefix = args[3];
-        
+
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null) norm = preferredNorm;
-        
+
         List<String> possibleResolutions = mixerParser.getMultipleResolutionOptions();
         if (possibleResolutions != null) {
             if (possibleResolutions.size() > 1)
-                System.err.println("Only one resolution can be specified for Drink\nUsing " + possibleResolutions.get(0));
+                System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
             resolution = Integer.parseInt(possibleResolutions.get(0));
         }
         
@@ -118,11 +99,7 @@ public class Slice extends MixerCLT {
         if (minSize > 0) {
             minIntervalSizeAllowed = minSize;
         }
-    
-        //convolution1d = mixerParser.getConvolutionOption();
-        //derivativeStatus = mixerParser.getUsingDerivativeStatus();
-        //useNormalizationOfRows = mixerParser.getUsingRowNomalizationStatus();
-    
+
         if (args.length == 5) {
             referenceBedFiles = args[4].split("\\+");
         }
@@ -142,7 +119,7 @@ public class Slice extends MixerCLT {
         
         if (useStackingAlongRow) {
             FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(0),
-                    chromosomeHandler, resolution, norm, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+                    chromosomeHandler, resolution, norm, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
             for (int i = 1; i < datasetList.size(); i++) {
                 withinClusters.appendGWDataFromAdditionalDataset(datasetList.get(i));
             }
@@ -150,7 +127,7 @@ public class Slice extends MixerCLT {
         } else {
             for (int i = 0; i < datasetList.size(); i++) {
                 FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                        chromosomeHandler, resolution, norm, oeThreshold, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+                        chromosomeHandler, resolution, norm, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
                 withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, i);
             }
             System.out.println("\nClustering complete");

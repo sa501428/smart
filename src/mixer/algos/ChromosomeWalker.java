@@ -27,7 +27,6 @@ package mixer.algos;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
 import javastraw.type.NormalizationType;
-import mixer.MixerGlobals;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.walker.LocalGenomeRegion;
@@ -53,7 +52,6 @@ public class ChromosomeWalker extends MixerCLT {
     public ChromosomeWalker() {
         super("walk [-r res1,res2] [-k normalization] [-w minimum size]" +
                 "  <hicFile> <assembly_file> <output_directory>");
-        MixerGlobals.useCache = false;
     }
     
     public static void writeStrictIntsToFile(File path, List<Integer> positions) {
@@ -88,7 +86,7 @@ public class ChromosomeWalker extends MixerCLT {
             printUsageAndExit(8);  // this will exit
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(args[1], true);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         
         

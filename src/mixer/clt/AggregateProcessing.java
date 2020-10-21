@@ -24,6 +24,7 @@
 
 package mixer.clt;
 
+import mixer.MixerTools;
 import mixer.utils.slice.SliceMatrix;
 
 
@@ -54,16 +55,17 @@ public class AggregateProcessing {
 
         SliceMatrix.USE_CORRELATION = true;
 
-        folder = "alpha_r100k_w2_gwkr";
-        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2", //"--verbose",
-                file14, "/Users/mss/Desktop/slice/" + folder, folder + "_", refs};
+        folder = "alpha_r50k_w4_gwkr_gm14"; // 50000
+        strings = new String[]{"slice", "-r", "50000", "-k", "GW_KR", "-w", "4", //"--verbose",
+                file14, "/Users/mss/Desktop/slice/" + folder, folder + "_" //, refs
+        };
         System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
-    
+
         String[] prefixes = new String[]{"Primary", "Replicate", "RH14"};
         String[] files = new String[]{primary14, replicate14, file14};
-    
+
         for (int i = 0; i < prefixes.length; i++) {
             String myfile = files[i];
             String myprefix = prefixes[i];

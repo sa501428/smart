@@ -50,7 +50,7 @@ public class ChainBreaker extends MixerCLT {
             printUsageAndExit(2);  // this will exit
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(args[1], true);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());

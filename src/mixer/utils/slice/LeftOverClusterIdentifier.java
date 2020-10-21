@@ -34,15 +34,17 @@ import mixer.utils.slice.kmeansfloat.ClusterTools;
 import java.util.*;
 
 public class LeftOverClusterIdentifier {
+
+    public static float threshold = 3f;
+
     public static void identify(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
-                                GenomewideBadIndexFinder badIndexFinder,
-                                float threshold) {
-    
+                                GenomewideBadIndexFinder badIndexFinder) {
+
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr1, resolution);
             if (zd == null) continue;
-        
+
             float[][] allDataForRegion = null;
             try {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,

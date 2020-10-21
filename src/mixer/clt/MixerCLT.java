@@ -24,11 +24,7 @@
 
 package mixer.clt;
 
-import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.Matrix;
-import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationHandler;
 import javastraw.type.NormalizationType;
 
@@ -48,16 +44,6 @@ public abstract class MixerCLT {
 
     protected MixerCLT(String usage) {
         setUsage(usage);
-    }
-
-    protected int determineHowManyChromosomesWillActuallyRun(Dataset ds, ChromosomeHandler chromosomeHandler) {
-        int maxProgressStatus = 0;
-        for (Chromosome chr : chromosomeHandler.getChromosomeArrayWithoutAllByAll()) {
-            Matrix matrix = ds.getMatrix(chr, chr);
-            if (matrix == null) continue;
-            maxProgressStatus++;
-        }
-        return maxProgressStatus;
     }
 
     public void readArguments(String[] args, CommandLineParserForMixer parser) {
@@ -80,10 +66,6 @@ public abstract class MixerCLT {
 
     protected abstract void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser);
 
-    public static String[] splitToList(String nextLine) {
-        return nextLine.trim().split("\\s+");
-    }
-
     private void assessIfChromosomesHaveBeenSpecified(CommandLineParserForMixer mixerParser) {
         List<String> possibleChromosomes = mixerParser.getChromosomeListOption();
         if (possibleChromosomes != null && possibleChromosomes.size() > 0) {
@@ -100,17 +82,5 @@ public abstract class MixerCLT {
     public void printUsageAndExit(int exitcode) {
         System.out.println("Usage:   mixer_tools " + usage);
         System.exit(exitcode);
-    }
-
-    protected void setDatasetAndNorm(String file, String normType, boolean allowPrinting) {
-        dataset = HiCFileTools.extractDatasetForCLT(file, allowPrinting);
-
-        norm = dataset.getNormalizationHandler().getNormTypeFromString(normType);
-        if (norm == null) {
-            System.err.println("Normalization type " + norm + " unrecognized.  Normalization type must be one of \n" +
-                    "\"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\"," +
-                    " \"GW_VC\", \"INTER_KR\", \"INTER_VC\", or a custom added normalization.");
-            System.exit(16);
-        }
     }
 }

@@ -45,7 +45,8 @@ public class Pair<A, B> {
         if (this == o) {
             return true;
         } else if (o != null && this.getClass() == o.getClass()) {
-            Pair pair = (Pair) o;
+            @SuppressWarnings("unchecked")
+            Pair<A, B> pair = (Pair<A, B>) o;
             if (this.first != null) {
                 if (!this.first.equals(pair.first)) {
                     return false;

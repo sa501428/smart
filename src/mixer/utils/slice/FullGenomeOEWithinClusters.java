@@ -45,20 +45,18 @@ public class FullGenomeOEWithinClusters {
     protected final File outputDirectory;
     private final int numRounds = 2;//10
     private final CompositeGenomeWideDensityMatrix interMatrix;
-    private final float oeThreshold;
     private final int numAttemptsForKMeans = 10;//5 //7 //5
     private final Random generator;
     
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      float oeThreshold, int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] referenceBedFiles) {
+                                      int minIntervalSizeAllowed, File outputDirectory, Random generator, String[] referenceBedFiles) {
         this.ds = ds;
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
         this.norm = norm;
-        this.oeThreshold = oeThreshold;
         this.outputDirectory = outputDirectory;
         this.generator = generator;
-    
+
         if (minIntervalSizeAllowed > 0) {
             SliceMatrix.numColumnsToPutTogether = minIntervalSizeAllowed;
         } else {
@@ -84,8 +82,6 @@ public class FullGenomeOEWithinClusters {
         if (MixerGlobals.printVerboseComments) {
             interMatrix.exportData();
         }
-        
-        MixerGlobals.usePositiveDiffKmeans = true;
         
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);
 
@@ -125,11 +121,9 @@ public class FullGenomeOEWithinClusters {
         }
         System.out.println(".");
 
-        MixerGlobals.usePositiveDiffKmeans = false;
-        
         System.out.println("Post processing");
         LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults,
-                interMatrix.getBadIndices(), oeThreshold);
+                interMatrix.getBadIndices());
 
         DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
     

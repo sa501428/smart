@@ -30,22 +30,7 @@ package mixer;
  */
 public class MixerGlobals {
 
-    public static final String versionNum = "3.01.00";
-    public static final int minVersion = 6;
+    public static final String versionNum = "3.02.00";
     public static final int bufferSize = 2097152;
-
-    // whether MatrixZoomData should cache or not
-    public static boolean useCache = false;
     public static boolean printVerboseComments = false;
-
-    // whether instance was linked before mouse press or not
-    public static boolean isLegacyOutputPrintingEnabled = false;
-    public static boolean usePositiveDiffKmeans = false;
-
-    public static void verifySupportedHiCFileVersion(int version) throws RuntimeException {
-        if (version < minVersion) {
-            throw new RuntimeException("This file is version " + version +
-                    ". Only versions " + minVersion + " and greater are supported at this time.");
-        }
-    }
 }

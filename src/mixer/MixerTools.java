@@ -45,7 +45,6 @@ public class MixerTools {
         }
 
         CommandLineParserForMixer parser = new CommandLineParserForMixer();
-        MixerGlobals.useCache = false; //TODO until memory leak cleared
         boolean help;
         boolean version;
         parser.parse(argv);
