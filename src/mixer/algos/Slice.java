@@ -31,6 +31,7 @@ import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
+import mixer.utils.slice.MatrixCleanup;
 import mixer.utils.slice.SliceMatrix;
 
 import java.io.File;
@@ -58,7 +59,8 @@ public class Slice extends MixerCLT {
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
         super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-m num_clusters] " +
-                "[-w window] [--compare reference.bed] [--corr] [--reorder] [--verbose] " +
+                "[-w window] [--compare reference.bed] [--corr/only-corr] [--remove-zeros] " +
+                "[--reorder] [--verbose] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
         useStackingAlongRow = command.contains("2");
     }
@@ -118,8 +120,10 @@ public class Slice extends MixerCLT {
             referenceBedFiles = bedFiles.split("\\+");
         }
 
-        SliceMatrix.USE_CORRELATION = mixerParser.getCorrelationOption();
+        MatrixCleanup.USE_ONLY_CORRELATION = mixerParser.getOnlyCorrelationOption();
+        MatrixCleanup.USE_CORRELATION = mixerParser.getCorrelationOption() || MatrixCleanup.USE_ONLY_CORRELATION;
         SliceMatrix.REORDER_COLUMNS = mixerParser.getReorderingOption();
+        MatrixCleanup.REMOVE_ZEROS = mixerParser.getZeroOption();
     }
     
     @Override

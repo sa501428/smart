@@ -53,8 +53,8 @@ public class AggregateProcessing {
         file14 = "/Users/mss/Desktop/gm12878_rh14_30.hic";
 
 
-        folder = "alpha2_r100k_w1_gwkr_gm14";
-        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "1",
+        folder = "alpha3Z_r100k_w2_gwkr_gm14";
+        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2",
                 "--corr",
                 file14, "5,7,10",
                 "/Users/mss/Desktop/slice/" + folder, folder + "_"
@@ -63,8 +63,9 @@ public class AggregateProcessing {
         MixerTools.main(strings);
         System.gc();
 
-        folder = "alpha2_r100k_w1_gwkr_gm14_nocorr";
-        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "1",
+        folder = "alpha3Z_r100k_w2_gwkr_gm14_reorder";
+        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2",
+                "--corr", "--reorder",
                 file14, "5,7,10",
                 "/Users/mss/Desktop/slice/" + folder, folder + "_"
         };

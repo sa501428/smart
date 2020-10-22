@@ -24,13 +24,14 @@
 
 package mixer.utils.slice;
 
-import javastraw.reader.*;
+import javastraw.reader.ChromosomeHandler;
+import javastraw.reader.Dataset;
+import javastraw.reader.HiCFileTools;
+import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
-import mixer.MixerGlobals;
-import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.Pair;
 
 import java.io.File;
@@ -39,7 +40,6 @@ import java.util.*;
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
 
     public static boolean REORDER_COLUMNS = false;
-    public static boolean USE_CORRELATION = false;
     public static int numColumnsToPutTogether = 2;
 
     /**
@@ -90,20 +90,11 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             }
         }
         System.out.println(".");
-
-        interMatrix = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
-    
-        System.out.println(".");
-    
-        if (MixerGlobals.printVerboseComments) {
-            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "pre_data_matrix.npy").getAbsolutePath(), interMatrix);
-        }
     
         MatrixCleanup matrixCleanupReduction = new MatrixCleanup(interMatrix, generator.nextLong(), outputDirectory);
-
-        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendCorr(rowIndexToIntervalMap, USE_CORRELATION);
+        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendCorr(rowIndexToIntervalMap);
     }
-    
+
     protected Map<Integer, Integer> calculateActualLengthForChromosomes(Chromosome[] chromosomes) {
         Map<Integer, Integer> indexToFilteredLength = new HashMap<>();
         for (Chromosome chrom : chromosomes) {

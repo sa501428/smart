@@ -24,7 +24,6 @@
 
 package mixer.utils.slice;
 
-import mixer.utils.common.FloatMatrixTools;
 import org.apache.commons.math.stat.regression.SimpleRegression;
 
 import java.io.File;
@@ -81,10 +80,7 @@ public class CorrelationTools {
 		while (!executor.isTerminated()) {
 		}
 
-		//FloatMatrixTools.inPlaceZscoreDownColsNoNan(result, 1);
-		FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_matrix_vs_centroids.npy").getAbsolutePath(), result);
-		return FloatMatrixTools.concatenate(matrix, result);
-		//return result;
+		return result;
 	}
 	
 	private static float arctanh(float x) {
