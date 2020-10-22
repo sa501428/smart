@@ -27,7 +27,6 @@ package mixer.algos;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
-import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
@@ -131,10 +130,7 @@ public class Slice extends MixerCLT {
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
         
         if (datasetList.size() < 1) return;
-        
-        File initialClusteringOutDir = new File(outputDirectory, "initial_clustering");
-        UNIXTools.makeDir(initialClusteringOutDir);
-        
+
         if (useStackingAlongRow) {
             FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(0),
                     chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles);
