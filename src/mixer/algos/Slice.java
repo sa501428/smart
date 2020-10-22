@@ -32,6 +32,7 @@ import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
+import mixer.utils.slice.SliceMatrix;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,20 +53,20 @@ public class Slice extends MixerCLT {
     private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
     private boolean useStackingAlongRow = false;
-    private int minIntervalSizeAllowed = 1; // 1
     private String prefix = "";
     private String[] referenceBedFiles;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
-        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR] [-m num_clusters] " +
-                "<input1.hic+input2.hic+input3.hic...> <output_file> <exp_name> [reference.bed]");
+        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-m num_clusters] " +
+                "[-w window] [--compare reference.bed] [--corr] [--reorder] [--verbose] " +
+                "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
         useStackingAlongRow = command.contains("2");
     }
     
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
-        if (args.length != 4 && args.length != 5) {
+        if (args.length != 5) {
             printUsageAndExit(5);
         }
 
@@ -74,9 +75,20 @@ public class Slice extends MixerCLT {
             inputHicFilePaths.add(path);
             datasetList.add(HiCFileTools.extractDatasetForCLT(path, true, false));
         }
+
+        try {
+            String[] valString = args[2].split(",");
+            FullGenomeOEWithinClusters.startingClusterSizeK = Integer.parseInt(valString[0]);
+            FullGenomeOEWithinClusters.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) -
+                    FullGenomeOEWithinClusters.startingClusterSizeK;
+            FullGenomeOEWithinClusters.numAttemptsForKMeans = Integer.parseInt(valString[2]);
+        } catch (Exception e) {
+            printUsageAndExit(5);
+        }
+
         ds = datasetList.get(0);
-        outputDirectory = HiCFileTools.createValidDirectory(args[2]);
-        prefix = args[3];
+        outputDirectory = HiCFileTools.createValidDirectory(args[3]);
+        prefix = args[4];
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null) norm = preferredNorm;
@@ -94,15 +106,21 @@ public class Slice extends MixerCLT {
                 generator.setSeed(seed);
             }
         }
-    
+
         int minSize = mixerParser.getAPAWindowSizeOption();
         if (minSize > 0) {
-            minIntervalSizeAllowed = minSize;
+            SliceMatrix.numColumnsToPutTogether = minSize;
+        } else {
+            SliceMatrix.numColumnsToPutTogether = 200000 / resolution;
         }
 
-        if (args.length == 5) {
-            referenceBedFiles = args[4].split("\\+");
+        String bedFiles = mixerParser.getCompareReferenceOption();
+        if (bedFiles != null && bedFiles.length() > 1) {
+            referenceBedFiles = bedFiles.split("\\+");
         }
+
+        SliceMatrix.USE_CORRELATION = mixerParser.getCorrelationOption();
+        SliceMatrix.REORDER_COLUMNS = mixerParser.getReorderingOption();
     }
     
     @Override
@@ -119,7 +137,7 @@ public class Slice extends MixerCLT {
         
         if (useStackingAlongRow) {
             FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(0),
-                    chromosomeHandler, resolution, norm, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+                    chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles);
             for (int i = 1; i < datasetList.size(); i++) {
                 withinClusters.appendGWDataFromAdditionalDataset(datasetList.get(i));
             }
@@ -127,7 +145,7 @@ public class Slice extends MixerCLT {
         } else {
             for (int i = 0; i < datasetList.size(); i++) {
                 FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                        chromosomeHandler, resolution, norm, minIntervalSizeAllowed, outputDirectory, generator, referenceBedFiles);
+                        chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles);
                 withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, i);
             }
             System.out.println("\nClustering complete");

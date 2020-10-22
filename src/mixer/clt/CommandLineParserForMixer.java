@@ -47,8 +47,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option multipleResolutionsOption = addStringOption('r', "resolutions");
     private final Option threadNumOption = addIntegerOption('z', "threads");
     private final Option randomSeedsOption = addStringOption("random-seeds");
-    private final Option apaWindowOption = addIntegerOption('w', "window");
-
+    private final Option sliceWindowOption = addIntegerOption('w', "window");
+    private final Option sliceCompareOption = addStringOption("compare");
+    private final Option sliceCorrelationOption = addBooleanOption("corr");
+    private final Option sliceOrderingOption = addBooleanOption("reorder");
 
     public CommandLineParserForMixer() {
     }
@@ -60,11 +62,15 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
     }
 
+    public String getCompareReferenceOption() {
+        return optionToString(sliceCompareOption);
+    }
+
     /**
      * int flags
      */
     public int getAPAWindowSizeOption() {
-        return optionToInt(apaWindowOption);
+        return optionToInt(sliceWindowOption);
     }
 
     public int getMatrixSizeOption() {
@@ -113,6 +119,14 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getVerboseOption() {
         return optionToBoolean(verboseOption);
+    }
+
+    public boolean getCorrelationOption() {
+        return optionToBoolean(sliceCorrelationOption);
+    }
+
+    public boolean getReorderingOption() {
+        return optionToBoolean(sliceOrderingOption);
     }
 
     public boolean getVersionOption() {

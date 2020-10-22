@@ -38,9 +38,9 @@ import java.util.*;
 
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
 
-    private static final boolean REORDER_COLUMNS = true;
-    public static int numColumnsToPutTogether = 2;
+    public static boolean REORDER_COLUMNS = false;
     public static boolean USE_CORRELATION = false;
+    public static int numColumnsToPutTogether = 2;
 
     /**
      * for SLICE, minIntervalSize become how many bins to collapse together (e.g. 5 means 5 bins together)

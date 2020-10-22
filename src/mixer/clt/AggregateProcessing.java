@@ -25,7 +25,6 @@
 package mixer.clt;
 
 import mixer.MixerTools;
-import mixer.utils.slice.SliceMatrix;
 
 
 /**
@@ -53,31 +52,25 @@ public class AggregateProcessing {
 
         file14 = "/Users/mss/Desktop/gm12878_rh14_30.hic";
 
-        SliceMatrix.USE_CORRELATION = true;
 
-        folder = "alpha_r50k_w4_gwkr_gm14"; // 50000
-        strings = new String[]{"slice", "-r", "50000", "-k", "GW_KR", "-w", "4", //"--verbose",
-                file14, "/Users/mss/Desktop/slice/" + folder, folder + "_" //, refs
+        folder = "alpha2_r100k_w1_gwkr_gm14";
+        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "1",
+                "--corr",
+                file14, "5,7,10",
+                "/Users/mss/Desktop/slice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
         System.gc();
 
-        String[] prefixes = new String[]{"Primary", "Replicate", "RH14"};
-        String[] files = new String[]{primary14, replicate14, file14};
+        folder = "alpha2_r100k_w1_gwkr_gm14_nocorr";
+        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "1",
+                file14, "5,7,10",
+                "/Users/mss/Desktop/slice/" + folder, folder + "_"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
 
-        for (int i = 0; i < prefixes.length; i++) {
-            String myfile = files[i];
-            String myprefix = prefixes[i];
-            for (int width : new int[]{4, 8}) {
-                folder = "Delphi_" + myprefix + "_50k_KR_w" + width;
-                strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "" + width, //"--verbose",
-                        myfile, "/Users/muhammad/Desktop/research/slice/" + folder, folder + "_", refs};
-                System.out.println("-----------------------------------------------------");
-                //MixerTools.main(strings);
-                System.gc();
-            }
-        }
-    
     }
 }
