@@ -70,8 +70,11 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
 
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
 
-        IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
-                badIndexLocations);
+        IndexOrderer orderer = null;
+        if (numColumnsToPutTogether > 1) {
+            orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
+                    badIndexLocations);
+        }
 
         for (int i = 0; i < chromosomes.length; i++) {
             Chromosome chr1 = chromosomes[i];
@@ -162,7 +165,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         Map<Integer, Integer> genomePosToLocal2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), offsetIndex2, 1);
 
         Map<Integer, Integer> genomePosToCompressed1, genomePosToCompressed2;
-        if (REORDER_COLUMNS) {
+        if (REORDER_COLUMNS && orderer != null) {
             genomePosToCompressed1 = makeLocalReorderedIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1,
                     numColumnsToPutTogether, orderer.get(chr1));
             genomePosToCompressed2 = makeLocalReorderedIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2,
