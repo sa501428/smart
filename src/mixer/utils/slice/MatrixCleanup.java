@@ -31,24 +31,16 @@ import java.io.File;
 import java.util.*;
 
 public class MatrixCleanup {
-    private final static float PERCENT_ZERO_ALLOWED = .5f;
     public static final int BATCHED_NUM_ROWS = 1; // 10
     protected static final float zScoreThreshold = 3f;
+    private final static float PERCENT_NAN_ALLOWED = .5f;
+    public static boolean USE_CORRELATION = false;
     protected final File outputDirectory;
     protected final Random generator;
-    public static boolean REMOVE_ZEROS = false;
-    public static boolean USE_CORRELATION = false;
-    public static boolean USE_ONLY_CORRELATION = false;
-
-    private final static float PERCENT_NAN_ALLOWED = .5f;
     protected float[][] data;
 
     public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory) {
-        if (REMOVE_ZEROS) {
-            data = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
-        } else {
-            data = simpleLogWithInfCleanup(interMatrix, 1);
-        }
+        data = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
 
         System.out.println("matrix size " + data.length + " x " + data[0].length);
         generator = new Random(seed);
@@ -62,18 +54,12 @@ public class MatrixCleanup {
         int[] numNans = getNumberOfNansInRow(matrix);
         int[] numZerosNotNans = getNumberZerosNotNansInRow(matrix);
 
-        //int[] numNonNan = new int[numNans.length];
         float n = matrix[0].length;
 
         for (int i = 0; i < numNans.length; i++) {
-            //numNonNan[i] = n - numNans[i];
             if ((float) (numNans[i] + numZerosNotNans[i]) / n > PERCENT_NAN_ALLOWED) {
                 badIndices.add(i);
             }
-
-            //if (((float) numZerosNotNans[i]) / ((float) numNonNan[i]) > PERCENT_ZERO_ALLOWED) {
-            //    badIndices.add(i);
-            //}
         }
 
         return badIndices;
@@ -109,20 +95,6 @@ public class MatrixCleanup {
         return newMatrix;
     }
 
-    private float[][] simpleLogWithInfCleanup(float[][] matrix, float pseudocount) {
-        matrix = ExtractingOEDataUtils.simpleLog(matrix, pseudocount);
-
-        for (int i = 0; i < matrix.length; ++i) {
-            for (int j = 0; j < matrix[0].length; ++j) {
-                if (Float.isInfinite(matrix[i][j])) {
-                    matrix[i][j] = Float.NaN;
-                }
-            }
-        }
-
-        return matrix;
-    }
-
     private static int[] getNumberZerosNotNansInRow(float[][] matrix) {
         int[] numZeros = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
@@ -156,13 +128,7 @@ public class MatrixCleanup {
         FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
 
         if (USE_CORRELATION) {
-            float[][] corr = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, data[0].length / 50, outputDirectory);
-            FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "correlation_matrix_vs_centroids.npy").getAbsolutePath(), corr);
-            if (USE_ONLY_CORRELATION) {
-                data = corr;
-            } else {
-                data = FloatMatrixTools.concatenate(data, corr);
-            }
+            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, data[0].length / 50, outputDirectory);
         }
         return data;
     }

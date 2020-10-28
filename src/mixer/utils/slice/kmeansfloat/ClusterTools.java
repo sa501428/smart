@@ -69,7 +69,6 @@ public class ClusterTools {
     }
 
 
-
     public static void performStatisticalAnalysisBetweenClusters(File directory, String description, Cluster[] clusters, int[] ids) {
 
         File statsFolder = new File(directory, description + "_cluster_stats");
@@ -145,27 +144,27 @@ public class ClusterTools {
 
     private static void saveClusterSizes(File directory, String filename, Cluster[] clusters) {
         int n = clusters.length;
-    
+
         int[][] sizeClusters = new int[1][n];
         for (int i = 0; i < n; i++) {
             sizeClusters[0][i] = clusters[i].getMemberIndexes().length;
         }
-    
+
         IntMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
     }
-    
+
     public static double getL2Distance(Cluster observed, Cluster expected) {
         return getL2Distance(observed.getCenter(), expected.getCenter());
     }
-    
+
     public static double getL2Distance(float[] expectedArray, float[] obsArray) {
         return Math.sqrt(expectedArray.length * getNonNanMeanSquaredError(expectedArray, obsArray));
     }
-    
+
     public static double getNonNanVectorSumOfSquares(float[] center, float[] obsArray) {
         return center.length * getNonNanMeanSquaredError(center, obsArray);
     }
-    
+
     public static double getNonNanMeanSquaredError(float[] array1, float[] array2) {
         double sumSquared = 0;
         int numDiffs = 0;
@@ -179,7 +178,7 @@ public class ClusterTools {
         numDiffs = Math.max(numDiffs, 1);
         return sumSquared / numDiffs;
     }
-    
+
     public static float[] normalize(float[] vector, Integer total) {
         float[] newVector = new float[vector.length];
         for (int k = 0; k < vector.length; k++) {
@@ -248,17 +247,17 @@ public class ClusterTools {
 
         return clone;
     }
-    
+
     public static double getL1Distance(float[] obsArray, float[] expectedArray) {
         double val = 0;
-        
+
         for (int k = 0; k < obsArray.length; k++) {
             val += Math.abs(expectedArray[k] - obsArray[k]);
         }
-        
+
         return val;
     }
-    
+
     public static double getNonNanMeanAbsoluteError(float[] array1, float[] array2) {
         double sumAbsError = 0;
         int numDiffs = 0;

@@ -38,15 +38,15 @@ import java.io.File;
 import java.util.*;
 
 public class FullGenomeOEWithinClusters {
+    public static int startingClusterSizeK = 5;
+    public static int numClusterSizeKValsUsed = 2;//10
+    public static int numAttemptsForKMeans = 10;
+    protected final File outputDirectory;
     private final Dataset ds;
     private final ChromosomeHandler chromosomeHandler;
     private final int resolution;
     private final NormalizationType norm;
-    protected final File outputDirectory;
-    public static int startingClusterSizeK = 5;
-    public static int numClusterSizeKValsUsed = 2;//10
     private final CompositeGenomeWideDensityMatrix interMatrix;
-    public static int numAttemptsForKMeans = 10;
     private final Random generator;
 
     public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
@@ -68,16 +68,16 @@ public class FullGenomeOEWithinClusters {
         additionalData = new SliceMatrix(chromosomeHandler, ds2, norm, resolution, outputDirectory, generator, new String[]{});
         interMatrix.appendDataAlongExistingRows(additionalData);
     }
-    
+
     public void extractFinalGWSubcompartments(Random generator, List<String> inputHicFilePaths,
                                               String prefix, int index) {
-        
+
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
-        
+
         if (MixerGlobals.printVerboseComments) {
             interMatrix.exportData();
         }
-        
+
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);
 
         double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
@@ -121,7 +121,7 @@ public class FullGenomeOEWithinClusters {
                 interMatrix.getBadIndices());
 
         DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
-    
+
         String hicFileName = SliceUtils.cleanUpPath(inputHicFilePaths.get(index));
         for (Integer key : numItersToResults.keySet()) {
             GenomeWideList<SubcompartmentInterval> gwList = numItersToResults.get(key);

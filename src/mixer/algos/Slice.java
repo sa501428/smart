@@ -45,26 +45,25 @@ import java.util.Random;
  * Created by muhammadsaadshamim on 9/14/15.
  */
 public class Slice extends MixerCLT {
-    
-    private int resolution = 100000;
-    private Dataset ds;
-    private File outputDirectory;
+
     private final List<Dataset> datasetList = new ArrayList<>();
     private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
+    private int resolution = 100000;
+    private Dataset ds;
+    private File outputDirectory;
     private boolean useStackingAlongRow = false;
     private String prefix = "";
     private String[] referenceBedFiles;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
-        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-m num_clusters] " +
-                "[-w window] [--compare reference.bed] [--corr/only-corr] [--remove-zeros] " +
-                "[--reorder] [--verbose] " +
+        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE]  [-w window] " +
+                "[--compare reference.bed] [--corr] [--verbose] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
         useStackingAlongRow = command.contains("2");
     }
-    
+
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 5) {
@@ -100,7 +99,7 @@ public class Slice extends MixerCLT {
                 System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
             resolution = Integer.parseInt(possibleResolutions.get(0));
         }
-        
+
         long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
         if (possibleSeeds != null && possibleSeeds.length > 0) {
             for (long seed : possibleSeeds) {
@@ -120,19 +119,16 @@ public class Slice extends MixerCLT {
             referenceBedFiles = bedFiles.split("\\+");
         }
 
-        MatrixCleanup.USE_ONLY_CORRELATION = mixerParser.getOnlyCorrelationOption();
-        MatrixCleanup.USE_CORRELATION = mixerParser.getCorrelationOption() || MatrixCleanup.USE_ONLY_CORRELATION;
-        SliceMatrix.REORDER_COLUMNS = mixerParser.getReorderingOption();
-        MatrixCleanup.REMOVE_ZEROS = mixerParser.getZeroOption();
+        MatrixCleanup.USE_CORRELATION = mixerParser.getCorrelationOption();
     }
-    
+
     @Override
     public void run() {
-        
+
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
         if (givenChromosomes != null)
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
-        
+
         if (datasetList.size() < 1) return;
 
         if (useStackingAlongRow) {
@@ -150,6 +146,6 @@ public class Slice extends MixerCLT {
             }
             System.out.println("\nClustering complete");
         }
-        
+
     }
 }

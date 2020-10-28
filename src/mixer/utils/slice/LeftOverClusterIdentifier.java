@@ -50,42 +50,42 @@ public class LeftOverClusterIdentifier {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
                         norm, threshold, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0);
-            
+
                 //allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
 
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(99);
             }
-        
+
             if (allDataForRegion == null) {
                 System.err.println("Missing Data " + zd.getKey());
                 return;
             }
-        
+
             Set<Integer> worstIndices = badIndexFinder.getWorstIndices(chr1);
             Set<Integer> indicesMissing = new HashSet<>();
-    
-    
+
+
             for (int k = 0; k < chr1.getLength() / resolution + 1; k++) {
                 if (worstIndices.contains(k)) {
                     continue;
                 }
-        
+
                 indicesMissing.add(k);
             }
-    
+
             // do it this way because of additional internal filter
             Integer firstEntryKey = (Integer) results.keySet().toArray()[0];
             for (SubcompartmentInterval handledInterval : results.get(firstEntryKey).getFeatures("" + chr1.getIndex())) {
                 int binXStart = handledInterval.getX1() / resolution;
                 int binXEnd = handledInterval.getX2() / resolution;
-        
+
                 for (int j = binXStart; j < binXEnd; j++) {
                     indicesMissing.remove(j);
                 }
             }
-    
+
             if (indicesMissing.size() > 0) {
                 for (Integer key : results.keySet()) {
                     GenomeWideList<SubcompartmentInterval> listForKey = results.get(key);

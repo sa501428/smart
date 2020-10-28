@@ -43,35 +43,18 @@ public class AggregateProcessing {
         String refs = "/Users/muhammad/Desktop/research/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed" + "+" +
                 "/Users/muhammad/Desktop/research/drinks/existingmethods/ultra_res_100k_default_clean_outliers.bed" + "+" +
                 "/Users/muhammad/Desktop/research/drinks/existingmethods/New_STRICT_gold_standard.bed";
-        String file42 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic";
         String file14 = "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic";
-        String file15B = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic";
         String folder;
-        String primary14 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/CELL2014/GSE63525_GM12878_insitu_primary_30.hic";
-        String replicate14 = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/CELL2014/GSE63525_GM12878_insitu_replicate_30.hic";
+        file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
 
-        file14 = "/Users/mss/Desktop/gm12878_rh14_30.hic";
-
-
-        folder = "alpha3Z_r100k_w2_gwkr_gm14";
+        folder = "temp_check";
         strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2",
                 "--corr",
                 file14, "5,7,10",
-                "/Users/mss/Desktop/slice/" + folder, folder + "_"
+                "/Users/mss/Desktop/tempslice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
         System.gc();
-
-        folder = "alpha3Z_r100k_w2_gwkr_gm14_reorder";
-        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2",
-                "--corr", "--reorder",
-                file14, "5,7,10",
-                "/Users/mss/Desktop/slice/" + folder, folder + "_"
-        };
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
-
     }
 }

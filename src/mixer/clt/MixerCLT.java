@@ -36,10 +36,10 @@ import java.util.List;
  */
 public abstract class MixerCLT {
 
-    protected NormalizationType norm = NormalizationHandler.KR;
-    protected List<String> givenChromosomes = null; //TODO set to protected
     protected static int numCPUThreads = 1;
     private static String usage;
+    protected NormalizationType norm = NormalizationHandler.KR;
+    protected List<String> givenChromosomes = null; //TODO set to protected
     protected Dataset dataset = null;
 
     protected MixerCLT(String usage) {

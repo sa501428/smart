@@ -43,6 +43,9 @@ public class IndexOrderer {
     private final int resolution;
     private final int minDistanceThreshold;
     private final int numColsToJoin;
+    private final int IGNORE = -1;
+    private final int DEFAULT = -5;
+    private final int CHECK_VAL = -2;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
                         int numColumnsToPutTogether, GenomewideBadIndexFinder badIndexLocations) {
@@ -72,34 +75,114 @@ public class IndexOrderer {
     }
 
     private int[] getNewOrderOfIndices(float[][] matrix, Set<Integer> badIndices) {
-        int[] indices = new int[matrix.length];
-        Arrays.fill(indices, -5);
+        int[] newIndexOrderAssignments = new int[matrix.length];
+        Arrays.fill(newIndexOrderAssignments, DEFAULT);
+        eraseTheRowsColumnsWeDontWant(badIndices, matrix, newIndexOrderAssignments);
 
+        int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments);
+        doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
+        return newIndexOrderAssignments;
+    }
+
+    private void eraseTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix, int[] newIndexOrderAssignments) {
         Set<Integer> columnsToErase = new HashSet<>();
         for (int k : badIndices) {
-            indices[k] = -1;
+            newIndexOrderAssignments[k] = IGNORE;
             columnsToErase.add(k / numColsToJoin);
         }
 
-        // erase columns that include these regions
         for (int i = 0; i < matrix.length; i++) {
             for (int j : columnsToErase) {
                 matrix[i][j] = Float.NaN;
             }
         }
 
+        for (int i : badIndices) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = Float.NaN;
+            }
+        }
+    }
+
+    private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
+
+        int numCentroids = 10;
+        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+
+        int vectorLength = newIndexOrderAssignments.length;
+        int[] numDecentRelations = new int[numCentroids];
+        float[][] correlationCentroidsWithData = new float[numCentroids][vectorLength];
+        for (int k = 0; k < numCentroids; k++) {
+            for (int z = 0; z < vectorLength; z++) {
+                if (newIndexOrderAssignments[z] < CHECK_VAL) {
+                    float corr = CorrelationTools.getNonNanPearsonCorrelation(centroids[k], matrix[z]);
+                    correlationCentroidsWithData[k][z] = corr;
+                    if (corr > .2 || corr < -.2) {
+                        numDecentRelations[k]++;
+                    }
+                } else {
+                    correlationCentroidsWithData[k][z] = Float.NaN;
+                }
+            }
+        }
+
+        int maxIndex = 0;
+        for (int k = 1; k < numDecentRelations.length; k++) {
+            if (numDecentRelations[maxIndex] < numDecentRelations[k]) {
+                maxIndex = k;
+            }
+        }
+
+        int gCounter = doSequentialOrdering(correlationCentroidsWithData[maxIndex], newIndexOrderAssignments, 0);
+        for (int c = 0; c < numCentroids; c++) {
+            if (c == maxIndex) continue;
+            gCounter = doSequentialOrdering(correlationCentroidsWithData[c],
+                    newIndexOrderAssignments, gCounter);
+        }
+
+        return gCounter;
+    }
+
+    private int doSequentialOrdering(float[] correlationWithCentroid, int[] newIndexOrderAssignments, int startCounter) {
+        int counter = startCounter;
+        for (float cutoff = .9f; cutoff >= .2f; cutoff -= .1f) {
+            for (int z = 0; z < correlationWithCentroid.length; z++) {
+                if (newIndexOrderAssignments[z] < CHECK_VAL && correlationWithCentroid[z] > cutoff) {
+                    newIndexOrderAssignments[z] = counter++;
+                }
+            }
+        }
+
+        for (float cutoff = .2f; cutoff < 1; cutoff += .1f) {
+            for (int z = 0; z < correlationWithCentroid.length; z++) {
+                float corr = correlationWithCentroid[z];
+                float cutoff1 = -cutoff;
+                float cutoff2 = cutoff1 - .1f;
+                if (newIndexOrderAssignments[z] < CHECK_VAL && corr < cutoff1 && corr >= cutoff2) {
+                    newIndexOrderAssignments[z] = counter++;
+                }
+            }
+        }
+
+        return counter;
+    }
+
+    // todo, this should never be needed; things that need this round should get excluded?
+    private void doSecondRoundOfAssignments(float[][] matrix, int[] newIndexOrderAssignments, int startCounter) {
+        int vectorLength = newIndexOrderAssignments.length;
         int numRoundsThatHappen = 0;
-        int counter = 0;
-        for (int cI = 0; cI < indices.length; cI++) {
+        int counter = startCounter;
+        for (int cI = 0; cI < vectorLength; cI++) {
             // handle stuff
-            if (indices[cI] < -2) {
+            if (newIndexOrderAssignments[cI] < CHECK_VAL) {
                 numRoundsThatHappen++;
-                indices[cI] = counter++;
-                for (int z = cI + 1; z < indices.length; z++) {
-                    if (indices[z] < -2) {
+                newIndexOrderAssignments[cI] = counter++;
+
+                for (int z = cI + 1; z < vectorLength; z++) {
+                    if (newIndexOrderAssignments[z] < CHECK_VAL) {
                         float val = CorrelationTools.getNonNanPearsonCorrelation(matrix[cI], matrix[z]);
-                        if (val >= .5) {
-                            indices[z] = counter++;
+                        if (val >= .2) {
+                            newIndexOrderAssignments[z] = counter++;
                         }
                     }
                 }
@@ -108,7 +191,6 @@ public class IndexOrderer {
             // or is a bad index, so skip
         }
         System.out.println("Num rounds " + numRoundsThatHappen);
-        return indices;
     }
 
     public float[][] extractObsOverExpBoundedRegion(MatrixZoomData zd, Chromosome chromosome,
@@ -135,21 +217,15 @@ public class IndexOrderer {
 
                         int dist = Math.abs(rec.getBinX() - rec.getBinY());
                         if (dist < minDistanceThreshold) {
-                            placeOEValInPosition(Float.NaN, rec, data);
+                            addOEValInPosition(Float.NaN, rec, data);
                         } else {
                             double observed = rec.getCounts() + 1;
                             double expected = getExpected(dist, df, chromosome.getIndex()) + 1;
                             float answer = (float) (observed / expected);
-                            // answer = Math.log(observed / expected);
-
                             if (Float.isNaN(answer) || Float.isInfinite(answer)) {
                                 answer = Float.NaN;
-                            } else if (answer < 1) {
-                                answer = 0;
                             }
-
-
-                            placeOEValInPosition(answer, rec, data);
+                            addOEValInPosition(answer, rec, data);
                         }
                     }
                 }
@@ -160,7 +236,7 @@ public class IndexOrderer {
         return data;
     }
 
-    private void placeOEValInPosition(float oeVal, ContactRecord rec, float[][] data) {
+    private void addOEValInPosition(float oeVal, ContactRecord rec, float[][] data) {
         int rX = rec.getBinX();
         int rY = rec.getBinY() / numColsToJoin;
         data[rX][rY] += oeVal;

@@ -684,28 +684,23 @@ public class ConcurrentKMeans implements KMeans {
         static final int DOING_NOTHING = 0;
         static final int COMPUTING_DISTANCES = 1;
         static final int MAKING_ASSIGNMENTS = 2;
-
-        // What the object is currently doing. Set to one of the
-        // three codes above.
-        private int mDoing = DOING_NOTHING;
-
-        // True if the at least one of the Workers is doing something.
-        private boolean mWorking;
-    
         // The executor that runs the Workers.
         // When in multiple processor mode, this is a ThreadPoolExecutor
         // with a fixed number of threads. In single-processor mode, it's
         // a simple implementation that calls the single worker's run
         // method directly.
         private final Executor mExecutor;
-
+        // The worker objects which implement Runnable.
+        private final ConcurrentKMeans.SubtaskManager.Worker[] mWorkers;
+        // What the object is currently doing. Set to one of the
+        // three codes above.
+        private int mDoing = DOING_NOTHING;
+        // True if the at least one of the Workers is doing something.
+        private boolean mWorking;
         // A Barrier to wait on multiple Workers to finish up the current task.
         // In single-processor mode, there is no need for a barrier, so it
         // is not set.
         private CyclicBarrier mBarrier;
-    
-        // The worker objects which implement Runnable.
-        private final ConcurrentKMeans.SubtaskManager.Worker[] mWorkers;
 
         /**
          * Constructor

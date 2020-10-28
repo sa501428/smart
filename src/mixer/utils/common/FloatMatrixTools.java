@@ -55,7 +55,7 @@ public class FloatMatrixTools {
             }
         }
     }
-    
+
     public static void inPlaceZscoreDownColsNoNan(float[][] matrix, int batchSize) {
         float[] colMeans = getColNonZeroMeansNonNan(matrix, batchSize);
         float[] colStdDevs = getColNonZeroStdDevNonNans(matrix, colMeans, batchSize);
@@ -87,11 +87,11 @@ public class FloatMatrixTools {
                 }
             }
         }
-        
+
         for (int k = 0; k < stdDevs.length; k++) {
             stdDevs[k] = (float) Math.sqrt(stdDevs[k] / Math.max(colNonNans[k], 1));
         }
-        
+
         return stdDevs;
     }
 
@@ -115,25 +115,25 @@ public class FloatMatrixTools {
 
         return colMeans;
     }
-    
+
     public static float[][] fill(float[][] allDataForRegion, float val) {
         for (int i = 0; i < allDataForRegion.length; i++) {
             Arrays.fill(allDataForRegion[i], val);
         }
         return allDataForRegion;
     }
-    
+
     public static void saveMatrixTextNumpy(String filename, float[][] matrix) {
         MatrixTools.saveMatrixTextNumpy(filename, matrix);
     }
-    
+
     public static float[] flattenedRowMajorOrderMatrix(float[][] matrix) {
         int m = matrix.length;
         int n = matrix[0].length;
-        
+
         int numElements = m * n;
         float[] flattenedMatrix = new float[numElements];
-        
+
         int index = 0;
         for (int i = 0; i < m; i++) {
             System.arraycopy(matrix[i], 0, flattenedMatrix, index, n);
@@ -141,13 +141,13 @@ public class FloatMatrixTools {
         }
         return flattenedMatrix;
     }
-    
+
     public static float[] getRowMajorOrderFlattendedSectionFromMatrix(float[][] matrix, int numCols) {
         int numRows = matrix.length - numCols;
-    
+
         int numElements = numRows * numCols;
         float[] flattenedMatrix = new float[numElements];
-    
+
         int index = 0;
         for (int i = numCols; i < numRows; i++) {
             System.arraycopy(matrix[i], 0, flattenedMatrix, index, numCols);

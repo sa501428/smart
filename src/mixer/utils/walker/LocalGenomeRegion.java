@@ -31,8 +31,8 @@ import java.util.List;
 public class LocalGenomeRegion {
 
     private final int initialIndex;
-    private List<Neighbor> neighbors = new ArrayList<>();
     private final int maxNumValsToStore;
+    private List<Neighbor> neighbors = new ArrayList<>();
 
     public LocalGenomeRegion(int initialIndex, int maxNumValsToStore) {
         this.initialIndex = initialIndex;

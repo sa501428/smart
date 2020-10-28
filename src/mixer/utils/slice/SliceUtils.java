@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class SliceUtils {
-    
+
     public static void reSort(GenomeWideList<SubcompartmentInterval> subcompartments) {
         subcompartments.filterLists(new FeatureFilter<SubcompartmentInterval>() {
             @Override
@@ -411,7 +411,7 @@ public class SliceUtils {
     /**
      * Methods for handling BED Files
      */
-    
+
     /**
      * Helper function for actually parsing BED file
      * Ignores any attributes beyond the third column (i.e. just chr and positions are read)
@@ -423,14 +423,14 @@ public class SliceUtils {
      */
     private static List<SubcompartmentInterval> parseSubcompartmentBEDFile(String bedFilePath, ChromosomeHandler handler) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(bedFilePath), MixerGlobals.bufferSize);
-        
+
         Set<SubcompartmentInterval> anchors = new HashSet<>();
         String nextLine;
-        
+
         Map<String, Integer> allIdsToIntId = new HashMap<>();
         // 1 - A1, 2 - A2, 3 - B1, 4 - B2, 5 - B3, 6 - B4
         int counter = 7;
-        
+
         int errorCount = 0;
         while ((nextLine = bufferedReader.readLine()) != null) {
             String[] tokens = Pattern.compile("\t").split(nextLine);
