@@ -115,7 +115,7 @@ public class IndexOrderer {
         for (int k = 0; k < numCentroids; k++) {
             for (int z = 0; z < vectorLength; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                    float corr = CorrelationTools.getNonNanPearsonCorrelation(centroids[k], matrix[z]);
+                    float corr = CorrelationTools.getCorrFromCosineStyleSimilarity(centroids[k], matrix[z]);
                     correlationCentroidsWithData[k][z] = corr;
                     if (corr > .2 || corr < -.2) {
                         numDecentRelations[k]++;
@@ -180,7 +180,7 @@ public class IndexOrderer {
 
                 for (int z = cI + 1; z < vectorLength; z++) {
                     if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                        float val = CorrelationTools.getNonNanPearsonCorrelation(matrix[cI], matrix[z]);
+                        float val = CorrelationTools.getCorrFromCosineStyleSimilarity(matrix[cI], matrix[z]);
                         if (val >= .2) {
                             newIndexOrderAssignments[z] = counter++;
                         }

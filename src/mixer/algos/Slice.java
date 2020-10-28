@@ -93,11 +93,11 @@ public class Slice extends MixerCLT {
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null) norm = preferredNorm;
 
-        List<String> possibleResolutions = mixerParser.getMultipleResolutionOptions();
+        List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
         if (possibleResolutions != null) {
             if (possibleResolutions.size() > 1)
                 System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
-            resolution = Integer.parseInt(possibleResolutions.get(0));
+            resolution = possibleResolutions.get(0);
         }
 
         long[] possibleSeeds = mixerParser.getMultipleSeedsOption();

@@ -91,9 +91,8 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return optionToStringList(multipleChromosomesOption);
     }
 
-    // todo fix to return list of ints
-    public List<String> getMultipleResolutionOptions() {
-        return optionToStringList(multipleResolutionsOption);
+    public List<Integer> getMultipleResolutionOptions() {
+        return optionToIntegerList(multipleResolutionsOption);
     }
 
     public long[] getMultipleSeedsOption() {
@@ -171,6 +170,17 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private List<String> optionToStringList(Option option) {
         Object opt = getOptionValue(option);
         return opt == null ? null : new ArrayList<>(Arrays.asList(opt.toString().split(",")));
+    }
+
+    private List<Integer> optionToIntegerList(Option option) {
+        Object opt = getOptionValue(option);
+        if (opt == null) return null;
+        List<String> tempList = new ArrayList<>(Arrays.asList(opt.toString().split(",")));
+        List<Integer> intList = new ArrayList<>();
+        for (String temp : tempList) {
+            intList.add(Integer.parseInt(temp));
+        }
+        return intList;
     }
 
     private NormalizationType retrieveNormalization(String norm, NormalizationHandler normalizationHandler) {

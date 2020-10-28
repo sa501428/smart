@@ -39,7 +39,7 @@ public abstract class MixerCLT {
     protected static int numCPUThreads = 1;
     private static String usage;
     protected NormalizationType norm = NormalizationHandler.KR;
-    protected List<String> givenChromosomes = null; //TODO set to protected
+    protected List<String> givenChromosomes = null;
     protected Dataset dataset = null;
 
     protected MixerCLT(String usage) {

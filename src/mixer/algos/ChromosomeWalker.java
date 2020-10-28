@@ -94,9 +94,9 @@ public class ChromosomeWalker extends MixerCLT {
         if (preferredNorm != null)
             norm = preferredNorm;
 
-        List<String> potentialResolution = mixerParser.getMultipleResolutionOptions();
+        List<Integer> potentialResolution = mixerParser.getMultipleResolutionOptions();
         if (potentialResolution != null) {
-            resolution = Integer.parseInt(potentialResolution.get(0));
+            resolution = potentialResolution.get(0);
         }
 
         int specifiedCliqueSize = mixerParser.getAPAWindowSizeOption();

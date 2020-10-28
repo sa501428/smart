@@ -57,9 +57,9 @@ public class ChainBreaker extends MixerCLT {
         if (preferredNorm != null)
             norm = preferredNorm;
 
-        List<String> potentialResolution = mixerParser.getMultipleResolutionOptions();
+        List<Integer> potentialResolution = mixerParser.getMultipleResolutionOptions();
         if (potentialResolution != null) {
-            initialResolution = Integer.parseInt(potentialResolution.get(0));
+            initialResolution = potentialResolution.get(0);
         }
 
         updateNumberOfCPUThreads(mixerParser);

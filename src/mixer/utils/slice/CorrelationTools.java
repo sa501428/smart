@@ -25,7 +25,6 @@
 package mixer.utils.slice;
 
 import mixer.utils.common.FloatMatrixTools;
-import org.apache.commons.math.stat.regression.SimpleRegression;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -33,18 +32,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CorrelationTools {
-
-    public static float getNonNanPearsonCorrelation(float[] array1, float[] array2) {
-        SimpleRegression regression = new SimpleRegression();
-        for (int i = 0; i < array1.length; i++) {
-            boolean entryIsBad = Float.isNaN(array1[i]) || Float.isNaN(array2[i]);
-            if (!entryIsBad) {
-                regression.addData(array1[i], array2[i]);
-            }
-        }
-
-        return (float) regression.getR();
-    }
 
     public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids, File outputDirectory) {
 
@@ -62,7 +49,7 @@ public class CorrelationTools {
                     while (i < matrix.length) {
 
                         for (int j = 0; j < centroids.length; j++) {
-                            float val = getNonNanPearsonCorrelation(matrix[i], centroids[j]);
+                            float val = getCorrFromCosineStyleSimilarity(matrix[i], centroids[j]);
                             result[i][j] = arctanh(val);
 
                             //result[i][centroids.length+j] = cosineSimilarity(matrix[i], centroids[j])*weight;
@@ -109,8 +96,7 @@ public class CorrelationTools {
         return (float) (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)));
     }
 
-    // todo time this vs other
-    private static float corrFromCosineStyleSimilarity(float[] vectorA, float[] vectorB) {
+    public static float getCorrFromCosineStyleSimilarity(float[] vectorA, float[] vectorB) {
         int counter = 0;
         double sumA = 0;
         double sumB = 0;
