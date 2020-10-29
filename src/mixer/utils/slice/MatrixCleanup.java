@@ -34,6 +34,7 @@ public class MatrixCleanup {
     public static final int BATCHED_NUM_ROWS = 1; // 10
     protected static final float zScoreThreshold = 3f;
     private final static float PERCENT_NAN_ALLOWED = .5f;
+    public static boolean USE_COSINE = false;
     public static boolean USE_CORRELATION = false;
     protected final File outputDirectory;
     protected final Random generator;
@@ -127,9 +128,20 @@ public class MatrixCleanup {
 
         FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
 
-        if (USE_CORRELATION) {
-            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data, data[0].length / 50, outputDirectory);
+        if (USE_COSINE) {
+            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data,
+                    data[0].length / 50, true);
+            File temp = new File(outputDirectory, "cosine.npy");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
         }
+        /*
+        else if (USE_CORRELATION) {
+            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data,
+                    data[0].length / 50, false);
+            File temp = new File(outputDirectory, "corr.npy");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
+        }
+        */
         return data;
     }
 }

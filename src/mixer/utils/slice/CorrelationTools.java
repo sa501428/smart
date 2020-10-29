@@ -26,14 +26,15 @@ package mixer.utils.slice;
 
 import mixer.utils.common.FloatMatrixTools;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CorrelationTools {
 
-    public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids, File outputDirectory) {
+    public static boolean ONLY_COSINE = false;
+
+    public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids, boolean useCosine) {
 
         float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
         float[][] result = new float[matrix.length][numCentroids]; // *2
@@ -47,15 +48,17 @@ public class CorrelationTools {
                 public void run() {
                     int i = currRowIndex.getAndIncrement();
                     while (i < matrix.length) {
-
-                        for (int j = 0; j < centroids.length; j++) {
-                            float val = getCorrFromCosineStyleSimilarity(matrix[i], centroids[j]);
-                            result[i][j] = arctanh(val);
-
-                            //result[i][centroids.length+j] = cosineSimilarity(matrix[i], centroids[j])*weight;
-                            //result[i][j] = cosineSimilarity(matrix[i], centroids[j]);
+                        if (useCosine) {
+                            for (int j = 0; j < centroids.length; j++) {
+                                float val = cosineSimilarity(matrix[i], centroids[j]);
+                                result[i][j] = arctanh(val);
+                            }
+                        } else {
+                            for (int j = 0; j < centroids.length; j++) {
+                                float val = getCorrFromCosineStyleSimilarity(matrix[i], centroids[j]);
+                                result[i][j] = arctanh(val);
+                            }
                         }
-
                         i = currRowIndex.getAndIncrement();
                     }
                 }
@@ -66,6 +69,10 @@ public class CorrelationTools {
 
         // Wait until all threads finish
         while (!executor.isTerminated()) {
+        }
+
+        if (ONLY_COSINE) {
+            return result;
         }
 
         return FloatMatrixTools.concatenate(matrix, result);

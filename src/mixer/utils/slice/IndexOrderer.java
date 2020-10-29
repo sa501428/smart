@@ -46,6 +46,7 @@ public class IndexOrderer {
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
     private final int CHECK_VAL = -2;
+    private final float corrValMin = 0.2f;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
                         int numColumnsToPutTogether, GenomewideBadIndexFinder badIndexLocations) {
@@ -145,7 +146,7 @@ public class IndexOrderer {
 
     private int doSequentialOrdering(float[] correlationWithCentroid, int[] newIndexOrderAssignments, int startCounter) {
         int counter = startCounter;
-        for (float cutoff = .9f; cutoff >= .2f; cutoff -= .1f) {
+        for (float cutoff = .9f; cutoff >= corrValMin; cutoff -= .1f) {
             for (int z = 0; z < correlationWithCentroid.length; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL && correlationWithCentroid[z] > cutoff) {
                     newIndexOrderAssignments[z] = counter++;
@@ -153,7 +154,7 @@ public class IndexOrderer {
             }
         }
 
-        for (float cutoff = .2f; cutoff < 1; cutoff += .1f) {
+        for (float cutoff = corrValMin; cutoff < 1; cutoff += .1f) {
             for (int z = 0; z < correlationWithCentroid.length; z++) {
                 float corr = correlationWithCentroid[z];
                 float cutoff1 = -cutoff;
@@ -167,7 +168,6 @@ public class IndexOrderer {
         return counter;
     }
 
-    // todo, this should never be needed; things that need this round should get excluded?
     private void doSecondRoundOfAssignments(float[][] matrix, int[] newIndexOrderAssignments, int startCounter) {
         int vectorLength = newIndexOrderAssignments.length;
         int numRoundsThatHappen = 0;
@@ -181,7 +181,7 @@ public class IndexOrderer {
                 for (int z = cI + 1; z < vectorLength; z++) {
                     if (newIndexOrderAssignments[z] < CHECK_VAL) {
                         float val = CorrelationTools.getCorrFromCosineStyleSimilarity(matrix[cI], matrix[z]);
-                        if (val >= .2) {
+                        if (val >= corrValMin) {
                             newIndexOrderAssignments[z] = counter++;
                         }
                     }

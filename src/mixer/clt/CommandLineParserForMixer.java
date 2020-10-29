@@ -51,9 +51,9 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
     private final Option sliceCorrelationOption = addBooleanOption("corr");
-    private final Option sliceOnlyCorrelationOption = addBooleanOption("only-corr");
-    private final Option sliceOrderingOption = addBooleanOption("reorder");
-    private final Option sliceZeroOption = addBooleanOption("remove-zeros");
+    private final Option sliceCosineOption = addBooleanOption("cosine");
+    private final Option sliceOnlyCosineOption = addBooleanOption("only-cosine");
+
 
     public CommandLineParserForMixer() {
     }
@@ -127,16 +127,12 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return optionToBoolean(sliceCorrelationOption);
     }
 
-    public boolean getOnlyCorrelationOption() {
-        return optionToBoolean(sliceOnlyCorrelationOption);
+    public boolean getCosineOption() {
+        return optionToBoolean(sliceCosineOption);
     }
 
-    public boolean getReorderingOption() {
-        return optionToBoolean(sliceOrderingOption);
-    }
-
-    public boolean getZeroOption() {
-        return optionToBoolean(sliceZeroOption);
+    public boolean getOnlyCosineOption() {
+        return optionToBoolean(sliceOnlyCosineOption);
     }
 
     public boolean getVersionOption() {

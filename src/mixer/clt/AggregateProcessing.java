@@ -47,9 +47,8 @@ public class AggregateProcessing {
         String folder;
         file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
 
-        folder = "temp_check";
-        strings = new String[]{"slice", "-r", "100000", "-k", "GW_KR", "-w", "2",
-                "--corr",
+        folder = "new_cosine_KR";
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2", "--cosine",
                 file14, "5,7,10",
                 "/Users/mss/Desktop/tempslice/" + folder, folder + "_"
         };
