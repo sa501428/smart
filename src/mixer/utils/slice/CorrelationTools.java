@@ -24,15 +24,11 @@
 
 package mixer.utils.slice;
 
-import mixer.utils.common.FloatMatrixTools;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CorrelationTools {
-
-    public static boolean ONLY_COSINE = false;
 
     public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids, boolean useCosine) {
 
@@ -71,11 +67,8 @@ public class CorrelationTools {
         while (!executor.isTerminated()) {
         }
 
-        if (ONLY_COSINE) {
-            return result;
-        }
-
-        return FloatMatrixTools.concatenate(matrix, result);
+        return result;
+        //return FloatMatrixTools.concatenate(matrix, result);
     }
 
     private static float arctanh(float x) {

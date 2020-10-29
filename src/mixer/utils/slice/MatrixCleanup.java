@@ -129,19 +129,12 @@ public class MatrixCleanup {
         FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
 
         if (USE_COSINE) {
+            int numCentroids = Math.max(data.length / 50, 200);
             data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data,
-                    data[0].length / 50, true);
+                    numCentroids, true);
             File temp = new File(outputDirectory, "cosine.npy");
             FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
         }
-        /*
-        else if (USE_CORRELATION) {
-            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data,
-                    data[0].length / 50, false);
-            File temp = new File(outputDirectory, "corr.npy");
-            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
-        }
-        */
         return data;
     }
 }

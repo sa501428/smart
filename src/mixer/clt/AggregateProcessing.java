@@ -43,12 +43,9 @@ public class AggregateProcessing {
         String refs = "/Users/muhammad/Desktop/research/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed" + "+" +
                 "/Users/muhammad/Desktop/research/drinks/existingmethods/ultra_res_100k_default_clean_outliers.bed" + "+" +
                 "/Users/muhammad/Desktop/research/drinks/existingmethods/New_STRICT_gold_standard.bed";
-        String file14 = "/Users/muhammad/Desktop/insitumboi/combined_GM12878_insitu_combined_30.hic";
-        String folder;
-        file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
-
-        folder = "new_cosine_KR";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2", "--cosine",
+        String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
+        String folder = "new_baseline0.2_KR_nomix";
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2", //"--cosine",
                 file14, "5,7,10",
                 "/Users/mss/Desktop/tempslice/" + folder, folder + "_"
         };

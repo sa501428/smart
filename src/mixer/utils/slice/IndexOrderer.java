@@ -46,7 +46,8 @@ public class IndexOrderer {
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
     private final int CHECK_VAL = -2;
-    private final float corrValMin = 0.2f;
+    private final float CORR_MIN = 0.2f;
+    private final float INCREMENT = .1f;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
                         int numColumnsToPutTogether, GenomewideBadIndexFinder badIndexLocations) {
@@ -118,7 +119,7 @@ public class IndexOrderer {
                 if (newIndexOrderAssignments[z] < CHECK_VAL) {
                     float corr = CorrelationTools.getCorrFromCosineStyleSimilarity(centroids[k], matrix[z]);
                     correlationCentroidsWithData[k][z] = corr;
-                    if (corr > .2 || corr < -.2) {
+                    if (corr > CORR_MIN || corr < -CORR_MIN) {
                         numDecentRelations[k]++;
                     }
                 } else {
@@ -146,7 +147,7 @@ public class IndexOrderer {
 
     private int doSequentialOrdering(float[] correlationWithCentroid, int[] newIndexOrderAssignments, int startCounter) {
         int counter = startCounter;
-        for (float cutoff = .9f; cutoff >= corrValMin; cutoff -= .1f) {
+        for (float cutoff = 1 - INCREMENT; cutoff >= CORR_MIN; cutoff -= INCREMENT) {
             for (int z = 0; z < correlationWithCentroid.length; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL && correlationWithCentroid[z] > cutoff) {
                     newIndexOrderAssignments[z] = counter++;
@@ -154,18 +155,28 @@ public class IndexOrderer {
             }
         }
 
-        for (float cutoff = corrValMin; cutoff < 1; cutoff += .1f) {
+        counter = getUpdatedNoMixIndex(counter);
+
+        for (float cutoff = CORR_MIN; cutoff < 1; cutoff += INCREMENT) {
             for (int z = 0; z < correlationWithCentroid.length; z++) {
                 float corr = correlationWithCentroid[z];
                 float cutoff1 = -cutoff;
-                float cutoff2 = cutoff1 - .1f;
+                float cutoff2 = cutoff1 - INCREMENT;
                 if (newIndexOrderAssignments[z] < CHECK_VAL && corr < cutoff1 && corr >= cutoff2) {
                     newIndexOrderAssignments[z] = counter++;
                 }
             }
         }
 
-        return counter;
+        return getUpdatedNoMixIndex(counter);
+    }
+
+    private int getUpdatedNoMixIndex(int counter) {
+        int temp = (counter / numColsToJoin);
+        if (counter % numColsToJoin > 0) {
+            temp++;
+        }
+        return temp * numColsToJoin;
     }
 
     private void doSecondRoundOfAssignments(float[][] matrix, int[] newIndexOrderAssignments, int startCounter) {
@@ -181,11 +192,12 @@ public class IndexOrderer {
                 for (int z = cI + 1; z < vectorLength; z++) {
                     if (newIndexOrderAssignments[z] < CHECK_VAL) {
                         float val = CorrelationTools.getCorrFromCosineStyleSimilarity(matrix[cI], matrix[z]);
-                        if (val >= corrValMin) {
+                        if (val >= CORR_MIN) {
                             newIndexOrderAssignments[z] = counter++;
                         }
                     }
                 }
+                counter = getUpdatedNoMixIndex(counter);
             }
             // else it has already been handled
             // or is a bad index, so skip
