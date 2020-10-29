@@ -30,7 +30,6 @@ import javastraw.reader.HiCFileTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.slice.CorrelationTools;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
 import mixer.utils.slice.MatrixCleanup;
 import mixer.utils.slice.SliceMatrix;
@@ -120,8 +119,7 @@ public class Slice extends MixerCLT {
             referenceBedFiles = bedFiles.split("\\+");
         }
 
-        CorrelationTools.ONLY_COSINE = mixerParser.getOnlyCosineOption();
-        MatrixCleanup.USE_COSINE = mixerParser.getCosineOption() || CorrelationTools.ONLY_COSINE;
+        MatrixCleanup.USE_COSINE = mixerParser.getCosineOption();
         MatrixCleanup.USE_CORRELATION = mixerParser.getCorrelationOption();
 
     }

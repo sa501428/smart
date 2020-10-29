@@ -52,7 +52,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option sliceCompareOption = addStringOption("compare");
     private final Option sliceCorrelationOption = addBooleanOption("corr");
     private final Option sliceCosineOption = addBooleanOption("cosine");
-    private final Option sliceOnlyCosineOption = addBooleanOption("only-cosine");
 
 
     public CommandLineParserForMixer() {
@@ -129,10 +128,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getCosineOption() {
         return optionToBoolean(sliceCosineOption);
-    }
-
-    public boolean getOnlyCosineOption() {
-        return optionToBoolean(sliceOnlyCosineOption);
     }
 
     public boolean getVersionOption() {
