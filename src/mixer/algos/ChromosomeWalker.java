@@ -27,7 +27,6 @@ package mixer.algos;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
 import javastraw.type.NormalizationType;
-import mixer.MixerGlobals;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.walker.LocalGenomeRegion;
@@ -41,21 +40,20 @@ import java.util.List;
 import java.util.Map;
 
 public class ChromosomeWalker extends MixerCLT {
-    
+
     private static int expectedMinSize = 3;
     private final int numPixelOverlapWhileSliding = 5;
     private Dataset ds;
     private File outputDirectory;
     private int resolution = 1000;
     private int neuralNetSize = 500;
-    
+
     //whole assembly linker
     public ChromosomeWalker() {
         super("walk [-r res1,res2] [-k normalization] [-w minimum size]" +
                 "  <hicFile> <assembly_file> <output_directory>");
-        MixerGlobals.useCache = false;
     }
-    
+
     public static void writeStrictIntsToFile(File path, List<Integer> positions) {
         try (ObjectOutputStream write = new ObjectOutputStream(new FileOutputStream(path))) {
             for (Integer pos : positions) {
@@ -65,22 +63,22 @@ public class ChromosomeWalker extends MixerCLT {
             eo.printStackTrace();
         }
     }
-    
+
     public static void writeStrictMapToFile(File path, Map<Integer, LocalGenomeRegion> indexToRegion) {
         List<Integer> keys = new ArrayList<>(indexToRegion.keySet());
         Collections.sort(keys);
-        
+
         try (ObjectOutputStream write = new ObjectOutputStream(new FileOutputStream(path))) {
             for (Integer key : keys) {
                 LocalGenomeRegion region = indexToRegion.get(key);
-                
+
                 write.writeObject(region.toString());
             }
         } catch (Exception eo) {
             eo.printStackTrace();
         }
     }
-    
+
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 4) {
@@ -88,36 +86,36 @@ public class ChromosomeWalker extends MixerCLT {
             printUsageAndExit(8);  // this will exit
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(args[1], true);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
-        
-        
+
+
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null)
             norm = preferredNorm;
-        
-        List<String> potentialResolution = mixerParser.getMultipleResolutionOptions();
+
+        List<Integer> potentialResolution = mixerParser.getMultipleResolutionOptions();
         if (potentialResolution != null) {
-            resolution = Integer.parseInt(potentialResolution.get(0));
+            resolution = potentialResolution.get(0);
         }
-        
+
         int specifiedCliqueSize = mixerParser.getAPAWindowSizeOption();
         if (specifiedCliqueSize > 1) {
             expectedMinSize = specifiedCliqueSize;
         }
-        
+
         updateNumberOfCPUThreads(mixerParser);
-        
+
         int specifiedMatrixSize = mixerParser.getMatrixSizeOption();
         if (specifiedMatrixSize > 10) {
             neuralNetSize = specifiedMatrixSize;
         }
     }
-    
-    
+
+
     @Override
     public void run() {
-    
-    
+
+
     }
 }

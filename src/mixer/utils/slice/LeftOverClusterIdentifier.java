@@ -34,56 +34,58 @@ import mixer.utils.slice.kmeansfloat.ClusterTools;
 import java.util.*;
 
 public class LeftOverClusterIdentifier {
+
+    public static float threshold = 3f;
+
     public static void identify(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
-                                GenomewideBadIndexFinder badIndexFinder,
-                                float threshold) {
-    
+                                GenomewideBadIndexFinder badIndexFinder) {
+
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr1, resolution);
             if (zd == null) continue;
-        
+
             float[][] allDataForRegion = null;
             try {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
                         norm, threshold, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0);
-            
+
                 //allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
 
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(99);
             }
-        
+
             if (allDataForRegion == null) {
                 System.err.println("Missing Data " + zd.getKey());
                 return;
             }
-        
+
             Set<Integer> worstIndices = badIndexFinder.getWorstIndices(chr1);
             Set<Integer> indicesMissing = new HashSet<>();
-    
-    
+
+
             for (int k = 0; k < chr1.getLength() / resolution + 1; k++) {
                 if (worstIndices.contains(k)) {
                     continue;
                 }
-        
+
                 indicesMissing.add(k);
             }
-    
+
             // do it this way because of additional internal filter
             Integer firstEntryKey = (Integer) results.keySet().toArray()[0];
             for (SubcompartmentInterval handledInterval : results.get(firstEntryKey).getFeatures("" + chr1.getIndex())) {
                 int binXStart = handledInterval.getX1() / resolution;
                 int binXEnd = handledInterval.getX2() / resolution;
-        
+
                 for (int j = binXStart; j < binXEnd; j++) {
                     indicesMissing.remove(j);
                 }
             }
-    
+
             if (indicesMissing.size() > 0) {
                 for (Integer key : results.keySet()) {
                     GenomeWideList<SubcompartmentInterval> listForKey = results.get(key);

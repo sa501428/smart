@@ -41,28 +41,28 @@ import java.util.*;
 public abstract class CompositeGenomeWideDensityMatrix {
     protected final NormalizationType norm;
     protected final int resolution;
-    private final float[][] gwCleanMatrix;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
     protected final Random generator;
     protected final File outputDirectory;
+    private final float[][] gwCleanMatrix;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
     protected GenomewideBadIndexFinder badIndexLocations;
-    
+
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                             File outputDirectory, Random generator, String[] relativeTestFiles) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
         this.generator = generator;
-        
+
         chrIndxTorowIndexToGoldIDMapList.clear();
         if (relativeTestFiles != null) {
             for (String filename : relativeTestFiles) {
                 chrIndxTorowIndexToGoldIDMapList.add(SliceUtils.createGoldStandardLookup(filename, resolution, chromosomeHandler));
             }
         }
-        
+
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         badIndexLocations = new GenomewideBadIndexFinder(ds, chromosomes, resolution, norm);
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
@@ -138,7 +138,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Final WCSS " + withinClusterSumOfSquares);
         }
-    
+
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
 
@@ -181,16 +181,16 @@ public abstract class CompositeGenomeWideDensityMatrix {
         System.out.println(getLength() + " -v- " + getWidth());
         FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
     }
-    
+
     public void appendDataAlongExistingRows(CompositeGenomeWideDensityMatrix additionalData) {
         if (getLength() != additionalData.getLength()) {
             System.err.println("***************************************\n" +
                     "Dimension mismatch: " + getLength() + " != " + additionalData.getLength());
         } else {
-        
+
         }
     }
-    
+
     public GenomewideBadIndexFinder getBadIndices() {
         return badIndexLocations;
     }

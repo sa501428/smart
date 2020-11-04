@@ -35,31 +35,31 @@ import java.util.List;
  * Helper methods to handle matrix operations
  */
 public class FloatMatrixTools {
-    
+
     private static final PearsonsCorrelation pearsonsCorrelation = new PearsonsCorrelation();
-    
-    public static void thresholdByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
-        float[] colMeans = getColMeansNonNan(matrix, batchSize);
-        float[] colStdDevs = getColStdDevNonNans(matrix, colMeans, batchSize);
-        
+
+    public static void thresholdNonZerosByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
+        float[] colMeans = getColNonZeroMeansNonNan(matrix, batchSize);
+        float[] colStdDevs = getColNonZeroStdDevNonNans(matrix, colMeans, batchSize);
+
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
+                if (!Float.isNaN(val) && val > 1e-10) {
                     int newJ = j / batchSize;
                     float newVal = (val - colMeans[newJ]) / colStdDevs[newJ];
-                    if (newVal > threshold || newVal < -threshold || val < 1e-10) {
+                    if (newVal > threshold) { // || newVal < -threshold || val < 1e-10
                         matrix[i][j] = Float.NaN;
                     }
                 }
             }
         }
     }
-    
+
     public static void inPlaceZscoreDownColsNoNan(float[][] matrix, int batchSize) {
-        float[] colMeans = getColMeansNonNan(matrix, batchSize);
-        float[] colStdDevs = getColStdDevNonNans(matrix, colMeans, batchSize);
-        
+        float[] colMeans = getColNonZeroMeansNonNan(matrix, batchSize);
+        float[] colStdDevs = getColNonZeroStdDevNonNans(matrix, colMeans, batchSize);
+
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
@@ -70,16 +70,16 @@ public class FloatMatrixTools {
             }
         }
     }
-    
-    public static float[] getColStdDevNonNans(float[][] matrix, float[] means, int batchSize) {
-        
+
+    public static float[] getColNonZeroStdDevNonNans(float[][] matrix, float[] means, int batchSize) {
+
         float[] stdDevs = new float[means.length];
         int[] colNonNans = new int[means.length];
-        
+
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
+                if (!Float.isNaN(val) && val > 1e-10) {
                     int newJ = j / batchSize;
                     float diff = val - means[newJ];
                     stdDevs[newJ] += diff * diff;
@@ -87,21 +87,21 @@ public class FloatMatrixTools {
                 }
             }
         }
-        
+
         for (int k = 0; k < stdDevs.length; k++) {
             stdDevs[k] = (float) Math.sqrt(stdDevs[k] / Math.max(colNonNans[k], 1));
         }
-        
+
         return stdDevs;
     }
-    
-    public static float[] getColMeansNonNan(float[][] matrix, int batchSize) {
+
+    public static float[] getColNonZeroMeansNonNan(float[][] matrix, int batchSize) {
         float[] colMeans = new float[matrix[0].length / batchSize + 1];
         int[] colNonNans = new int[matrix[0].length / batchSize + 1];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
+                if (!Float.isNaN(val) && val > 1e-10) {
                     int newJ = j / batchSize;
                     colMeans[newJ] += val;
                     colNonNans[newJ] += 1;
@@ -115,25 +115,25 @@ public class FloatMatrixTools {
 
         return colMeans;
     }
-    
+
     public static float[][] fill(float[][] allDataForRegion, float val) {
         for (int i = 0; i < allDataForRegion.length; i++) {
             Arrays.fill(allDataForRegion[i], val);
         }
         return allDataForRegion;
     }
-    
+
     public static void saveMatrixTextNumpy(String filename, float[][] matrix) {
         MatrixTools.saveMatrixTextNumpy(filename, matrix);
     }
-    
+
     public static float[] flattenedRowMajorOrderMatrix(float[][] matrix) {
         int m = matrix.length;
         int n = matrix[0].length;
-        
+
         int numElements = m * n;
         float[] flattenedMatrix = new float[numElements];
-        
+
         int index = 0;
         for (int i = 0; i < m; i++) {
             System.arraycopy(matrix[i], 0, flattenedMatrix, index, n);
@@ -141,13 +141,13 @@ public class FloatMatrixTools {
         }
         return flattenedMatrix;
     }
-    
+
     public static float[] getRowMajorOrderFlattendedSectionFromMatrix(float[][] matrix, int numCols) {
         int numRows = matrix.length - numCols;
-    
+
         int numElements = numRows * numCols;
         float[] flattenedMatrix = new float[numElements];
-    
+
         int index = 0;
         for (int i = numCols; i < numRows; i++) {
             System.arraycopy(matrix[i], 0, flattenedMatrix, index, numCols);

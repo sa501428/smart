@@ -50,16 +50,16 @@ public class ChainBreaker extends MixerCLT {
             printUsageAndExit(2);  // this will exit
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(args[1], true);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null)
             norm = preferredNorm;
 
-        List<String> potentialResolution = mixerParser.getMultipleResolutionOptions();
+        List<Integer> potentialResolution = mixerParser.getMultipleResolutionOptions();
         if (potentialResolution != null) {
-            initialResolution = Integer.parseInt(potentialResolution.get(0));
+            initialResolution = potentialResolution.get(0);
         }
 
         updateNumberOfCPUThreads(mixerParser);

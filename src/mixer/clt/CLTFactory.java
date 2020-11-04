@@ -37,27 +37,20 @@ import mixer.algos.Slice;
  */
 public class CLTFactory {
 
-    // Commenting some out because we're not going to release all these when we release CLT
-    private final static String[] commandLineToolUsages = {
-            "grind---"
-    };
-
     public static void generalUsage() {
         System.out.println("Mixer Tools Version " + MixerGlobals.versionNum);
         System.out.println("Usage:");
-        for (String usage : commandLineToolUsages) {
-            System.out.println("\t" + usage);
-        }
         System.out.println("\t" + "-h, --help print help");
         System.out.println("\t" + "-v, --verbose verbose mode");
         System.out.println("\t" + "-V, --version print version");
+        System.out.println("Tool(s): slice");
         System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
     }
 
     public static MixerCLT getCLTCommand(String cmd) {
 
         cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice") || cmd.startsWith("drink") || cmd.startsWith("link")) {
+        if (cmd.startsWith("slice")) {
             return new Slice(cmd);
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();

@@ -32,9 +32,6 @@ import java.util.List;
 
 public class SubcompartmentInterval extends SimpleInterval {
 
-    private Integer clusterID;
-    private double differenceFromControl = 0;
-
     private static final Color[] colors = new Color[]{
             new Color(0, 0, 0),
 
@@ -70,6 +67,8 @@ public class SubcompartmentInterval extends SimpleInterval {
             new Color(115, 115, 115),
             new Color(204, 204, 204)
     };
+    private Integer clusterID;
+    private double differenceFromControl = 0;
 
     public SubcompartmentInterval(int chrIndex, String chrName, int x1, int x2, Integer clusterID) {
         super(chrIndex, chrName, x1, x2);
@@ -79,7 +78,7 @@ public class SubcompartmentInterval extends SimpleInterval {
     public Integer getClusterID() {
         return clusterID;
     }
-    
+
     public void setClusterID(Integer clusterID) {
         this.clusterID = clusterID;
     }
