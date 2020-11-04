@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.cleaning;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.ExpectedValueFunction;

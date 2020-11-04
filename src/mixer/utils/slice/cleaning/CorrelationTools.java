@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.cleaning;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

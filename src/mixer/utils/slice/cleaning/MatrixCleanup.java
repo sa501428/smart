@@ -22,10 +22,11 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.cleaning;
 
 import javastraw.reader.ExtractingOEDataUtils;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.*;
