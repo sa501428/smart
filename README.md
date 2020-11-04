@@ -1,6 +1,7 @@
 # MIXER Tools
 
 Machine Intelligence for Xtracting Essential Regions
+Machine Intelligence for Xtracting Enriched Relationships
 
 ## SLICE
 Subcompartment Landscape Identification via Clustering Enrichments
