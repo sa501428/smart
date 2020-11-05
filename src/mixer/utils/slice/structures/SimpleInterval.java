@@ -28,7 +28,7 @@ package mixer.utils.slice.structures;
 import javastraw.featurelist.Feature;
 
 public class SimpleInterval extends Feature implements Comparable<SimpleInterval> {
-    private final Integer x1;
+    private final Integer x1; // genomic position, not bin position
     private final Integer x2;
     private final String chrName;
     private final Integer chrIndex;

@@ -24,15 +24,28 @@
 
 package mixer.utils.slice.cleaning;
 
+import mixer.utils.slice.kmeansfloat.ClusterTools;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CorrelationTools {
 
-    public static float[][] getMinimallySufficientNonNanPearsonCorrelationMatrix(float[][] matrix, int numCentroids, boolean useCosine) {
+    /**
+     * @param matrix
+     * @param numCentroids
+     * @param type         0 - cosine, 1 - corr, 2 - mse, 3 - mae
+     * @return
+     */
+    public static float[][] getMinimallySufficientNonNanSimilarityMatrix(float[][] matrix, int numCentroids, int type) {
 
-        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+        float[][] centroids;
+        if (numCentroids == matrix.length) {
+            centroids = matrix;
+        } else {
+            centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+        }
         float[][] result = new float[matrix.length][numCentroids]; // *2
 
         int numCPUThreads = 20;
@@ -44,16 +57,30 @@ public class CorrelationTools {
                 public void run() {
                     int i = currRowIndex.getAndIncrement();
                     while (i < matrix.length) {
-                        if (useCosine) {
-                            for (int j = 0; j < centroids.length; j++) {
-                                float val = cosineSimilarity(matrix[i], centroids[j]);
-                                result[i][j] = arctanh(val);
-                            }
-                        } else {
-                            for (int j = 0; j < centroids.length; j++) {
-                                float val = getCorrFromCosineStyleSimilarity(matrix[i], centroids[j]);
-                                result[i][j] = arctanh(val);
-                            }
+                        switch (type) {
+                            case 1:
+                                for (int j = 0; j < centroids.length; j++) {
+                                    float val = getCorrFromCosineStyleSimilarity(matrix[i], centroids[j]);
+                                    result[i][j] = arctanh(val);
+                                }
+                                break;
+                            case 2:
+                                for (int j = 0; j < centroids.length; j++) {
+                                    result[i][j] = (float) ClusterTools.getNonNanMeanSquaredError(matrix[i], centroids[j]);
+                                }
+                                break;
+                            case 3:
+                                for (int j = 0; j < centroids.length; j++) {
+                                    result[i][j] = (float) ClusterTools.getNonNanMeanAbsoluteError(matrix[i], centroids[j]);
+                                }
+                                break;
+                            case 0:
+                            default:
+                                for (int j = 0; j < centroids.length; j++) {
+                                    float val = cosineSimilarity(matrix[i], centroids[j]);
+                                    result[i][j] = arctanh(val);
+                                }
+                                break;
                         }
                         i = currRowIndex.getAndIncrement();
                     }

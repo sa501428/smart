@@ -26,6 +26,7 @@ package mixer.utils.slice.cleaning;
 
 import javastraw.reader.ExtractingOEDataUtils;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.IntMatrixTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -40,6 +41,7 @@ public class MatrixCleanup {
     protected final File outputDirectory;
     protected final Random generator;
     protected float[][] data;
+    private static final boolean saveIntermediateData = true;
 
     public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory) {
         data = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
@@ -129,13 +131,48 @@ public class MatrixCleanup {
 
         FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
 
+        if (saveIntermediateData) {
+            int numCentroids = Math.max(data.length / 50, 200);
+            saveMatricesLocally(data, numCentroids, outputDirectory, rowIndexToIntervalMap);
+        }
+
         if (USE_COSINE) {
             int numCentroids = Math.max(data.length / 50, 200);
-            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data,
-                    numCentroids, true);
+            data = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data,
+                    numCentroids, 0);
             File temp = new File(outputDirectory, "cosine.npy");
             FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
         }
         return data;
+    }
+
+    private void saveMatricesLocally(float[][] data, int numCentroids, File outputDirectory, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+        //0 - cosine, 1 - corr, 2 - mse, 3 - mae
+        String[] names = {"cosine", "correlation", "mse", "mae"};
+        for (int k = 0; k < 4; k++) {
+            float[][] result = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data, numCentroids, k);
+            File temp = new File(outputDirectory, names[k] + "_vs_centroids.npy");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+            result = null;
+        }
+        System.gc();
+
+        for (int k = 0; k < 4; k++) {
+            float[][] result = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data, data.length, k);
+            File temp = new File(outputDirectory, names[k] + "_all.npy");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+            result = null;
+            System.gc();
+        }
+
+        // indices
+        int[][] indices = new int[data.length][2];
+        for (int i = 0; i < indices.length; i++) {
+            SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
+            indices[i][0] = interval.getChrIndex();
+            indices[i][1] = interval.getX1();
+        }
+        File temp = new File(outputDirectory, "gw_indices.npy");
+        IntMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indices);
     }
 }

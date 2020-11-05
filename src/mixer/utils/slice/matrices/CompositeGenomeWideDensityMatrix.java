@@ -116,9 +116,10 @@ public abstract class CompositeGenomeWideDensityMatrix {
                         subcompartmentIntervals.add(
                                 new SubcompartmentInterval(chrIndex, chrName, x1, x2, currentClusterID));
 
-                        idsForIndex[chrIndxTorowIndexToGoldIDMapList.size()][i] = currentClusterID;
+                        int numReferences = chrIndxTorowIndexToGoldIDMapList.size();
+                        idsForIndex[numReferences][i] = currentClusterID;
 
-                        for (int q = 0; q < chrIndxTorowIndexToGoldIDMapList.size(); q++) {
+                        for (int q = 0; q < numReferences; q++) {
                             Map<Integer, Map<Integer, Integer>> map = chrIndxTorowIndexToGoldIDMapList.get(q);
                             if (map.containsKey(chrIndex)) {
                                 if (map.get(chrIndex).containsKey(x1)) {
