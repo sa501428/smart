@@ -26,6 +26,7 @@ package mixer.utils.slice.kmeansfloat;
 
 import mixer.utils.common.DoubleMatrixTools;
 import mixer.utils.common.IntMatrixTools;
+import mixer.utils.shuffle.Metrics;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
 import java.io.File;
@@ -91,7 +92,7 @@ public class ClusterTools {
         for (int i = 0; i < n; i++) {
             Cluster expected = clusters[i];
             for (int j = 0; j < n; j++) {
-                distances[i][j] = getL2Distance(clusters[j], expected);
+                distances[i][j] = Metrics.getL2Distance(clusters[j], expected);
                 distancesNormalized[i][j] = distances[i][j] / clusters[j].getCenter().length;
             }
         }
@@ -151,32 +152,6 @@ public class ClusterTools {
         }
 
         IntMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
-    }
-
-    public static double getL2Distance(Cluster observed, Cluster expected) {
-        return getL2Distance(observed.getCenter(), expected.getCenter());
-    }
-
-    public static double getL2Distance(float[] expectedArray, float[] obsArray) {
-        return Math.sqrt(expectedArray.length * getNonNanMeanSquaredError(expectedArray, obsArray));
-    }
-
-    public static double getNonNanVectorSumOfSquares(float[] center, float[] obsArray) {
-        return center.length * getNonNanMeanSquaredError(center, obsArray);
-    }
-
-    public static double getNonNanMeanSquaredError(float[] array1, float[] array2) {
-        double sumSquared = 0;
-        int numDiffs = 0;
-        for (int i = 0; i < array1.length; i++) {
-            if (!Float.isNaN(array1[i]) && !Float.isNaN(array2[i])) {
-                double v = array1[i] - array2[i];
-                sumSquared += (v * v);
-                numDiffs++;
-            }
-        }
-        numDiffs = Math.max(numDiffs, 1);
-        return sumSquared / numDiffs;
     }
 
     public static float[] normalize(float[] vector, Integer total) {
@@ -246,30 +221,6 @@ public class ClusterTools {
         }
 
         return clone;
-    }
-
-    public static double getL1Distance(float[] obsArray, float[] expectedArray) {
-        double val = 0;
-
-        for (int k = 0; k < obsArray.length; k++) {
-            val += Math.abs(expectedArray[k] - obsArray[k]);
-        }
-
-        return val;
-    }
-
-    public static double getNonNanMeanAbsoluteError(float[] array1, float[] array2) {
-        double sumAbsError = 0;
-        int numDiffs = 0;
-        for (int i = 0; i < array1.length; i++) {
-            if (!Float.isNaN(array1[i]) && !Float.isNaN(array2[i])) {
-                double v = array1[i] - array2[i];
-                sumAbsError += Math.abs(v);
-                numDiffs++;
-            }
-        }
-        numDiffs = Math.max(numDiffs, 1);
-        return sumAbsError / numDiffs;
     }
 }
 

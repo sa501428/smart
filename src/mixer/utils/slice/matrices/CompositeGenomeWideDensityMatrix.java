@@ -32,9 +32,9 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.Pair;
+import mixer.utils.shuffle.Metrics;
 import mixer.utils.slice.cleaning.GenomewideBadIndexFinder;
 import mixer.utils.slice.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeansfloat.ClusterTools;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -99,7 +99,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
             }
 
             for (int i : cluster.getMemberIndexes()) {
-                withinClusterSumOfSquares += ClusterTools.getNonNanVectorSumOfSquares(cluster.getCenter(), gwCleanMatrix[i]);
+                withinClusterSumOfSquares += Metrics.getNonNanVectorSumOfSquares(cluster.getCenter(), gwCleanMatrix[i]);
 
                 try {
                     SubcompartmentInterval interv;

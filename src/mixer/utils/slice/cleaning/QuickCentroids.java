@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.shuffle.Metrics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,7 +94,7 @@ public class QuickCentroids {
         double currDist = Double.MAX_VALUE;
 
         for (int k = 0; k < prevCentroids.length; k++) {
-            double newDist = ClusterTools.getNonNanMeanSquaredError(prevCentroids[k], vector);
+            double newDist = Metrics.getNonNanMeanSquaredError(prevCentroids[k], vector);
             if (newDist < currDist) {
                 currDist = newDist;
                 bestIndexSoFar = k;
@@ -120,8 +120,8 @@ public class QuickCentroids {
 
     private static void updateDistances(float[] distFromClosestPoint, float[][] matrix, Integer index) {
         for (int k = 0; k < matrix.length; k++) {
-            distFromClosestPoint[k] = Math.min(distFromClosestPoint[k],
-                    (float) ClusterTools.getNonNanMeanSquaredError(matrix[k], matrix[index]));
+            float newDist = (float) Metrics.getNonNanMeanSquaredError(matrix[k], matrix[index]);
+            distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
         }
     }
 
