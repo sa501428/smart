@@ -22,10 +22,13 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.cleaning;
 
 import javastraw.reader.ExtractingOEDataUtils;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.IntMatrixTools;
+import mixer.utils.shuffle.Metrics;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.*;
@@ -39,6 +42,7 @@ public class MatrixCleanup {
     protected final File outputDirectory;
     protected final Random generator;
     protected float[][] data;
+    private static final boolean saveIntermediateData = false;
 
     public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory) {
         data = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
@@ -126,15 +130,47 @@ public class MatrixCleanup {
         data = filterOutColumnsAndRowsNonSymmetricMatrix(data, rowIndexToIntervalMap);
         System.out.println("matrix size " + data.length + " x " + data[0].length);
 
+        if (saveIntermediateData) {
+            int numCentroids = Math.max(data.length / 50, 200);
+            saveMatricesLocally(data, numCentroids, outputDirectory, rowIndexToIntervalMap);
+        }
+
         FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
 
         if (USE_COSINE) {
             int numCentroids = Math.max(data.length / 50, 200);
-            data = CorrelationTools.getMinimallySufficientNonNanPearsonCorrelationMatrix(data,
-                    numCentroids, true);
+            data = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data,
+                    numCentroids, Metrics.Type.COSINE);
             File temp = new File(outputDirectory, "cosine.npy");
             FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
         }
         return data;
+    }
+
+    private void saveMatricesLocally(float[][] data, int numCentroids, File outputDirectory, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+        //0 - cosine, 1 - corr, 2 - mse, 3 - mae, 4 - EMD
+        String[] names = {"pre_cosine", "correlation", "pre_mse", "mae", "pre_emd", "pre_kl", "pre_js"};
+        String[] suffixes = {"_vs_centroids.npy", "_all.npy"};
+        int[] numToUse = {numCentroids, data.length};
+
+        for (int z = 0; z < 2; z++) {
+            Metrics.Type k = Metrics.Type.JS;
+            //if (k == 1 || k == 3 || k == 4) continue;
+            float[][] result = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data, numToUse[z], k);
+            File temp = new File(outputDirectory, k.toString() + suffixes[z]);
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+            result = null;
+            System.gc();
+        }
+
+        // indices
+        int[][] indices = new int[data.length][2];
+        for (int i = 0; i < indices.length; i++) {
+            SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
+            indices[i][0] = interval.getChrIndex();
+            indices[i][1] = interval.getX1();
+        }
+        File temp = new File(outputDirectory, "gw_indices.npy");
+        IntMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indices);
     }
 }

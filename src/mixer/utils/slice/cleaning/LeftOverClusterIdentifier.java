@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.cleaning;
 
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.*;
@@ -30,6 +30,7 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.clt.AggregateProcessing;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.*;
 

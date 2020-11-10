@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.matrices;
 
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
@@ -33,6 +33,10 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.Pair;
+import mixer.utils.slice.cleaning.GenomewideBadIndexFinder;
+import mixer.utils.slice.cleaning.IndexOrderer;
+import mixer.utils.slice.cleaning.MatrixCleanup;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.*;

@@ -50,7 +50,7 @@ public class CLTFactory {
     public static MixerCLT getCLTCommand(String cmd) {
 
         cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice")) {
+        if (cmd.startsWith("slice") || cmd.startsWith("dice")) {
             return new Slice(cmd);
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();

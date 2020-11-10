@@ -33,21 +33,22 @@ import mixer.MixerTools;
  */
 public class AggregateProcessing {
 
-    public static boolean useDerivative = false;
     public static boolean useL1Norm = false;
 
     public static void main(String[] argv) throws Exception {
 
 
         String[] strings;
-        String refs = "/Users/muhammad/Desktop/research/drinks/existingmethods/GSE63525_GM12878_subcompartments.bed" + "+" +
-                "/Users/muhammad/Desktop/research/drinks/existingmethods/ultra_res_100k_default_clean_outliers.bed" + "+" +
-                "/Users/muhammad/Desktop/research/drinks/existingmethods/New_STRICT_gold_standard.bed";
+
+        String refs = "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed+" +
+                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed+" +
+                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
-        String folder = "new_baseline0.2_KR_nomix";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2", //"--cosine",
-                file14, "5,7,10",
-                "/Users/mss/Desktop/tempslice/" + folder, folder + "_"
+        String folder = "final_baseline_JSDist";
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2", "--cosine",
+                "--compare", refs,
+                file14, "2,11,10",
+                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);

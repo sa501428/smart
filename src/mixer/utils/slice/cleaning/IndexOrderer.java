@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.cleaning;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.ExpectedValueFunction;
@@ -32,6 +32,7 @@ import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
+import mixer.utils.shuffle.Metrics;
 
 import java.io.IOException;
 import java.util.*;
@@ -117,7 +118,7 @@ public class IndexOrderer {
         for (int k = 0; k < numCentroids; k++) {
             for (int z = 0; z < vectorLength; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                    float corr = CorrelationTools.getCorrFromCosineStyleSimilarity(centroids[k], matrix[z]);
+                    float corr = Metrics.getCorrFromCosineStyleSimilarity(centroids[k], matrix[z]);
                     correlationCentroidsWithData[k][z] = corr;
                     if (corr > CORR_MIN || corr < -CORR_MIN) {
                         numDecentRelations[k]++;
@@ -191,7 +192,7 @@ public class IndexOrderer {
 
                 for (int z = cI + 1; z < vectorLength; z++) {
                     if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                        float val = CorrelationTools.getCorrFromCosineStyleSimilarity(matrix[cI], matrix[z]);
+                        float val = Metrics.getCorrFromCosineStyleSimilarity(matrix[cI], matrix[z]);
                         if (val >= CORR_MIN) {
                             newIndexOrderAssignments[z] = counter++;
                         }

@@ -31,8 +31,8 @@ import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
-import mixer.utils.slice.MatrixCleanup;
-import mixer.utils.slice.SliceMatrix;
+import mixer.utils.slice.cleaning.MatrixCleanup;
+import mixer.utils.slice.matrices.SliceMatrix;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class Slice extends MixerCLT {
         super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE]  [-w window] " +
                 "[--compare reference.bed] [--corr] [--verbose] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
-        useStackingAlongRow = command.contains("2");
+        useStackingAlongRow = command.contains("2") || command.contains("dice");
     }
 
     @Override

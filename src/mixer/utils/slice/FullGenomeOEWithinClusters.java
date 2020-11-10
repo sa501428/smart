@@ -31,8 +31,13 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.DoubleMatrixTools;
 import mixer.utils.common.IntMatrixTools;
+import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
+import mixer.utils.slice.matrices.SliceMatrix;
+import mixer.utils.slice.structures.SliceUtils;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.*;

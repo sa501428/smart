@@ -33,6 +33,8 @@ import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
 import mixer.utils.slice.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.kmeansfloat.KMeansListener;
+import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.matrices;
 
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
@@ -32,8 +32,11 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.Pair;
+import mixer.utils.slice.cleaning.GenomewideBadIndexFinder;
 import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.structures.SliceUtils;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.*;
@@ -113,9 +116,10 @@ public abstract class CompositeGenomeWideDensityMatrix {
                         subcompartmentIntervals.add(
                                 new SubcompartmentInterval(chrIndex, chrName, x1, x2, currentClusterID));
 
-                        idsForIndex[chrIndxTorowIndexToGoldIDMapList.size()][i] = currentClusterID;
+                        int numReferences = chrIndxTorowIndexToGoldIDMapList.size();
+                        idsForIndex[numReferences][i] = currentClusterID;
 
-                        for (int q = 0; q < chrIndxTorowIndexToGoldIDMapList.size(); q++) {
+                        for (int q = 0; q < numReferences; q++) {
                             Map<Integer, Map<Integer, Integer>> map = chrIndxTorowIndexToGoldIDMapList.get(q);
                             if (map.containsKey(chrIndex)) {
                                 if (map.get(chrIndex).containsKey(x1)) {
