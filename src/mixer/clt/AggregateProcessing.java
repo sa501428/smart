@@ -40,15 +40,15 @@ public class AggregateProcessing {
 
         String[] strings;
 
-        String refs = "/Users/mss/Desktop/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed+" +
-                "/Users/mss/Desktop/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed+" +
-                "/Users/mss/Desktop/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
+        String refs = "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed+" +
+                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed+" +
+                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
-        String folder = "final_baseline_lots_to_umap";
+        String folder = "final_baseline_JSDist";
         strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2", "--cosine",
                 "--compare", refs,
                 file14, "2,11,10",
-                "/Users/mss/Desktop/tempslice/" + folder, folder + "_"
+                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);

@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.matrices;
+package mixer.utils.shuffle;
 
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
@@ -38,11 +38,9 @@ import mixer.utils.slice.structures.SubcompartmentInterval;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ShuffleMatrix {
 
-    public final static AtomicInteger genomewideInitialClusterID = new AtomicInteger(0);
     private final NormalizationType norm;
     private final int resolution;
     private final GenomeWideList<SubcompartmentInterval> intraSubcompartments;
@@ -51,24 +49,24 @@ public class ShuffleMatrix {
     private final Map<Integer, SubcompartmentInterval> indexToInterval2Map = new HashMap<>();
     private final Chromosome[] rowsChromosomes;
     private final Chromosome[] colsChromosomes;
+    private final int compressionFactor;
 
     public ShuffleMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                          GenomeWideList<SubcompartmentInterval> intraSubcompartments,
-                         InterMapType mapType) {
+                         InterMapType mapType, int compressionFactor) {
         this.norm = norm;
         this.resolution = resolution;
         this.intraSubcompartments = intraSubcompartments;
+        this.compressionFactor = compressionFactor;
 
         switch (mapType) {
             case SKIP_BY_TWOS: // but start with CHR 1 separate
-                Pair<Chromosome[], Chromosome[]> splitByTwos = new Pair<>(chromosomeHandler.splitAutosomesAndSkipByTwos().getFirst(), chromosomeHandler.splitAutosomesAndSkipByTwos().getSecond());
-                rowsChromosomes = splitByTwos.getFirst();
-                colsChromosomes = splitByTwos.getSecond();
+                rowsChromosomes = chromosomeHandler.splitAutosomesAndSkipByTwos().getFirst();
+                colsChromosomes = chromosomeHandler.splitAutosomesAndSkipByTwos().getSecond();
                 break;
             case FIRST_HALF_VS_SECOND_HALF:
-                Pair<Chromosome[], Chromosome[]> firstHalfVsSecondHalf = new Pair<>(chromosomeHandler.splitAutosomesIntoHalves().getFirst(), chromosomeHandler.splitAutosomesIntoHalves().getSecond());
-                rowsChromosomes = firstHalfVsSecondHalf.getFirst();
-                colsChromosomes = firstHalfVsSecondHalf.getSecond();
+                rowsChromosomes = chromosomeHandler.splitAutosomesIntoHalves().getFirst();
+                colsChromosomes = chromosomeHandler.splitAutosomesIntoHalves().getSecond();
                 break;
             case ODDS_VS_EVENS:
             default:
@@ -79,6 +77,8 @@ public class ShuffleMatrix {
 
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
     }
+
+    public enum InterMapType {ODDS_VS_EVENS, FIRST_HALF_VS_SECOND_HALF, SKIP_BY_TWOS}
 
     private float[][] makeCleanScaledInterMatrix(Dataset ds) {
 
@@ -200,6 +200,4 @@ public class ShuffleMatrix {
             }
         }
     }
-
-    public enum InterMapType {ODDS_VS_EVENS, FIRST_HALF_VS_SECOND_HALF, SKIP_BY_TWOS}
 }

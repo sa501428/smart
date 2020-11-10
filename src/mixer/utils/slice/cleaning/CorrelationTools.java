@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.shuffle.Metrics;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,17 +35,16 @@ public class CorrelationTools {
     /**
      * @param matrix
      * @param numCentroids
-     * @param type         0 - cosine, 1 - corr, 2 - mse, 3 - mae
+     * @param type         0 - cosine, 1 - corr, 2 - mse, 3 - mae, 4 - emd, 5 - KLD, 6 - JSD
      * @return
      */
-    public static float[][] getMinimallySufficientNonNanSimilarityMatrix(float[][] matrix, int numCentroids, int type) {
+    public static float[][] getMinimallySufficientNonNanSimilarityMatrix(float[][] matrix, int numCentroids, Metrics.Type type) {
 
-        float[][] centroids;
         if (numCentroids == matrix.length) {
-            centroids = matrix;
-        } else {
-            centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+            return getNonNanDistanceMatrix(matrix, type);
         }
+
+        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
         float[][] result = new float[matrix.length][numCentroids]; // *2
 
         int numCPUThreads = 20;
@@ -57,31 +56,7 @@ public class CorrelationTools {
                 public void run() {
                     int i = currRowIndex.getAndIncrement();
                     while (i < matrix.length) {
-                        switch (type) {
-                            case 1:
-                                for (int j = 0; j < centroids.length; j++) {
-                                    float val = getCorrFromCosineStyleSimilarity(matrix[i], centroids[j]);
-                                    result[i][j] = arctanh(val);
-                                }
-                                break;
-                            case 2:
-                                for (int j = 0; j < centroids.length; j++) {
-                                    result[i][j] = (float) ClusterTools.getNonNanMeanSquaredError(matrix[i], centroids[j]);
-                                }
-                                break;
-                            case 3:
-                                for (int j = 0; j < centroids.length; j++) {
-                                    result[i][j] = (float) ClusterTools.getNonNanMeanAbsoluteError(matrix[i], centroids[j]);
-                                }
-                                break;
-                            case 0:
-                            default:
-                                for (int j = 0; j < centroids.length; j++) {
-                                    float val = cosineSimilarity(matrix[i], centroids[j]);
-                                    result[i][j] = arctanh(val);
-                                }
-                                break;
-                        }
+                        Metrics.fillEntries(i, 0, matrix, centroids, result, type, false);
                         i = currRowIndex.getAndIncrement();
                     }
                 }
@@ -98,60 +73,33 @@ public class CorrelationTools {
         //return FloatMatrixTools.concatenate(matrix, result);
     }
 
-    private static float arctanh(float x) {
-        float val = Math.max(x, -.99f);
-        val = Math.min(val, .99f);
-        val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2;
-        if (Float.isInfinite(val)) {
-            val = Float.NaN;
-        }
-        return val;
-    }
+    public static float[][] getNonNanDistanceMatrix(float[][] matrix, Metrics.Type type) {
 
-    private static float cosineSimilarity(float[] vectorA, float[] vectorB) {
-        double dotProduct = 0.0;
-        double normA = 0.0;
-        double normB = 0.0;
-        for (int i = 0; i < vectorA.length; i++) {
-            boolean entryIsBad = Float.isNaN(vectorA[i]) || Float.isNaN(vectorB[i]);
-            if (!entryIsBad) {
-                dotProduct += vectorA[i] * vectorB[i];
-                normA += vectorA[i] * vectorA[i];
-                normB += vectorB[i] * vectorB[i];
-            }
-        }
-        return (float) (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)));
-    }
 
-    public static float getCorrFromCosineStyleSimilarity(float[] vectorA, float[] vectorB) {
-        int counter = 0;
-        double sumA = 0;
-        double sumB = 0;
-        for (int i = 0; i < vectorA.length; i++) {
-            boolean entryIsBad = Float.isNaN(vectorA[i]) || Float.isNaN(vectorB[i]);
-            if (!entryIsBad) {
-                sumA += vectorA[i];
-                sumB += vectorB[i];
-                counter++;
-            }
-        }
-        double avgA = sumA / counter;
-        double avgB = sumB / counter;
+        float[][] result = new float[matrix.length][matrix.length]; // *2
 
-        double dotProduct = 0.0;
-        double normA = 0.0;
-        double normB = 0.0;
-        for (int i = 0; i < vectorA.length; i++) {
-            boolean entryIsBad = Float.isNaN(vectorA[i]) || Float.isNaN(vectorB[i]);
-            if (!entryIsBad) {
-                double tempA = vectorA[i] - avgA;
-                double tempB = vectorB[i] - avgB;
-
-                dotProduct += tempA * tempB;
-                normA += tempA * tempA;
-                normB += tempB * tempB;
-            }
+        int numCPUThreads = 20;
+        AtomicInteger currRowIndex = new AtomicInteger(0);
+        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
+        for (int l = 0; l < numCPUThreads; l++) {
+            Runnable worker = new Runnable() {
+                @Override
+                public void run() {
+                    int i = currRowIndex.getAndIncrement();
+                    while (i < matrix.length) {
+                        Metrics.fillEntries(i, i, matrix, matrix, result, type, true);
+                        i = currRowIndex.getAndIncrement();
+                    }
+                }
+            };
+            executor.execute(worker);
         }
-        return (float) (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)));
+        executor.shutdown();
+
+        // Wait until all threads finish
+        while (!executor.isTerminated()) {
+        }
+
+        return result;
     }
 }
