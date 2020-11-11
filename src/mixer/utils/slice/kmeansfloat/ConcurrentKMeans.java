@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.kmeansfloat;
 
-import mixer.utils.shuffle.Metrics;
+import tagbio.umap.metric.Metric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +69,7 @@ public class ConcurrentKMeans implements KMeans {
     private ConcurrentKMeans.SubtaskManager mSubtaskManager;
     // An array of Cluster objects: the output of k-means.
     private Cluster[] mClusters;
+    private final Metric mMetric;
 
     /**
      * Constructor
@@ -80,13 +81,14 @@ public class ConcurrentKMeans implements KMeans {
      * @param threadCount   the number of threads to be used for computing time-consuming steps.
      */
     private ConcurrentKMeans(float[][] coordinates, int k, int maxIterations,
-                             long randomSeed, int threadCount) {
+                             long randomSeed, int threadCount, Metric metric) {
         mCoordinates = coordinates;
         // Can't have more clusters than coordinates.
         mK = Math.min(k, mCoordinates.length);
         mMaxIterations = maxIterations;
         mRandomSeed = randomSeed;
         mThreadCount = threadCount;
+        mMetric = metric;
     }
 
     /**
@@ -100,9 +102,9 @@ public class ConcurrentKMeans implements KMeans {
      * @param randomSeed    seed used with the random number generator.
      */
     public ConcurrentKMeans(float[][] coordinates, int k, int maxIterations,
-                            long randomSeed) {
+                            long randomSeed, Metric metric) {
         this(coordinates, k, maxIterations, randomSeed,
-                Runtime.getRuntime().availableProcessors());
+                Runtime.getRuntime().availableProcessors(), metric);
     }
 
     /**
@@ -965,7 +967,7 @@ public class ConcurrentKMeans implements KMeans {
                     for (int c = 0; c < numClusters; c++) {
                         ConcurrentKMeans.ProtoCluster cluster = mProtoClusters[c];
                         if (cluster.getConsiderForAssignment() && cluster.needsUpdate()) {
-                            mDistanceCache[i][c] = Metrics.getL2Distance(mCoordinates[i], cluster.getCenter());
+                            mDistanceCache[i][c] = mMetric.distance(mCoordinates[i], cluster.getCenter());
                         }
                     }
                 }

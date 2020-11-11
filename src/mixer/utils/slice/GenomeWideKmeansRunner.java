@@ -35,6 +35,7 @@ import mixer.utils.slice.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.kmeansfloat.KMeansListener;
 import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import tagbio.umap.metric.Metric;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,10 +53,12 @@ public class GenomeWideKmeansRunner {
     private int[][] recentIDsForIndex;
     private GenomeWideList<SubcompartmentInterval> finalCompartments;
     private int numClusters = 0;
+    private final Metric metric;
 
-    public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideDensityMatrix interMatrix) {
+    public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideDensityMatrix interMatrix, Metric metric) {
         matrix = interMatrix;
         this.chromosomeHandler = chromosomeHandler;
+        this.metric = metric;
     }
 
     public void prepareForNewRun(int numClusters) {
@@ -75,7 +78,8 @@ public class GenomeWideKmeansRunner {
                 System.out.println("Using seed " + seed);
             }
 
-            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix.getCleanedData(), numClusters, maxIters, seed);
+            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix.getCleanedData(),
+                    numClusters, maxIters, seed, metric);
 
             KMeansListener kMeansListener = new KMeansListener() {
                 @Override

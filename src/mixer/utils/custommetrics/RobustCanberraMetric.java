@@ -21,16 +21,38 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package mixer.utils.custommetrics;
 
-package mixer;
+import tagbio.umap.metric.Metric;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Canberra distance.
  */
-public class MixerGlobals {
+public final class RobustCanberraMetric extends Metric {
 
-    public static final String versionNum = "3.05.01";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+  /**
+   * Canberra distance.
+   */
+  public static final RobustCanberraMetric SINGLETON = new RobustCanberraMetric();
+
+  private RobustCanberraMetric() {
+    super(false);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    float result = 0;
+    int numVals = 0;
+    for (int i = 0; i < x.length; ++i) {
+      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
+        final float denominator = Math.abs(x[i]) + Math.abs(y[i]);
+        if (denominator > 0) {
+          result += Math.abs(x[i] - y[i]) / denominator;
+          numVals++;
+        }
+      }
+    }
+    numVals = Math.max(numVals, 1);
+    return x.length * result / numVals;
+  }
 }

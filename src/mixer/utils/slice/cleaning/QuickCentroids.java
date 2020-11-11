@@ -24,16 +24,16 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.utils.shuffle.Metrics;
+import tagbio.umap.metric.Metric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class QuickCentroids {
-    public static float[][] generateCentroids(float[][] matrix, int numCentroids, int numIters) {
+    public static float[][] generateCentroids(float[][] matrix, int numCentroids, int numIters, Metric metric) {
 
-        List<Integer> bestIndices = getInitialIndices(matrix, numCentroids);
+        List<Integer> bestIndices = getInitialIndices(matrix, numCentroids, metric);
 
         int vectorLength = matrix[0].length;
         float[][] centroids = new float[bestIndices.size()][vectorLength];
@@ -42,15 +42,15 @@ public class QuickCentroids {
         }
 
         for (int z = 0; z < numIters; z++) {
-            centroids = getUpdatedCentroids(centroids, matrix);
+            centroids = getUpdatedCentroids(centroids, matrix, metric);
         }
 
         return centroids;
     }
 
-    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix) {
+    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix, Metric metric) {
 
-        int[] closestCentroid = getClosestCentroidsForEachVector(prevCentroids, matrix);
+        int[] closestCentroid = getClosestCentroidsForEachVector(prevCentroids, matrix, metric);
 
         int n = prevCentroids.length;
         float[][] newCentroids = new float[n][matrix[0].length];
@@ -81,20 +81,20 @@ public class QuickCentroids {
         return newCentroids;
     }
 
-    private static int[] getClosestCentroidsForEachVector(float[][] prevCentroids, float[][] matrix) {
+    private static int[] getClosestCentroidsForEachVector(float[][] prevCentroids, float[][] matrix, Metric metric) {
         int[] closestCentroid = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
-            closestCentroid[i] = getNearestCentroidIndex(matrix[i], prevCentroids);
+            closestCentroid[i] = getNearestCentroidIndex(matrix[i], prevCentroids, metric);
         }
         return closestCentroid;
     }
 
-    private static int getNearestCentroidIndex(float[] vector, float[][] prevCentroids) {
+    private static int getNearestCentroidIndex(float[] vector, float[][] prevCentroids, Metric metric) {
         int bestIndexSoFar = -1;
         double currDist = Double.MAX_VALUE;
 
         for (int k = 0; k < prevCentroids.length; k++) {
-            double newDist = Metrics.getNonNanMeanSquaredError(prevCentroids[k], vector);
+            double newDist = metric.distance(prevCentroids[k], vector);
             if (newDist < currDist) {
                 currDist = newDist;
                 bestIndexSoFar = k;
@@ -103,7 +103,7 @@ public class QuickCentroids {
         return bestIndexSoFar;
     }
 
-    private static List<Integer> getInitialIndices(float[][] matrix, int numCentroids) {
+    private static List<Integer> getInitialIndices(float[][] matrix, int numCentroids, Metric metric) {
         float[] distFromClosestPoint = new float[matrix.length];
         Arrays.fill(distFromClosestPoint, Float.MAX_VALUE);
 
@@ -111,16 +111,16 @@ public class QuickCentroids {
         bestIndices.add(getMostDenseVectorIndex(matrix));
 
         for (int c = 0; c < numCentroids - 1; c++) {
-            updateDistances(distFromClosestPoint, matrix, bestIndices.get(c));
+            updateDistances(distFromClosestPoint, matrix, bestIndices.get(c), metric);
             bestIndices.add(getIndexOfMaxVal(distFromClosestPoint));
         }
 
         return bestIndices;
     }
 
-    private static void updateDistances(float[] distFromClosestPoint, float[][] matrix, Integer index) {
+    private static void updateDistances(float[] distFromClosestPoint, float[][] matrix, Integer index, Metric metric) {
         for (int k = 0; k < matrix.length; k++) {
-            float newDist = (float) Metrics.getNonNanMeanSquaredError(matrix[k], matrix[index]);
+            float newDist = metric.distance(matrix[k], matrix[index]);
             distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
         }
     }

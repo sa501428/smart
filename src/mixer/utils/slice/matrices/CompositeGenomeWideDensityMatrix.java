@@ -32,11 +32,11 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.Pair;
-import mixer.utils.shuffle.Metrics;
-import mixer.utils.slice.cleaning.GenomewideBadIndexFinder;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.*;
@@ -50,16 +50,22 @@ public abstract class CompositeGenomeWideDensityMatrix {
     protected final File outputDirectory;
     private final float[][] gwCleanMatrix;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
-    protected GenomewideBadIndexFinder badIndexLocations;
+    protected final BadIndexFinder badIndexLocations;
+    protected final int datasetIndex;
+    protected Metric metric;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                            File outputDirectory, Random generator, String[] relativeTestFiles) {
+                                            File outputDirectory, Random generator, String[] relativeTestFiles,
+                                            BadIndexFinder badIndexLocations, int datasetIndex,
+                                            Metric metric) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
         this.generator = generator;
+        this.badIndexLocations = badIndexLocations;
+        this.datasetIndex = datasetIndex;
+        this.metric = metric;
 
-        chrIndxTorowIndexToGoldIDMapList.clear();
         if (relativeTestFiles != null) {
             for (String filename : relativeTestFiles) {
                 chrIndxTorowIndexToGoldIDMapList.add(SliceUtils.createGoldStandardLookup(filename, resolution, chromosomeHandler));
@@ -67,7 +73,6 @@ public abstract class CompositeGenomeWideDensityMatrix {
         }
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
-        badIndexLocations = new GenomewideBadIndexFinder(ds, chromosomes, resolution, norm);
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
     }
 
@@ -99,7 +104,8 @@ public abstract class CompositeGenomeWideDensityMatrix {
             }
 
             for (int i : cluster.getMemberIndexes()) {
-                withinClusterSumOfSquares += Metrics.getNonNanVectorSumOfSquares(cluster.getCenter(), gwCleanMatrix[i]);
+                float dist = metric.distance(cluster.getCenter(), gwCleanMatrix[i]);
+                withinClusterSumOfSquares += dist * dist;
 
                 try {
                     SubcompartmentInterval interv;
@@ -195,7 +201,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         }
     }
 
-    public GenomewideBadIndexFinder getBadIndices() {
+    public BadIndexFinder getBadIndices() {
         return badIndexLocations;
     }
 }

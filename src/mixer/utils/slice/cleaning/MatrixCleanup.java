@@ -27,8 +27,9 @@ package mixer.utils.slice.cleaning;
 import javastraw.reader.ExtractingOEDataUtils;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.IntMatrixTools;
-import mixer.utils.shuffle.Metrics;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import tagbio.umap.Umap;
+import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.*;
@@ -37,19 +38,19 @@ public class MatrixCleanup {
     public static final int BATCHED_NUM_ROWS = 1; // 10
     protected static final float zScoreThreshold = 3f;
     private final static float PERCENT_NAN_ALLOWED = .5f;
-    public static boolean USE_COSINE = false;
-    public static boolean USE_CORRELATION = false;
     protected final File outputDirectory;
-    protected final Random generator;
+    public static boolean USE_ZSCORE = false;
     protected float[][] data;
-    private static final boolean saveIntermediateData = false;
+    protected final Random generator = new Random();
+    private final Metric metric;
 
-    public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory) {
-        data = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
-
-        System.out.println("matrix size " + data.length + " x " + data[0].length);
-        generator = new Random(seed);
+    public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory, Metric metric) {
+        this.metric = metric;
         this.outputDirectory = outputDirectory;
+        generator.setSeed(seed);
+
+        data = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
+        System.out.println("matrix size " + data.length + " x " + data[0].length);
     }
 
     public static Set<Integer> getBadIndices(float[][] matrix) {
@@ -130,47 +131,37 @@ public class MatrixCleanup {
         data = filterOutColumnsAndRowsNonSymmetricMatrix(data, rowIndexToIntervalMap);
         System.out.println("matrix size " + data.length + " x " + data[0].length);
 
-        if (saveIntermediateData) {
-            int numCentroids = Math.max(data.length / 50, 200);
-            saveMatricesLocally(data, numCentroids, outputDirectory, rowIndexToIntervalMap);
+        if (USE_ZSCORE) {
+            FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
         }
 
-        FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
+        System.out.println("Run UMAP");
+        runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
+        System.out.println("Done running UMAP");
 
-        if (USE_COSINE) {
-            int numCentroids = Math.max(data.length / 50, 200);
-            data = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data,
-                    numCentroids, Metrics.Type.COSINE);
-            File temp = new File(outputDirectory, "cosine.npy");
-            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
-        }
         return data;
     }
 
-    private void saveMatricesLocally(float[][] data, int numCentroids, File outputDirectory, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        //0 - cosine, 1 - corr, 2 - mse, 3 - mae, 4 - EMD
-        String[] names = {"pre_cosine", "correlation", "pre_mse", "mae", "pre_emd", "pre_kl", "pre_js"};
-        String[] suffixes = {"_vs_centroids.npy", "_all.npy"};
-        int[] numToUse = {numCentroids, data.length};
+    private void runUmapAndSaveMatrices(float[][] data, File outputDirectory, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+        //float[][] result = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data, numToUse[z], k);
+        final Umap umap = new Umap();
+        umap.setNumberComponents(2);         // todo 3
+        umap.setNumberNearestNeighbours(15);
+        umap.setMetric(metric);
+        umap.setThreads(20);                  // use > 1 to enable parallelism
+        final float[][] result = umap.fitTransform(data);
+        File temp = new File(outputDirectory, "umap_embedding.npy");
+        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+        System.gc();
 
-        for (int z = 0; z < 2; z++) {
-            Metrics.Type k = Metrics.Type.JS;
-            //if (k == 1 || k == 3 || k == 4) continue;
-            float[][] result = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data, numToUse[z], k);
-            File temp = new File(outputDirectory, k.toString() + suffixes[z]);
-            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
-            result = null;
-            System.gc();
-        }
-
-        // indices
+        // save indices
         int[][] indices = new int[data.length][2];
         for (int i = 0; i < indices.length; i++) {
             SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
             indices[i][0] = interval.getChrIndex();
             indices[i][1] = interval.getX1();
         }
-        File temp = new File(outputDirectory, "gw_indices.npy");
+        temp = new File(outputDirectory, "gw_indices.npy");
         IntMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indices);
     }
 }

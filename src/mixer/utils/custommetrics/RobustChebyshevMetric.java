@@ -21,16 +21,33 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package mixer.utils.custommetrics;
 
-package mixer;
+import tagbio.umap.metric.Metric;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Chebyshev distance.
  */
-public class MixerGlobals {
+public final class RobustChebyshevMetric extends Metric {
 
-    public static final String versionNum = "3.05.01";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+  /**
+   * Chebyshev distance.
+   */
+  public static final RobustChebyshevMetric SINGLETON = new RobustChebyshevMetric();
+
+  private RobustChebyshevMetric() {
+    super(false);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    // D(x, y) = \max_i |x_i - y_i|
+    float result = 0;
+    for (int i = 0; i < x.length; ++i) {
+      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
+        result = Math.max(result, Math.abs(x[i] - y[i]));
+      }
+    }
+    return result;
+  }
 }

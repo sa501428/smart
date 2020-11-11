@@ -22,15 +22,56 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.custommetrics;
+
+import tagbio.umap.metric.Metric;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Cosine distance.
+ *
+ * @author Sean A. Irvine
  */
-public class MixerGlobals {
+public final class RobustCosineMetric extends Metric {
 
-    public static final String versionNum = "3.05.01";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+  /**
+   * Cosine distance.
+   */
+  public static final RobustCosineMetric SINGLETON = new RobustCosineMetric();
+
+  private RobustCosineMetric() {
+    super(true);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    double dotProduct = 0.0;
+    double normX = 0.0;
+    double normY = 0.0;
+    for (int i = 0; i < x.length; i++) {
+      boolean entryIsBad = Float.isNaN(x[i]) || Float.isNaN(y[i]);
+      if (!entryIsBad) {
+        dotProduct += x[i] * y[i];
+        normX += x[i] * x[i];
+        normY += y[i] * y[i];
+      }
+    }
+
+    if (normX == 0.0 && normY == 0.0) {
+      return 0;
+    } else if (normX == 0.0 || normY == 0.0) {
+      return 1;
+    } else {
+      return (float) (1 - (dotProduct / Math.sqrt(normX * normY)));
+    }
+  }
+
+  private float arctanh(float x) {
+    float val = Math.max(x, -.99f);
+    val = Math.min(val, .99f);
+    val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2;
+    if (Float.isInfinite(val)) {
+      val = Float.NaN;
+    }
+    return val;
+  }
 }

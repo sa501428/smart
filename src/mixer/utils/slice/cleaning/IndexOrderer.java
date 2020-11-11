@@ -32,7 +32,9 @@ import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
-import mixer.utils.shuffle.Metrics;
+import mixer.utils.custommetrics.RobustCorrelationMetric;
+import mixer.utils.custommetrics.RobustEuclideanMetric;
+import tagbio.umap.metric.Metric;
 
 import java.io.IOException;
 import java.util.*;
@@ -51,7 +53,7 @@ public class IndexOrderer {
     private final float INCREMENT = .1f;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
-                        int numColumnsToPutTogether, GenomewideBadIndexFinder badIndexLocations) {
+                        int numColumnsToPutTogether, BadIndexFinder badIndexLocations) {
         this.resolution = resolution;
         minDistanceThreshold = DISTANCE / resolution;
         numColsToJoin = numColumnsToPutTogether;
@@ -110,7 +112,9 @@ public class IndexOrderer {
     private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
 
         int numCentroids = 10;
-        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+        Metric l2Metric = RobustEuclideanMetric.SINGLETON;
+        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, l2Metric);
+        Metric corrMetric = RobustCorrelationMetric.SINGLETON;
 
         int vectorLength = newIndexOrderAssignments.length;
         int[] numDecentRelations = new int[numCentroids];
@@ -118,7 +122,7 @@ public class IndexOrderer {
         for (int k = 0; k < numCentroids; k++) {
             for (int z = 0; z < vectorLength; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                    float corr = Metrics.getCorrFromCosineStyleSimilarity(centroids[k], matrix[z]);
+                    float corr = corrMetric.distance(centroids[k], matrix[z]);
                     correlationCentroidsWithData[k][z] = corr;
                     if (corr > CORR_MIN || corr < -CORR_MIN) {
                         numDecentRelations[k]++;
@@ -184,6 +188,7 @@ public class IndexOrderer {
         int vectorLength = newIndexOrderAssignments.length;
         int numRoundsThatHappen = 0;
         int counter = startCounter;
+        Metric corrMetric = RobustCorrelationMetric.SINGLETON;
         for (int cI = 0; cI < vectorLength; cI++) {
             // handle stuff
             if (newIndexOrderAssignments[cI] < CHECK_VAL) {
@@ -192,7 +197,7 @@ public class IndexOrderer {
 
                 for (int z = cI + 1; z < vectorLength; z++) {
                     if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                        float val = Metrics.getCorrFromCosineStyleSimilarity(matrix[cI], matrix[z]);
+                        float val = corrMetric.distance(matrix[cI], matrix[z]);
                         if (val >= CORR_MIN) {
                             newIndexOrderAssignments[z] = counter++;
                         }

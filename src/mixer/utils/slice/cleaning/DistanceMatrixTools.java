@@ -24,27 +24,27 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.utils.shuffle.Metrics;
+import tagbio.umap.metric.Metric;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CorrelationTools {
+public class DistanceMatrixTools {
 
     /**
      * @param matrix
      * @param numCentroids
-     * @param type         0 - cosine, 1 - corr, 2 - mse, 3 - mae, 4 - emd, 5 - KLD, 6 - JSD
+     * @param metric
      * @return
      */
-    public static float[][] getMinimallySufficientNonNanSimilarityMatrix(float[][] matrix, int numCentroids, Metrics.Type type) {
+    public static float[][] getMinimallySufficientNonNanSimilarityMatrix(float[][] matrix, int numCentroids, Metric metric) {
 
         if (numCentroids == matrix.length) {
-            return getNonNanDistanceMatrix(matrix, type);
+            return getNonNanDistanceMatrix(matrix, metric);
         }
 
-        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, metric);
         float[][] result = new float[matrix.length][numCentroids]; // *2
 
         int numCPUThreads = 20;
@@ -56,7 +56,7 @@ public class CorrelationTools {
                 public void run() {
                     int i = currRowIndex.getAndIncrement();
                     while (i < matrix.length) {
-                        Metrics.fillEntries(i, 0, matrix, centroids, result, type, false);
+                        fillEntries(i, 0, matrix, centroids, result, metric, false);
                         i = currRowIndex.getAndIncrement();
                     }
                 }
@@ -73,7 +73,7 @@ public class CorrelationTools {
         //return FloatMatrixTools.concatenate(matrix, result);
     }
 
-    public static float[][] getNonNanDistanceMatrix(float[][] matrix, Metrics.Type type) {
+    public static float[][] getNonNanDistanceMatrix(float[][] matrix, Metric type) {
 
 
         float[][] result = new float[matrix.length][matrix.length]; // *2
@@ -87,7 +87,7 @@ public class CorrelationTools {
                 public void run() {
                     int i = currRowIndex.getAndIncrement();
                     while (i < matrix.length) {
-                        Metrics.fillEntries(i, i, matrix, matrix, result, type, true);
+                        fillEntries(i, i, matrix, matrix, result, type, true);
                         i = currRowIndex.getAndIncrement();
                     }
                 }
@@ -101,5 +101,18 @@ public class CorrelationTools {
         }
 
         return result;
+    }
+
+    public static void fillEntries(int i, int colStart, float[][] matrix, float[][] centroids, float[][] result,
+                                   Metric metric, boolean isSymmetric) {
+        for (int j = colStart; j < centroids.length; j++) {
+            result[i][j] = metric.distance(matrix[i], centroids[j]);
+        }
+
+        if (isSymmetric) {
+            for (int j = colStart; j < centroids.length; j++) {
+                result[j][i] = result[i][j];
+            }
+        }
     }
 }

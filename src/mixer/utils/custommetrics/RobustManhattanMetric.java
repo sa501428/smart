@@ -21,16 +21,40 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package mixer.utils.custommetrics;
 
-package mixer;
+import tagbio.umap.metric.Metric;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Manhattan distance.
  */
-public class MixerGlobals {
+public final class RobustManhattanMetric extends Metric {
 
-    public static final String versionNum = "3.05.01";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+  /**
+   * Manhattan distance.
+   */
+  public static final RobustManhattanMetric SINGLETON = new RobustManhattanMetric();
+
+  private RobustManhattanMetric() {
+    super(false);
+  }
+
+  private static float getNonNanMeanAbsoluteError(float[] x, float[] y) {
+    double sumAbsError = 0;
+    int numDiffs = 0;
+    for (int i = 0; i < x.length; i++) {
+      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
+        sumAbsError += Math.abs(x[i] - y[i]);
+        numDiffs++;
+      }
+    }
+    numDiffs = Math.max(numDiffs, 1);
+    return (float) (sumAbsError / numDiffs);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    //  D(x, y) = \sum_i |x_i - y_i|
+    return getNonNanMeanAbsoluteError(x, y) * x.length;
+  }
 }

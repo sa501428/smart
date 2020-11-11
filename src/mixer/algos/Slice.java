@@ -30,9 +30,11 @@ import javastraw.reader.HiCFileTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.custommetrics.RobustCosineMetric;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
 import mixer.utils.slice.cleaning.MatrixCleanup;
 import mixer.utils.slice.matrices.SliceMatrix;
+import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,16 +54,17 @@ public class Slice extends MixerCLT {
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    private boolean useStackingAlongRow = false;
+    public static Metric metric = RobustCosineMetric.SINGLETON;
     private String prefix = "";
     private String[] referenceBedFiles;
+    private final boolean compareMaps;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
         super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE]  [-w window] " +
                 "[--compare reference.bed] [--corr] [--verbose] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
-        useStackingAlongRow = command.contains("2") || command.contains("dice");
+        compareMaps = command.contains("dice");
     }
 
     @Override
@@ -111,7 +114,7 @@ public class Slice extends MixerCLT {
         if (minSize > 0) {
             SliceMatrix.numColumnsToPutTogether = minSize;
         } else {
-            SliceMatrix.numColumnsToPutTogether = 200000 / resolution;
+            SliceMatrix.numColumnsToPutTogether = 500000 / resolution;
         }
 
         String bedFiles = mixerParser.getCompareReferenceOption();
@@ -119,9 +122,8 @@ public class Slice extends MixerCLT {
             referenceBedFiles = bedFiles.split("\\+");
         }
 
-        MatrixCleanup.USE_COSINE = mixerParser.getCosineOption();
-        MatrixCleanup.USE_CORRELATION = mixerParser.getCorrelationOption();
-
+        metric = mixerParser.getMetricTypeOption();
+        MatrixCleanup.USE_ZSCORE = mixerParser.getZscoreOption();
     }
 
     @Override
@@ -133,21 +135,10 @@ public class Slice extends MixerCLT {
 
         if (datasetList.size() < 1) return;
 
-        if (useStackingAlongRow) {
-            FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(0),
-                    chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles);
-            for (int i = 1; i < datasetList.size(); i++) {
-                withinClusters.appendGWDataFromAdditionalDataset(datasetList.get(i));
-            }
-            withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, 0);
-        } else {
-            for (int i = 0; i < datasetList.size(); i++) {
-                FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList.get(i),
-                        chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles);
-                withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, i);
-            }
-            System.out.println("\nClustering complete");
-        }
+        FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
+                chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles, metric);
+        withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, 0, compareMaps);
 
+        System.out.println("\nClustering complete");
     }
 }

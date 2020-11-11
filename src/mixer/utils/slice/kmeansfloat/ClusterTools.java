@@ -26,8 +26,8 @@ package mixer.utils.slice.kmeansfloat;
 
 import mixer.utils.common.DoubleMatrixTools;
 import mixer.utils.common.IntMatrixTools;
-import mixer.utils.shuffle.Metrics;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
+import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class ClusterTools {
     }
 
 
-    public static void performStatisticalAnalysisBetweenClusters(File directory, String description, Cluster[] clusters, int[] ids) {
+    public static void performStatisticalAnalysisBetweenClusters(File directory, String description, Cluster[] clusters, int[] ids, Metric metric) {
 
         File statsFolder = new File(directory, description + "_cluster_stats");
         statsFolder.mkdir();
@@ -78,21 +78,21 @@ public class ClusterTools {
         IntMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
 
         saveClusterSizes(statsFolder, "sizes", clusters);
-        saveDistComparisonBetweenClusters(statsFolder, "distances", clusters);
+        saveDistComparisonBetweenClusters(statsFolder, "distances", clusters, metric);
         saveComparisonBetweenClusters(statsFolder, "num.differences", clusters);
         saveChiSquarePvalComparisonBetweenClusters(statsFolder, "chi2.pval", clusters);
         saveChiSquareValComparisonBetweenClusters(statsFolder, "chi2", clusters);
 
     }
 
-    private static void saveDistComparisonBetweenClusters(File directory, String filename, Cluster[] clusters) {
+    private static void saveDistComparisonBetweenClusters(File directory, String filename, Cluster[] clusters, Metric metric) {
         int n = clusters.length;
         double[][] distances = new double[n][n];
         double[][] distancesNormalized = new double[n][n];
         for (int i = 0; i < n; i++) {
             Cluster expected = clusters[i];
             for (int j = 0; j < n; j++) {
-                distances[i][j] = Metrics.getL2Distance(clusters[j], expected);
+                distances[i][j] = metric.distance(clusters[j].getCenter(), expected.getCenter());
                 distancesNormalized[i][j] = distances[i][j] / clusters[j].getCenter().length;
             }
         }

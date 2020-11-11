@@ -36,56 +36,65 @@ import mixer.utils.common.Pair;
 import java.io.IOException;
 import java.util.*;
 
-public class GenomewideBadIndexFinder {
+public class BadIndexFinder {
 
     private static final float ZSCORE_MIN_SPARSE_THRESHOLD_LOWER_INTRA = -3;//-5; // 3 bottom 0.15% dropped
     private static final float ZSCORE_MAX_ALLOWED_INTER = 3;
     public static float ZSCORE_MIN_SPARSE_THRESHOLD_INTER_HIGHER = -1;//-2; //-1.28f; // bottom 10% dropped
-    private final double GLOBAL_MAX_RAW_VALUE;
     private final int resolution;
     private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     private final Map<Integer, Set<Integer>> worstIndices = new HashMap<>();
     private final NormalizationType norm;
-    private final float globalInterMean, globalInterStdDev;
-    private double globalSum = 0, globalSumOfSquares = 0;
-    private long globalCounts = 0;
 
-    public GenomewideBadIndexFinder(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType norm) {
+    // per dataset
+    private final float[] globalInterMean, globalInterStdDev;
+    private final double[] globalSum, globalSumOfSquares, GLOBAL_MAX_RAW_VALUE;
+    private final long[] globalCounts;
+
+    public BadIndexFinder(List<Dataset> datasets, Chromosome[] chromosomes, int resolution,
+                          NormalizationType norm) {
         this.resolution = resolution;
         this.norm = norm;
-        createInternalBadList(ds, chromosomes);
+        for (Chromosome chrom : chromosomes) {
+            badIndices.put(chrom.getIndex(), new HashSet<Integer>());
+            worstIndices.put(chrom.getIndex(), new HashSet<Integer>());
+        }
+        globalInterMean = new float[datasets.size()];
+        globalInterStdDev = new float[datasets.size()];
+        globalSum = new double[datasets.size()];
+        globalSumOfSquares = new double[datasets.size()];
+        GLOBAL_MAX_RAW_VALUE = new double[datasets.size()];
+        globalCounts = new long[datasets.size()];
 
-        globalInterMean = (float) (globalSum / globalCounts);
-        double variance = (globalSumOfSquares / globalCounts) - globalInterMean * globalInterMean;
-        globalInterStdDev = (float) Math.sqrt(variance);
-        GLOBAL_MAX_RAW_VALUE = Math.exp(ZSCORE_MAX_ALLOWED_INTER * globalInterStdDev + globalInterMean) - 1;
+        createInternalBadList(datasets, chromosomes);
+
+        for (int k = 0; k < datasets.size(); k++) {
+            globalInterMean[k] = (float) (globalSum[k] / globalCounts[k]);
+            double variance = (globalSumOfSquares[k] / globalCounts[k]) - globalInterMean[k] * globalInterMean[k];
+            globalInterStdDev[k] = (float) Math.sqrt(variance);
+            GLOBAL_MAX_RAW_VALUE[k] = Math.exp(ZSCORE_MAX_ALLOWED_INTER * globalInterStdDev[k] + globalInterMean[k]) - 1;
+        }
     }
 
-    private void createInternalBadList(Dataset ds, Chromosome[] chromosomes) {
-
-        for (Chromosome chr1 : chromosomes) {
-            badIndices.put(chr1.getIndex(), new HashSet<Integer>());
-            worstIndices.put(chr1.getIndex(), new HashSet<Integer>());
-        }
-
-        for (int i = 0; i < chromosomes.length; i++) {
-            Chromosome chr1 = chromosomes[i];
-            for (int j = i; j < chromosomes.length; j++) {
-                Chromosome chr2 = chromosomes[j];
-                final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
-                try {
-                    determineBadIndicesForRegion(chr1, chr2, zd, i == j);
-                } catch (IOException e) {
-                    e.printStackTrace();
+    private void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
+        for (int z = 0; z < datasets.size(); z++) {
+            for (int i = 0; i < chromosomes.length; i++) {
+                Chromosome chr1 = chromosomes[i];
+                for (int j = i; j < chromosomes.length; j++) {
+                    Chromosome chr2 = chromosomes[j];
+                    final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(datasets.get(z), chr1, chr2, resolution);
+                    try {
+                        determineBadIndicesForRegion(chr1, chr2, zd, i == j, z);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
     }
 
-    /**
-     * @return
-     */
-    private Pair<int[], int[]> getNumberOfNonZeros(List<Block> blocks, int numRows, int numCols, boolean isIntra) {
+    private Pair<int[], int[]> getNumberOfNonZeros(List<Block> blocks, int numRows, int numCols,
+                                                   boolean isIntra, int dIndex) {
         int[] numNonZerosRows = new int[numRows];
         int[] numNonZerosCols = new int[numCols];
 
@@ -107,9 +116,9 @@ public class GenomewideBadIndexFinder {
                             numNonZerosCols[cr.getBinX()]++;
                         }
                     } else {
-                        globalSum += val;
-                        globalSumOfSquares += val * val;
-                        globalCounts += 1;
+                        globalSum[dIndex] += val;
+                        globalSumOfSquares[dIndex] += val * val;
+                        globalCounts[dIndex] += 1;
                     }
                 }
             }
@@ -118,18 +127,20 @@ public class GenomewideBadIndexFinder {
         return new Pair<>(numNonZerosRows, numNonZerosCols);
     }
 
-    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd, boolean isIntra) throws IOException {
+    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
+                                              boolean isIntra, int dIndex) throws IOException {
 
         int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
 
         determineBadIndicesForRegion(chr1, chr2,
                 HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, isIntra),
-                lengthChr1, lengthChr2, isIntra);
+                lengthChr1, lengthChr2, isIntra, dIndex);
     }
 
-    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, List<Block> blocks, int numRows, int numCols, boolean isIntra) {
-        Pair<int[], int[]> results = getNumberOfNonZeros(blocks, numRows, numCols, isIntra);
+    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, List<Block> blocks,
+                                              int numRows, int numCols, boolean isIntra, int dIndex) {
+        Pair<int[], int[]> results = getNumberOfNonZeros(blocks, numRows, numCols, isIntra, dIndex);
         removeSparserIndicesZscoredCount(chr1, results.getFirst(), isIntra);
         if (!isIntra) {
             removeSparserIndicesZscoredCount(chr2, results.getSecond(), isIntra);
@@ -198,7 +209,7 @@ public class GenomewideBadIndexFinder {
         return worstIndices.get(chrom.getIndex());
     }
 
-    public boolean getExceedsAllowedGlobalValue(float val) {
-        return val > GLOBAL_MAX_RAW_VALUE;
+    public boolean getExceedsAllowedGlobalValue(float val, int index) {
+        return val > GLOBAL_MAX_RAW_VALUE[index];
     }
 }

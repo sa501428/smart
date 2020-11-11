@@ -31,6 +31,7 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.DoubleMatrixTools;
 import mixer.utils.common.IntMatrixTools;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
@@ -38,6 +39,7 @@ import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.*;
@@ -46,36 +48,43 @@ public class FullGenomeOEWithinClusters {
     public static int startingClusterSizeK = 5;
     public static int numClusterSizeKValsUsed = 2;//10
     public static int numAttemptsForKMeans = 10;
+    private final List<Dataset> datasets;
     protected final File outputDirectory;
-    private final Dataset ds;
     private final ChromosomeHandler chromosomeHandler;
     private final int resolution;
     private final NormalizationType norm;
     private final CompositeGenomeWideDensityMatrix interMatrix;
-    private final Random generator;
+    private final BadIndexFinder badIndexFinder;
+    private final Metric metric;
 
-    public FullGenomeOEWithinClusters(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      File outputDirectory, Random generator, String[] referenceBedFiles) {
-        this.ds = ds;
+    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
+                                      File outputDirectory, Random generator, String[] referenceBedFiles,
+                                      Metric metric) {
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
         this.norm = norm;
         this.outputDirectory = outputDirectory;
-        this.generator = generator;
+        this.datasets = datasets;
+        this.metric = metric;
+
+        badIndexFinder = new BadIndexFinder(datasets,
+                chromosomeHandler.getAutosomalChromosomesArray(), resolution, norm);
+
         interMatrix = new SliceMatrix(
-                chromosomeHandler, ds, norm, resolution, outputDirectory, generator, referenceBedFiles);
+                chromosomeHandler, datasets.get(0), norm, resolution, outputDirectory, generator, referenceBedFiles,
+                badIndexFinder, 0, metric);
+
+        for (int dI = 1; dI < datasets.size(); dI++) {
+            SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
+                    norm, resolution, outputDirectory, generator, new String[]{}, badIndexFinder, dI, metric);
+            interMatrix.appendDataAlongExistingRows(additionalData);
+        }
 
         System.gc();
     }
 
-    public void appendGWDataFromAdditionalDataset(Dataset ds2) {
-        CompositeGenomeWideDensityMatrix additionalData;
-        additionalData = new SliceMatrix(chromosomeHandler, ds2, norm, resolution, outputDirectory, generator, new String[]{});
-        interMatrix.appendDataAlongExistingRows(additionalData);
-    }
-
     public void extractFinalGWSubcompartments(Random generator, List<String> inputHicFilePaths,
-                                              String prefix, int index) {
+                                              String prefix, int index, boolean compareMaps) {
 
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
 
@@ -83,7 +92,7 @@ public class FullGenomeOEWithinClusters {
             interMatrix.exportData();
         }
 
-        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);
+        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix, metric);
 
         double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
         Arrays.fill(iterToWcssAicBic[1], Double.MAX_VALUE);
@@ -116,14 +125,16 @@ public class FullGenomeOEWithinClusters {
                 System.out.print(".");
             }
 
-            ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs);
+            ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs, metric);
             IntMatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
         }
         System.out.println(".");
 
-        System.out.println("Post processing");
-        LeftOverClusterIdentifier.identify(chromosomeHandler, ds, norm, resolution, numItersToResults,
-                interMatrix.getBadIndices());
+        if (!compareMaps) {
+            System.out.println("Post processing");
+            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norm, resolution, metric);
+            identifier.identify(numItersToResults, interMatrix.getBadIndices());
+        }
 
         DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
 

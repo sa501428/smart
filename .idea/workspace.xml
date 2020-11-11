@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="MixerTools.jar" />
+    </artifacts-to-build>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="overhaul of metric handling, umap code added">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/umap_java.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/umap/UMAP-BSD3-LICENSE.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/umap/umap-java.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustBrayCurtisMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustCanberraMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustChebyshevMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustCorrelationMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustCosineMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustEarthMoversMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustEuclideanMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustJensenShannonMetric.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustManhattanMetric.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Mixer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Mixer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Metrics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/CorrelationTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/DistanceMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/GenomewideBadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ClusterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ClusterTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ConcurrentKMeans.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ConcurrentKMeans.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideDensityMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideDensityMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Muhammad S Shamim &lt;sa501428@gmail.com&gt;" />
+        <option value="Muhammad Saad Shamim &lt;sa501428@gmail.com&gt;" />
+      </list>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="shuffle2" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1ivO8RiMhDvHpcU6yYItpXYofmd" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.ide.settings.file-colors" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/general" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Aggregate" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="mixer.clt.AggregateProcessing" />
+      <module name="Mixer" />
+      <option name="VM_PARAMETERS" value="-Xmx12G" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="" />
+      <created>1602784440136</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1602784440136</updated>
+    </task>
+    <task id="LOCAL-00001" summary="ranking of indices">
+      <created>1603178935775</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1603178935775</updated>
+    </task>
+    <task id="LOCAL-00002" summary="update straw, cache handling, fix usage, fix architecture">
+      <created>1603245417754</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1603245417754</updated>
+    </task>
+    <task id="LOCAL-00003" summary="add flags to parametrize slice">
+      <created>1603346089801</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1603346089801</updated>
+    </task>
+    <task id="LOCAL-00004" summary="bug fix">
+      <created>1603346367610</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1603346367610</updated>
+    </task>
+    <task id="LOCAL-00005" summary="bug fix">
+      <created>1603346432525</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1603346432525</updated>
+    </task>
+    <task id="LOCAL-00006" summary="update usage code">
+      <created>1603387686066</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1603387686066</updated>
+    </task>
+    <task id="LOCAL-00007" summary="New indexing method; quick centroids iterates a few times, update defaults and usage, code cleanup">
+      <created>1603908080989</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1603908080989</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fix todos; use faster correlation">
+      <created>1603910239344</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1603910239344</updated>
+    </task>
+    <task id="LOCAL-00009" summary="cosine similarity, code cleanup">
+      <created>1603989730386</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1603989730386</updated>
+    </task>
+    <task id="LOCAL-00010" summary="fix up defaults">
+      <created>1604001479754</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1604001479754</updated>
+    </task>
+    <task id="LOCAL-00011" summary="bug fix">
+      <created>1604002058281</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1604002058281</updated>
+    </task>
+    <task id="LOCAL-00012" summary="restructuring; initial shuffle codes">
+      <created>1604520805515</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1604520805515</updated>
+    </task>
+    <task id="LOCAL-00013" summary="save intermediate data representation">
+      <created>1604595695559</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1604595695559</updated>
+    </task>
+    <task id="LOCAL-00014" summary="additional metrics, saving of genomewide distance map, shuffle matrix initial code">
+      <created>1604983056588</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1604983056588</updated>
+    </task>
+    <task id="LOCAL-00015" summary="additional metrics, saving of genomewide distance map, shuffle matrix initial code">
+      <created>1605027867946</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1605027867946</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
+    <servers />
+  </component>
+  <component name="UpdateCopyrightCheckinHandler">
+    <option name="UPDATE_COPYRIGHT" value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="ranking of indices" />
+    <MESSAGE value="update straw, cache handling, fix usage, fix architecture" />
+    <MESSAGE value="add flags to parametrize slice" />
+    <MESSAGE value="update usage code" />
+    <MESSAGE value="New indexing method; quick centroids iterates a few times, update defaults and usage" />
+    <MESSAGE value="New indexing method; quick centroids iterates a few times, update defaults and usage, code cleanup" />
+    <MESSAGE value="fix todos; use faster correlation" />
+    <MESSAGE value="cosine similarity, code cleanup" />
+    <MESSAGE value="fix up defaults" />
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="restructuring; initial shuffle codes" />
+    <MESSAGE value="save intermediate data representation" />
+    <MESSAGE value="additional metrics, saving of genomewide distance map, shuffle matrix initial code" />
+    <option name="LAST_COMMIT_MESSAGE" value="additional metrics, saving of genomewide distance map, shuffle matrix initial code" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="184" y="76" width="1071" height="748" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604534823983">
+      <screen x="0" y="23" width="1440" height="810" />
+    </state>
+    <state x="184" y="76" width="1071" height="748" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.801@0.23.1440.801" timestamp="1603366273569" />
+    <state x="184" y="85" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.806@0.23.1440.806" timestamp="1602793006276" />
+    <state x="184" y="76" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.810@0.23.1440.810" timestamp="1604534823983" />
+    <state x="457" y="233" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1603394907935">
+      <screen x="0" y="23" width="1440" height="804" />
+    </state>
+    <state x="457" y="232" key="#com.intellij.ide.util.TreeClassChooserDialog/0.23.1440.801@0.23.1440.801" timestamp="1602980494878" />
+    <state x="457" y="233" key="#com.intellij.ide.util.TreeClassChooserDialog/0.23.1440.804@0.23.1440.804" timestamp="1603394907935" />
+    <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1604942576111">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state x="466" y="285" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.804@0.23.1440.804" timestamp="1602984020850" />
+    <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.811@0.23.1440.811" timestamp="1604942576111" />
+    <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.812@0.23.1440.812" timestamp="1603907822345" />
+    <state x="297" y="23" key="CommitChangelistDialog2" timestamp="1605080630828">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.801@0.23.1440.801" timestamp="1603366056339" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.804@0.23.1440.804" timestamp="1603387685926" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.810@0.23.1440.810" timestamp="1604595695388" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.811@0.23.1440.811" timestamp="1605080630828" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.812@0.23.1440.812" timestamp="1605027867800" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.814@0.23.1440.814" timestamp="1603910239188" />
+    <state x="100" y="124" width="1152" height="648" key="DiffContextDialog" timestamp="1605080629829">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state x="100" y="123" width="1240" height="601" key="DiffContextDialog/0.23.1440.801@0.23.1440.801" timestamp="1603366047921" />
+    <state x="100" y="123" key="DiffContextDialog/0.23.1440.804@0.23.1440.804" timestamp="1603387673194" />
+    <state x="100" y="124" key="DiffContextDialog/0.23.1440.810@0.23.1440.810" timestamp="1604595677303" />
+    <state x="100" y="124" width="1152" height="648" key="DiffContextDialog/0.23.1440.811@0.23.1440.811" timestamp="1605080629829" />
+    <state x="100" y="124" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1605027755735" />
+    <state x="100" y="124" key="DiffContextDialog/0.23.1440.814@0.23.1440.814" timestamp="1603910221677" />
+    <state width="1398" height="206" key="GridCell.Tab.0.bottom" timestamp="1605037755361">
+      <screen x="0" y="23" width="1440" height="814" />
+    </state>
+    <state width="1398" height="205" key="GridCell.Tab.0.bottom/0.23.1440.801@0.23.1440.801" timestamp="1603382885594" />
+    <state width="1398" height="206" key="GridCell.Tab.0.bottom/0.23.1440.810@0.23.1440.810" timestamp="1604556294149" />
+    <state width="1398" height="206" key="GridCell.Tab.0.bottom/0.23.1440.811@0.23.1440.811" timestamp="1604982909865" />
+    <state width="1398" height="206" key="GridCell.Tab.0.bottom/0.23.1440.812@0.23.1440.812" timestamp="1604883746748" />
+    <state width="1398" height="206" key="GridCell.Tab.0.bottom/0.23.1440.814@0.23.1440.814" timestamp="1605037755361" />
+    <state width="1398" height="208" key="GridCell.Tab.0.bottom/0.23.1440.816@0.23.1440.816" timestamp="1603909314032" />
+    <state width="1398" height="206" key="GridCell.Tab.0.center" timestamp="1605037755360">
+      <screen x="0" y="23" width="1440" height="814" />
+    </state>
+    <state width="1398" height="205" key="GridCell.Tab.0.center/0.23.1440.801@0.23.1440.801" timestamp="1603382885593" />
+    <state width="1398" height="206" key="GridCell.Tab.0.center/0.23.1440.810@0.23.1440.810" timestamp="1604556294147" />
+    <state width="1398" height="206" key="GridCell.Tab.0.center/0.23.1440.811@0.23.1440.811" timestamp="1604982909864" />
+    <state width="1398" height="206" key="GridCell.Tab.0.center/0.23.1440.812@0.23.1440.812" timestamp="1604883746747" />
+    <state width="1398" height="206" key="GridCell.Tab.0.center/0.23.1440.814@0.23.1440.814" timestamp="1605037755360" />
+    <state width="1398" height="208" key="GridCell.Tab.0.center/0.23.1440.816@0.23.1440.816" timestamp="1603909314032" />
+    <state width="1398" height="206" key="GridCell.Tab.0.left" timestamp="1605037755359">
+      <screen x="0" y="23" width="1440" height="814" />
+    </state>
+    <state width="1398" height="205" key="GridCell.Tab.0.left/0.23.1440.801@0.23.1440.801" timestamp="1603382885593" />
+    <state width="1398" height="206" key="GridCell.Tab.0.left/0.23.1440.810@0.23.1440.810" timestamp="1604556294147" />
+    <state width="1398" height="206" key="GridCell.Tab.0.left/0.23.1440.811@0.23.1440.811" timestamp="1604982909864" />
+    <state width="1398" height="206" key="GridCell.Tab.0.left/0.23.1440.812@0.23.1440.812" timestamp="1604883746747" />
+    <state width="1398" height="206" key="GridCell.Tab.0.left/0.23.1440.814@0.23.1440.814" timestamp="1605037755359" />
+    <state width="1398" height="208" key="GridCell.Tab.0.left/0.23.1440.816@0.23.1440.816" timestamp="1603909314031" />
+    <state width="1398" height="206" key="GridCell.Tab.0.right" timestamp="1605037755360">
+      <screen x="0" y="23" width="1440" height="814" />
+    </state>
+    <state width="1398" height="205" key="GridCell.Tab.0.right/0.23.1440.801@0.23.1440.801" timestamp="1603382885594" />
+    <state width="1398" height="206" key="GridCell.Tab.0.right/0.23.1440.810@0.23.1440.810" timestamp="1604556294148" />
+    <state width="1398" height="206" key="GridCell.Tab.0.right/0.23.1440.811@0.23.1440.811" timestamp="1604982909865" />
+    <state width="1398" height="206" key="GridCell.Tab.0.right/0.23.1440.812@0.23.1440.812" timestamp="1604883746747" />
+    <state width="1398" height="206" key="GridCell.Tab.0.right/0.23.1440.814@0.23.1440.814" timestamp="1605037755360" />
+    <state width="1398" height="208" key="GridCell.Tab.0.right/0.23.1440.816@0.23.1440.816" timestamp="1603909314032" />
+    <state x="599" y="138" key="RollbackChangesDialog" timestamp="1605079442583">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state x="599" y="138" key="RollbackChangesDialog/0.23.1440.811@0.23.1440.811" timestamp="1605079442583" />
+    <state x="221" y="23" key="SettingsEditor" timestamp="1605038640405">
+      <screen x="0" y="23" width="1440" height="814" />
+    </state>
+    <state x="221" y="23" key="SettingsEditor/0.23.1440.801@0.23.1440.801" timestamp="1602980127828" />
+    <state x="221" y="23" key="SettingsEditor/0.23.1440.804@0.23.1440.804" timestamp="1603394947494" />
+    <state x="221" y="23" key="SettingsEditor/0.23.1440.814@0.23.1440.814" timestamp="1605038640405" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2" timestamp="1605027897863">
+      <screen x="0" y="23" width="1440" height="812" />
+    </state>
+    <state x="320" y="150" key="Vcs.Push.Dialog.v2/0.23.1440.801@0.23.1440.801" timestamp="1603346433518" />
+    <state x="320" y="150" key="Vcs.Push.Dialog.v2/0.23.1440.804@0.23.1440.804" timestamp="1603387687043" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.810@0.23.1440.810" timestamp="1604595697335" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.811@0.23.1440.811" timestamp="1604983057909" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.812@0.23.1440.812" timestamp="1605027897863" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.814@0.23.1440.814" timestamp="1603910241515" />
+    <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1605027959065">
+      <screen x="0" y="23" width="1440" height="812" />
+    </state>
+    <state x="518" y="344" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.801@0.23.1440.801" timestamp="1603178678490" />
+    <state x="518" y="347" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.810@0.23.1440.810" timestamp="1604503326458" />
+    <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.812@0.23.1440.812" timestamp="1605027959065" />
+    <state x="418" y="179" width="604" height="523" key="find.popup" timestamp="1604957304469">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state x="418" y="178" width="604" height="490" key="find.popup/0.23.1440.801@0.23.1440.801" timestamp="1603346393967" />
+    <state x="418" y="179" width="604" height="518" key="find.popup/0.23.1440.806@0.23.1440.806" timestamp="1603609702516" />
+    <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.811@0.23.1440.811" timestamp="1604957304468" />
+    <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.812@0.23.1440.812" timestamp="1603907078192" />
+    <state x="418" y="180" width="604" height="524" key="find.popup/0.23.1440.814@0.23.1440.814" timestamp="1603910354886" />
+    <state x="385" y="158" width="670" height="676" key="search.everywhere.popup" timestamp="1605077982217">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state x="385" y="158" width="670" height="676" key="search.everywhere.popup/0.23.1440.811@0.23.1440.811" timestamp="1605077982217" />
+  </component>
+</project>

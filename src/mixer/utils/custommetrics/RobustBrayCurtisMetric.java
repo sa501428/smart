@@ -21,16 +21,34 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+package mixer.utils.custommetrics;
 
-package mixer;
+import tagbio.umap.metric.Metric;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Bray Curtis distance.
  */
-public class MixerGlobals {
+public final class RobustBrayCurtisMetric extends Metric {
 
-    public static final String versionNum = "3.05.01";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+  /**
+   * Bray Curtis distance.
+   */
+  public static final RobustBrayCurtisMetric SINGLETON = new RobustBrayCurtisMetric();
+
+  private RobustBrayCurtisMetric() {
+    super(false);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    float numerator = 0;
+    float denominator = 0;
+    for (int i = 0; i < x.length; ++i) {
+      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
+        numerator += Math.abs(x[i] - y[i]);
+        denominator += Math.abs(x[i] + y[i]);
+      }
+    }
+    return denominator > 0 ? numerator / denominator : 0;
+  }
 }

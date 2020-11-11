@@ -27,6 +27,8 @@ package mixer.clt;
 import jargs.gnu.CmdLineParser;
 import javastraw.type.NormalizationHandler;
 import javastraw.type.NormalizationType;
+import mixer.utils.custommetrics.*;
+import tagbio.umap.metric.Metric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,8 +52,8 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
-    private final Option sliceCorrelationOption = addBooleanOption("corr");
-    private final Option sliceCosineOption = addBooleanOption("cosine");
+    private final Option sliceMetricTypeOption = addStringOption("type");
+    private final Option zscoreOption = addBooleanOption("zscore");
 
 
     public CommandLineParserForMixer() {
@@ -122,16 +124,12 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return optionToBoolean(verboseOption);
     }
 
-    public boolean getCorrelationOption() {
-        return optionToBoolean(sliceCorrelationOption);
-    }
-
-    public boolean getCosineOption() {
-        return optionToBoolean(sliceCosineOption);
-    }
-
     public boolean getVersionOption() {
         return optionToBoolean(versionOption);
+    }
+
+    public boolean getZscoreOption() {
+        return optionToBoolean(zscoreOption);
     }
 
     /**
@@ -184,6 +182,36 @@ public class CommandLineParserForMixer extends CmdLineParser {
             System.err.println("Normalization must be one of \"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\", \"GW_VC\", \"INTER_KR\", or \"INTER_VC\".");
             System.exit(7);
         }
+        return null;
+    }
+
+    public Metric getMetricTypeOption() {
+        return getMetricType(optionToString(sliceMetricTypeOption));
+    }
+
+    private Metric getMetricType(String potentialType) {
+        String name = potentialType.toLowerCase();
+        if (name.contains("cosine")) {
+            return RobustCosineMetric.SINGLETON;
+        } else if (name.contains("l2")) {
+            return RobustEuclideanMetric.SINGLETON;
+        } else if (name.contains("l1")) {
+            return RobustManhattanMetric.SINGLETON;
+        } else if (name.contains("corr")) {
+            return RobustCorrelationMetric.SINGLETON;
+        } else if (name.contains("bray")) {
+            return RobustBrayCurtisMetric.SINGLETON;
+        } else if (name.contains("linf")) {
+            return RobustChebyshevMetric.SINGLETON;
+        } else if (name.contains("canberra")) {
+            return RobustCanberraMetric.SINGLETON;
+        } else if (name.contains("js")) {
+            return RobustJensenShannonMetric.SINGLETON;
+        } else if (name.contains("emd")) {
+            return RobustEarthMoversMetric.SINGLETON;
+        }
+        System.err.println("Invalid type: " + potentialType);
+        System.exit(-5);
         return null;
     }
 }
