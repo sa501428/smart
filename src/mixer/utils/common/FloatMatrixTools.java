@@ -222,4 +222,15 @@ public class FloatMatrixTools {
 
         return aggregate;
     }
+
+    public static float[][] cleanUpMatrix(float[][] matrix) {
+        for (int r = 0; r < matrix.length; r++) {
+            for (int c = 0; c < matrix[r].length; c++) {
+                if (Float.isNaN(matrix[r][c]) || Float.isInfinite(matrix[r][c]) || Math.abs(matrix[r][c]) < 1E-10) {
+                    matrix[r][c] = 0;
+                }
+            }
+        }
+        return matrix;
+    }
 }

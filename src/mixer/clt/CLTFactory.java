@@ -26,6 +26,7 @@ package mixer.clt;
 
 import mixer.MixerGlobals;
 import mixer.algos.ChromosomeWalker;
+import mixer.algos.Shuffle;
 import mixer.algos.Slice;
 
 
@@ -54,6 +55,8 @@ public class CLTFactory {
             return new Slice(cmd);
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();
+        } else if (cmd.equals("shuffle")) {
+            return new Shuffle();
         }
 
         return null;

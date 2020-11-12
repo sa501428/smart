@@ -48,7 +48,7 @@ public class GenomeWideKmeansRunner {
     private final ChromosomeHandler chromosomeHandler;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private final AtomicDouble withinClusterSumOfSquaresForRun = new AtomicDouble(0);
-    private final int maxIters = 20000;
+    private final int maxIters = 250;
     private int[][] recentIDs;
     private int[][] recentIDsForIndex;
     private GenomeWideList<SubcompartmentInterval> finalCompartments;
