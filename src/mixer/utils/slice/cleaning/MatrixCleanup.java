@@ -149,9 +149,10 @@ public class MatrixCleanup {
         umap.setNumberNearestNeighbours(15);
         umap.setMetric(metric);
         umap.setThreads(20);                  // use > 1 to enable parallelism
-        final float[][] result = umap.fitTransform(data);
+        umap.setVerbose(true);
+        // todo final float[][] result = umap.fitTransform(data, true);
         File temp = new File(outputDirectory, "umap_embedding.npy");
-        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+        //FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
         System.gc();
 
         // save indices
