@@ -31,94 +31,91 @@ import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import org.apache.commons.math3.stat.inference.TTest;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 
 public class ShuffleMatrix {
 
-    private final InterOnlyMatrix interMatrix;
     private final Random generator = new Random(0);
+    private final Dataset ds;
+    private final NormalizationType norm;
     private final int compressionFactor;
     private final int resolution;
     private final int numRounds = 50;
-    private final double[] baseline = new double[numRounds];
-    private final double[] scores = new double[numRounds];
-    private final Dataset ds;
-    private final File outfolder;
+    private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
+            InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
+    private final double[][] baseline = new double[mapTypes.length][numRounds];
+    private final double[][] scores = new double[mapTypes.length][numRounds];
+    double[] ratios = new double[mapTypes.length];
 
-    public ShuffleMatrix(Dataset ds, NormalizationType norm, int resolution,
-                         GenomeWideList<SubcompartmentInterval> subcompartments, int compressionFactor,
-                         File outfolder) {
-        this.ds = ds;
+    public ShuffleMatrix(Dataset ds, NormalizationType norm, int resolution, int compressionFactor) {
         this.resolution = resolution;
         this.compressionFactor = compressionFactor;
-        this.outfolder = outfolder;
-        interMatrix = new InterOnlyMatrix(ds, norm, resolution, InterOnlyMatrix.InterMapType.ODDS_VS_EVENS);
+        this.ds = ds;
+        this.norm = norm;
+    }
 
+    public void runAnalysis(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
         SliceUtils.collapseGWList(subcompartments);
-        final Map<Integer, List<Integer>> clusterToRowIndices = new HashMap<>();
-        final Map<Integer, List<Integer>> clusterToColIndices = new HashMap<>();
-        populateClusterToIndexMaps(subcompartments, clusterToRowIndices, clusterToColIndices);
+        for (int y = 0; y < mapTypes.length; y++) {
+            final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, mapTypes[y]);
+            final Map<Integer, List<Integer>> clusterToRowIndices = new HashMap<>();
+            final Map<Integer, List<Integer>> clusterToColIndices = new HashMap<>();
+            populateClusterToIndexMaps(interMatrix, subcompartments, clusterToRowIndices, clusterToColIndices);
 
-        float[][] baselineM = determineBaseline(clusterToRowIndices, clusterToColIndices);
-        float[][] shuffleM = determineScore(clusterToRowIndices, clusterToColIndices);
+            float[][] baselineM = determineScore(interMatrix, clusterToRowIndices, clusterToColIndices, true, baseline[y]);
+            float[][] shuffleM = determineScore(interMatrix, clusterToRowIndices, clusterToColIndices, false, scores[y]);
 
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_baseline.npy").getAbsolutePath(), baselineM);
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_shuffle.npy").getAbsolutePath(), shuffleM);
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_matrix.npy").getAbsolutePath(), interMatrix.getMatrix());
 
-        File temp = new File(outfolder, "baseline.npy");
-        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), baselineM);
-        temp = new File(outfolder, "scored.npy");
-        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), shuffleM);
-
-        double sumN = 0, sumD = 0;
-        for (int i = 0; i < numRounds; i++) {
-            sumN += scores[i];
-            sumD += baseline[i];
+            double sumN = 0, sumD = 9;
+            for (int i = 0; i < numRounds; i++) {
+                sumN += scores[y][i];
+                sumD += baseline[y][i];
+            }
+            ratios[y] = sumN / sumD;
         }
-        System.out.println("Scores: " + sumN + "  baseline: " + sumD + "  ratio:" + (sumN / sumD));
-
-        TTest test = new TTest();
-        System.out.println("Ttest " + test.pairedTTest(baseline, scores) / 2);
-        System.out.println("Ttest " + test.pairedTTest(baseline, scores, 0.1));
     }
 
-    private float[][] determineScore(Map<Integer, List<Integer>> clusterToRowIndices,
-                                     Map<Integer, List<Integer>> clusterToColIndices) {
+    public void savePlotsAndResults(File outfolder) {
+        try {
+            FileWriter myWriter = new FileWriter(new File(outfolder, "scores.txt"));
+            for (int y = 0; y < mapTypes.length; y++) {
+                myWriter.write(mapTypes[y].toString() + " score: " + ratios[y] + "\n");
+            }
+            myWriter.close();
+        } catch (Exception ee) {
+            System.err.println("Unable to write results to text file");
+        }
+        //System.out.println("Scores: " + sumN + "  baseline: " + sumD + "  ratio:" + (sumN / sumD));
+        //TTest test = new TTest();
+        //System.out.println("Ttest " + test.pairedTTest(baseline, scores) / 2);
+        //System.out.println("Ttest " + test.pairedTTest(baseline, scores, 0.1));
+
+    }
+
+    private float[][] determineScore(InterOnlyMatrix interMatrix,
+                                     Map<Integer, List<Integer>> clusterToRowIndices,
+                                     Map<Integer, List<Integer>> clusterToColIndices,
+                                     boolean randomizeGW, double[] vector) {
         float[][] aggregate = null;
         for (int k = 0; k < numRounds; k++) {
-            List<Integer> allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, false);
-            List<Integer> allColIndices = getShuffledByClusterIndices(clusterToColIndices, false);
-            float[][] matrix = getShuffledMatrix(allRowIndices, allColIndices);
+            List<Integer> allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, randomizeGW);
+            List<Integer> allColIndices = getShuffledByClusterIndices(clusterToColIndices, randomizeGW);
+            float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices, allColIndices);
 
             if (aggregate == null) {
                 aggregate = matrix;
             } else {
                 FloatMatrixTools.addBToA(aggregate, matrix);
             }
-            scores[k] = scoreMatrix(matrix);
+            vector[k] = scoreMatrix(matrix);
         }
-        System.out.println(".");
-        FloatMatrixTools.scaleBy(aggregate, 1f / ((float) numRounds));
-        return aggregate;
-    }
 
-    private float[][] determineBaseline(Map<Integer, List<Integer>> clusterToRowIndices,
-                                        Map<Integer, List<Integer>> clusterToColIndices) {
-        float[][] aggregate = null;
-        for (int k = 0; k < numRounds; k++) {
-            List<Integer> allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, true);
-            List<Integer> allColIndices = getShuffledByClusterIndices(clusterToColIndices, true);
-            float[][] matrix = getShuffledMatrix(allRowIndices, allColIndices);
-
-            if (aggregate == null) {
-                aggregate = matrix;
-            } else {
-                FloatMatrixTools.addBToA(aggregate, matrix);
-            }
-            baseline[k] = scoreMatrix(matrix);
-        }
-        System.out.println(".");
         FloatMatrixTools.scaleBy(aggregate, 1f / ((float) numRounds));
         return aggregate;
     }
@@ -138,7 +135,7 @@ public class ShuffleMatrix {
         return allIndices;
     }
 
-    private float[][] getShuffledMatrix(List<Integer> allRowIndices, List<Integer> allColIndices) {
+    private float[][] getShuffledMatrix(InterOnlyMatrix interMatrix, List<Integer> allRowIndices, List<Integer> allColIndices) {
         int numRows = allRowIndices.size() / compressionFactor;
         int numCols = allColIndices.size() / compressionFactor;
         int numRowsKept = numRows * compressionFactor;
@@ -170,7 +167,7 @@ public class ShuffleMatrix {
         return diff / ((matrix.length - 1) * (matrix[0].length - 1));
     }
 
-    private void populateClusterToIndexMaps(GenomeWideList<SubcompartmentInterval> intraSubcompartments, Map<Integer, List<Integer>> clusterToRowIndices, Map<Integer, List<Integer>> clusterToColIndices) {
+    private void populateClusterToIndexMaps(InterOnlyMatrix interMatrix, GenomeWideList<SubcompartmentInterval> intraSubcompartments, Map<Integer, List<Integer>> clusterToRowIndices, Map<Integer, List<Integer>> clusterToColIndices) {
         populateCluster(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(), intraSubcompartments, clusterToRowIndices);
         populateCluster(interMatrix.getColChromosomes(), interMatrix.getColOffsets(), intraSubcompartments, clusterToColIndices);
     }

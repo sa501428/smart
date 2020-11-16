@@ -28,6 +28,7 @@ import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
+import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
@@ -56,7 +57,7 @@ public class Shuffle extends MixerCLT {
     private int resolution = 100000;
     private int compressionFactor = 8;
     private File outputDirectory;
-    private String prefix = "";
+    private String[] prefix;
     private String[] referenceBedFiles;
 
     // subcompartment lanscape identification via clustering enrichment
@@ -73,9 +74,9 @@ public class Shuffle extends MixerCLT {
 
         ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
 
-        referenceBedFiles = args[2].split("\\+");
+        referenceBedFiles = args[2].split(",");
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
-        prefix = args[4];
+        prefix = args[4].split(",");
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null) norm = preferredNorm;
@@ -107,10 +108,16 @@ public class Shuffle extends MixerCLT {
         if (givenChromosomes != null)
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
-        GenomeWideList<SubcompartmentInterval> subcompartments =
-                SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, referenceBedFiles[0]);
-
-        ShuffleMatrix matrix = new ShuffleMatrix(ds, norm, resolution, subcompartments, compressionFactor, outputDirectory);
+        for (int i = 0; i < referenceBedFiles.length; i++) {
+            GenomeWideList<SubcompartmentInterval> subcompartments =
+                    SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, referenceBedFiles[i]);
+            System.out.println("Processing " + prefix[i]);
+            File newFolder = new File(outputDirectory, prefix[i]);
+            UNIXTools.makeDir(newFolder);
+            ShuffleMatrix matrix = new ShuffleMatrix(ds, norm, resolution, compressionFactor);
+            matrix.runAnalysis(subcompartments, newFolder);
+            matrix.savePlotsAndResults(newFolder);
+        }
         System.out.println("Shuffle complete");
     }
 }

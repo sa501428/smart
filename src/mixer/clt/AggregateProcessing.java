@@ -39,8 +39,8 @@ public class AggregateProcessing {
 
         String[] strings;
 
-        String refs = "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed+" +
-                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed+" +
+        String refs = "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed," +
+                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
 
@@ -82,11 +82,58 @@ public class AggregateProcessing {
         folder = "shuffle1";
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
                 file14, refs,
-                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
+                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder,
+                "RH2014,SCI,SNIPER"
+        };
+
+        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
+                file14,
+                "/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_cosine/metric4umap_v1_cosine_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_cosine_zscore/metric4umap_v1_cosine_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_l2_zscore/metric4umap_v1_l2_zscore_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_js/metric4umap_v1_js_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/final_baseline_lots_to_umap/final_baseline_lots_to_umap_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/final_baseline_JSDist/final_baseline_JSDist_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder,
+                "newcosine,newzscorecosine,newzscoreL2,newJS,prevSlice,distMatrixJSPrev"
+        };
+
+
+        System.out.println("-----------------------------------------------------");
+        //MixerTools.main(strings);
+        System.gc();
+
+        strings = new String[]{"shuffle", "-r", "25000", "-k", "KR", "-w", "32",
+                file14,
+                "/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_cosine/metric4umap_v1_cosine_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_cosine_zscore/metric4umap_v1_cosine_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_l2_zscore/metric4umap_v1_l2_zscore_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_js/metric4umap_v1_js_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/final_baseline_lots_to_umap/final_baseline_lots_to_umap_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/final_baseline_JSDist/final_baseline_JSDist_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder,
+                "newcosine,newzscorecosine,newzscoreL2,newJS,prevSlice,distMatrixJSPrev"
+        };
+
+
+        System.out.println("-----------------------------------------------------");
+        //MixerTools.main(strings);
+        System.gc();
+
+        String degronbeds = "/Users/mss/Desktop/slice_degron/slice_wt_degron_30.hic_50000_16_9_clusters_wt_degron_30.subcompartment.bed," +
+                "/Users/mss/Desktop/slice_degron/slice_treated_degron_30.hic_50000_16_9_clusters_treated_degron_30.subcompartment.bed";
+
+        String degronfolder = "/Users/mss/Desktop/degron_shuffle";
+        String wthic = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/degron/notreat_nosync_combined.hic";
+        String treatedhic = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/degron/6hrtreat_nosync_combined.hic";
+
+
+        strings = new String[]{"shuffle", "-r", "50000", "-k", "KR", "-w", "50",
+                wthic, degronbeds, degronfolder,
+                "wtbed_wtnic,trbed_wthic"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
         System.gc();
+
+        strings = new String[]{"shuffle", "-r", "50000", "-k", "KR", "-w", "50",
+                treatedhic, degronbeds, degronfolder,
+                "wtbed_trnic,trbed_trhic"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
 
     }
 }
