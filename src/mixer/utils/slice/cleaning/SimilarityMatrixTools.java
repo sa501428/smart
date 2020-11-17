@@ -24,30 +24,34 @@
 
 package mixer.utils.slice.cleaning;
 
-import tagbio.umap.metric.Metric;
+import mixer.utils.custommetrics.RobustEuclideanMetric;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DistanceMatrixTools {
+public class SimilarityMatrixTools {
 
-    /**
-     * @param matrix
-     * @param numCentroids
-     * @param metric
-     * @return
-     */
-    public static float[][] getMinimallySufficientNonNanSimilarityMatrix(float[][] matrix, int numCentroids, Metric metric) {
-
-        if (numCentroids == matrix.length) {
-            return getNonNanDistanceMatrix(matrix, metric);
+    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid) {
+        if ((!metric.isSymmetric()) || numPerCentroid > 1) {
+            return getAsymmetricMatrix(matrix, metric, numPerCentroid);
         }
 
-        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, metric);
-        float[][] result = new float[matrix.length][numCentroids]; // *2
+        return getSymmetricMatrix(matrix, metric);
+    }
 
-        int numCPUThreads = 20;
+    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid) {
+        final int numCentroids = matrix.length / numPerCentroid;
+        final float[][] centroids;
+        if (numPerCentroid > 1) {
+            centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, RobustEuclideanMetric.SINGLETON);
+        } else {
+            centroids = matrix;
+        }
+
+        float[][] result = new float[matrix.length][numCentroids];
+        int numCPUThreads = Runtime.getRuntime().availableProcessors();
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
@@ -56,7 +60,12 @@ public class DistanceMatrixTools {
                 public void run() {
                     int i = currRowIndex.getAndIncrement();
                     while (i < matrix.length) {
-                        fillEntries(i, 0, matrix, centroids, result, metric, false);
+                        for (int j = 0; j < numCentroids; j++) {
+                            result[i][j] = metric.distance(matrix[i], centroids[j]);
+                            if (Float.isNaN(result[i][j])) {
+                                System.err.println("Error appearing in distance measure...");
+                            }
+                        }
                         i = currRowIndex.getAndIncrement();
                     }
                 }
@@ -64,21 +73,17 @@ public class DistanceMatrixTools {
             executor.execute(worker);
         }
         executor.shutdown();
-
         // Wait until all threads finish
         while (!executor.isTerminated()) {
         }
 
         return result;
-        //return FloatMatrixTools.concatenate(matrix, result);
     }
 
-    public static float[][] getNonNanDistanceMatrix(float[][] matrix, Metric type) {
-
-
+    private static float[][] getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
         float[][] result = new float[matrix.length][matrix.length]; // *2
 
-        int numCPUThreads = 20;
+        int numCPUThreads = Runtime.getRuntime().availableProcessors();
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
@@ -87,7 +92,10 @@ public class DistanceMatrixTools {
                 public void run() {
                     int i = currRowIndex.getAndIncrement();
                     while (i < matrix.length) {
-                        fillEntries(i, i, matrix, matrix, result, type, true);
+                        for (int j = i; j < matrix.length; j++) {
+                            result[i][j] = metric.distance(matrix[i], matrix[j]);
+                            result[j][i] = result[i][j];
+                        }
                         i = currRowIndex.getAndIncrement();
                     }
                 }
@@ -95,24 +103,10 @@ public class DistanceMatrixTools {
             executor.execute(worker);
         }
         executor.shutdown();
-
         // Wait until all threads finish
         while (!executor.isTerminated()) {
         }
 
         return result;
-    }
-
-    public static void fillEntries(int i, int colStart, float[][] matrix, float[][] centroids, float[][] result,
-                                   Metric metric, boolean isSymmetric) {
-        for (int j = colStart; j < centroids.length; j++) {
-            result[i][j] = metric.distance(matrix[i], centroids[j]);
-        }
-
-        if (isSymmetric) {
-            for (int j = colStart; j < centroids.length; j++) {
-                result[j][i] = result[i][j];
-            }
-        }
     }
 }

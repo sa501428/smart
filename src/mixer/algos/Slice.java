@@ -30,11 +30,11 @@ import javastraw.reader.HiCFileTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.custommetrics.RobustCosineMetric;
+import mixer.utils.similaritymeasures.RobustCosineSimilarity;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
-import mixer.utils.slice.cleaning.MatrixCleanup;
+import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 import mixer.utils.slice.matrices.SliceMatrix;
-import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class Slice extends MixerCLT {
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    public static Metric metric = RobustCosineMetric.SINGLETON;
+    public static SimilarityMetric metric = RobustCosineSimilarity.SINGLETON;
     private String prefix = "";
     private String[] referenceBedFiles;
     private final boolean compareMaps;
@@ -73,7 +73,7 @@ public class Slice extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        for (String path : args[1].split("\\+")) {
+        for (String path : args[1].split(",")) {
             System.out.println("Extracting " + path);
             inputHicFilePaths.add(path);
             datasetList.add(HiCFileTools.extractDatasetForCLT(path, true, false));
@@ -117,13 +117,18 @@ public class Slice extends MixerCLT {
             SliceMatrix.numColumnsToPutTogether = 500000 / resolution;
         }
 
+        int subsampling = mixerParser.getSubsamplingOption();
+        if (subsampling > 1) {
+            MatrixCleanupAndSimilarityMetric.NUM_PER_CENTROID = subsampling;
+        }
+
         String bedFiles = mixerParser.getCompareReferenceOption();
         if (bedFiles != null && bedFiles.length() > 1) {
-            referenceBedFiles = bedFiles.split("\\+");
+            referenceBedFiles = bedFiles.split(",");
         }
 
         metric = mixerParser.getMetricTypeOption();
-        MatrixCleanup.USE_ZSCORE = mixerParser.getZscoreOption();
+        MatrixCleanupAndSimilarityMetric.USE_ZSCORE = mixerParser.getZscoreOption();
     }
 
     @Override

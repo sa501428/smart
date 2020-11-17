@@ -32,14 +32,11 @@ import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.custommetrics.RobustCosineMetric;
 import mixer.utils.shuffle.ShuffleMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import tagbio.umap.metric.Metric;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -50,8 +47,6 @@ import java.util.Random;
  */
 public class Shuffle extends MixerCLT {
 
-    public static Metric metric = RobustCosineMetric.SINGLETON;
-    private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
     private Dataset ds;
     private int resolution = 100000;

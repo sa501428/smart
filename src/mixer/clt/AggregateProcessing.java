@@ -44,31 +44,9 @@ public class AggregateProcessing {
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
 
-        String folder = "metric4umap_v1_l2_zscore";
+        String folder = "phoenix_similarity_reboot_cosine_sub50";
         strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2",
-                "--type", "l2", "--zscore",
-                "--compare", refs,
-                file14, "2,11,10",
-                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        folder = "metric4umap_v1_js";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2",
-                "--type", "js",
-                "--compare", refs,
-                file14, "2,11,10",
-                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        folder = "metric4umap_v1_cosine";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2",
-                "--type", "cosine",
+                "--type", "cosine", "--zscore", "--subsample", "50",
                 "--compare", refs,
                 file14, "2,11,10",
                 "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
@@ -79,17 +57,16 @@ public class AggregateProcessing {
 
         //====================
 
-        folder = "shuffle1";
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
                 file14, refs,
-                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder,
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle1",
                 "RH2014,SCI,SNIPER"
         };
 
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
                 file14,
                 "/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_cosine/metric4umap_v1_cosine_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_cosine_zscore/metric4umap_v1_cosine_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_l2_zscore/metric4umap_v1_l2_zscore_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/metric4umap_v1_js/metric4umap_v1_js_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/final_baseline_lots_to_umap/final_baseline_lots_to_umap_5_clusters_gm12878_rh14_30.subcompartment.bed,/Users/mss/Desktop/SLICE.work/tempslice/final_baseline_JSDist/final_baseline_JSDist_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder,
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle1",
                 "newcosine,newzscorecosine,newzscoreL2,newJS,prevSlice,distMatrixJSPrev"
         };
 
@@ -123,7 +100,7 @@ public class AggregateProcessing {
                 "wtbed_wtnic,trbed_wthic"
         };
         System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        //MixerTools.main(strings);
         System.gc();
 
         strings = new String[]{"shuffle", "-r", "50000", "-k", "KR", "-w", "50",
@@ -131,9 +108,21 @@ public class AggregateProcessing {
                 "wtbed_trnic,trbed_trhic"
         };
         System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        //MixerTools.main(strings);
         System.gc();
 
+
+        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
+                file14,
+                "/Users/mss/Desktop/SLICE.work/tempslice/phoenix_similarity_reboot_cosine/phoenix_similarity_reboot_cosine_5_clusters_gm12878_rh14_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed," +
+                        "/Users/mss/Desktop/SLICE.work/tempslice/phoenix_similarity_reboot_cosine_sub50/phoenix_similarity_reboot_cosine_sub50_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle2",
+                "phoenix_cosine_zscore_again,phoenix_rh14,phoenix_cosine_zscore_sub50"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
 
     }
 }

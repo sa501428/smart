@@ -25,26 +25,28 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.ExtractingOEDataUtils;
+import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.IntMatrixTools;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import tagbio.umap.Umap;
-import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.*;
 
-public class MatrixCleanup {
+public class MatrixCleanupAndSimilarityMetric {
     public static final int BATCHED_NUM_ROWS = 1; // 10
+    public static int NUM_PER_CENTROID = 1;
     protected static final float zScoreThreshold = 3f;
     private final static float PERCENT_NAN_ALLOWED = .5f;
     protected final File outputDirectory;
     public static boolean USE_ZSCORE = false;
     protected float[][] data;
     protected final Random generator = new Random();
-    private final Metric metric;
+    private final SimilarityMetric metric;
 
-    public MatrixCleanup(float[][] interMatrix, long seed, File outputDirectory, Metric metric) {
+    public MatrixCleanupAndSimilarityMetric(float[][] interMatrix, long seed, File outputDirectory, SimilarityMetric metric) {
         this.metric = metric;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
@@ -77,7 +79,9 @@ public class MatrixCleanup {
             return interMatrix;
         }
 
-        System.out.println("interMatrix.length " + interMatrix.length + " badIndices.size() " + badIndices.size());
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("interMatrix.length " + interMatrix.length + " badIndices.size() " + badIndices.size());
+        }
 
         int counter = 0;
         int[] newIndexToOrigIndex = new int[interMatrix.length - badIndices.size()];
@@ -125,19 +129,27 @@ public class MatrixCleanup {
         return numNans;
     }
 
-    public float[][] getSimpleCleaningOfMatrixAppendCorr(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+    public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
         FloatMatrixTools.thresholdNonZerosByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
 
         data = filterOutColumnsAndRowsNonSymmetricMatrix(data, rowIndexToIntervalMap);
-        System.out.println("matrix size " + data.length + " x " + data[0].length);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("matrix size " + data.length + " x " + data[0].length);
+        }
 
         if (USE_ZSCORE) {
             FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
         }
 
+        System.out.println("Generating similarity matrix");
+        data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID);
+
+        File temp = new File(outputDirectory, "data.npy");
+        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
+
         System.out.println("Run UMAP");
-        runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
-        System.out.println("Done running UMAP");
+        //runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
+        //System.out.println("Done running UMAP");
 
         return data;
     }

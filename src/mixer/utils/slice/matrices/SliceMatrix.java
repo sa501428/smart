@@ -32,12 +32,13 @@ import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
+import mixer.MixerGlobals;
 import mixer.utils.common.Pair;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
-import mixer.utils.slice.cleaning.MatrixCleanup;
+import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.*;
@@ -59,7 +60,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
      */
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution, File outputDirectory,
                        Random generator, String[] referenceBedFiles, BadIndexFinder badIndexLocations,
-                       int datasetIndex, Metric metric) {
+                       int datasetIndex, SimilarityMetric metric) {
         super(chromosomeHandler, ds, norm, resolution, outputDirectory, generator, referenceBedFiles,
                 badIndexLocations, datasetIndex, metric);
     }
@@ -73,7 +74,9 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         Pair<Integer, int[][]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         Pair<Integer, int[][]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
 
-        System.out.println(dimensions.getFirst() + " by " + compressedDimensions.getFirst());
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println(dimensions.getFirst() + " by " + compressedDimensions.getFirst());
+        }
 
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
 
@@ -99,8 +102,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
 
-        MatrixCleanup matrixCleanupReduction = new MatrixCleanup(interMatrix, generator.nextLong(), outputDirectory, metric);
-        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendCorr(rowIndexToIntervalMap);
+        MatrixCleanupAndSimilarityMetric matrixCleanupReduction = new MatrixCleanupAndSimilarityMetric(interMatrix, generator.nextLong(), outputDirectory, metric);
+        return matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
     }
 
     protected Map<Integer, Integer> calculateActualLengthForChromosomes(Chromosome[] chromosomes) {

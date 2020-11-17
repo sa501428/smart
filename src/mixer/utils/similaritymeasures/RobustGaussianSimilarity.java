@@ -21,34 +21,34 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package mixer.utils.custommetrics;
 
-import tagbio.umap.metric.Metric;
+package mixer.utils.similaritymeasures;
 
-/**
- * Bray Curtis distance.
- */
-public final class RobustBrayCurtisMetric extends Metric {
+public final class RobustGaussianSimilarity extends SimilarityMetric {
 
-  /**
-   * Bray Curtis distance.
-   */
-  public static final RobustBrayCurtisMetric SINGLETON = new RobustBrayCurtisMetric();
+  public static final RobustGaussianSimilarity SINGLETON = new RobustGaussianSimilarity();
 
-  private RobustBrayCurtisMetric() {
-    super(false);
+  private RobustGaussianSimilarity() {
+    super(true, true);
   }
 
   @Override
   public float distance(final float[] x, final float[] y) {
-    float numerator = 0;
-    float denominator = 0;
-    for (int i = 0; i < x.length; ++i) {
-      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
-        numerator += Math.abs(x[i] - y[i]);
-        denominator += Math.abs(x[i] + y[i]);
+    return (float) Math.exp(-getNonNanMeanSquaredError(x, y) / 2);
+  }
+
+  private float getNonNanMeanSquaredError(float[] x, float[] y) {
+    double sumOfSquares = 0;
+    int numDiffs = 0;
+    for (int i = 0; i < x.length; i++) {
+      boolean entryIsBad = Float.isNaN(x[i]) || Float.isNaN(y[i]);
+      if (!entryIsBad) {
+        final float v = x[i] - y[i];
+        sumOfSquares += (v * v);
+        numDiffs++;
       }
     }
-    return denominator > 0 ? numerator / denominator : 0;
+    numDiffs = Math.max(numDiffs, 1);
+    return (float) (x.length * sumOfSquares / numDiffs);
   }
 }

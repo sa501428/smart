@@ -31,6 +31,7 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.DoubleMatrixTools;
 import mixer.utils.common.IntMatrixTools;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 import mixer.utils.slice.kmeansfloat.Cluster;
@@ -39,7 +40,6 @@ import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.*;
@@ -55,11 +55,11 @@ public class FullGenomeOEWithinClusters {
     private final NormalizationType norm;
     private final CompositeGenomeWideDensityMatrix interMatrix;
     private final BadIndexFinder badIndexFinder;
-    private final Metric metric;
+    private final SimilarityMetric metric;
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
                                       File outputDirectory, Random generator, String[] referenceBedFiles,
-                                      Metric metric) {
+                                      SimilarityMetric metric) {
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
         this.norm = norm;

@@ -27,8 +27,10 @@ package mixer.clt;
 import jargs.gnu.CmdLineParser;
 import javastraw.type.NormalizationHandler;
 import javastraw.type.NormalizationType;
-import mixer.utils.custommetrics.*;
-import tagbio.umap.metric.Metric;
+import mixer.utils.similaritymeasures.RobustCosineSimilarity;
+import mixer.utils.similaritymeasures.RobustGaussianSimilarity;
+import mixer.utils.similaritymeasures.RobustJensenShannonDivergence;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option multipleChromosomesOption = addStringOption('c', "chromosomes");
     private final Option multipleResolutionsOption = addStringOption('r', "resolutions");
     private final Option threadNumOption = addIntegerOption('z', "threads");
+    private final Option subsampleNumOption = addIntegerOption("subsample");
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
@@ -83,6 +86,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public int getNumThreads() {
         return optionToInt(threadNumOption);
+    }
+
+    public int getSubsamplingOption() {
+        return optionToInt(subsampleNumOption);
     }
 
     /**
@@ -185,33 +192,21 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return null;
     }
 
-    public Metric getMetricTypeOption() {
+    public SimilarityMetric getMetricTypeOption() {
         return getMetricType(optionToString(sliceMetricTypeOption));
     }
 
-    private Metric getMetricType(String potentialType) {
+    private SimilarityMetric getMetricType(String potentialType) {
         String name = potentialType.toLowerCase();
         if (name.contains("cosine")) {
-            return RobustCosineMetric.SINGLETON;
-        } else if (name.contains("l2")) {
-            return RobustEuclideanMetric.SINGLETON;
-        } else if (name.contains("l1")) {
-            return RobustManhattanMetric.SINGLETON;
-        } else if (name.contains("corr")) {
-            return RobustCorrelationMetric.SINGLETON;
-        } else if (name.contains("bray")) {
-            return RobustBrayCurtisMetric.SINGLETON;
-        } else if (name.contains("linf")) {
-            return RobustChebyshevMetric.SINGLETON;
-        } else if (name.contains("canberra")) {
-            return RobustCanberraMetric.SINGLETON;
+            return RobustCosineSimilarity.SINGLETON;
+        } else if (name.contains("gaussian")) {
+            return RobustGaussianSimilarity.SINGLETON;
         } else if (name.contains("js")) {
-            return RobustJensenShannonMetric.SINGLETON;
-        } else if (name.contains("emd")) {
-            return RobustEarthMoversMetric.SINGLETON;
+            return RobustJensenShannonDivergence.SINGLETON;
         }
         System.err.println("Invalid type: " + potentialType);
-        System.exit(-5);
-        return null;
+        System.err.println("Using cosine similarity by default: " + potentialType);
+        return RobustCosineSimilarity.SINGLETON;
     }
 }

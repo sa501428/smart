@@ -32,11 +32,11 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.Pair;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.*;
@@ -52,12 +52,12 @@ public abstract class CompositeGenomeWideDensityMatrix {
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
     protected final BadIndexFinder badIndexLocations;
     protected final int datasetIndex;
-    protected Metric metric;
+    protected SimilarityMetric metric;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                             File outputDirectory, Random generator, String[] relativeTestFiles,
                                             BadIndexFinder badIndexLocations, int datasetIndex,
-                                            Metric metric) {
+                                            SimilarityMetric metric) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
@@ -104,8 +104,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
             }
 
             for (int i : cluster.getMemberIndexes()) {
-                float dist = metric.distance(cluster.getCenter(), gwCleanMatrix[i]);
-                withinClusterSumOfSquares += dist * dist;
+                withinClusterSumOfSquares += sumOfSquaresDistance(cluster.getCenter(), gwCleanMatrix[i]);
 
                 try {
                     SubcompartmentInterval interv;
@@ -157,6 +156,15 @@ public abstract class CompositeGenomeWideDensityMatrix {
         outputs.add(idsForIndex);
 
         return new Pair<>(withinClusterSumOfSquares, outputs);
+    }
+
+    private double sumOfSquaresDistance(float[] center, float[] vector) {
+        double sumSquared = 0.0;
+        for (int i = 0; i < center.length; i++) {
+            double v = vector[i] - center[i];
+            sumSquared += (v * v);
+        }
+        return sumSquared;
     }
 
     protected Pair<Integer, int[][]> calculateDimensionInterMatrix(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {

@@ -24,22 +24,12 @@
 
 package mixer.utils.similaritymeasures;
 
-import tagbio.umap.metric.Metric;
+public final class RobustCosineSimilarity extends SimilarityMetric {
 
-/**
- * Cosine distance.
- *
- * @author Sean A. Irvine
- */
-public final class RobustCosineSimilarity extends Metric {
-
-  /**
-   * Cosine distance.
-   */
   public static final RobustCosineSimilarity SINGLETON = new RobustCosineSimilarity();
 
   private RobustCosineSimilarity() {
-    super(true);
+    super(true, true);
   }
 
   private static float arctanh(double x) {
@@ -65,6 +55,7 @@ public final class RobustCosineSimilarity extends Metric {
         normY += y[i] * y[i];
       }
     }
+
     return arctanh(dotProduct / Math.sqrt(normX * normY));
   }
 }

@@ -32,6 +32,7 @@ import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
+import mixer.MixerGlobals;
 import mixer.utils.custommetrics.RobustCorrelationMetric;
 import mixer.utils.custommetrics.RobustEuclideanMetric;
 import tagbio.umap.metric.Metric;
@@ -208,7 +209,9 @@ public class IndexOrderer {
             // else it has already been handled
             // or is a bad index, so skip
         }
-        System.out.println("Num rounds " + numRoundsThatHappen);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Num rounds " + numRoundsThatHappen);
+        }
     }
 
     public float[][] extractObsOverExpBoundedRegion(MatrixZoomData zd, Chromosome chromosome,

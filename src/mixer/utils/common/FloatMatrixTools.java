@@ -25,7 +25,6 @@
 package mixer.utils.common;
 
 import javastraw.tools.MatrixTools;
-import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +34,6 @@ import java.util.List;
  * Helper methods to handle matrix operations
  */
 public class FloatMatrixTools {
-
-    private static final PearsonsCorrelation pearsonsCorrelation = new PearsonsCorrelation();
 
     public static void thresholdNonZerosByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
         float[] colMeans = getColNonZeroMeansNonNan(matrix, batchSize);

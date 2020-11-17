@@ -79,7 +79,7 @@ public class GenomeWideKmeansRunner {
             }
 
             ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix.getCleanedData(),
-                    numClusters, maxIters, seed, metric);
+                    numClusters, maxIters, seed);
 
             KMeansListener kMeansListener = new KMeansListener() {
                 @Override

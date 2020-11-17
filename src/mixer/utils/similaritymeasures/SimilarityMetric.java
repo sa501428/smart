@@ -21,33 +21,20 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package mixer.utils.custommetrics;
+
+package mixer.utils.similaritymeasures;
 
 import tagbio.umap.metric.Metric;
 
-/**
- * Chebyshev distance.
- */
-public final class RobustChebyshevMetric extends Metric {
+public abstract class SimilarityMetric extends Metric {
+    private final boolean mIsSymmmetric;
 
-  /**
-   * Chebyshev distance.
-   */
-  public static final RobustChebyshevMetric SINGLETON = new RobustChebyshevMetric();
-
-  private RobustChebyshevMetric() {
-    super(false);
-  }
-
-  @Override
-  public float distance(final float[] x, final float[] y) {
-    // D(x, y) = \max_i |x_i - y_i|
-    float result = 0;
-    for (int i = 0; i < x.length; ++i) {
-      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
-        result = Math.max(result, Math.abs(x[i] - y[i]));
-      }
+    public SimilarityMetric(boolean isAngular, boolean isSymmmetric) {
+        super(isAngular);
+        mIsSymmmetric = isSymmmetric;
     }
-    return result;
-  }
+
+    public boolean isSymmetric() {
+        return this.mIsSymmmetric;
+    }
 }

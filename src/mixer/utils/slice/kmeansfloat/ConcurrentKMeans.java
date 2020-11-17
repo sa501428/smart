@@ -24,8 +24,6 @@
 
 package mixer.utils.slice.kmeansfloat;
 
-import tagbio.umap.metric.Metric;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +67,6 @@ public class ConcurrentKMeans implements KMeans {
     private ConcurrentKMeans.SubtaskManager mSubtaskManager;
     // An array of Cluster objects: the output of k-means.
     private Cluster[] mClusters;
-    private final Metric mMetric;
 
     /**
      * Constructor
@@ -81,14 +78,13 @@ public class ConcurrentKMeans implements KMeans {
      * @param threadCount   the number of threads to be used for computing time-consuming steps.
      */
     private ConcurrentKMeans(float[][] coordinates, int k, int maxIterations,
-                             long randomSeed, int threadCount, Metric metric) {
+                             long randomSeed, int threadCount) {
         mCoordinates = coordinates;
         // Can't have more clusters than coordinates.
         mK = Math.min(k, mCoordinates.length);
         mMaxIterations = maxIterations;
         mRandomSeed = randomSeed;
         mThreadCount = threadCount;
-        mMetric = metric;
     }
 
     /**
@@ -102,9 +98,9 @@ public class ConcurrentKMeans implements KMeans {
      * @param randomSeed    seed used with the random number generator.
      */
     public ConcurrentKMeans(float[][] coordinates, int k, int maxIterations,
-                            long randomSeed, Metric metric) {
+                            long randomSeed) {
         this(coordinates, k, maxIterations, randomSeed,
-                Runtime.getRuntime().availableProcessors(), metric);
+                Runtime.getRuntime().availableProcessors());
     }
 
     /**
@@ -418,6 +414,9 @@ public class ConcurrentKMeans implements KMeans {
                 }
             }
         }
+        if (nearest < 0) {
+            System.err.println("Something is going wrong in kmeans...");
+        }
         return nearest;
     }
 
@@ -632,18 +631,14 @@ public class ConcurrentKMeans implements KMeans {
         void updateCenter(float[][] coordinates) {
             Arrays.fill(mCenter, 0f);
             if (mCurrentSize > 0) {
-                int[] mCurrentSizeForIndex = new int[mCenter.length];
                 for (int i = 0; i < mCurrentSize; i++) {
                     float[] coord = coordinates[mCurrentMembership[i]];
                     for (int j = 0; j < coord.length; j++) {
-                        if (!Float.isNaN(coord[j])) {
-                            mCenter[j] += coord[j];
-                            mCurrentSizeForIndex[j]++;
-                        }
+                        mCenter[j] += coord[j];
                     }
                 }
                 for (int i = 0; i < mCenter.length; i++) {
-                    mCenter[i] /= Math.max(mCurrentSizeForIndex[i], 1);
+                    mCenter[i] /= mCurrentSize;
                 }
             }
         }
@@ -658,23 +653,28 @@ public class ConcurrentKMeans implements KMeans {
         static final int DOING_NOTHING = 0;
         static final int COMPUTING_DISTANCES = 1;
         static final int MAKING_ASSIGNMENTS = 2;
+
+        // What the object is currently doing. Set to one of the
+        // three codes above.
+        private int mDoing = DOING_NOTHING;
+
+        // True if the at least one of the Workers is doing something.
+        private boolean mWorking;
+
         // The executor that runs the Workers.
         // When in multiple processor mode, this is a ThreadPoolExecutor
         // with a fixed number of threads. In single-processor mode, it's
         // a simple implementation that calls the single worker's run
         // method directly.
         private final Executor mExecutor;
-        // The worker objects which implement Runnable.
-        private final ConcurrentKMeans.SubtaskManager.Worker[] mWorkers;
-        // What the object is currently doing. Set to one of the
-        // three codes above.
-        private int mDoing = DOING_NOTHING;
-        // True if the at least one of the Workers is doing something.
-        private boolean mWorking;
+
         // A Barrier to wait on multiple Workers to finish up the current task.
         // In single-processor mode, there is no need for a barrier, so it
         // is not set.
         private CyclicBarrier mBarrier;
+
+        // The worker objects which implement Runnable.
+        private final ConcurrentKMeans.SubtaskManager.Worker[] mWorkers;
 
         /**
          * Constructor
@@ -967,10 +967,22 @@ public class ConcurrentKMeans implements KMeans {
                     for (int c = 0; c < numClusters; c++) {
                         ConcurrentKMeans.ProtoCluster cluster = mProtoClusters[c];
                         if (cluster.getConsiderForAssignment() && cluster.needsUpdate()) {
-                            mDistanceCache[i][c] = mMetric.distance(mCoordinates[i], cluster.getCenter());
+                            mDistanceCache[i][c] = distanceL2Norm(mCoordinates[i], cluster.getCenter());
                         }
                     }
                 }
+            }
+
+            /**
+             * Compute the euclidean distance between the two arguments.
+             */
+            private float distanceL2Norm(float[] coord, float[] center) {
+                float sumSquared = 0f;
+                for (int i = 0; i < coord.length; i++) {
+                    float v = coord[i] - center[i];
+                    sumSquared += (v * v);
+                }
+                return sumSquared;
             }
 
             /**
