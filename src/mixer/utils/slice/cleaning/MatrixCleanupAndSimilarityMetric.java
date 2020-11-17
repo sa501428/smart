@@ -147,6 +147,8 @@ public class MatrixCleanupAndSimilarityMetric {
         File temp = new File(outputDirectory, "data.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
 
+        System.exit(0);
+
         System.out.println("Run UMAP");
         //runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
         //System.out.println("Done running UMAP");

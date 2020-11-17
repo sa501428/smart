@@ -33,8 +33,8 @@ public final class RobustCosineSimilarity extends SimilarityMetric {
   }
 
   private static float arctanh(double x) {
-    float val = (float) Math.max(x, -.9999f);
-    val = Math.min(val, .9999f);
+    float val = (float) Math.max(x, -.99f);
+    val = Math.min(val, .99f);
     val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2f;
     if (Float.isInfinite(val)) {
       val = Float.NaN;
