@@ -28,7 +28,7 @@ import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.*;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
-import mixer.clt.AggregateProcessing;
+import mixer.utils.shuffle.Metrics;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -165,12 +165,7 @@ public class LeftOverClusterIdentifier {
         boolean nothingChanged = true;
 
         for (Integer key : cIDToCenter.keySet()) {
-            double newDistance;
-            if (AggregateProcessing.useL1Norm) {
-                newDistance = ClusterTools.getL1Distance(cIDToCenter.get(key), vector);
-            } else {
-                newDistance = ClusterTools.getL2Distance(cIDToCenter.get(key), vector);
-            }
+            double newDistance = Metrics.getL2Distance(cIDToCenter.get(key), vector);
 
             if (newDistance < overallDistance) {
                 overallDistance = newDistance;

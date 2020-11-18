@@ -24,6 +24,8 @@
 
 package mixer.utils.slice.kmeansfloat;
 
+import mixer.utils.shuffle.Metrics;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -101,36 +103,6 @@ public class ConcurrentKMeans implements KMeans {
                             long randomSeed) {
         this(coordinates, k, maxIterations, randomSeed,
                 Runtime.getRuntime().availableProcessors());
-    }
-
-    /**
-     * Compute the Chi^2 statistic relative to cluster center (expected)
-     */
-    private static float distanceChi2(float[] coord, float[] center) {
-        int len = coord.length;
-        float chiSquared = 0f;
-        for (int i = 0; i < len; i++) {
-            float v = coord[i] - center[i];
-            chiSquared += (v * v) / center[i];
-        }
-        return chiSquared;
-    }
-
-    /**
-     * Compute the euclidean distance between the two arguments.
-     */
-    private static float distanceL2Norm(float[] coord, float[] center) {
-        double sumSquared = 0;
-        int numDiffs = 0;
-        for (int i = 0; i < coord.length; i++) {
-            if (!Float.isNaN(coord[i]) && !Float.isNaN(center[i])) {
-                double v = coord[i] - center[i];
-                sumSquared += (v * v);
-                numDiffs++;
-            }
-        }
-        numDiffs = Math.max(numDiffs, 1);
-        return (float) Math.sqrt(coord.length * (sumSquared / numDiffs));
     }
 
     /**
@@ -993,7 +965,7 @@ public class ConcurrentKMeans implements KMeans {
                     for (int c = 0; c < numClusters; c++) {
                         ConcurrentKMeans.ProtoCluster cluster = mProtoClusters[c];
                         if (cluster.getConsiderForAssignment() && cluster.needsUpdate()) {
-                            mDistanceCache[i][c] = distanceL2Norm(mCoordinates[i], cluster.getCenter());
+                            mDistanceCache[i][c] = Metrics.getL2Distance(mCoordinates[i], cluster.getCenter());
                         }
                     }
                 }

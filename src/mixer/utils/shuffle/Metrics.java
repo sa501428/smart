@@ -24,7 +24,7 @@
 
 package mixer.utils.shuffle;
 
-import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeansfloat.Cluster;
 
 public class Metrics {
 
@@ -41,13 +41,13 @@ public class Metrics {
             case MSE:
             case PRE_Z_MSE:
                 for (int j = colStart; j < centroids.length; j++) {
-                    result[i][j] = (float) ClusterTools.getNonNanMeanSquaredError(matrix[i], centroids[j]);
+                    result[i][j] = (float) getNonNanMeanSquaredError(matrix[i], centroids[j]);
                 }
                 break;
             case MAE:
             case PRE_Z_MAE:
                 for (int j = colStart; j < centroids.length; j++) {
-                    result[i][j] = (float) ClusterTools.getNonNanMeanAbsoluteError(matrix[i], centroids[j]);
+                    result[i][j] = (float) getNonNanMeanAbsoluteError(matrix[i], centroids[j]);
                 }
                 break;
             case EARTHMOVER:
@@ -213,6 +213,74 @@ public class Metrics {
             }
         }
         return Math.sqrt(distP / 2 + distQ / 2);
+    }
+
+    /**
+     * Compute the euclidean distance between the two arguments.
+     */
+
+
+    public static double getL2Distance(Cluster observed, Cluster expected) {
+        return getL2Distance(observed.getCenter(), expected.getCenter());
+    }
+
+    public static float getL2Distance(float[] a, float[] b) {
+        return (float) Math.sqrt(a.length * getNonNanMeanSquaredError(a, b));
+    }
+
+    public static double getNonNanVectorSumOfSquares(float[] center, float[] obsArray) {
+        return center.length * getNonNanMeanSquaredError(center, obsArray);
+    }
+
+    public static double getNonNanMeanSquaredError(float[] a, float[] b) {
+        double sumSquared = 0;
+        int numDiffs = 0;
+        for (int i = 0; i < a.length; i++) {
+            if (!Float.isNaN(a[i]) && !Float.isNaN(b[i])) {
+                double v = a[i] - b[i];
+                sumSquared += (v * v);
+                numDiffs++;
+            }
+        }
+        numDiffs = Math.max(numDiffs, 1);
+        return sumSquared / numDiffs;
+    }
+
+    public static double getL1Distance(float[] obsArray, float[] expectedArray) {
+        double val = 0;
+
+        for (int k = 0; k < obsArray.length; k++) {
+            val += Math.abs(expectedArray[k] - obsArray[k]);
+        }
+
+        return val;
+    }
+
+    public static double getNonNanMeanAbsoluteError(float[] array1, float[] array2) {
+        double sumAbsError = 0;
+        int numDiffs = 0;
+        for (int i = 0; i < array1.length; i++) {
+            if (!Float.isNaN(array1[i]) && !Float.isNaN(array2[i])) {
+                double v = array1[i] - array2[i];
+                sumAbsError += Math.abs(v);
+                numDiffs++;
+            }
+        }
+        numDiffs = Math.max(numDiffs, 1);
+        return sumAbsError / numDiffs;
+    }
+
+    /**
+     * Compute the Chi^2 statistic relative to cluster center (expected)
+     */
+    private static float distanceChi2(float[] coord, float[] center) {
+        int len = coord.length;
+        float chiSquared = 0f;
+        for (int i = 0; i < len; i++) {
+            float v = coord[i] - center[i];
+            chiSquared += (v * v) / center[i];
+        }
+        return chiSquared;
     }
 
     public enum Type {
