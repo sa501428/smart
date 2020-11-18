@@ -22,43 +22,39 @@
  *  THE SOFTWARE.
  */
 
-package mixer.clt;
-
-import mixer.MixerGlobals;
-import mixer.algos.ChromosomeWalker;
-import mixer.algos.Shuffle;
-import mixer.algos.Slice;
-
+package mixer.utils.similaritymeasures;
 
 /**
- * Factory for command line tools to call different functions
- *
- * @author Muhammad Shamim
- * @since 1/30/2015
+ * Euclidean distance.
  */
-public class CLTFactory {
+public final class RobustManhattanDistance extends SimilarityMetric {
 
-    public static void generalUsage() {
-        System.out.println("Mixer Tools Version " + MixerGlobals.versionNum);
-        System.out.println("Usage:");
-        System.out.println("\t" + "-h, --help print help");
-        System.out.println("\t" + "-v, --verbose verbose mode");
-        System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
-        System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
+  /**
+   * Euclidean metric.
+   */
+  public static final RobustManhattanDistance SINGLETON = new RobustManhattanDistance();
+
+  private RobustManhattanDistance() {
+    super(true);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    //  D(x, y) = \sqrt{\sum_i (x_i - y_i)^2}
+    double result = getNonNanMeanAbsoluteError(x, y);
+    return (float) (result * x.length);
+  }
+
+  private double getNonNanMeanAbsoluteError(float[] x, float[] y) {
+    double sumOfError = 0;
+    int numDiffs = 0;
+    for (int i = 0; i < x.length; i++) {
+      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
+        sumOfError += Math.abs(x[i] - y[i]);
+        numDiffs++;
+      }
     }
-
-    public static MixerCLT getCLTCommand(String cmd) {
-
-        cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice") || cmd.startsWith("dice")) {
-            return new Slice(cmd);
-        } else if (cmd.equals("walk")) {
-            return new ChromosomeWalker();
-        } else if (cmd.equals("shuffle")) {
-            return new Shuffle();
-        }
-
-        return null;
-    }
+    numDiffs = Math.max(numDiffs, 1);
+    return sumOfError / numDiffs;
+  }
 }

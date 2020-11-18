@@ -7,8 +7,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="broadinstitute" level="project" />
     <orderEntry type="library" exported="" name="general" level="project" />
-    <orderEntry type="library" exported="" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="org.jetbrains.kotlin:kotlin-stdlib:0.11.91.4" level="project" />
+    <orderEntry type="library" name="umap-java" level="project" />
   </component>
 </module>

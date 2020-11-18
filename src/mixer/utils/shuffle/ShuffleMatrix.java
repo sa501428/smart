@@ -25,178 +25,174 @@
 package mixer.utils.shuffle;
 
 import javastraw.featurelist.GenomeWideList;
-import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.Pair;
+import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.*;
 
 public class ShuffleMatrix {
 
+    private final Random generator = new Random(0);
+    private final Dataset ds;
     private final NormalizationType norm;
-    private final int resolution;
-    private final GenomeWideList<SubcompartmentInterval> intraSubcompartments;
-    private final float[][] gwCleanMatrix;
-    private final Map<Integer, SubcompartmentInterval> indexToInterval1Map = new HashMap<>();
-    private final Map<Integer, SubcompartmentInterval> indexToInterval2Map = new HashMap<>();
-    private final Chromosome[] rowsChromosomes;
-    private final Chromosome[] colsChromosomes;
     private final int compressionFactor;
+    private final int resolution;
+    private final int numRounds = 50;
+    private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
+            InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
+    private final double[][] baseline = new double[mapTypes.length][numRounds];
+    private final double[][] scores = new double[mapTypes.length][numRounds];
+    double[] ratios = new double[mapTypes.length];
 
-    public ShuffleMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                         GenomeWideList<SubcompartmentInterval> intraSubcompartments,
-                         InterMapType mapType, int compressionFactor) {
-        this.norm = norm;
+    public ShuffleMatrix(Dataset ds, NormalizationType norm, int resolution, int compressionFactor) {
         this.resolution = resolution;
-        this.intraSubcompartments = intraSubcompartments;
         this.compressionFactor = compressionFactor;
-
-        switch (mapType) {
-            case SKIP_BY_TWOS: // but start with CHR 1 separate
-                rowsChromosomes = chromosomeHandler.splitAutosomesAndSkipByTwos().getFirst();
-                colsChromosomes = chromosomeHandler.splitAutosomesAndSkipByTwos().getSecond();
-                break;
-            case FIRST_HALF_VS_SECOND_HALF:
-                rowsChromosomes = chromosomeHandler.splitAutosomesIntoHalves().getFirst();
-                colsChromosomes = chromosomeHandler.splitAutosomesIntoHalves().getSecond();
-                break;
-            case ODDS_VS_EVENS:
-            default:
-                rowsChromosomes = chromosomeHandler.extractOddOrEvenAutosomes(true);
-                colsChromosomes = chromosomeHandler.extractOddOrEvenAutosomes(false);
-                break;
-        }
-
-        gwCleanMatrix = makeCleanScaledInterMatrix(ds);
+        this.ds = ds;
+        this.norm = norm;
     }
 
-    public enum InterMapType {ODDS_VS_EVENS, FIRST_HALF_VS_SECOND_HALF, SKIP_BY_TWOS}
+    public void runAnalysis(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
+        SliceUtils.collapseGWList(subcompartments);
+        for (int y = 0; y < mapTypes.length; y++) {
+            final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, mapTypes[y]);
+            final Map<Integer, List<Integer>> clusterToRowIndices = new HashMap<>();
+            final Map<Integer, List<Integer>> clusterToColIndices = new HashMap<>();
+            populateClusterToIndexMaps(interMatrix, subcompartments, clusterToRowIndices, clusterToColIndices);
 
-    private float[][] makeCleanScaledInterMatrix(Dataset ds) {
+            float[][] baselineM = determineScore(interMatrix, clusterToRowIndices, clusterToColIndices, true, baseline[y]);
+            float[][] shuffleM = determineScore(interMatrix, clusterToRowIndices, clusterToColIndices, false, scores[y]);
 
-        // assuming Odd vs Even
-        // height chromosomes
-        Pair<Integer, int[]> rowsDimension = calculateDimensionInterMatrix(rowsChromosomes);
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_baseline.npy").getAbsolutePath(), baselineM);
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_shuffle.npy").getAbsolutePath(), shuffleM);
+            FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_matrix.npy").getAbsolutePath(), interMatrix.getMatrix());
 
-        // width chromosomes
-        Pair<Integer, int[]> colsDimension = calculateDimensionInterMatrix(colsChromosomes);
-
-        float[][] interMatrix = new float[rowsDimension.getFirst()][colsDimension.getFirst()];
-        for (int i = 0; i < rowsChromosomes.length; i++) {
-            Chromosome chr1 = rowsChromosomes[i];
-
-            for (int j = 0; j < colsChromosomes.length; j++) {
-                Chromosome chr2 = colsChromosomes[j];
-
-                if (chr1.getIndex() == chr2.getIndex()) continue;
-                final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
-                if (zd == null) continue;
-
-                // will need to flip across diagonal
-                boolean needToFlip = chr2.getIndex() < chr1.getIndex();
-                fillInInterChromosomeRegion(interMatrix, zd, chr1, rowsDimension.getSecond()[i], chr2, colsDimension.getSecond()[j], needToFlip);
+            double sumN = 0, sumD = 9;
+            for (int i = 0; i < numRounds; i++) {
+                sumN += scores[y][i];
+                sumD += baseline[y][i];
             }
+            ratios[y] = sumN / sumD;
         }
-
-        return interMatrix;
     }
 
-    private Pair<Integer, int[]> calculateDimensionInterMatrix(Chromosome[] chromosomes) {
-        int total = 0;
-        int[] indices = new int[chromosomes.length];
-
-        for (int i = 0; i < chromosomes.length; i++) {
-            for (SubcompartmentInterval interval : intraSubcompartments.getFeatures("" + chromosomes[i].getIndex())) {
-                total += interval.getWidthForResolution(resolution);
-            }
-            if (i < chromosomes.length - 1) {
-                indices[i + 1] = total;
-            }
-        }
-
-        return new Pair<>(total, indices);
-    }
-
-    private void fillInInterChromosomeRegion(float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
-                                             Chromosome chr2, int offsetIndex2, boolean needToFlip) {
-
-        int chr1Index = chr1.getIndex();
-        int chr2Index = chr2.getIndex();
-        if (chr1Index == chr2Index) {
-            System.err.println("Same chr " + chr1.getName());
-            System.exit(989);
-        }
-
-        int lengthChr1 = (int) (chr1.getLength() / resolution);
-        int lengthChr2 = (int) (chr2.getLength() / resolution);
-        List<SubcompartmentInterval> intervals1 = intraSubcompartments.getFeatures("" + chr1.getIndex());
-        List<SubcompartmentInterval> intervals2 = intraSubcompartments.getFeatures("" + chr2.getIndex());
-
-        if (intervals1.size() == 0 || intervals2.size() == 0) return;
-        float[][] allDataForRegion = null;
+    public void savePlotsAndResults(File outfolder) {
         try {
-            if (needToFlip) {
-                float[][] allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr2,
-                        0, lengthChr1, lengthChr2, lengthChr1, norm, false);
-                allDataForRegion = FloatMatrixTools.transpose(allDataForRegionMatrix);
-            } else {
-                allDataForRegion = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr1,
-                        0, lengthChr2, lengthChr1, lengthChr2, norm, false);
+            FileWriter myWriter = new FileWriter(new File(outfolder, "scores.txt"));
+            for (int y = 0; y < mapTypes.length; y++) {
+                myWriter.write(mapTypes[y].toString() + " score: " + ratios[y] + "\n");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(99);
+            myWriter.close();
+        } catch (Exception ee) {
+            System.err.println("Unable to write results to text file");
         }
+        //System.out.println("Scores: " + sumN + "  baseline: " + sumD + "  ratio:" + (sumN / sumD));
+        //TTest test = new TTest();
+        //System.out.println("Ttest " + test.pairedTTest(baseline, scores) / 2);
+        //System.out.println("Ttest " + test.pairedTTest(baseline, scores, 0.1));
 
-        if (allDataForRegion == null) {
-            System.err.println("Missing Interchromosomal Data " + zd.getKey());
-            return;
-        }
-
-        Map<String, Integer> allAreaBetweenClusters = new HashMap<>();
-        Map<String, Float> allContactsBetweenClusters = new HashMap<>();
-
-        for (SubcompartmentInterval interv1 : intervals1) {
-            Integer id1 = interv1.getClusterID();
-            for (SubcompartmentInterval interv2 : intervals2) {
-                Integer id2 = interv2.getClusterID();
-                String regionKey = id1 + "-" + id2;
-
-
-            }
-        }
-
-        int internalOffset1 = offsetIndex1;
-        for (SubcompartmentInterval interv1 : intervals1) {
-            Integer id1 = interv1.getClusterID();
-            int numRows = interv1.getWidthForResolution(resolution);
-
-            int internalOffset2 = offsetIndex2;
-            for (SubcompartmentInterval interv2 : intervals2) {
-                Integer id2 = interv2.getClusterID();
-                int numCols = interv2.getWidthForResolution(resolution);
-
-            }
-            internalOffset1 += numRows;
-        }
     }
 
-    private void updateMasterMatrixWithRegionalDensities(float[][] matrix, float density,
-                                                         SubcompartmentInterval interv1, int offsetIndex1, int numRows,
-                                                         SubcompartmentInterval interv2, int offsetIndex2, int numCols) {
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                indexToInterval1Map.put(offsetIndex1 + i, interv1);
-                indexToInterval2Map.put(offsetIndex2 + j, interv2);
-                matrix[offsetIndex1 + i][offsetIndex2 + j] = density;
+    private float[][] determineScore(InterOnlyMatrix interMatrix,
+                                     Map<Integer, List<Integer>> clusterToRowIndices,
+                                     Map<Integer, List<Integer>> clusterToColIndices,
+                                     boolean randomizeGW, double[] vector) {
+        float[][] aggregate = null;
+        for (int k = 0; k < numRounds; k++) {
+            List<Integer> allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, randomizeGW);
+            List<Integer> allColIndices = getShuffledByClusterIndices(clusterToColIndices, randomizeGW);
+            float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices, allColIndices);
+
+            if (aggregate == null) {
+                aggregate = matrix;
+            } else {
+                FloatMatrixTools.addBToA(aggregate, matrix);
+            }
+            vector[k] = scoreMatrix(matrix);
+        }
+
+        FloatMatrixTools.scaleBy(aggregate, 1f / ((float) numRounds));
+        return aggregate;
+    }
+
+    private List<Integer> getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean randomizeGW) {
+        List<Integer> allIndices = new ArrayList<>();
+        for (List<Integer> indexList : clusterToIndices.values()) {
+            Collections.shuffle(indexList, generator);
+            int numToUse = (indexList.size() / compressionFactor) * compressionFactor;
+            for (int z = 0; z < numToUse; z++) {
+                allIndices.add(indexList.get(z));
+            }
+        }
+        if (randomizeGW) {
+            Collections.shuffle(allIndices, generator);
+        }
+        return allIndices;
+    }
+
+    private float[][] getShuffledMatrix(InterOnlyMatrix interMatrix, List<Integer> allRowIndices, List<Integer> allColIndices) {
+        int numRows = allRowIndices.size() / compressionFactor;
+        int numCols = allColIndices.size() / compressionFactor;
+        int numRowsKept = numRows * compressionFactor;
+        int numColsKept = numCols * compressionFactor;
+        float[][] original = interMatrix.getMatrix();
+
+        float[][] result = new float[numRows][numCols];
+        for (int i = 0; i < numRowsKept; i++) {
+            final int i0 = allRowIndices.get(i);
+            for (int j = 0; j < numColsKept; j++) {
+                final int j0 = allColIndices.get(j);
+                result[i / compressionFactor][j / compressionFactor] += original[i0][j0];
+            }
+        }
+
+        return result;
+    }
+
+    private double scoreMatrix(float[][] matrix) {
+        double diff = 0;
+        for (int i = 0; i < matrix.length - 1; i++) {
+            for (int j = 0; j < matrix[i].length - 1; j++) {
+                diff += Math.abs(matrix[i][j] - matrix[i + 1][j]);
+                diff += Math.abs(matrix[i][j] - matrix[i][j + 1]);
+                diff += Math.abs(matrix[i][j] - matrix[i + 1][j + 1]);
+                diff += Math.abs(matrix[i + 1][j] - matrix[i][j + 1]);
+            }
+        }
+        return diff / ((matrix.length - 1) * (matrix[0].length - 1));
+    }
+
+    private void populateClusterToIndexMaps(InterOnlyMatrix interMatrix, GenomeWideList<SubcompartmentInterval> intraSubcompartments, Map<Integer, List<Integer>> clusterToRowIndices, Map<Integer, List<Integer>> clusterToColIndices) {
+        populateCluster(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(), intraSubcompartments, clusterToRowIndices);
+        populateCluster(interMatrix.getColChromosomes(), interMatrix.getColOffsets(), intraSubcompartments, clusterToColIndices);
+    }
+
+    private void populateCluster(Chromosome[] chromosomes, int[] offsets, GenomeWideList<SubcompartmentInterval> subcompartments,
+                                 Map<Integer, List<Integer>> clusterToIndices) {
+        for (int x = 0; x < chromosomes.length; x++) {
+            Chromosome chrom = chromosomes[x];
+            List<SubcompartmentInterval> intervalList = subcompartments.getFeatures("" + chrom.getIndex());
+            for (SubcompartmentInterval interval : intervalList) {
+                int xStart = interval.getX1() / resolution;
+                int xEnd = interval.getX2() / resolution;
+                int clusterID = interval.getClusterID();
+
+                List<Integer> tempList = new ArrayList<>();
+                for (int k = xStart; k < xEnd; k++) {
+                    final int actualPosition = k + offsets[x];
+                    tempList.add(actualPosition);
+                }
+
+                if (clusterToIndices.containsKey(clusterID)) {
+                    clusterToIndices.get(clusterID).addAll(tempList);
+                } else {
+                    clusterToIndices.put(clusterID, tempList);
+                }
             }
         }
     }

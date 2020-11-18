@@ -32,10 +32,12 @@ import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
+import mixer.MixerGlobals;
 import mixer.utils.common.Pair;
-import mixer.utils.slice.cleaning.GenomewideBadIndexFinder;
+import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
-import mixer.utils.slice.cleaning.MatrixCleanup;
+import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -56,8 +58,11 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
      * @param generator
      * @param referenceBedFiles
      */
-    public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution, File outputDirectory, Random generator, String[] referenceBedFiles) {
-        super(chromosomeHandler, ds, norm, resolution, outputDirectory, generator, referenceBedFiles);
+    public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution, File outputDirectory,
+                       Random generator, String[] referenceBedFiles, BadIndexFinder badIndexLocations,
+                       int datasetIndex, SimilarityMetric metric) {
+        super(chromosomeHandler, ds, norm, resolution, outputDirectory, generator, referenceBedFiles,
+                badIndexLocations, datasetIndex, metric);
     }
 
     float[][] makeCleanScaledInterMatrix(Dataset ds) {
@@ -69,7 +74,9 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         Pair<Integer, int[][]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         Pair<Integer, int[][]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
 
-        System.out.println(dimensions.getFirst() + " by " + compressedDimensions.getFirst());
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println(dimensions.getFirst() + " by " + compressedDimensions.getFirst());
+        }
 
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
 
@@ -95,8 +102,8 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
 
-        MatrixCleanup matrixCleanupReduction = new MatrixCleanup(interMatrix, generator.nextLong(), outputDirectory);
-        return matrixCleanupReduction.getSimpleCleaningOfMatrixAppendCorr(rowIndexToIntervalMap);
+        MatrixCleanupAndSimilarityMetric matrixCleanupReduction = new MatrixCleanupAndSimilarityMetric(interMatrix, generator.nextLong(), outputDirectory, metric);
+        return matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
     }
 
     protected Map<Integer, Integer> calculateActualLengthForChromosomes(Chromosome[] chromosomes) {
@@ -134,7 +141,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
      * @param compressedOffsetIndex2
      * @param isIntra
      */
-    private void fillInChromosomeRegion(float[][] matrix, GenomewideBadIndexFinder badIndices, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
+    private void fillInChromosomeRegion(float[][] matrix, BadIndexFinder badIndices, MatrixZoomData zd, Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
                                         Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2, boolean isIntra,
                                         IndexOrderer orderer) {
 
@@ -179,7 +186,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
     }
 
 
-    private void copyValuesToArea(float[][] matrix, List<Block> blocks, GenomewideBadIndexFinder badIndices,
+    private void copyValuesToArea(float[][] matrix, List<Block> blocks, BadIndexFinder badIndices,
                                   Map<Integer, Integer> genomePosToLocal1, Map<Integer, Integer> genomePosToCompressed1,
                                   Map<Integer, Integer> genomePosToLocal2, Map<Integer, Integer> genomePosToCompressed2, boolean isIntra) {
         if (isIntra) {
@@ -200,7 +207,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                         //    val0 = Float.NaN;
                         //}
 
-                        if (badIndices.getExceedsAllowedGlobalValue(val)) {
+                        if (badIndices.getExceedsAllowedGlobalValue(val, datasetIndex)) {
                             val = Float.NaN;
                         }
 

@@ -28,7 +28,8 @@ import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.*;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
-import mixer.utils.shuffle.Metrics;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -36,22 +37,37 @@ import java.util.*;
 
 public class LeftOverClusterIdentifier {
 
+    private static final int DISTANCE_CUTOFF = 3000000;
     public static float threshold = 3f;
+    private final ChromosomeHandler chromosomeHandler;
+    private final Dataset dataset;
+    private final NormalizationType norm;
+    private final int resolution;
+    public static SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
 
-    public static void identify(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
-                                GenomewideBadIndexFinder badIndexFinder) {
+    public LeftOverClusterIdentifier(ChromosomeHandler chromosomeHandler, Dataset dataset, NormalizationType norm, int resolution) {
+        this.chromosomeHandler = chromosomeHandler;
+        this.dataset = dataset;
+        this.norm = norm;
+        this.resolution = resolution;
+    }
+
+    public void identify(Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
+                         BadIndexFinder badIndexFinder) {
 
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
-            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr1, resolution);
+            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(dataset, chr1, chr1, resolution);
             if (zd == null) continue;
 
             float[][] allDataForRegion = null;
             try {
-                allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
+                allDataForRegion = HiCFileTools.getOEMatrixForChromosome(dataset, zd, chr1, resolution,
                         norm, threshold, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0);
 
+                if (chr1.getLength() > 5 * DISTANCE_CUTOFF) {
+                    trimDiagonalWithin(allDataForRegion, resolution, DISTANCE_CUTOFF);
+                }
                 //allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
 
             } catch (Exception e) {
@@ -104,34 +120,51 @@ public class LeftOverClusterIdentifier {
         System.out.println(".");
     }
 
-    private static Map<Integer, float[]> getClusterCenters(float[][] allDataForRegion, List<SubcompartmentInterval> intervals, int resolution) {
+    private void trimDiagonalWithin(float[][] data, int resolution, int distance) {
+        int pixelDistance = distance / resolution;
+        for (int i = 0; i < data.length; i++) {
+            int limit = Math.min(data[i].length, i + pixelDistance);
+            for (int j = i; j < limit; j++) {
+                data[i][j] = Float.NaN;
+                data[j][i] = Float.NaN;
+            }
+        }
+    }
+
+    private Map<Integer, float[]> getClusterCenters(float[][] allDataForRegion, List<SubcompartmentInterval> intervals, int resolution) {
 
         Map<Integer, float[]> cIDToCenter = new HashMap<>();
-        Map<Integer, Integer> cIDToSize = new HashMap<>();
-
+        Map<Integer, int[]> cIDToSize = new HashMap<>();
 
         for (SubcompartmentInterval interval : intervals) {
             int binXStart = interval.getX1() / resolution;
             int binXEnd = interval.getX2() / resolution;
             int cID = interval.getClusterID();
-            float[] total = new float[allDataForRegion[0].length];
+            float[] totalSum = new float[allDataForRegion[0].length];
+            int[] totalCounts = new int[allDataForRegion[0].length];
 
             for (int i = binXStart; i < binXEnd; i++) {
                 for (int j = 0; j < allDataForRegion[i].length; j++) {
-                    total[j] += allDataForRegion[i][j];
+                    if (!Float.isNaN(allDataForRegion[i][j])) {
+                        totalSum[j] += allDataForRegion[i][j];
+                        totalCounts[j] += 1;
+                    }
                 }
             }
 
             if (cIDToSize.containsKey(cID)) {
-                cIDToSize.put(cID, cIDToSize.get(cID) + binXEnd - binXStart);
-                float[] vec = cIDToCenter.get(cID);
-                for (int j = 0; j < vec.length; j++) {
-                    total[j] += vec[j];
+                float[] sumVec = cIDToCenter.get(cID);
+                for (int j = 0; j < sumVec.length; j++) {
+                    totalSum[j] += sumVec[j];
                 }
-            } else {
-                cIDToSize.put(cID, binXEnd - binXStart);
+
+                int[] countVec = cIDToSize.get(cID);
+                for (int j = 0; j < countVec.length; j++) {
+                    totalCounts[j] += countVec[j];
+                }
             }
-            cIDToCenter.put(cID, total);
+            cIDToCenter.put(cID, totalSum);
+            cIDToSize.put(cID, totalCounts);
         }
 
         for (Integer key : cIDToCenter.keySet()) {
@@ -142,8 +175,8 @@ public class LeftOverClusterIdentifier {
     }
 
 
-    private static List<SubcompartmentInterval> getNewlyAssignedCompartments(Chromosome chromosome, Map<Integer, float[]> cIDToCenter,
-                                                                             Set<Integer> indicesMissing, float[][] allDataForRegion, int resolution) {
+    private List<SubcompartmentInterval> getNewlyAssignedCompartments(Chromosome chromosome, Map<Integer, float[]> cIDToCenter,
+                                                                      Set<Integer> indicesMissing, float[][] allDataForRegion, int resolution) {
 
         List<SubcompartmentInterval> intervals = new ArrayList<>();
 
@@ -159,13 +192,13 @@ public class LeftOverClusterIdentifier {
         return intervals;
     }
 
-    private static int getClosestClusterID(float[] vector, Map<Integer, float[]> cIDToCenter) {
+    private int getClosestClusterID(float[] vector, Map<Integer, float[]> cIDToCenter) {
         int currID = Integer.MAX_VALUE;
         double overallDistance = Double.MAX_VALUE;
         boolean nothingChanged = true;
 
         for (Integer key : cIDToCenter.keySet()) {
-            double newDistance = Metrics.getL2Distance(cIDToCenter.get(key), vector);
+            double newDistance = metric.distance(cIDToCenter.get(key), vector);
 
             if (newDistance < overallDistance) {
                 overallDistance = newDistance;

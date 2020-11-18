@@ -27,6 +27,11 @@ package mixer.clt;
 import jargs.gnu.CmdLineParser;
 import javastraw.type.NormalizationHandler;
 import javastraw.type.NormalizationType;
+import mixer.utils.similaritymeasures.RobustCosineSimilarity;
+import mixer.utils.similaritymeasures.RobustGaussianSimilarity;
+import mixer.utils.similaritymeasures.RobustJensenShannonDivergence;
+import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,11 +52,11 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option multipleChromosomesOption = addStringOption('c', "chromosomes");
     private final Option multipleResolutionsOption = addStringOption('r', "resolutions");
     private final Option threadNumOption = addIntegerOption('z', "threads");
+    private final Option subsampleNumOption = addIntegerOption("subsample");
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
-    private final Option sliceCorrelationOption = addBooleanOption("corr");
-    private final Option sliceCosineOption = addBooleanOption("cosine");
+    private final Option sliceMetricTypeOption = addStringOption("type");
 
 
     public CommandLineParserForMixer() {
@@ -81,6 +86,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public int getNumThreads() {
         return optionToInt(threadNumOption);
+    }
+
+    public int getSubsamplingOption() {
+        return optionToInt(subsampleNumOption);
     }
 
     /**
@@ -120,14 +129,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getVerboseOption() {
         return optionToBoolean(verboseOption);
-    }
-
-    public boolean getCorrelationOption() {
-        return optionToBoolean(sliceCorrelationOption);
-    }
-
-    public boolean getCosineOption() {
-        return optionToBoolean(sliceCosineOption);
     }
 
     public boolean getVersionOption() {
@@ -185,5 +186,27 @@ public class CommandLineParserForMixer extends CmdLineParser {
             System.exit(7);
         }
         return null;
+    }
+
+    public SimilarityMetric getMetricTypeOption() {
+        return getMetricType(optionToString(sliceMetricTypeOption));
+    }
+
+    private SimilarityMetric getMetricType(String potentialType) {
+        String name = potentialType.toLowerCase();
+        if (name.contains("zscore")) {
+            MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
+        }
+
+        if (name.contains("cosine")) {
+            return RobustCosineSimilarity.SINGLETON;
+        } else if (name.contains("gaussian")) {
+            return RobustGaussianSimilarity.SINGLETON;
+        } else if (name.contains("js")) {
+            return RobustJensenShannonDivergence.SINGLETON;
+        }
+        System.err.println("Invalid type: " + potentialType);
+        System.err.println("Using cosine similarity by default: " + potentialType);
+        return RobustCosineSimilarity.SINGLETON;
     }
 }

@@ -25,6 +25,8 @@
 package mixer.clt;
 
 import mixer.MixerTools;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 
 
 /**
@@ -37,21 +39,41 @@ public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
 
-
         String[] strings;
 
-        String refs = "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed+" +
-                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed+" +
+        String refs = "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed," +
+                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
-        String folder = "final_baseline_JSDist";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2", "--cosine",
-                "--compare", refs,
+        LeftOverClusterIdentifier.metric = RobustEuclideanDistance.SINGLETON;
+        String folder = "phoenix_clone4_umap";
+        strings = new String[]{"slice", "-r", "250000", "-k", "KR",
+                "--type", "cosine", "--subsample", "50",
+                //"--compare", refs,
                 file14, "2,11,10",
                 "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
         System.gc();
+
+
+        String degronfolder = "/Users/mss/Desktop/degron_shuffle";
+        String wthic = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/degron/notreat_nosync_combined.hic";
+        String treatedhic = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/degron/6hrtreat_nosync_combined.hic";
+
+
+        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
+                file14,
+                //"/Users/mss/Desktop/SLICE.work/tempslice/phoenix_clone_cosine_sub50/phoenix_clone_cosine_sub50_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/phoenix_clone3_cosine_sub50_leftMSE/phoenix_clone3_cosine_sub50_leftMSE_5_clusters_gm12878_rh14_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/SLICE.work/tempslice/phoenix_clone3_cosine_sub50_leftMAE/phoenix_clone3_cosine_sub50_leftMAE_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle3",
+                "clone3MSE,clone3MAE"
+        };
+        System.out.println("-----------------------------------------------------");
+        //MixerTools.main(strings);
+        System.gc();
+
     }
 }

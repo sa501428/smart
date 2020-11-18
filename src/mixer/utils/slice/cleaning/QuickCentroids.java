@@ -24,13 +24,17 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.utils.shuffle.Metrics;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class QuickCentroids {
+
+    private static final SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
+
     public static float[][] generateCentroids(float[][] matrix, int numCentroids, int numIters) {
 
         List<Integer> bestIndices = getInitialIndices(matrix, numCentroids);
@@ -42,13 +46,13 @@ public class QuickCentroids {
         }
 
         for (int z = 0; z < numIters; z++) {
-            centroids = getUpdatedCentroids(centroids, matrix);
+            centroids = getUpdatedCentroids(centroids, matrix, metric);
         }
 
         return centroids;
     }
 
-    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix) {
+    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix, SimilarityMetric metric) {
 
         int[] closestCentroid = getClosestCentroidsForEachVector(prevCentroids, matrix);
 
@@ -94,7 +98,7 @@ public class QuickCentroids {
         double currDist = Double.MAX_VALUE;
 
         for (int k = 0; k < prevCentroids.length; k++) {
-            double newDist = Metrics.getNonNanMeanSquaredError(prevCentroids[k], vector);
+            double newDist = metric.distance(prevCentroids[k], vector);
             if (newDist < currDist) {
                 currDist = newDist;
                 bestIndexSoFar = k;
@@ -120,7 +124,7 @@ public class QuickCentroids {
 
     private static void updateDistances(float[] distFromClosestPoint, float[][] matrix, Integer index) {
         for (int k = 0; k < matrix.length; k++) {
-            float newDist = (float) Metrics.getNonNanMeanSquaredError(matrix[k], matrix[index]);
+            float newDist = metric.distance(matrix[k], matrix[index]);
             distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
         }
     }

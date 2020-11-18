@@ -25,7 +25,6 @@
 package mixer.utils.common;
 
 import javastraw.tools.MatrixTools;
-import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +34,6 @@ import java.util.List;
  * Helper methods to handle matrix operations
  */
 public class FloatMatrixTools {
-
-    private static final PearsonsCorrelation pearsonsCorrelation = new PearsonsCorrelation();
 
     public static void thresholdNonZerosByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
         float[] colMeans = getColNonZeroMeansNonNan(matrix, batchSize);
@@ -221,5 +218,37 @@ public class FloatMatrixTools {
         }
 
         return aggregate;
+    }
+
+    public static float[][] cleanUpMatrix(float[][] matrix) {
+        for (int r = 0; r < matrix.length; r++) {
+            for (int c = 0; c < matrix[r].length; c++) {
+                if (Float.isNaN(matrix[r][c]) || Float.isInfinite(matrix[r][c]) || Math.abs(matrix[r][c]) < 1E-10) {
+                    matrix[r][c] = 0;
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public static void addBToA(float[][] a, float[][] b) {
+        if (a.length == b.length && a[0].length == b[0].length) {
+            for (int i = 0; i < a.length; i++) {
+                for (int j = 0; j < a[i].length; j++) {
+                    a[i][j] += b[i][j];
+                }
+            }
+        } else {
+            System.err.println("dimensions incorrect " + a.length + "==" + b.length
+                    + "; " + a[0].length + "==" + b[0].length);
+        }
+    }
+
+    public static void scaleBy(float[][] matrix, float scalar) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] *= scalar;
+            }
+        }
     }
 }

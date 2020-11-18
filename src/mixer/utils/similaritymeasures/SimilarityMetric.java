@@ -22,43 +22,18 @@
  *  THE SOFTWARE.
  */
 
-package mixer.clt;
+package mixer.utils.similaritymeasures;
 
-import mixer.MixerGlobals;
-import mixer.algos.ChromosomeWalker;
-import mixer.algos.Shuffle;
-import mixer.algos.Slice;
+public abstract class SimilarityMetric {
+    private final boolean mIsSymmmetric;
 
-
-/**
- * Factory for command line tools to call different functions
- *
- * @author Muhammad Shamim
- * @since 1/30/2015
- */
-public class CLTFactory {
-
-    public static void generalUsage() {
-        System.out.println("Mixer Tools Version " + MixerGlobals.versionNum);
-        System.out.println("Usage:");
-        System.out.println("\t" + "-h, --help print help");
-        System.out.println("\t" + "-v, --verbose verbose mode");
-        System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
-        System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
+    public SimilarityMetric(boolean isSymmmetric) {
+        mIsSymmmetric = isSymmmetric;
     }
 
-    public static MixerCLT getCLTCommand(String cmd) {
+    abstract public float distance(final float[] x, final float[] y);
 
-        cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice") || cmd.startsWith("dice")) {
-            return new Slice(cmd);
-        } else if (cmd.equals("walk")) {
-            return new ChromosomeWalker();
-        } else if (cmd.equals("shuffle")) {
-            return new Shuffle();
-        }
-
-        return null;
+    public boolean isSymmetric() {
+        return this.mIsSymmmetric;
     }
 }

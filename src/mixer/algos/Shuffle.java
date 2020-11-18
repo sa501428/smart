@@ -24,21 +24,19 @@
 
 package mixer.algos;
 
+import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
+import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.similaritymeasures.RobustCosineSimilarity;
-import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.FullGenomeOEWithinClusters;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
-import mixer.utils.slice.matrices.SliceMatrix;
-import mixer.utils.slice.structures.HiCInterTools;
+import mixer.utils.shuffle.ShuffleMatrix;
+import mixer.utils.slice.structures.SliceUtils;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -47,52 +45,33 @@ import java.util.Random;
  * <p>
  * Created by muhammadsaadshamim on 9/14/15.
  */
-public class Slice extends MixerCLT {
+public class Shuffle extends MixerCLT {
 
-    private final List<Dataset> datasetList = new ArrayList<>();
-    private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
-    private int resolution = 100000;
     private Dataset ds;
+    private int resolution = 100000;
+    private int compressionFactor = 8;
     private File outputDirectory;
-    public static SimilarityMetric metric = RobustCosineSimilarity.SINGLETON;
-    private String prefix = "";
+    private String[] prefix;
     private String[] referenceBedFiles;
-    private final boolean compareMaps;
 
     // subcompartment lanscape identification via clustering enrichment
-    public Slice(String command) {
-        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE]  [-w window] " +
-                "[--compare reference.bed] [--corr] [--verbose] " +
-                "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
-        compareMaps = command.contains("dice");
+    public Shuffle() {
+        super("shuffle [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
+                "<file.hic> <subcompartment.bed> <outfolder> <prefix>");
     }
 
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
         if (args.length != 5) {
-            printUsageAndExit(5);
+            printUsageAndExit(51);
         }
 
-        for (String path : args[1].split(",")) {
-            System.out.println("Extracting " + path);
-            inputHicFilePaths.add(path);
-            datasetList.add(HiCFileTools.extractDatasetForCLT(path, true, false));
-        }
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
 
-        try {
-            String[] valString = args[2].split(",");
-            FullGenomeOEWithinClusters.startingClusterSizeK = Integer.parseInt(valString[0]);
-            FullGenomeOEWithinClusters.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) -
-                    FullGenomeOEWithinClusters.startingClusterSizeK;
-            FullGenomeOEWithinClusters.numAttemptsForKMeans = Integer.parseInt(valString[2]);
-        } catch (Exception e) {
-            printUsageAndExit(5);
-        }
-
-        ds = datasetList.get(0);
+        referenceBedFiles = args[2].split(",");
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
-        prefix = args[4];
+        prefix = args[4].split(",");
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null) norm = preferredNorm;
@@ -112,24 +91,9 @@ public class Slice extends MixerCLT {
         }
 
         int minSize = mixerParser.getAPAWindowSizeOption();
-        if (minSize > 0) {
-            SliceMatrix.numColumnsToPutTogether = minSize;
-        } else {
-            SliceMatrix.numColumnsToPutTogether = HiCInterTools.calculateIdealWidth(ds, resolution);
-            System.out.println("Using compression width: " + SliceMatrix.numColumnsToPutTogether);
+        if (minSize > 1) {
+            compressionFactor = minSize;
         }
-
-        int subsampling = mixerParser.getSubsamplingOption();
-        if (subsampling > 1) {
-            MatrixCleanupAndSimilarityMetric.NUM_PER_CENTROID = subsampling;
-        }
-
-        String bedFiles = mixerParser.getCompareReferenceOption();
-        if (bedFiles != null && bedFiles.length() > 1) {
-            referenceBedFiles = bedFiles.split(",");
-        }
-
-        metric = mixerParser.getMetricTypeOption();
     }
 
     @Override
@@ -139,12 +103,16 @@ public class Slice extends MixerCLT {
         if (givenChromosomes != null)
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
-        if (datasetList.size() < 1) return;
-
-        FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles, metric);
-        withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, 0, compareMaps);
-
-        System.out.println("\nClustering complete");
+        for (int i = 0; i < referenceBedFiles.length; i++) {
+            GenomeWideList<SubcompartmentInterval> subcompartments =
+                    SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, referenceBedFiles[i]);
+            System.out.println("Processing " + prefix[i]);
+            File newFolder = new File(outputDirectory, prefix[i]);
+            UNIXTools.makeDir(newFolder);
+            ShuffleMatrix matrix = new ShuffleMatrix(ds, norm, resolution, compressionFactor);
+            matrix.runAnalysis(subcompartments, newFolder);
+            matrix.savePlotsAndResults(newFolder);
+        }
+        System.out.println("Shuffle complete");
     }
 }
