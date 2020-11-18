@@ -139,15 +139,15 @@ public class MatrixCleanupAndSimilarityMetric {
 
         if (USE_ZSCORE) {
             FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
+            File temp = new File(outputDirectory, "zscore_new.npy");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
         }
 
         System.out.println("Generating similarity matrix");
         data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID);
 
-        File temp = new File(outputDirectory, "data.npy");
+        File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
-
-        System.exit(0);
 
         System.out.println("Run UMAP");
         //runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);

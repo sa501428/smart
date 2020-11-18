@@ -21,21 +21,21 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package mixer.utils.custommetrics;
+package mixer.utils.similaritymeasures;
 
 import tagbio.umap.metric.Metric;
 
 /**
  * Correlation distance.
  */
-public final class RobustCorrelationMetric extends Metric {
+public final class RobustCorrelationSimilarity extends Metric {
 
     /**
      * Correlation distance.
      */
-    public static final RobustCorrelationMetric SINGLETON = new RobustCorrelationMetric();
+    public static final RobustCorrelationSimilarity SINGLETON = new RobustCorrelationSimilarity();
 
-    private RobustCorrelationMetric() {
+    private RobustCorrelationSimilarity() {
         super(true);
     }
 
@@ -70,12 +70,6 @@ public final class RobustCorrelationMetric extends Metric {
             }
         }
 
-        if (normX == 0.0 && normY == 0.0) {
-            return 0;
-        } else if (dotProduct == 0.0) {
-            return 1;
-        } else {
-            return (float) (1 - (dotProduct / Math.sqrt(normX * normY)));
-        }
+        return (float) (dotProduct / Math.sqrt(normX * normY));
     }
 }

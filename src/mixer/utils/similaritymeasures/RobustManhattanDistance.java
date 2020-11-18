@@ -22,15 +22,41 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.similaritymeasures;
+
+import tagbio.umap.metric.Metric;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Euclidean distance.
  */
-public class MixerGlobals {
+public final class RobustManhattanDistance extends Metric {
 
-    public static final String versionNum = "3.07.01";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+  /**
+   * Euclidean metric.
+   */
+  public static final RobustManhattanDistance SINGLETON = new RobustManhattanDistance();
+
+  private RobustManhattanDistance() {
+    super(false);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    //  D(x, y) = \sqrt{\sum_i (x_i - y_i)^2}
+    double result = getNonNanMeanAbsoluteError(x, y);
+    return (float) (result * x.length);
+  }
+
+  private double getNonNanMeanAbsoluteError(float[] x, float[] y) {
+    double sumOfError = 0;
+    int numDiffs = 0;
+    for (int i = 0; i < x.length; i++) {
+      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
+        sumOfError += Math.abs(x[i] - y[i]);
+        numDiffs++;
+      }
+    }
+    numDiffs = Math.max(numDiffs, 1);
+    return sumOfError / numDiffs;
+  }
 }

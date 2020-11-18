@@ -104,6 +104,18 @@ public class ConcurrentKMeans implements KMeans {
     }
 
     /**
+     * Compute the euclidean distance between the two arguments.
+     */
+    private float distanceL2Norm(float[] coord, float[] center) {
+        double sumSquared = 0.0;
+        for (int i = 0; i < coord.length; i++) {
+            float v = coord[i] - center[i];
+            sumSquared += (v * v);
+        }
+        return (float) Math.sqrt(sumSquared);
+    }
+
+    /**
      * Adds a KMeansListener to be notified of significant happenings.
      *
      * @param l the listener to be added.
@@ -413,9 +425,6 @@ public class ConcurrentKMeans implements KMeans {
                     nearest = c;
                 }
             }
-        }
-        if (nearest < 0) {
-            System.err.println("Something is going wrong in kmeans...");
         }
         return nearest;
     }
@@ -971,18 +980,6 @@ public class ConcurrentKMeans implements KMeans {
                         }
                     }
                 }
-            }
-
-            /**
-             * Compute the euclidean distance between the two arguments.
-             */
-            private float distanceL2Norm(float[] coord, float[] center) {
-                float sumSquared = 0f;
-                for (int i = 0; i < coord.length; i++) {
-                    float v = coord[i] - center[i];
-                    sumSquared += (v * v);
-                }
-                return sumSquared;
             }
 
             /**

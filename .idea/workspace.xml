@@ -30,10 +30,97 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="bug fixes">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/org_jetbrains_kotlin_kotlin_stdlib_0_11_91_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustManhattanDistance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Mixer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Mixer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/KotlinJavaRuntime.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/broadinstitute.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/Folder-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/assembly/small-ne-invert.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/assembly/small-ne-paste.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/assembly/small-nw-paste.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/assembly/small-scissors.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/assembly/small-se-paste.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/assembly/small-sw-invert.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/assembly/small-sw-paste.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/center.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/close.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/collapseall.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/crystal/fileclose.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/cursor-fist.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/cursor-openhand-arrow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/cursor-openhand-dot.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/cursor-openhand.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/dragNdrop.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/dsliderbar.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/dsliderbottom.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/dslidertop.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/east.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/expandall.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/file-document.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/genomespacelogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/info.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/info2.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/juicebox.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/juicebox256.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/color.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/copy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/down.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/enlarge_clicked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/enlarge_clicked_down.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/enlarge_clicked_up.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/erase.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/export_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/export_icon_green.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/eye_clicked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/eye_clicked_green.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/full_clicked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/hiclogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/import_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/import_icon_green.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/ll_clicked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/pencil.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/pencil_gray.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/sparse.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/trans_clicked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/trans_clicked_green.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/trash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/undo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/up.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/layer/ur_clicked.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/left-arrow.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/lock.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/lock_open.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/manifest.mf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/no-tooltip.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/north.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/regionTool.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/right-arrow.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/roi_image.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/slider.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/south.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/tooltip.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/west.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/zoom-minus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/zoom-plus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/zoom.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/images/zoomin.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustCorrelationMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCorrelationSimilarity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/custommetrics/RobustEuclideanMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanupAndSimilarityMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanupAndSimilarityMetric.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ClusterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ClusterTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ConcurrentKMeans.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ConcurrentKMeans.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +154,10 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="project.structure.last.edited" value="Artifacts" />
@@ -76,15 +167,15 @@
     <property name="settings.editor.selected.configurable" value="reference.settings.ide.settings.file-colors" />
   </component>
   <component name="RecentsManager">
-    <key name="CreateClassDialog.RecentsKey">
-      <recent name="mixer.utils.slice.structures" />
-      <recent name="mixer.utils.slice" />
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="mixer.utils.similaritymeasures" />
     </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/lib/general" />
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.structures" />
+      <recent name="mixer.utils.slice" />
     </key>
   </component>
   <component name="RunManager">
@@ -314,71 +405,74 @@
     <state x="466" y="285" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.804@0.23.1440.804" timestamp="1602984020850" />
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.811@0.23.1440.811" timestamp="1605084384344" />
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.812@0.23.1440.812" timestamp="1603907822345" />
-    <state x="297" y="23" width="846" height="811" key="CommitChangelistDialog2" timestamp="1605643453332">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2" timestamp="1605673975313">
+      <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.801@0.23.1440.801" timestamp="1603366056339" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.804@0.23.1440.804" timestamp="1603387685926" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.810@0.23.1440.810" timestamp="1604595695388" />
-    <state x="297" y="23" width="846" height="811" key="CommitChangelistDialog2/0.23.1440.811@0.23.1440.811" timestamp="1605643453332" />
+    <state x="297" y="23" width="846" height="811" key="CommitChangelistDialog2/0.23.1440.811@0.23.1440.811" timestamp="1605657744310" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.812@0.23.1440.812" timestamp="1605604512212" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.814@0.23.1440.814" timestamp="1605560422289" />
-    <state x="100" y="124" width="1152" height="649" key="DiffContextDialog" timestamp="1605643446714">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2/0.23.1440.816@0.23.1440.816" timestamp="1605673975313" />
+    <state x="100" y="125" width="1152" height="648" key="DiffContextDialog" timestamp="1605672229752">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state x="100" y="123" width="1240" height="601" key="DiffContextDialog/0.23.1440.801@0.23.1440.801" timestamp="1603366047921" />
     <state x="100" y="123" key="DiffContextDialog/0.23.1440.804@0.23.1440.804" timestamp="1603387673194" />
     <state x="100" y="124" key="DiffContextDialog/0.23.1440.810@0.23.1440.810" timestamp="1604595677303" />
-    <state x="100" y="124" width="1152" height="648" key="DiffContextDialog/0.23.1440.811@0.23.1440.811" timestamp="1605643446714" />
-    <state x="100" y="124" width="1152" height="649" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1605604510298" />
-    <state x="100" y="124" width="1152" height="651" key="DiffContextDialog/0.23.1440.814@0.23.1440.814" timestamp="1605560680911" />
-    <state width="1398" height="238" key="GridCell.Tab.0.bottom" timestamp="1605634061598">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="100" y="124" width="1152" height="648" key="DiffContextDialog/0.23.1440.811@0.23.1440.811" timestamp="1605658476479" />
+    <state x="100" y="124" width="1152" height="649" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1605653696879" />
+    <state x="100" y="125" width="1152" height="651" key="DiffContextDialog/0.23.1440.814@0.23.1440.814" timestamp="1605672229752" />
+    <state width="1398" height="238" key="GridCell.Tab.0.bottom" timestamp="1605662874583">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state width="1398" height="205" key="GridCell.Tab.0.bottom/0.23.1440.801@0.23.1440.801" timestamp="1603382885594" />
     <state width="1398" height="238" key="GridCell.Tab.0.bottom/0.23.1440.810@0.23.1440.810" timestamp="1605169847756" />
-    <state width="1398" height="238" key="GridCell.Tab.0.bottom/0.23.1440.811@0.23.1440.811" timestamp="1605634061598" />
-    <state width="1398" height="238" key="GridCell.Tab.0.bottom/0.23.1440.812@0.23.1440.812" timestamp="1605632269277" />
-    <state width="1398" height="206" key="GridCell.Tab.0.bottom/0.23.1440.814@0.23.1440.814" timestamp="1605037755361" />
+    <state width="1398" height="238" key="GridCell.Tab.0.bottom/0.23.1440.811@0.23.1440.811" timestamp="1605657322114" />
+    <state width="1398" height="238" key="GridCell.Tab.0.bottom/0.23.1440.812@0.23.1440.812" timestamp="1605660140553" />
+    <state width="1398" height="238" key="GridCell.Tab.0.bottom/0.23.1440.814@0.23.1440.814" timestamp="1605662874583" />
     <state width="1398" height="208" key="GridCell.Tab.0.bottom/0.23.1440.816@0.23.1440.816" timestamp="1603909314032" />
-    <state width="1398" height="238" key="GridCell.Tab.0.center" timestamp="1605634061597">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state width="1398" height="238" key="GridCell.Tab.0.center" timestamp="1605662874583">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state width="1398" height="205" key="GridCell.Tab.0.center/0.23.1440.801@0.23.1440.801" timestamp="1603382885593" />
     <state width="1398" height="238" key="GridCell.Tab.0.center/0.23.1440.810@0.23.1440.810" timestamp="1605169847755" />
-    <state width="1398" height="238" key="GridCell.Tab.0.center/0.23.1440.811@0.23.1440.811" timestamp="1605634061597" />
-    <state width="1398" height="238" key="GridCell.Tab.0.center/0.23.1440.812@0.23.1440.812" timestamp="1605632269277" />
-    <state width="1398" height="206" key="GridCell.Tab.0.center/0.23.1440.814@0.23.1440.814" timestamp="1605037755360" />
+    <state width="1398" height="238" key="GridCell.Tab.0.center/0.23.1440.811@0.23.1440.811" timestamp="1605657322112" />
+    <state width="1398" height="238" key="GridCell.Tab.0.center/0.23.1440.812@0.23.1440.812" timestamp="1605660140552" />
+    <state width="1398" height="238" key="GridCell.Tab.0.center/0.23.1440.814@0.23.1440.814" timestamp="1605662874583" />
     <state width="1398" height="208" key="GridCell.Tab.0.center/0.23.1440.816@0.23.1440.816" timestamp="1603909314032" />
-    <state width="1398" height="238" key="GridCell.Tab.0.left" timestamp="1605634061597">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state width="1398" height="238" key="GridCell.Tab.0.left" timestamp="1605662874582">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state width="1398" height="205" key="GridCell.Tab.0.left/0.23.1440.801@0.23.1440.801" timestamp="1603382885593" />
     <state width="1398" height="238" key="GridCell.Tab.0.left/0.23.1440.810@0.23.1440.810" timestamp="1605169847755" />
-    <state width="1398" height="238" key="GridCell.Tab.0.left/0.23.1440.811@0.23.1440.811" timestamp="1605634061597" />
-    <state width="1398" height="238" key="GridCell.Tab.0.left/0.23.1440.812@0.23.1440.812" timestamp="1605632269276" />
-    <state width="1398" height="206" key="GridCell.Tab.0.left/0.23.1440.814@0.23.1440.814" timestamp="1605037755359" />
+    <state width="1398" height="238" key="GridCell.Tab.0.left/0.23.1440.811@0.23.1440.811" timestamp="1605657322111" />
+    <state width="1398" height="238" key="GridCell.Tab.0.left/0.23.1440.812@0.23.1440.812" timestamp="1605660140552" />
+    <state width="1398" height="238" key="GridCell.Tab.0.left/0.23.1440.814@0.23.1440.814" timestamp="1605662874582" />
     <state width="1398" height="208" key="GridCell.Tab.0.left/0.23.1440.816@0.23.1440.816" timestamp="1603909314031" />
-    <state width="1398" height="238" key="GridCell.Tab.0.right" timestamp="1605634061598">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state width="1398" height="238" key="GridCell.Tab.0.right" timestamp="1605662874583">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state width="1398" height="205" key="GridCell.Tab.0.right/0.23.1440.801@0.23.1440.801" timestamp="1603382885594" />
     <state width="1398" height="238" key="GridCell.Tab.0.right/0.23.1440.810@0.23.1440.810" timestamp="1605169847756" />
-    <state width="1398" height="238" key="GridCell.Tab.0.right/0.23.1440.811@0.23.1440.811" timestamp="1605634061598" />
-    <state width="1398" height="238" key="GridCell.Tab.0.right/0.23.1440.812@0.23.1440.812" timestamp="1605632269277" />
-    <state width="1398" height="206" key="GridCell.Tab.0.right/0.23.1440.814@0.23.1440.814" timestamp="1605037755360" />
+    <state width="1398" height="238" key="GridCell.Tab.0.right/0.23.1440.811@0.23.1440.811" timestamp="1605657322113" />
+    <state width="1398" height="238" key="GridCell.Tab.0.right/0.23.1440.812@0.23.1440.812" timestamp="1605660140553" />
+    <state width="1398" height="238" key="GridCell.Tab.0.right/0.23.1440.814@0.23.1440.814" timestamp="1605662874583" />
     <state width="1398" height="208" key="GridCell.Tab.0.right/0.23.1440.816@0.23.1440.816" timestamp="1603909314032" />
     <state x="599" y="138" key="RollbackChangesDialog" timestamp="1605595820457">
       <screen x="0" y="23" width="1440" height="812" />
     </state>
     <state x="599" y="138" key="RollbackChangesDialog/0.23.1440.811@0.23.1440.811" timestamp="1605079442583" />
     <state x="599" y="138" key="RollbackChangesDialog/0.23.1440.812@0.23.1440.812" timestamp="1605595820457" />
-    <state x="221" y="23" key="SettingsEditor" timestamp="1605038640405">
-      <screen x="0" y="23" width="1440" height="814" />
+    <state x="221" y="23" width="1024" height="816" key="SettingsEditor" timestamp="1605670469159">
+      <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="221" y="23" key="SettingsEditor/0.23.1440.801@0.23.1440.801" timestamp="1602980127828" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.804@0.23.1440.804" timestamp="1603394947494" />
+    <state x="221" y="23" key="SettingsEditor/0.23.1440.811@0.23.1440.811" timestamp="1605647536019" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.814@0.23.1440.814" timestamp="1605038640405" />
+    <state x="221" y="23" width="1024" height="816" key="SettingsEditor/0.23.1440.816@0.23.1440.816" timestamp="1605670469159" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2" timestamp="1605643455124">
       <screen x="0" y="23" width="1440" height="811" />
     </state>
@@ -388,20 +482,25 @@
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.811@0.23.1440.811" timestamp="1605643455124" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.812@0.23.1440.812" timestamp="1605027897863" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.814@0.23.1440.814" timestamp="1605560423703" />
-    <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1605027959065">
-      <screen x="0" y="23" width="1440" height="812" />
+    <state x="430" y="328" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1605647453643">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state x="430" y="328" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.23.1440.811@0.23.1440.811" timestamp="1605647453643" />
+    <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1605647133106">
+      <screen x="0" y="23" width="1440" height="811" />
     </state>
     <state x="518" y="344" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.801@0.23.1440.801" timestamp="1603178678490" />
     <state x="518" y="347" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.810@0.23.1440.810" timestamp="1604503326458" />
+    <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.811@0.23.1440.811" timestamp="1605647133106" />
     <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.812@0.23.1440.812" timestamp="1605027959065" />
-    <state x="418" y="179" width="604" height="523" key="find.popup" timestamp="1605643474765">
+    <state x="418" y="179" width="604" height="523" key="find.popup" timestamp="1605657988372">
       <screen x="0" y="23" width="1440" height="811" />
     </state>
     <state x="418" y="178" width="604" height="490" key="find.popup/0.23.1440.801@0.23.1440.801" timestamp="1603346393967" />
     <state x="418" y="179" width="604" height="518" key="find.popup/0.23.1440.806@0.23.1440.806" timestamp="1603609702516" />
     <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.810@0.23.1440.810" timestamp="1605165790562" />
-    <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.811@0.23.1440.811" timestamp="1605643474765" />
-    <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.812@0.23.1440.812" timestamp="1605632864811" />
+    <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.811@0.23.1440.811" timestamp="1605657988372" />
+    <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.812@0.23.1440.812" timestamp="1605653743454" />
     <state x="418" y="180" width="604" height="524" key="find.popup/0.23.1440.814@0.23.1440.814" timestamp="1603910354886" />
     <state x="418" y="206" key="refactoring.ChangeSignatureDialog" timestamp="1605458027550">
       <screen x="0" y="23" width="1440" height="811" />

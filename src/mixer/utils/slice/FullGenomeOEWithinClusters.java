@@ -79,8 +79,6 @@ public class FullGenomeOEWithinClusters {
                     norm, resolution, outputDirectory, generator, new String[]{}, badIndexFinder, dI, metric);
             interMatrix.appendDataAlongExistingRows(additionalData);
         }
-
-        System.gc();
     }
 
     public void extractFinalGWSubcompartments(Random generator, List<String> inputHicFilePaths,
@@ -92,7 +90,7 @@ public class FullGenomeOEWithinClusters {
             interMatrix.exportData();
         }
 
-        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix, metric);
+        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, interMatrix);
 
         double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
         Arrays.fill(iterToWcssAicBic[1], Double.MAX_VALUE);
@@ -132,7 +130,7 @@ public class FullGenomeOEWithinClusters {
 
         if (!compareMaps) {
             System.out.println("Post processing");
-            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norm, resolution, metric);
+            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norm, resolution);
             identifier.identify(numItersToResults, interMatrix.getBadIndices());
         }
 

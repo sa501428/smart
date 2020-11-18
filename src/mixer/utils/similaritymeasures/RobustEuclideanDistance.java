@@ -22,32 +22,32 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.custommetrics;
+package mixer.utils.similaritymeasures;
 
 import tagbio.umap.metric.Metric;
 
 /**
  * Euclidean distance.
  */
-public final class RobustEuclideanMetric extends Metric {
+public final class RobustEuclideanDistance extends Metric {
 
   /**
    * Euclidean metric.
    */
-  public static final RobustEuclideanMetric SINGLETON = new RobustEuclideanMetric();
+  public static final RobustEuclideanDistance SINGLETON = new RobustEuclideanDistance();
 
-  private RobustEuclideanMetric() {
+  private RobustEuclideanDistance() {
     super(false);
   }
 
   @Override
   public float distance(final float[] x, final float[] y) {
     //  D(x, y) = \sqrt{\sum_i (x_i - y_i)^2}
-    float result = getNonNanMeanSquaredError(x, y);
+    double result = getNonNanMeanSquaredError(x, y);
     return (float) Math.sqrt(result * x.length);
   }
 
-  private float getNonNanMeanSquaredError(float[] x, float[] y) {
+  private double getNonNanMeanSquaredError(float[] x, float[] y) {
     double sumOfSquares = 0;
     int numDiffs = 0;
     for (int i = 0; i < x.length; i++) {
@@ -58,6 +58,6 @@ public final class RobustEuclideanMetric extends Metric {
       }
     }
     numDiffs = Math.max(numDiffs, 1);
-    return (float) (sumOfSquares / numDiffs);
+    return (sumOfSquares / numDiffs);
   }
 }

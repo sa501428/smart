@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.utils.custommetrics.RobustEuclideanMetric;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.concurrent.ExecutorService;
@@ -45,7 +45,7 @@ public class SimilarityMatrixTools {
         final int numCentroids = matrix.length / numPerCentroid;
         final float[][] centroids;
         if (numPerCentroid > 1) {
-            centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, RobustEuclideanMetric.SINGLETON);
+            centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, RobustEuclideanDistance.SINGLETON);
         } else {
             centroids = matrix;
         }

@@ -154,10 +154,10 @@ public class ClusterTools {
         IntMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
     }
 
-    public static float[] normalize(float[] vector, Integer total) {
+    public static float[] normalize(float[] vector, int[] counts) {
         float[] newVector = new float[vector.length];
         for (int k = 0; k < vector.length; k++) {
-            newVector[k] = vector[k] / total;
+            newVector[k] = vector[k] / Math.max(counts[k], 1);
         }
         return newVector;
     }

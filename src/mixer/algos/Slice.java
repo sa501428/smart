@@ -128,7 +128,6 @@ public class Slice extends MixerCLT {
         }
 
         metric = mixerParser.getMetricTypeOption();
-        MatrixCleanupAndSimilarityMetric.USE_ZSCORE = mixerParser.getZscoreOption();
     }
 
     @Override

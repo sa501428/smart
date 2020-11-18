@@ -31,6 +31,7 @@ import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.RobustGaussianSimilarity;
 import mixer.utils.similaritymeasures.RobustJensenShannonDivergence;
 import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,6 +199,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     private SimilarityMetric getMetricType(String potentialType) {
         String name = potentialType.toLowerCase();
+        if (name.contains("zscore")) {
+            MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
+        }
+
         if (name.contains("cosine")) {
             return RobustCosineSimilarity.SINGLETON;
         } else if (name.contains("gaussian")) {
