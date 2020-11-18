@@ -30,7 +30,7 @@ package mixer;
  */
 public class MixerGlobals {
 
-    public static final String versionNum = "3.07.04";
+    public static final String versionNum = "3.07.05";
     public static final int bufferSize = 2097152;
     public static boolean printVerboseComments = false;
 }

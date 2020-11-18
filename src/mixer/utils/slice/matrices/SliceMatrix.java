@@ -71,6 +71,13 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         Map<Integer, Integer> indexToFilteredLength = calculateActualLengthForChromosomes(chromosomes);
         Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(indexToFilteredLength);
 
+        IndexOrderer orderer = null;
+        if (numColumnsToPutTogether > 1) {
+            orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
+                    badIndexLocations);
+            indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
+        }
+
         Pair<Integer, int[][]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);
         Pair<Integer, int[][]> compressedDimensions = calculateDimensionInterMatrix(chromosomes, indexToCompressedLength);
 
@@ -79,12 +86,6 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
 
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
-
-        IndexOrderer orderer = null;
-        if (numColumnsToPutTogether > 1) {
-            orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
-                    badIndexLocations);
-        }
         System.out.println("Indexing complete");
 
         for (int i = 0; i < chromosomes.length; i++) {
@@ -163,18 +164,18 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             System.exit(99);
         }
 
-        Map<Integer, Integer> genomePosToLocal1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, 1);
-        Map<Integer, Integer> genomePosToLocal2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), offsetIndex2, 1);
+        Map<Integer, Integer> rowPosChrom1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, 1);
+        Map<Integer, Integer> rowPosChrom2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), offsetIndex2, 1);
 
-        Map<Integer, Integer> genomePosToCompressed1, genomePosToCompressed2;
+        Map<Integer, Integer> colPosChrom1, colPosChrom2;
         if (orderer != null) {
-            genomePosToCompressed1 = makeLocalReorderedIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1,
+            colPosChrom1 = makeLocalReorderedIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1,
                     numColumnsToPutTogether, orderer.get(chr1));
-            genomePosToCompressed2 = makeLocalReorderedIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2,
+            colPosChrom2 = makeLocalReorderedIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2,
                     numColumnsToPutTogether, orderer.get(chr2));
         } else {
-            genomePosToCompressed1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1, numColumnsToPutTogether);
-            genomePosToCompressed2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2, numColumnsToPutTogether);
+            colPosChrom1 = makeLocalIndexMap(chr1, badIndices.getBadIndices(chr1), compressedOffsetIndex1, numColumnsToPutTogether);
+            colPosChrom2 = makeLocalIndexMap(chr2, badIndices.getBadIndices(chr2), compressedOffsetIndex2, numColumnsToPutTogether);
         }
 
         if (isIntra) {
@@ -182,17 +183,17 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
 
         copyValuesToArea(matrix, blocks, badIndices,
-                genomePosToLocal1, genomePosToCompressed1, genomePosToLocal2, genomePosToCompressed2, isIntra);
+                rowPosChrom1, colPosChrom1, rowPosChrom2, colPosChrom2, isIntra);
     }
 
 
     private void copyValuesToArea(float[][] matrix, List<Block> blocks, BadIndexFinder badIndices,
-                                  Map<Integer, Integer> genomePosToLocal1, Map<Integer, Integer> genomePosToCompressed1,
-                                  Map<Integer, Integer> genomePosToLocal2, Map<Integer, Integer> genomePosToCompressed2, boolean isIntra) {
+                                  Map<Integer, Integer> rowPosChrom1, Map<Integer, Integer> colPosChrom1,
+                                  Map<Integer, Integer> rowPosChrom2, Map<Integer, Integer> colPosChrom2, boolean isIntra) {
         if (isIntra) {
-            for (int binX : genomePosToLocal1.keySet()) {
-                for (int binY : genomePosToLocal2.keySet()) {
-                    matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] = Float.NaN;
+            for (int binX : rowPosChrom1.keySet()) {
+                for (int binY : rowPosChrom2.keySet()) {
+                    matrix[rowPosChrom1.get(binX)][colPosChrom2.get(binY)] = Float.NaN;
                 }
             }
         } else {
@@ -200,13 +201,6 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                 if (b != null) {
                     for (ContactRecord cr : b.getContactRecords()) {
                         float val = cr.getCounts();
-                        //float val = (float) Math.log(val0 + 1);
-                        //if (Float.isNaN(val) || Float.isInfinite(val) || badIndices.getExceedsAllowedGlobalZscore(val)) {
-                        // val < 1e-10 --> leave as zero, will get aggregated
-                        // val = 0 prob never even happens
-                        //    val0 = Float.NaN;
-                        //}
-
                         if (badIndices.getExceedsAllowedGlobalValue(val, datasetIndex)) {
                             val = Float.NaN;
                         }
@@ -214,9 +208,9 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                         int binX = cr.getBinX();
                         int binY = cr.getBinY();
 
-                        if (genomePosToLocal1.containsKey(binX) && genomePosToLocal2.containsKey(binY)) {
-                            matrix[genomePosToLocal1.get(binX)][genomePosToCompressed2.get(binY)] += val;
-                            matrix[genomePosToLocal2.get(binY)][genomePosToCompressed1.get(binX)] += val;
+                        if (rowPosChrom1.containsKey(binX) && rowPosChrom2.containsKey(binY)) {
+                            matrix[rowPosChrom1.get(binX)][colPosChrom2.get(binY)] += val;
+                            matrix[rowPosChrom2.get(binY)][colPosChrom1.get(binX)] += val;
                         }
                     }
                 }

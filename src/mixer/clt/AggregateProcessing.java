@@ -25,8 +25,6 @@
 package mixer.clt;
 
 import mixer.MixerTools;
-import mixer.utils.similaritymeasures.RobustEuclideanDistance;
-import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 
 
 /**
@@ -45,10 +43,10 @@ public class AggregateProcessing {
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
-        LeftOverClusterIdentifier.metric = RobustEuclideanDistance.SINGLETON;
-        String folder = "phoenix_clone4_umap";
-        strings = new String[]{"slice", "-r", "250000", "-k", "KR",
-                "--type", "cosine", "--subsample", "50",
+
+        String folder = "phoenix_test_w3";
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "3",
+                "--type", "cosine", //"--subsample", "50",
                 //"--compare", refs,
                 file14, "2,11,10",
                 "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"

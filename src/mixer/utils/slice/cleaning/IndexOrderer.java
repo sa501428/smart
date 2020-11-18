@@ -51,6 +51,7 @@ public class IndexOrderer {
     private final int CHECK_VAL = -2;
     private final float CORR_MIN = 0.2f;
     private final float INCREMENT = .1f;
+    private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
                         int numColumnsToPutTogether, BadIndexFinder badIndexLocations) {
@@ -62,13 +63,17 @@ public class IndexOrderer {
             ExpectedValueFunction df = ds.getExpectedValuesOrExit(zd.getZoom(), normalizationType, chrom, true);
             try {
                 float[][] matrix = extractObsOverExpBoundedRegion(zd, chrom, normalizationType, df);
-                int[] newOrderIndexes = getNewOrderOfIndices(matrix, badIndexLocations.getBadIndices(chrom));
+                int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndexLocations.getBadIndices(chrom));
                 chromToReorderedIndices.put(chrom, newOrderIndexes);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             System.out.print(".");
         }
+    }
+
+    public Map<Integer, Integer> getIndexToRearrangedLength() {
+        return indexToRearrangedLength;
     }
 
     private static double getExpected(int dist, ExpectedValueFunction df, int chrIndex) {
@@ -79,13 +84,14 @@ public class IndexOrderer {
         return chromToReorderedIndices.get(chrom);
     }
 
-    private int[] getNewOrderOfIndices(float[][] matrix, Set<Integer> badIndices) {
+    private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] matrix, Set<Integer> badIndices) {
         int[] newIndexOrderAssignments = new int[matrix.length];
         Arrays.fill(newIndexOrderAssignments, DEFAULT);
         eraseTheRowsColumnsWeDontWant(badIndices, matrix, newIndexOrderAssignments);
 
         int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments);
-        doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
+        gCounter = doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
+        indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
         return newIndexOrderAssignments;
     }
 
@@ -183,7 +189,7 @@ public class IndexOrderer {
         return temp * numColsToJoin;
     }
 
-    private void doSecondRoundOfAssignments(float[][] matrix, int[] newIndexOrderAssignments, int startCounter) {
+    private int doSecondRoundOfAssignments(float[][] matrix, int[] newIndexOrderAssignments, int startCounter) {
         int vectorLength = newIndexOrderAssignments.length;
         int numRoundsThatHappen = 0;
         int counter = startCounter;
@@ -210,6 +216,7 @@ public class IndexOrderer {
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Num rounds " + numRoundsThatHappen);
         }
+        return counter;
     }
 
     public float[][] extractObsOverExpBoundedRegion(MatrixZoomData zd, Chromosome chromosome,
