@@ -34,7 +34,6 @@ import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
-import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.io.IOException;
@@ -113,8 +112,7 @@ public class IndexOrderer {
     private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
 
         int numCentroids = 10;
-        SimilarityMetric l2Metric = RobustEuclideanDistance.SINGLETON;
-        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, l2Metric);
+        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
         SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
 
         int vectorLength = newIndexOrderAssignments.length;

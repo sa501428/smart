@@ -156,8 +156,8 @@ public class MatrixCleanupAndSimilarityMetric {
         return data;
     }
 
-    private void runUmapAndSaveMatrices(float[][] data, File outputDirectory, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        //float[][] result = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data, numToUse[z], k);
+    private void runUmapAndSaveMatrices(float[][] data, File outputDirectory,
+                                        Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
         for (int dimensions = 2; dimensions < 4; dimensions++) {
             System.out.println("Dimensions: " + dimensions);
             final Umap umap = new Umap();
