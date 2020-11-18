@@ -24,14 +24,14 @@
 
 package mixer.utils.similaritymeasures;
 
-public class RobustJensenShannonDivergence extends SimilarityMetric {
-    public static final RobustJensenShannonDivergence SINGLETON = new RobustJensenShannonDivergence();
+public class RobustKullbackLeiblerDivergence extends SimilarityMetric {
+    public static final RobustKullbackLeiblerDivergence SINGLETON = new RobustKullbackLeiblerDivergence();
 
-    private RobustJensenShannonDivergence() {
-        super(true);
+    private RobustKullbackLeiblerDivergence() {
+        super(false);
     }
 
-    private static float nonNanJSDistance(float[] a, float[] b) {
+    private static float nonNanKLDistance(float[] a, float[] b) {
         double sumA = 0, sumB = 0;
         boolean[] isValid = new boolean[a.length];
         for (int k = 0; k < a.length; k++) {
@@ -41,23 +41,21 @@ public class RobustJensenShannonDivergence extends SimilarityMetric {
                 sumB += b[k];
             }
         }
-        final double sumC = sumA + sumB;
 
-        double distP = 0, distQ = 0;
+        double distP = 0;
         for (int i = 0; i < a.length; i++) {
             if (isValid[i]) {
                 final double p = a[i] / sumA;
                 final double q = b[i] / sumB;
-                final double m = (a[i] + b[i]) / sumC;
-                distP += (p * Math.log(p / m));
-                distQ += (q * Math.log(q / m));
+
+                distP += (p * Math.log(p / q));
             }
         }
-        return (float) ((distP + distQ) / 2f);
+        return (float) distP;
     }
 
     @Override
     public float distance(final float[] x, final float[] y) {
-        return nonNanJSDistance(x, y);
+        return nonNanKLDistance(x, y);
     }
 }

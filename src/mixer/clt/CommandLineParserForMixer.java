@@ -27,10 +27,7 @@ package mixer.clt;
 import jargs.gnu.CmdLineParser;
 import javastraw.type.NormalizationHandler;
 import javastraw.type.NormalizationType;
-import mixer.utils.similaritymeasures.RobustCosineSimilarity;
-import mixer.utils.similaritymeasures.RobustGaussianSimilarity;
-import mixer.utils.similaritymeasures.RobustJensenShannonDivergence;
-import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.similaritymeasures.*;
 import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 
 import java.util.ArrayList;
@@ -204,6 +201,8 @@ public class CommandLineParserForMixer extends CmdLineParser {
             return RobustGaussianSimilarity.SINGLETON;
         } else if (name.contains("js")) {
             return RobustJensenShannonDivergence.SINGLETON;
+        } else if (name.contains("kl")) {
+            return RobustKullbackLeiblerDivergence.SINGLETON;
         }
         System.err.println("Invalid type: " + potentialType);
         System.err.println("Using cosine similarity by default: " + potentialType);
