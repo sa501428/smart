@@ -35,6 +35,7 @@ import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.FullGenomeOEWithinClusters;
 import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 import mixer.utils.slice.matrices.SliceMatrix;
+import mixer.utils.slice.structures.HiCInterTools;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -114,7 +115,8 @@ public class Slice extends MixerCLT {
         if (minSize > 0) {
             SliceMatrix.numColumnsToPutTogether = minSize;
         } else {
-            SliceMatrix.numColumnsToPutTogether = 500000 / resolution;
+            SliceMatrix.numColumnsToPutTogether = HiCInterTools.calculateIdealWidth(ds, resolution);
+            System.out.println("Using compression width: " + SliceMatrix.numColumnsToPutTogether);
         }
 
         int subsampling = mixerParser.getSubsamplingOption();

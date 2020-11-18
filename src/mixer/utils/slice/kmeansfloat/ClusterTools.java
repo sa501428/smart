@@ -26,8 +26,8 @@ package mixer.utils.slice.kmeansfloat;
 
 import mixer.utils.common.DoubleMatrixTools;
 import mixer.utils.common.IntMatrixTools;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
-import tagbio.umap.metric.Metric;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +70,8 @@ public class ClusterTools {
     }
 
 
-    public static void performStatisticalAnalysisBetweenClusters(File directory, String description, Cluster[] clusters, int[] ids, Metric metric) {
+    public static void performStatisticalAnalysisBetweenClusters(File directory, String description, Cluster[] clusters,
+                                                                 int[] ids, SimilarityMetric metric) {
 
         File statsFolder = new File(directory, description + "_cluster_stats");
         statsFolder.mkdir();
@@ -85,7 +86,7 @@ public class ClusterTools {
 
     }
 
-    private static void saveDistComparisonBetweenClusters(File directory, String filename, Cluster[] clusters, Metric metric) {
+    private static void saveDistComparisonBetweenClusters(File directory, String filename, Cluster[] clusters, SimilarityMetric metric) {
         int n = clusters.length;
         double[][] distances = new double[n][n];
         double[][] distancesNormalized = new double[n][n];

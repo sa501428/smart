@@ -24,12 +24,10 @@
 
 package mixer.utils.similaritymeasures;
 
-import tagbio.umap.metric.Metric;
-
 /**
  * Euclidean distance.
  */
-public final class RobustManhattanDistance extends Metric {
+public final class RobustManhattanDistance extends SimilarityMetric {
 
   /**
    * Euclidean metric.
@@ -37,7 +35,7 @@ public final class RobustManhattanDistance extends Metric {
   public static final RobustManhattanDistance SINGLETON = new RobustManhattanDistance();
 
   private RobustManhattanDistance() {
-    super(false);
+    super(true);
   }
 
   @Override

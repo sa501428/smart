@@ -24,14 +24,14 @@
 
 package mixer.utils.slice.cleaning;
 
-import tagbio.umap.metric.Metric;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class QuickCentroids {
-    public static float[][] generateCentroids(float[][] matrix, int numCentroids, int numIters, Metric metric) {
+    public static float[][] generateCentroids(float[][] matrix, int numCentroids, int numIters, SimilarityMetric metric) {
 
         List<Integer> bestIndices = getInitialIndices(matrix, numCentroids, metric);
 
@@ -48,7 +48,7 @@ public class QuickCentroids {
         return centroids;
     }
 
-    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix, Metric metric) {
+    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix, SimilarityMetric metric) {
 
         int[] closestCentroid = getClosestCentroidsForEachVector(prevCentroids, matrix, metric);
 
@@ -81,7 +81,7 @@ public class QuickCentroids {
         return newCentroids;
     }
 
-    private static int[] getClosestCentroidsForEachVector(float[][] prevCentroids, float[][] matrix, Metric metric) {
+    private static int[] getClosestCentroidsForEachVector(float[][] prevCentroids, float[][] matrix, SimilarityMetric metric) {
         int[] closestCentroid = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             closestCentroid[i] = getNearestCentroidIndex(matrix[i], prevCentroids, metric);
@@ -89,7 +89,7 @@ public class QuickCentroids {
         return closestCentroid;
     }
 
-    private static int getNearestCentroidIndex(float[] vector, float[][] prevCentroids, Metric metric) {
+    private static int getNearestCentroidIndex(float[] vector, float[][] prevCentroids, SimilarityMetric metric) {
         int bestIndexSoFar = -1;
         double currDist = Double.MAX_VALUE;
 
@@ -103,7 +103,7 @@ public class QuickCentroids {
         return bestIndexSoFar;
     }
 
-    private static List<Integer> getInitialIndices(float[][] matrix, int numCentroids, Metric metric) {
+    private static List<Integer> getInitialIndices(float[][] matrix, int numCentroids, SimilarityMetric metric) {
         float[] distFromClosestPoint = new float[matrix.length];
         Arrays.fill(distFromClosestPoint, Float.MAX_VALUE);
 
@@ -118,7 +118,7 @@ public class QuickCentroids {
         return bestIndices;
     }
 
-    private static void updateDistances(float[] distFromClosestPoint, float[][] matrix, Integer index, Metric metric) {
+    private static void updateDistances(float[] distFromClosestPoint, float[][] matrix, Integer index, SimilarityMetric metric) {
         for (int k = 0; k < matrix.length; k++) {
             float newDist = metric.distance(matrix[k], matrix[index]);
             distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);

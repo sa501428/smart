@@ -29,9 +29,9 @@ import javastraw.reader.*;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import tagbio.umap.metric.Metric;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public class LeftOverClusterIdentifier {
     private final Dataset dataset;
     private final NormalizationType norm;
     private final int resolution;
-    public static Metric metric = RobustEuclideanDistance.SINGLETON;
+    public static SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
 
     public LeftOverClusterIdentifier(ChromosomeHandler chromosomeHandler, Dataset dataset, NormalizationType norm, int resolution) {
         this.chromosomeHandler = chromosomeHandler;

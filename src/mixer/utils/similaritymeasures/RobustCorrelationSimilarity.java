@@ -23,12 +23,10 @@
  */
 package mixer.utils.similaritymeasures;
 
-import tagbio.umap.metric.Metric;
-
 /**
  * Correlation distance.
  */
-public final class RobustCorrelationSimilarity extends Metric {
+public final class RobustCorrelationSimilarity extends SimilarityMetric {
 
     /**
      * Correlation distance.

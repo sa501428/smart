@@ -28,7 +28,7 @@ public class RobustJensenShannonDivergence extends SimilarityMetric {
     public static final RobustJensenShannonDivergence SINGLETON = new RobustJensenShannonDivergence();
 
     private RobustJensenShannonDivergence() {
-        super(false, true);
+        super(true);
     }
 
     private static float nonNanJSDistance(float[] a, float[] b) {

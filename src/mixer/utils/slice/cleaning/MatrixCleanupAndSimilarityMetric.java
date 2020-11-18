@@ -149,34 +149,35 @@ public class MatrixCleanupAndSimilarityMetric {
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
 
-        System.out.println("Run UMAP");
-        //runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
-        //System.out.println("Done running UMAP");
+        System.out.println("Running UMAP");
+        runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
+        System.out.println("Done running UMAP");
 
         return data;
     }
 
     private void runUmapAndSaveMatrices(float[][] data, File outputDirectory, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
         //float[][] result = CorrelationTools.getMinimallySufficientNonNanSimilarityMatrix(data, numToUse[z], k);
-        final Umap umap = new Umap();
-        umap.setNumberComponents(2);         // todo 3
-        umap.setNumberNearestNeighbours(15);
-        umap.setMetric(metric);
-        umap.setThreads(20);                  // use > 1 to enable parallelism
-        umap.setVerbose(true);
-        // todo final float[][] result = umap.fitTransform(data, true);
-        File temp = new File(outputDirectory, "umap_embedding.npy");
-        //FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
-        System.gc();
+        for (int dimensions = 2; dimensions < 4; dimensions++) {
+            System.out.println("Dimensions: " + dimensions);
+            final Umap umap = new Umap();
+            umap.setNumberComponents(dimensions);
+            umap.setNumberNearestNeighbours(15);
+            umap.setThreads(20);                  // use > 1 to enable parallelism
+            umap.setVerbose(true);
+            final float[][] result = umap.fitTransform(data);
+            File temp = new File(outputDirectory, "umap_" + dimensions + "d_embedding.npy");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+            System.gc();
+        }
 
-        // save indices
         int[][] indices = new int[data.length][2];
         for (int i = 0; i < indices.length; i++) {
             SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
             indices[i][0] = interval.getChrIndex();
             indices[i][1] = interval.getX1();
         }
-        temp = new File(outputDirectory, "gw_indices.npy");
+        File temp = new File(outputDirectory, "genome_indices.npy");
         IntMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indices);
     }
 }

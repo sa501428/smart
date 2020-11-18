@@ -24,15 +24,14 @@
 
 package mixer.utils.similaritymeasures;
 
-import tagbio.umap.metric.Metric;
-
-public abstract class SimilarityMetric extends Metric {
+public abstract class SimilarityMetric {
     private final boolean mIsSymmmetric;
 
-    public SimilarityMetric(boolean isAngular, boolean isSymmmetric) {
-        super(isAngular);
+    public SimilarityMetric(boolean isSymmmetric) {
         mIsSymmmetric = isSymmmetric;
     }
+
+    abstract public float distance(final float[] x, final float[] y);
 
     public boolean isSymmetric() {
         return this.mIsSymmmetric;

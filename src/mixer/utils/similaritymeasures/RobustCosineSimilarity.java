@@ -29,7 +29,7 @@ public final class RobustCosineSimilarity extends SimilarityMetric {
   public static final RobustCosineSimilarity SINGLETON = new RobustCosineSimilarity();
 
   private RobustCosineSimilarity() {
-    super(true, true);
+    super(true);
   }
 
   private static float arctanh(double x) {

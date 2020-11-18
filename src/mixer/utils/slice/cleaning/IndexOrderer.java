@@ -35,7 +35,7 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
-import tagbio.umap.metric.Metric;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.io.IOException;
 import java.util.*;
@@ -113,9 +113,9 @@ public class IndexOrderer {
     private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
 
         int numCentroids = 10;
-        Metric l2Metric = RobustEuclideanDistance.SINGLETON;
+        SimilarityMetric l2Metric = RobustEuclideanDistance.SINGLETON;
         float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5, l2Metric);
-        Metric corrMetric = RobustCorrelationSimilarity.SINGLETON;
+        SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
 
         int vectorLength = newIndexOrderAssignments.length;
         int[] numDecentRelations = new int[numCentroids];
@@ -189,7 +189,7 @@ public class IndexOrderer {
         int vectorLength = newIndexOrderAssignments.length;
         int numRoundsThatHappen = 0;
         int counter = startCounter;
-        Metric corrMetric = RobustCorrelationSimilarity.SINGLETON;
+        SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
         for (int cI = 0; cI < vectorLength; cI++) {
             // handle stuff
             if (newIndexOrderAssignments[cI] < CHECK_VAL) {

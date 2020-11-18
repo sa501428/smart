@@ -29,7 +29,7 @@ public final class RobustGaussianSimilarity extends SimilarityMetric {
   public static final RobustGaussianSimilarity SINGLETON = new RobustGaussianSimilarity();
 
   private RobustGaussianSimilarity() {
-    super(true, true);
+    super(true);
   }
 
   @Override

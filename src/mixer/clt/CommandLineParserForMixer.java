@@ -57,7 +57,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
     private final Option sliceMetricTypeOption = addStringOption("type");
-    private final Option zscoreOption = addBooleanOption("zscore");
 
 
     public CommandLineParserForMixer() {
@@ -134,10 +133,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getVersionOption() {
         return optionToBoolean(versionOption);
-    }
-
-    public boolean getZscoreOption() {
-        return optionToBoolean(zscoreOption);
     }
 
     /**

@@ -24,8 +24,8 @@
 
 package mixer.clt;
 
+import mixer.MixerTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
-import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 
 
@@ -46,27 +46,15 @@ public class AggregateProcessing {
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
         LeftOverClusterIdentifier.metric = RobustEuclideanDistance.SINGLETON;
-        String folder = "phoenix_clone3_cosine_sub50_leftMSE";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2",
-                "--type", "cosine", "--zscore", "--subsample", "50",
-                "--compare", refs,
+        String folder = "phoenix_clone4_umap";
+        strings = new String[]{"slice", "-r", "250000", "-k", "KR",
+                "--type", "cosine", "--subsample", "50",
+                //"--compare", refs,
                 file14, "2,11,10",
                 "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        LeftOverClusterIdentifier.metric = RobustManhattanDistance.SINGLETON;
-        folder = "phoenix_clone3_cosine_sub50_leftMAE";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "2",
-                "--type", "cosine", "--zscore", "--subsample", "50",
-                "--compare", refs,
-                file14, "2,11,10",
-                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
 
 
