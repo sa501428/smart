@@ -354,13 +354,13 @@ public class SliceUtils {
     private static int getModeID(List<Integer> ids) {
         if (ids == null) return -2;
         if (ids.size() == 2) {
-            if (ids.get(0) == ids.get(1)) {
+            if (ids.get(0).equals(ids.get(1))) {
                 return ids.get(0);
             }
         } else if (ids.size() == 3) {
-            if (ids.get(0) == ids.get(1) || ids.get(0) == ids.get(2)) {
+            if (ids.get(0).equals(ids.get(1)) || ids.get(0).equals(ids.get(2))) {
                 return ids.get(0);
-            } else if (ids.get(1) == ids.get(2)) {
+            } else if (ids.get(1).equals(ids.get(2))) {
                 return ids.get(1);
             }
         }
@@ -370,7 +370,7 @@ public class SliceUtils {
     private static int getUnanimousID(List<Integer> ids) {
         if (ids == null) return -2;
         if (ids.size() == 3) {
-            if (ids.get(0) == ids.get(1) && ids.get(0) == ids.get(2)) {
+            if (ids.get(0).equals(ids.get(1)) && ids.get(0).equals(ids.get(2))) {
                 return ids.get(0);
             }
         }

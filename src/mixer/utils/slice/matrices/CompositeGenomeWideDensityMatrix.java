@@ -52,7 +52,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
     protected final BadIndexFinder badIndexLocations;
     protected final int datasetIndex;
-    protected SimilarityMetric metric;
+    protected final SimilarityMetric metric;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                             File outputDirectory, Random generator, String[] relativeTestFiles,
@@ -205,6 +205,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
             System.err.println("***************************************\n" +
                     "Dimension mismatch: " + getLength() + " != " + additionalData.getLength());
         } else {
+            // todo
 
         }
     }

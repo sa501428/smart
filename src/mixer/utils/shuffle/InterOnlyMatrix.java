@@ -134,7 +134,7 @@ public class InterOnlyMatrix {
 
         for (int i = 0; i < allDataForRegion.length; i++) {
             System.arraycopy(allDataForRegion[i], 0,
-                    matrix[offsetIndex1 + i], offsetIndex2 + 0, allDataForRegion[i].length);
+                    matrix[offsetIndex1 + i], offsetIndex2, allDataForRegion[i].length);
         }
     }
 

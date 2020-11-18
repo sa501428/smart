@@ -47,9 +47,8 @@ public abstract class MixerCLT {
     }
 
     public void readArguments(String[] args, CommandLineParserForMixer parser) {
-        CommandLineParserForMixer mixerParser = parser;
-        assessIfChromosomesHaveBeenSpecified(mixerParser);
-        readMixerArguments(args, mixerParser);
+        assessIfChromosomesHaveBeenSpecified(parser);
+        readMixerArguments(args, parser);
     }
 
     protected void updateNumberOfCPUThreads(CommandLineParserForMixer mixerParser) {

@@ -30,18 +30,12 @@ import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ClusterTools {
 
     public static Cluster[] getSortedClusters(Cluster[] unsortedClusters) {
-        List<Cluster> tempClusters = new ArrayList<>();
-        for (Cluster item : unsortedClusters) {
-            tempClusters.add(item);
-        }
+        List<Cluster> tempClusters = new ArrayList<>(Arrays.asList(unsortedClusters));
 
         Collections.sort(tempClusters, new Comparator<Cluster>() {
             @Override
@@ -74,19 +68,17 @@ public class ClusterTools {
                                                                  int[] ids, SimilarityMetric metric) {
 
         File statsFolder = new File(directory, description + "_cluster_stats");
-        statsFolder.mkdir();
-
-        IntMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
-
-        saveClusterSizes(statsFolder, "sizes", clusters);
-        saveDistComparisonBetweenClusters(statsFolder, "distances", clusters, metric);
-        saveComparisonBetweenClusters(statsFolder, "num.differences", clusters);
-        saveChiSquarePvalComparisonBetweenClusters(statsFolder, "chi2.pval", clusters);
-        saveChiSquareValComparisonBetweenClusters(statsFolder, "chi2", clusters);
-
+        if (statsFolder.mkdir()) {
+            IntMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
+            saveClusterSizes(statsFolder, clusters);
+            saveDistComparisonBetweenClusters(statsFolder, clusters, metric);
+            saveComparisonBetweenClusters(statsFolder, clusters);
+            saveChiSquarePvalComparisonBetweenClusters(statsFolder, clusters);
+            saveChiSquareValComparisonBetweenClusters(statsFolder, clusters);
+        }
     }
 
-    private static void saveDistComparisonBetweenClusters(File directory, String filename, Cluster[] clusters, SimilarityMetric metric) {
+    private static void saveDistComparisonBetweenClusters(File directory, Cluster[] clusters, SimilarityMetric metric) {
         int n = clusters.length;
         double[][] distances = new double[n][n];
         double[][] distancesNormalized = new double[n][n];
@@ -98,11 +90,11 @@ public class ClusterTools {
             }
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), distances);
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + "_normed.npy").getAbsolutePath(), distancesNormalized);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "distances.npy").getAbsolutePath(), distances);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "distances_normed.npy").getAbsolutePath(), distancesNormalized);
     }
 
-    private static void saveChiSquarePvalComparisonBetweenClusters(File directory, String filename, Cluster[] clusters) {
+    private static void saveChiSquarePvalComparisonBetweenClusters(File directory, Cluster[] clusters) {
         int n = clusters.length;
         double[][] pvalues = new double[n][n];
         for (int i = 0; i < n; i++) {
@@ -111,11 +103,11 @@ public class ClusterTools {
                 pvalues[i][j] = getPvalueChiSquared(clusters[j], expected);
             }
         }
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), pvalues);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.pval.npy").getAbsolutePath(), pvalues);
     }
 
 
-    private static void saveComparisonBetweenClusters(File directory, String filename, Cluster[] clusters) {
+    private static void saveComparisonBetweenClusters(File directory, Cluster[] clusters) {
         int n = clusters.length;
         double[][] numDiffEntries = new double[n][n];
         double[][] numDiffEntriesNormalized = new double[n][n];
@@ -127,11 +119,11 @@ public class ClusterTools {
             }
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), numDiffEntries);
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + "_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences.npy").getAbsolutePath(), numDiffEntries);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
     }
 
-    private static void saveChiSquareValComparisonBetweenClusters(File directory, String filename, Cluster[] clusters) {
+    private static void saveChiSquareValComparisonBetweenClusters(File directory, Cluster[] clusters) {
         int n = clusters.length;
         double[][] chi2Val = new double[n][n];
         for (int i = 0; i < n; i++) {
@@ -140,11 +132,11 @@ public class ClusterTools {
                 chi2Val[i][j] = getValueChiSquared(clusters[j], expected);
             }
         }
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), chi2Val);
+        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.npy").getAbsolutePath(), chi2Val);
 
     }
 
-    private static void saveClusterSizes(File directory, String filename, Cluster[] clusters) {
+    private static void saveClusterSizes(File directory, Cluster[] clusters) {
         int n = clusters.length;
 
         int[][] sizeClusters = new int[1][n];
@@ -152,7 +144,7 @@ public class ClusterTools {
             sizeClusters[0][i] = clusters[i].getMemberIndexes().length;
         }
 
-        IntMatrixTools.saveMatrixTextNumpy(new File(directory, filename + ".npy").getAbsolutePath(), sizeClusters);
+        IntMatrixTools.saveMatrixTextNumpy(new File(directory, "sizes.npy").getAbsolutePath(), sizeClusters);
     }
 
     public static float[] normalize(float[] vector, int[] counts) {

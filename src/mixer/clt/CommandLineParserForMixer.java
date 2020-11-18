@@ -190,22 +190,23 @@ public class CommandLineParserForMixer extends CmdLineParser {
     }
 
     private SimilarityMetric getMetricType(String potentialType) {
-        String name = potentialType.toLowerCase();
-        if (name.contains("zscore")) {
-            MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
+        if (potentialType != null) {
+            String name = potentialType.toLowerCase();
+            if (name.contains("zscore")) {
+                MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
+            }
+            if (name.contains("cosine")) {
+                return RobustCosineSimilarity.SINGLETON;
+            } else if (name.contains("gaussian")) {
+                return RobustGaussianSimilarity.SINGLETON;
+            } else if (name.contains("js")) {
+                return RobustJensenShannonDivergence.SINGLETON;
+            } else if (name.contains("kl")) {
+                return RobustKullbackLeiblerDivergence.SINGLETON;
+            }
         }
-
-        if (name.contains("cosine")) {
-            return RobustCosineSimilarity.SINGLETON;
-        } else if (name.contains("gaussian")) {
-            return RobustGaussianSimilarity.SINGLETON;
-        } else if (name.contains("js")) {
-            return RobustJensenShannonDivergence.SINGLETON;
-        } else if (name.contains("kl")) {
-            return RobustKullbackLeiblerDivergence.SINGLETON;
-        }
-        System.err.println("Invalid type: " + potentialType);
-        System.err.println("Using cosine similarity by default: " + potentialType);
+        System.out.println("Using zscore-cosine similarity by default: " + potentialType);
+        MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
         return RobustCosineSimilarity.SINGLETON;
     }
 }

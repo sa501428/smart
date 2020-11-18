@@ -234,7 +234,7 @@ public class ConcurrentKMeans implements KMeans {
             makeAssignments();
 
             // Number of moves in the iteration and the iteration counter.
-            int moves = 0, it = 0;
+            int moves, it = 0;
 
             // Main Loop:
             //
@@ -751,14 +751,10 @@ public class ConcurrentKMeans implements KMeans {
 
                 // Need the barrier to notify the controlling thread when the
                 // Workers are done.
-                mBarrier = new CyclicBarrier(numThreads, new Runnable() {
-                    public void run() {
-                        // Method called after all workers have called await() on the
-                        // barrier.  The call to workersDone()
-                        // unblocks the controlling thread.
-                        workersDone();
-                    }
-                });
+                // Method called after all workers have called await() on the
+                // barrier.  The call to workersDone()
+                // unblocks the controlling thread.
+                mBarrier = new CyclicBarrier(numThreads, this::workersDone);
 
                 // Set the executor to a fixed thread pool with
                 // threads that do not time out.

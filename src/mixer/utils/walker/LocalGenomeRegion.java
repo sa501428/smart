@@ -103,7 +103,7 @@ public class LocalGenomeRegion {
         return initialIndex + " - " + nei;
     }
 
-    private class Neighbor implements Comparable<Neighbor> {
+    private static class Neighbor implements Comparable<Neighbor> {
         final Integer index;
         final Float value;
 

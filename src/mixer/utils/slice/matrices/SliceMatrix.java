@@ -86,6 +86,17 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
 
         float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
+        try {
+            if (interMatrix.length == 0 || interMatrix[0].length == 0) {
+                System.err.println("No matrix created; map is likely too sparse. " +
+                        "Try a lower resolution or higher compression window.");
+                System.exit(9);
+            }
+        } catch (Exception e) {
+            System.err.println("No matrix created; map is likely too sparse. Try a lower resolution.");
+            System.exit(9);
+        }
+
         System.out.println("Indexing complete");
 
         for (int i = 0; i < chromosomes.length; i++) {
@@ -152,7 +163,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         List<Block> blocks = null;
         try {
             if (!isIntra) {
-                blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, isIntra);
+                blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, false);
 
                 if (blocks.size() < 1) {
                     System.err.println("Missing Interchromosomal Data " + zd.getKey());

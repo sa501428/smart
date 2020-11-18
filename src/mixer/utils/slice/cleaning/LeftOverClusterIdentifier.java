@@ -38,12 +38,12 @@ import java.util.*;
 public class LeftOverClusterIdentifier {
 
     private static final int DISTANCE_CUTOFF = 3000000;
-    public static float threshold = 3f;
+    public static final float threshold = 3f;
     private final ChromosomeHandler chromosomeHandler;
     private final Dataset dataset;
     private final NormalizationType norm;
     private final int resolution;
-    public static SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
+    public static final SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
 
     public LeftOverClusterIdentifier(ChromosomeHandler chromosomeHandler, Dataset dataset, NormalizationType norm, int resolution) {
         this.chromosomeHandler = chromosomeHandler;
@@ -66,7 +66,7 @@ public class LeftOverClusterIdentifier {
                         true, 1, 0);
 
                 if (chr1.getLength() > 5 * DISTANCE_CUTOFF) {
-                    trimDiagonalWithin(allDataForRegion, resolution, DISTANCE_CUTOFF);
+                    trimDiagonalWithin(allDataForRegion, resolution);
                 }
                 //allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
 
@@ -120,8 +120,8 @@ public class LeftOverClusterIdentifier {
         System.out.println(".");
     }
 
-    private void trimDiagonalWithin(float[][] data, int resolution, int distance) {
-        int pixelDistance = distance / resolution;
+    private void trimDiagonalWithin(float[][] data, int resolution) {
+        int pixelDistance = LeftOverClusterIdentifier.DISTANCE_CUTOFF / resolution;
         for (int i = 0; i < data.length; i++) {
             int limit = Math.min(data[i].length, i + pixelDistance);
             for (int j = i; j < limit; j++) {

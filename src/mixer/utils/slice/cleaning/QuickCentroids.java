@@ -46,13 +46,13 @@ public class QuickCentroids {
         }
 
         for (int z = 0; z < numIters; z++) {
-            centroids = getUpdatedCentroids(centroids, matrix, metric);
+            centroids = getUpdatedCentroids(centroids, matrix);
         }
 
         return centroids;
     }
 
-    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix, SimilarityMetric metric) {
+    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix) {
 
         int[] closestCentroid = getClosestCentroidsForEachVector(prevCentroids, matrix);
 

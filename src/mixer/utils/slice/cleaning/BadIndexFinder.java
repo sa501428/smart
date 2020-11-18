@@ -40,14 +40,12 @@ public class BadIndexFinder {
 
     private static final float ZSCORE_MIN_SPARSE_THRESHOLD_LOWER_INTRA = -3;//-5; // 3 bottom 0.15% dropped
     private static final float ZSCORE_MAX_ALLOWED_INTER = 3;
-    public static float ZSCORE_MIN_SPARSE_THRESHOLD_INTER_HIGHER = -1;//-2; //-1.28f; // bottom 10% dropped
+    public static final float ZSCORE_MIN_SPARSE_THRESHOLD_INTER_HIGHER = -1;//-2; //-1.28f; // bottom 10% dropped
     private final int resolution;
     private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     private final Map<Integer, Set<Integer>> worstIndices = new HashMap<>();
     private final NormalizationType norm;
 
-    // per dataset
-    private final float[] globalInterMean, globalInterStdDev;
     private final double[] globalSum, globalSumOfSquares, GLOBAL_MAX_RAW_VALUE;
     private final long[] globalCounts;
 
@@ -56,11 +54,12 @@ public class BadIndexFinder {
         this.resolution = resolution;
         this.norm = norm;
         for (Chromosome chrom : chromosomes) {
-            badIndices.put(chrom.getIndex(), new HashSet<Integer>());
-            worstIndices.put(chrom.getIndex(), new HashSet<Integer>());
+            badIndices.put(chrom.getIndex(), new HashSet<>());
+            worstIndices.put(chrom.getIndex(), new HashSet<>());
         }
-        globalInterMean = new float[datasets.size()];
-        globalInterStdDev = new float[datasets.size()];
+
+        float[] globalInterMean = new float[datasets.size()];
+        float[] globalInterStdDev = new float[datasets.size()];
         globalSum = new double[datasets.size()];
         globalSumOfSquares = new double[datasets.size()];
         GLOBAL_MAX_RAW_VALUE = new double[datasets.size()];
@@ -143,7 +142,7 @@ public class BadIndexFinder {
         Pair<int[], int[]> results = getNumberOfNonZeros(blocks, numRows, numCols, isIntra, dIndex);
         removeSparserIndicesZscoredCount(chr1, results.getFirst(), isIntra);
         if (!isIntra) {
-            removeSparserIndicesZscoredCount(chr2, results.getSecond(), isIntra);
+            removeSparserIndicesZscoredCount(chr2, results.getSecond(), false);
         }
     }
 

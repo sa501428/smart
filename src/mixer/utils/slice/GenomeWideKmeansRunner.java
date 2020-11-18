@@ -90,7 +90,6 @@ public class GenomeWideKmeansRunner {
                 public void kmeansComplete(Cluster[] preSortedClusters, long l) {
 
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
-
                     System.out.print(".");
                     Pair<Double, List<int[][]>> wcssAndIds = matrix.processGWKmeansResult(clusters, finalCompartments);
                     recentClusters = ClusterTools.clone(clusters);

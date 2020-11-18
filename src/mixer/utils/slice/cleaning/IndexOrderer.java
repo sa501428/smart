@@ -109,9 +109,7 @@ public class IndexOrderer {
         }
 
         for (int i : badIndices) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                matrix[i][j] = Float.NaN;
-            }
+            Arrays.fill(matrix[i], Float.NaN);
         }
     }
 

@@ -54,7 +54,6 @@ public class FullGenomeOEWithinClusters {
     private final int resolution;
     private final NormalizationType norm;
     private final CompositeGenomeWideDensityMatrix interMatrix;
-    private final BadIndexFinder badIndexFinder;
     private final SimilarityMetric metric;
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
@@ -67,7 +66,7 @@ public class FullGenomeOEWithinClusters {
         this.datasets = datasets;
         this.metric = metric;
 
-        badIndexFinder = new BadIndexFinder(datasets,
+        BadIndexFinder badIndexFinder = new BadIndexFinder(datasets,
                 chromosomeHandler.getAutosomalChromosomesArray(), resolution, norm);
 
         interMatrix = new SliceMatrix(

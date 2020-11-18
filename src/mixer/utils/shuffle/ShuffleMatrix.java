@@ -48,7 +48,7 @@ public class ShuffleMatrix {
             InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
     private final double[][] baseline = new double[mapTypes.length][numRounds];
     private final double[][] scores = new double[mapTypes.length][numRounds];
-    double[] ratios = new double[mapTypes.length];
+    final double[] ratios = new double[mapTypes.length];
 
     public ShuffleMatrix(Dataset ds, NormalizationType norm, int resolution, int compressionFactor) {
         this.resolution = resolution;
