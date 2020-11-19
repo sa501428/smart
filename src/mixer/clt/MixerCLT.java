@@ -57,7 +57,6 @@ public abstract class MixerCLT {
             numCPUThreads = numThreads;
         } else if (numThreads < 0) {
             numCPUThreads = Runtime.getRuntime().availableProcessors();
-            System.out.println("Using " + numCPUThreads + " threads");
         } else {
             numCPUThreads = 1;
         }

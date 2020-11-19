@@ -85,7 +85,6 @@ public class ConcurrentKMeans implements KMeans {
         mMaxIterations = maxIterations;
         mRandomSeed = randomSeed;
         mThreadCount = threadCount;
-        System.out.println("Using " + mThreadCount + " threads");
     }
 
     /**

@@ -30,6 +30,8 @@ import mixer.utils.slice.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.kmeansfloat.KMeansListener;
 
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -98,25 +100,45 @@ public class QuickCentroids {
     }
 
     private void convertClustersToFloatMatrix(Cluster[] clusters) {
+        int numCPUThreads = Runtime.getRuntime().availableProcessors();
+        System.out.println("Using " + numCPUThreads + " threads");
+        AtomicInteger currRowIndex = new AtomicInteger(0);
         centroids = new float[clusters.length][matrix[0].length];
-        for (int c = 0; c < clusters.length; c++) {
-            Cluster cluster = clusters[c];
-            int[] counts = new int[matrix[0].length];
-            for (int i : cluster.getMemberIndexes()) {
-                for (int j = 0; j < matrix[i].length; j++) {
-                    float val = matrix[i][j];
-                    if (!Float.isNaN(val)) {
-                        centroids[c][j] += val;
-                        counts[j]++;
+        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
+        for (int l = 0; l < numCPUThreads; l++) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    int c = currRowIndex.getAndIncrement();
+                    while (c < clusters.length) {
+                        processCluster(clusters[c], c);
+                        c = currRowIndex.getAndIncrement();
                     }
                 }
-            }
-            for (int j = 0; j < counts.length; j++) {
-                if (counts[j] > 0) {
-                    centroids[c][j] /= counts[j];
-                } else {
-                    centroids[c][j] = Float.NaN;
+            });
+        }
+        executor.shutdown();
+        // Wait until all threads finish
+        while (!executor.isTerminated()) {
+        }
+    }
+
+    void processCluster(Cluster cluster, int cIndex) {
+        int[] counts = new int[matrix[0].length];
+        for (int i : cluster.getMemberIndexes()) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    centroids[cIndex][j] += val;
+                    counts[j]++;
                 }
+            }
+        }
+        for (int j = 0; j < counts.length; j++) {
+            if (counts[j] > 0) {
+                centroids[cIndex][j] /= counts[j];
+            } else {
+                centroids[cIndex][j] = Float.NaN;
             }
         }
     }
