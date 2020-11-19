@@ -45,7 +45,7 @@ public class AggregateProcessing {
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
 
         String folder = "collins_dice_test";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR",
+        strings = new String[]{"dice", "-r", "100000", "-k", "KR",
                 "--type", "zscore-cosine", "--subsample", "50",
                 "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map1_30.hic,/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map2_30.hic",
                 "2,11,10",

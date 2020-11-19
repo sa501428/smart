@@ -51,6 +51,7 @@ public class SimilarityMatrixTools {
 
         float[][] result = new float[matrix.length][numCentroids];
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
+        System.out.println("Using " + numCPUThreads + " threads");
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
@@ -83,6 +84,7 @@ public class SimilarityMatrixTools {
         float[][] result = new float[matrix.length][matrix.length]; // *2
 
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
+        System.out.println("Using " + numCPUThreads + " threads");
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
