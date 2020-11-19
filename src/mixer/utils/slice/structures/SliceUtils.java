@@ -499,7 +499,13 @@ public class SliceUtils {
             case "B4":
                 return 6;
             default:
-                return -1;
+                try {
+                    return Integer.parseInt(upperCaseID);
+                } catch (Exception e) {
+                    System.err.println("Unable to parse/interpret " + upperCaseID);
+                    System.exit(11);
+                    return -1;
+                }
         }
     }
 

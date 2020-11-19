@@ -44,33 +44,36 @@ public class AggregateProcessing {
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
 
-        String folder = "phoenix_test_w3";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "-w", "3",
-                "--type", "cosine", //"--subsample", "50",
-                //"--compare", refs,
-                file14, "2,11,10",
+        String folder = "collins_dice_test";
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR",
+                "--type", "zscore-cosine", "--subsample", "50",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map1_30.hic,/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map2_30.hic",
+                "2,11,10",
                 "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
+        };
+        System.out.println("-----------------------------------------------------");
+        //MixerTools.main(strings);
+        System.gc();
+
+
+        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map1_30.hic",
+                "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_10_clusters_map1_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle4",
+                "collins1_10_again"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
         System.gc();
 
-
-        String degronfolder = "/Users/mss/Desktop/degron_shuffle";
-        String wthic = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/degron/notreat_nosync_combined.hic";
-        String treatedhic = "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/degron/6hrtreat_nosync_combined.hic";
-
-
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
-                file14,
-                //"/Users/mss/Desktop/SLICE.work/tempslice/phoenix_clone_cosine_sub50/phoenix_clone_cosine_sub50_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/phoenix_clone3_cosine_sub50_leftMSE/phoenix_clone3_cosine_sub50_leftMSE_5_clusters_gm12878_rh14_30.subcompartment.bed," +
-                        "/Users/mss/Desktop/SLICE.work/tempslice/phoenix_clone3_cosine_sub50_leftMAE/phoenix_clone3_cosine_sub50_leftMAE_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle3",
-                "clone3MSE,clone3MAE"
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map2_30.hic",
+                "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_10_clusters_map1_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle4",
+                "collins2_10_again"
         };
         System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
 
     }

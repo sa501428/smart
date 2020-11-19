@@ -122,7 +122,12 @@ public class ShuffleMatrix {
 
     private List<Integer> getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean randomizeGW) {
         List<Integer> allIndices = new ArrayList<>();
-        for (List<Integer> indexList : clusterToIndices.values()) {
+
+        List<Integer> order = new ArrayList<>(clusterToIndices.keySet());
+        Collections.sort(order);
+
+        for (Integer index : order) {
+            List<Integer> indexList = clusterToIndices.get(index);
             Collections.shuffle(indexList, generator);
             int numToUse = (indexList.size() / compressionFactor) * compressionFactor;
             for (int z = 0; z < numToUse; z++) {

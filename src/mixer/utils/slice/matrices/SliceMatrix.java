@@ -37,7 +37,6 @@ import mixer.utils.common.Pair;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -114,8 +113,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         }
         System.out.println(".");
 
-        MatrixCleanupAndSimilarityMetric matrixCleanupReduction = new MatrixCleanupAndSimilarityMetric(interMatrix, generator.nextLong(), outputDirectory, metric);
-        return matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
+        return interMatrix;
     }
 
     protected Map<Integer, Integer> calculateActualLengthForChromosomes(Chromosome[] chromosomes) {

@@ -115,8 +115,15 @@ public class Slice extends MixerCLT {
         if (minSize > 0) {
             SliceMatrix.numColumnsToPutTogether = minSize;
         } else {
-            SliceMatrix.numColumnsToPutTogether = HiCInterTools.calculateIdealWidth(ds, resolution);
-            System.out.println("Using compression width: " + SliceMatrix.numColumnsToPutTogether);
+            int numColumns = HiCInterTools.calculateIdealWidth(ds, resolution);
+            for (int i = 1; i < datasetList.size(); i++) {
+                int numColumns2 = HiCInterTools.calculateIdealWidth(datasetList.get(i), resolution);
+                if (numColumns2 > numColumns) {
+                    numColumns = numColumns2;
+                }
+            }
+            SliceMatrix.numColumnsToPutTogether = numColumns;
+            System.out.println("Using compression width: " + numColumns);
         }
 
         int subsampling = mixerParser.getSubsamplingOption();

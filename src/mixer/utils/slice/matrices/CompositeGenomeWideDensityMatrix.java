@@ -34,6 +34,7 @@ import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.Pair;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
+import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -48,7 +49,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
     protected final Chromosome[] chromosomes;
     protected final Random generator;
     protected final File outputDirectory;
-    private final float[][] gwCleanMatrix;
+    private float[][] gwCleanMatrix;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
     protected final BadIndexFinder badIndexLocations;
     protected final int datasetIndex;
@@ -77,6 +78,11 @@ public abstract class CompositeGenomeWideDensityMatrix {
     }
 
     abstract float[][] makeCleanScaledInterMatrix(Dataset ds);
+
+    public void cleanUpMatricesBySparsity() {
+        MatrixCleanupAndSimilarityMetric matrixCleanupReduction = new MatrixCleanupAndSimilarityMetric(gwCleanMatrix, generator.nextLong(), outputDirectory, metric);
+        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
+    }
 
     public synchronized Pair<Double, List<int[][]>> processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
@@ -201,12 +207,11 @@ public abstract class CompositeGenomeWideDensityMatrix {
     }
 
     public void appendDataAlongExistingRows(CompositeGenomeWideDensityMatrix additionalData) {
-        if (getLength() != additionalData.getLength()) {
+        if (gwCleanMatrix.length != additionalData.gwCleanMatrix.length) {
             System.err.println("***************************************\n" +
                     "Dimension mismatch: " + getLength() + " != " + additionalData.getLength());
         } else {
-            // todo
-
+            gwCleanMatrix = FloatMatrixTools.concatenate(gwCleanMatrix, additionalData.gwCleanMatrix);
         }
     }
 
