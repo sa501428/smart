@@ -51,6 +51,7 @@ public class QuickCentroids {
     }
 
     public float[][] generateCentroids() {
+        ConcurrentKMeans.useNonNanVersion = true;
         if (matrix.length > 0 && matrix[0].length > 0) {
 
             ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
@@ -85,6 +86,7 @@ public class QuickCentroids {
         }
 
         waitUntilDone();
+        ConcurrentKMeans.useNonNanVersion = false;
         return centroids;
     }
 

@@ -28,7 +28,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -324,7 +324,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605824918951</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="parallelize centroid re-calculation">
+      <created>1605825418095</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1605825418095</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -346,7 +353,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="New indexing method; quick centroids iterates a few times, update defaults and usage" />
     <MESSAGE value="New indexing method; quick centroids iterates a few times, update defaults and usage, code cleanup" />
     <MESSAGE value="fix todos; use faster correlation" />
     <MESSAGE value="cosine similarity, code cleanup" />
@@ -371,7 +377,8 @@
     <MESSAGE value="separation and restructuring of kmeans" />
     <MESSAGE value="removing gaussian, code cleanup/optimizations" />
     <MESSAGE value="pass seeds instead of random, use parallel kmeans for quick centroids" />
-    <option name="LAST_COMMIT_MESSAGE" value="pass seeds instead of random, use parallel kmeans for quick centroids" />
+    <MESSAGE value="parallelize centroid re-calculation" />
+    <option name="LAST_COMMIT_MESSAGE" value="parallelize centroid re-calculation" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -404,7 +411,7 @@
     <state x="466" y="285" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.804@0.23.1440.804" timestamp="1602984020850" />
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.811@0.23.1440.811" timestamp="1605084384344" />
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.812@0.23.1440.812" timestamp="1605726627686" />
-    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2" timestamp="1605824918792">
+    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2" timestamp="1605825417949">
       <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.801@0.23.1440.801" timestamp="1603366056339" />
@@ -413,9 +420,9 @@
     <state x="297" y="23" width="846" height="811" key="CommitChangelistDialog2/0.23.1440.811@0.23.1440.811" timestamp="1605657744310" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.812@0.23.1440.812" timestamp="1605686313444" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.814@0.23.1440.814" timestamp="1605817720736" />
-    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2/0.23.1440.816@0.23.1440.816" timestamp="1605824918792" />
+    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2/0.23.1440.816@0.23.1440.816" timestamp="1605825417949" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.821@0.23.1440.821" timestamp="1605821824457" />
-    <state x="100" y="125" width="1152" height="648" key="DiffContextDialog" timestamp="1605824867374">
+    <state x="100" y="125" width="1152" height="648" key="DiffContextDialog" timestamp="1605825410238">
       <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="100" y="123" width="1240" height="601" key="DiffContextDialog/0.23.1440.801@0.23.1440.801" timestamp="1603366047921" />
@@ -424,7 +431,7 @@
     <state x="100" y="124" width="1152" height="648" key="DiffContextDialog/0.23.1440.811@0.23.1440.811" timestamp="1605658476479" />
     <state x="100" y="124" width="1152" height="649" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1605686307218" />
     <state x="100" y="125" width="1152" height="651" key="DiffContextDialog/0.23.1440.814@0.23.1440.814" timestamp="1605817677248" />
-    <state x="100" y="125" key="DiffContextDialog/0.23.1440.816@0.23.1440.816" timestamp="1605824867374" />
+    <state x="100" y="125" key="DiffContextDialog/0.23.1440.816@0.23.1440.816" timestamp="1605825410238" />
     <state x="100" y="126" key="DiffContextDialog/0.23.1440.821@0.23.1440.821" timestamp="1605821817846" />
     <state width="1398" height="237" key="GridCell.Tab.0.bottom" timestamp="1605810382398">
       <screen x="0" y="23" width="1440" height="814" />
@@ -475,7 +482,7 @@
     <state x="221" y="23" key="SettingsEditor/0.23.1440.811@0.23.1440.811" timestamp="1605647536019" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.814@0.23.1440.814" timestamp="1605038640405" />
     <state x="221" y="23" width="1024" height="816" key="SettingsEditor/0.23.1440.816@0.23.1440.816" timestamp="1605670469159" />
-    <state x="320" y="152" key="Vcs.Push.Dialog.v2" timestamp="1605824927830">
+    <state x="320" y="152" key="Vcs.Push.Dialog.v2" timestamp="1605825419619">
       <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="320" y="150" key="Vcs.Push.Dialog.v2/0.23.1440.801@0.23.1440.801" timestamp="1603346433518" />
@@ -484,7 +491,7 @@
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.811@0.23.1440.811" timestamp="1605643455124" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.812@0.23.1440.812" timestamp="1605686314710" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.814@0.23.1440.814" timestamp="1605817722018" />
-    <state x="320" y="152" key="Vcs.Push.Dialog.v2/0.23.1440.816@0.23.1440.816" timestamp="1605824927830" />
+    <state x="320" y="152" key="Vcs.Push.Dialog.v2/0.23.1440.816@0.23.1440.816" timestamp="1605825419619" />
     <state x="320" y="152" key="Vcs.Push.Dialog.v2/0.23.1440.821@0.23.1440.821" timestamp="1605821826481" />
     <state x="430" y="328" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1605647453643">
       <screen x="0" y="23" width="1440" height="811" />
@@ -497,8 +504,8 @@
     <state x="518" y="347" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.810@0.23.1440.810" timestamp="1604503326458" />
     <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.811@0.23.1440.811" timestamp="1605647133106" />
     <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.812@0.23.1440.812" timestamp="1605684321711" />
-    <state x="418" y="181" width="604" height="529" key="find.popup" timestamp="1605822334385">
-      <screen x="0" y="23" width="1440" height="821" />
+    <state x="418" y="180" width="604" height="526" key="find.popup" timestamp="1605825296259">
+      <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="418" y="178" width="604" height="490" key="find.popup/0.23.1440.801@0.23.1440.801" timestamp="1603346393967" />
     <state x="418" y="179" width="604" height="518" key="find.popup/0.23.1440.806@0.23.1440.806" timestamp="1603609702516" />
@@ -506,6 +513,7 @@
     <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.811@0.23.1440.811" timestamp="1605657988372" />
     <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.812@0.23.1440.812" timestamp="1605653743454" />
     <state x="418" y="180" width="604" height="524" key="find.popup/0.23.1440.814@0.23.1440.814" timestamp="1605810100635" />
+    <state x="418" y="180" width="604" height="526" key="find.popup/0.23.1440.816@0.23.1440.816" timestamp="1605825296259" />
     <state x="418" y="181" width="604" height="529" key="find.popup/0.23.1440.821@0.23.1440.821" timestamp="1605822334385" />
     <state x="418" y="206" key="refactoring.ChangeSignatureDialog" timestamp="1605458027550">
       <screen x="0" y="23" width="1440" height="811" />
