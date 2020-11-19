@@ -49,8 +49,9 @@ public final class RobustManhattanDistance extends SimilarityMetric {
     double sumOfError = 0;
     int numDiffs = 0;
     for (int i = 0; i < x.length; i++) {
-      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
-        sumOfError += Math.abs(x[i] - y[i]);
+      float diff = x[i] - y[i];
+      if (!Float.isNaN(diff)) {
+        sumOfError += Math.abs(diff);
         numDiffs++;
       }
     }

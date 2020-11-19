@@ -49,8 +49,8 @@ public final class RobustEuclideanDistance extends SimilarityMetric {
     double sumOfSquares = 0;
     int numDiffs = 0;
     for (int i = 0; i < x.length; i++) {
-      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
-        final float v = x[i] - y[i];
+      final float v = x[i] - y[i];
+      if (!Float.isNaN(v)) {
         sumOfSquares += (v * v);
         numDiffs++;
       }

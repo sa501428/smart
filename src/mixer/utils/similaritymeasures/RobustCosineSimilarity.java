@@ -48,9 +48,9 @@ public final class RobustCosineSimilarity extends SimilarityMetric {
     double normX = 0.0;
     double normY = 0.0;
     for (int i = 0; i < x.length; i++) {
-      boolean entryIsBad = Float.isNaN(x[i]) || Float.isNaN(y[i]);
-      if (!entryIsBad) {
-        dotProduct += x[i] * y[i];
+      float product = x[i] * y[i];
+      if (!Float.isNaN(product)) {
+        dotProduct += product;
         normX += x[i] * x[i];
         normY += y[i] * y[i];
       }

@@ -24,6 +24,8 @@
 
 package mixer.utils.slice.kmeansfloat;
 
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+
 import java.util.concurrent.BrokenBarrierException;
 
 /**
@@ -133,7 +135,7 @@ public class Worker implements Runnable {
      */
     private float distanceL2Norm(float[] coord, float[] center) {
         if (ConcurrentKMeans.useNonNanVersion) {
-            return nonNanDistanceL2Norm(coord, center);
+            return RobustEuclideanDistance.SINGLETON.distance(coord, center);
         }
         double sumSquared = 0.0;
         for (int i = 0; i < coord.length; i++) {
@@ -141,19 +143,6 @@ public class Worker implements Runnable {
             sumSquared += (v * v);
         }
         return (float) Math.sqrt(sumSquared);
-    }
-
-    private float nonNanDistanceL2Norm(float[] coord, float[] center) {
-        double sumSquared = 0.0;
-        int numVals = 0;
-        for (int i = 0; i < coord.length; i++) {
-            float v = coord[i] - center[i];
-            if (!Float.isNaN(v)) {
-                sumSquared += (v * v);
-                numVals++;
-            }
-        }
-        return (float) Math.sqrt(coord.length * sumSquared / numVals);
     }
 
     /**
