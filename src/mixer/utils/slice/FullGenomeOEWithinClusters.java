@@ -54,9 +54,10 @@ public class FullGenomeOEWithinClusters {
     private final NormalizationType norm;
     private final SliceMatrix sliceMatrix;
     private final SimilarityMetric metric;
+    private final Random generator = new Random(0);
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      File outputDirectory, Random generator, String[] referenceBedFiles,
+                                      File outputDirectory, long seed, String[] referenceBedFiles,
                                       SimilarityMetric metric) {
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
@@ -64,24 +65,25 @@ public class FullGenomeOEWithinClusters {
         this.outputDirectory = outputDirectory;
         this.datasets = datasets;
         this.metric = metric;
+        generator.setSeed(seed);
 
         BadIndexFinder badIndexFinder = new BadIndexFinder(datasets,
                 chromosomeHandler.getAutosomalChromosomesArray(), resolution, norm);
 
         sliceMatrix = new SliceMatrix(
-                chromosomeHandler, datasets.get(0), norm, resolution, outputDirectory, generator, referenceBedFiles,
+                chromosomeHandler, datasets.get(0), norm, resolution, outputDirectory, generator.nextLong(), referenceBedFiles,
                 badIndexFinder, 0, metric);
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
-                    norm, resolution, outputDirectory, generator, new String[]{}, badIndexFinder, dI, metric);
+                    norm, resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, dI, metric);
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 
         sliceMatrix.cleanUpMatricesBySparsity();
     }
 
-    public void extractFinalGWSubcompartments(Random generator, List<String> inputHicFilePaths,
+    public void extractFinalGWSubcompartments(List<String> inputHicFilePaths,
                                               String prefix, int index, boolean compareMaps) {
 
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();

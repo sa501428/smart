@@ -149,8 +149,8 @@ public class Slice extends MixerCLT {
         if (datasetList.size() < 1) return;
 
         FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, norm, outputDirectory, generator, referenceBedFiles, metric);
-        withinClusters.extractFinalGWSubcompartments(generator, inputHicFilePaths, prefix, 0, compareMaps);
+                chromosomeHandler, resolution, norm, outputDirectory, generator.nextLong(), referenceBedFiles, metric);
+        withinClusters.extractFinalGWSubcompartments(inputHicFilePaths, prefix, 0, compareMaps);
 
         System.out.println("\nClustering complete");
     }

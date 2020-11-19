@@ -47,7 +47,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
-    protected final Random generator;
+    protected final Random generator = new Random(0);
     protected final File outputDirectory;
     private float[][] gwCleanMatrix;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
@@ -56,13 +56,13 @@ public abstract class CompositeGenomeWideDensityMatrix {
     protected final SimilarityMetric metric;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                            File outputDirectory, Random generator, String[] relativeTestFiles,
+                                            File outputDirectory, long seed, String[] relativeTestFiles,
                                             BadIndexFinder badIndexLocations, int datasetIndex,
                                             SimilarityMetric metric) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
-        this.generator = generator;
+        this.generator.setSeed(seed);
         this.badIndexLocations = badIndexLocations;
         this.datasetIndex = datasetIndex;
         this.metric = metric;
@@ -96,8 +96,8 @@ public abstract class CompositeGenomeWideDensityMatrix {
 
         int[][] ids = new int[1][clusters.length];
         int[][] idsForIndex = new int[chrIndxTorowIndexToGoldIDMapList.size() + 1][gwCleanMatrix.length];
-        for (int q = 0; q < idsForIndex.length; q++) {
-            Arrays.fill(idsForIndex[q], -1);
+        for (int[] forIndex : idsForIndex) {
+            Arrays.fill(forIndex, -1);
         }
 
         for (int z = 0; z < clusters.length; z++) {

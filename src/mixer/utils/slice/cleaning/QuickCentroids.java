@@ -24,140 +24,100 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.utils.similaritymeasures.RobustEuclideanDistance;
-import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.MixerGlobals;
+import mixer.utils.slice.kmeansfloat.Cluster;
+import mixer.utils.slice.kmeansfloat.ConcurrentKMeans;
+import mixer.utils.slice.kmeansfloat.KMeansListener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class QuickCentroids {
 
-    private static final SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
+    private final int maxIters = 5;
+    private final float[][] matrix;
+    private final int numClusters;
+    private final Random generator = new Random(0);
+    private final AtomicInteger numActualClusters = new AtomicInteger(0);
+    private float[][] centroids = null;
 
-    public static float[][] generateCentroids(float[][] matrix, int numCentroids, int numIters) {
+    public QuickCentroids(float[][] matrix, int numCentroids, long seed) {
+        this.matrix = matrix;
+        this.numClusters = numCentroids;
+        generator.setSeed(seed);
+    }
 
-        List<Integer> bestIndices = getInitialIndices(matrix, numCentroids);
+    public float[][] generateCentroids() {
+        if (matrix.length > 0 && matrix[0].length > 0) {
 
-        int vectorLength = matrix[0].length;
-        float[][] centroids = new float[bestIndices.size()][vectorLength];
-        for (int i = 0; i < numCentroids; i++) {
-            System.arraycopy(matrix[bestIndices.get(i)], 0, centroids[i], 0, vectorLength);
+            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
+
+            KMeansListener kMeansListener = new KMeansListener() {
+                @Override
+                public void kmeansMessage(String s) {
+                    if (MixerGlobals.printVerboseComments) {
+                        System.out.println(s);
+                    }
+                }
+
+                @Override
+                public void kmeansComplete(Cluster[] clusters, long l) {
+                    convertClustersToFloatMatrix(clusters);
+                    System.out.print(".");
+                    numActualClusters.set(clusters.length);
+                }
+
+                @Override
+                public void kmeansError(Throwable throwable) {
+                    throwable.printStackTrace();
+                    System.err.println("Error - " + throwable.getLocalizedMessage());
+                    System.exit(18);
+                }
+            };
+            kMeans.addKMeansListener(kMeansListener);
+            kMeans.run();
+        } else {
+            System.err.println("Empty matrix provided for quick centroids");
+            System.exit(5);
         }
 
-        for (int z = 0; z < numIters; z++) {
-            centroids = getUpdatedCentroids(centroids, matrix);
-        }
-
+        waitUntilDone();
         return centroids;
     }
 
-    private static float[][] getUpdatedCentroids(float[][] prevCentroids, float[][] matrix) {
+    private void waitUntilDone() {
+        while (numActualClusters.get() < 1) {
+            System.out.print(".");
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-        int[] closestCentroid = getClosestCentroidsForEachVector(prevCentroids, matrix);
-
-        int n = prevCentroids.length;
-        float[][] newCentroids = new float[n][matrix[0].length];
-        int[][] countsForCentroid = new int[n][matrix[0].length];
-        double[][] centroidTotals = new double[n][matrix[0].length];
-
-        for (int i = 0; i < matrix.length; i++) {
-            int cID = closestCentroid[i];
-            if (cID > -1) {
+    private void convertClustersToFloatMatrix(Cluster[] clusters) {
+        centroids = new float[clusters.length][matrix[0].length];
+        for (int c = 0; c < clusters.length; c++) {
+            Cluster cluster = clusters[c];
+            int[] counts = new int[matrix[0].length];
+            for (int i : cluster.getMemberIndexes()) {
                 for (int j = 0; j < matrix[i].length; j++) {
-                    if (!Float.isNaN(matrix[i][j])) {
-                        centroidTotals[cID][j] += matrix[i][j];
-                        countsForCentroid[cID][j] += 1;
+                    float val = matrix[i][j];
+                    if (!Float.isNaN(val)) {
+                        centroids[c][j] += val;
+                        counts[j]++;
                     }
                 }
             }
-        }
-
-        for (int i = 0; i < newCentroids.length; i++) {
-            for (int j = 0; j < newCentroids[i].length; j++) {
-                if (countsForCentroid[i][j] > 0) {
-                    newCentroids[i][j] = (float) (centroidTotals[i][j] / countsForCentroid[i][j]);
+            for (int j = 0; j < counts.length; j++) {
+                if (counts[j] > 0) {
+                    centroids[c][j] /= counts[j];
                 } else {
-                    newCentroids[i][j] = Float.NaN;
+                    centroids[c][j] = Float.NaN;
                 }
             }
         }
-        return newCentroids;
-    }
-
-    private static int[] getClosestCentroidsForEachVector(float[][] prevCentroids, float[][] matrix) {
-        int[] closestCentroid = new int[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            closestCentroid[i] = getNearestCentroidIndex(matrix[i], prevCentroids);
-        }
-        return closestCentroid;
-    }
-
-    private static int getNearestCentroidIndex(float[] vector, float[][] prevCentroids) {
-        int bestIndexSoFar = -1;
-        double currDist = Double.MAX_VALUE;
-
-        for (int k = 0; k < prevCentroids.length; k++) {
-            double newDist = metric.distance(prevCentroids[k], vector);
-            if (newDist < currDist) {
-                currDist = newDist;
-                bestIndexSoFar = k;
-            }
-        }
-        return bestIndexSoFar;
-    }
-
-    private static List<Integer> getInitialIndices(float[][] matrix, int numCentroids) {
-        float[] distFromClosestPoint = new float[matrix.length];
-        Arrays.fill(distFromClosestPoint, Float.MAX_VALUE);
-
-        List<Integer> bestIndices = new ArrayList<>();
-        bestIndices.add(getMostDenseVectorIndex(matrix));
-
-        for (int c = 0; c < numCentroids - 1; c++) {
-            updateDistances(distFromClosestPoint, matrix, bestIndices.get(c));
-            bestIndices.add(getIndexOfMaxVal(distFromClosestPoint));
-        }
-
-        return bestIndices;
-    }
-
-    private static void updateDistances(float[] distFromClosestPoint, float[][] matrix, Integer index) {
-        for (int k = 0; k < matrix.length; k++) {
-            float newDist = metric.distance(matrix[k], matrix[index]);
-            distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
-        }
-    }
-
-    private static int getIndexOfMaxVal(float[] data) {
-        float max = data[0];
-        int index = 0;
-
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] > max) {
-                index = i;
-                max = data[i];
-            }
-        }
-        return index;
-    }
-
-    public static int getMostDenseVectorIndex(float[][] matrix) {
-        float[] numNonNans = new float[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            numNonNans[i] = getNumNonNanEntries(matrix[i]);
-        }
-
-        return getIndexOfMaxVal(numNonNans);
-    }
-
-    public static int getNumNonNanEntries(float[] row) {
-        int numNanEntries = 0;
-        for (float val : row) {
-            if (Float.isNaN(val)) {
-                numNanEntries++;
-            }
-        }
-        return row.length - numNanEntries;
     }
 }

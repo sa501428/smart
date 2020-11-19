@@ -51,13 +51,15 @@ public class IndexOrderer {
     private final int CHECK_VAL = -2;
     private final float CORR_MIN = 0.2f;
     private final float INCREMENT = .1f;
+    private final Random generator = new Random(0);
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
-                        int numColumnsToPutTogether, BadIndexFinder badIndexLocations) {
+                        int numColumnsToPutTogether, BadIndexFinder badIndexLocations, long seed) {
         this.resolution = resolution;
         minDistanceThreshold = DISTANCE / resolution;
         numColsToJoin = numColumnsToPutTogether;
+        generator.setSeed(seed);
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
             ExpectedValueFunction df = ds.getExpectedValuesOrExit(zd.getZoom(), normalizationType, chrom, true);
@@ -116,7 +118,7 @@ public class IndexOrderer {
     private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
 
         int numCentroids = 10;
-        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+        float[][] centroids = new QuickCentroids(matrix, numCentroids, generator.nextLong()).generateCentroids();
         SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
 
         int vectorLength = newIndexOrderAssignments.length;

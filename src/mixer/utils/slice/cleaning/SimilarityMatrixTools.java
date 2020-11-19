@@ -32,19 +32,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid) {
+    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
-            return getAsymmetricMatrix(matrix, metric, numPerCentroid);
+            return getAsymmetricMatrix(matrix, metric, numPerCentroid, seed);
         }
 
         return getSymmetricMatrix(matrix, metric);
     }
 
-    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid) {
+    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
         final int numCentroids = matrix.length / numPerCentroid;
         final float[][] centroids;
         if (numPerCentroid > 1) {
-            centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+            centroids = new QuickCentroids(matrix, numCentroids, seed).generateCentroids();
         } else {
             centroids = matrix;
         }

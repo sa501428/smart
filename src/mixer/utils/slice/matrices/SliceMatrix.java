@@ -40,7 +40,10 @@ import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
 
@@ -54,13 +57,13 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
      * @param norm
      * @param resolution
      * @param outputDirectory
-     * @param generator
+     * @param seed
      * @param referenceBedFiles
      */
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution, File outputDirectory,
-                       Random generator, String[] referenceBedFiles, BadIndexFinder badIndexLocations,
+                       long seed, String[] referenceBedFiles, BadIndexFinder badIndexLocations,
                        int datasetIndex, SimilarityMetric metric) {
-        super(chromosomeHandler, ds, norm, resolution, outputDirectory, generator, referenceBedFiles,
+        super(chromosomeHandler, ds, norm, resolution, outputDirectory, seed, referenceBedFiles,
                 badIndexLocations, datasetIndex, metric);
     }
 
@@ -73,7 +76,7 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
         IndexOrderer orderer = null;
         if (numColumnsToPutTogether > 1) {
             orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
-                    badIndexLocations);
+                    badIndexLocations, generator.nextLong());
             indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
         }
 
@@ -84,19 +87,14 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
             System.out.println(dimensions.getFirst() + " by " + compressedDimensions.getFirst());
         }
 
-        float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
-        try {
-            if (interMatrix.length == 0 || interMatrix[0].length == 0) {
-                System.err.println("No matrix created; map is likely too sparse. " +
-                        "Try a lower resolution or higher compression window.");
-                System.exit(9);
-            }
-        } catch (Exception e) {
-            System.err.println("No matrix created; map is likely too sparse. Try a lower resolution.");
+        if (dimensions.getFirst() == 0 || compressedDimensions.getFirst() == 0) {
+            System.err.println("No matrix created; map is likely too sparse. " +
+                    "Try a lower resolution or higher compression window.");
             System.exit(9);
         }
 
         System.out.println("Indexing complete");
+        float[][] interMatrix = new float[dimensions.getFirst()][compressedDimensions.getFirst()];
 
         for (int i = 0; i < chromosomes.length; i++) {
             Chromosome chr1 = chromosomes[i];

@@ -43,7 +43,7 @@ public class MatrixCleanupAndSimilarityMetric {
     protected final File outputDirectory;
     public static boolean USE_ZSCORE = false;
     protected float[][] data;
-    protected final Random generator = new Random();
+    protected final Random generator = new Random(0);
     private final SimilarityMetric metric;
 
     public MatrixCleanupAndSimilarityMetric(float[][] interMatrix, long seed, File outputDirectory, SimilarityMetric metric) {
@@ -144,7 +144,7 @@ public class MatrixCleanupAndSimilarityMetric {
         }
 
         System.out.println("Generating similarity matrix");
-        data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID);
+        data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
