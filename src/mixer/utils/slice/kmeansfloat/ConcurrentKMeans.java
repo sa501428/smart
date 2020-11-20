@@ -289,21 +289,8 @@ public class ConcurrentKMeans implements KMeans {
             Arrays.fill(mClusterAssignments, -1);
         }
 
-        // Place the coordinate indices into an array and shuffle it.
-        int[] indices = new int[coordCount];
-        for (int i = 0; i < coordCount; i++) {
-            indices[i] = i;
-        }
-        for (int i = 0, m = coordCount; m > 0; i++, m--) {
-            int j = i + random.nextInt(m);
-            if (i != j) {
-                // Swap the indices.
-                indices[i] ^= indices[j];
-                indices[j] ^= indices[i];
-                indices[i] ^= indices[j];
-            }
-        }
 
+        int[] indices = new SmartInitialization(mCoordinates, mK, random.nextInt(coordCount)).getSmartKmeansInitialization();
         mProtoClusters = new ProtoCluster[mK];
         for (int i = 0; i < mK; i++) {
             int coordIndex = indices[i];

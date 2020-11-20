@@ -44,15 +44,14 @@ public class AggregateProcessing {
                 "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
 
-        String folder = "collins_dice_test";
-        strings = new String[]{"dice", "-r", "100000", "-k", "KR",
+        String folder = "new_change_test";
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR",
                 "--type", "zscore-cosine", "--subsample", "50",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map1_30.hic,/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map2_30.hic",
-                "2,11,10",
+                file14, "2,11,10",
                 "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
 
 
@@ -63,7 +62,7 @@ public class AggregateProcessing {
                 "collins1_10_again"
         };
         System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        //MixerTools.main(strings);
         System.gc();
 
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
@@ -73,7 +72,7 @@ public class AggregateProcessing {
                 "collins2_10_again"
         };
         System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        //MixerTools.main(strings);
         System.gc();
 
     }

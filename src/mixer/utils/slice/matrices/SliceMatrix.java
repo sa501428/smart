@@ -71,13 +71,14 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
 
         // height/weight chromosomes
         Map<Integer, Integer> indexToFilteredLength = calculateActualLengthForChromosomes(chromosomes);
-        Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(indexToFilteredLength);
-
+        Map<Integer, Integer> indexToCompressedLength;
         IndexOrderer orderer = null;
         if (numColumnsToPutTogether > 1) {
             orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
                     badIndexLocations, generator.nextLong());
             indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
+        } else {
+            indexToCompressedLength = calculateCompressedLengthForChromosomes(indexToFilteredLength);
         }
 
         Pair<Integer, int[][]> dimensions = calculateDimensionInterMatrix(chromosomes, indexToFilteredLength);

@@ -118,7 +118,9 @@ public class IndexOrderer {
     private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
 
         int numCentroids = 10;
-        float[][] centroids = new QuickCentroids(matrix, numCentroids, generator.nextLong()).generateCentroids();
+
+        float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments), numCentroids, generator.nextLong()).generateCentroids();
+        System.out.println("Planned centroids: " + numCentroids + " Actual centroids: " + centroids.length);
         SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
 
         int vectorLength = newIndexOrderAssignments.length;
@@ -153,6 +155,21 @@ public class IndexOrderer {
         }
 
         return gCounter;
+    }
+
+    private float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
+        List<Integer> actualIndices = new ArrayList<>();
+        for (int z = 0; z < newIndexOrderAssignments.length; z++) {
+            if (newIndexOrderAssignments[z] < CHECK_VAL) {
+                actualIndices.add(z);
+            }
+        }
+
+        float[][] tempCleanMatrix = new float[actualIndices.size()][matrix[0].length];
+        for (int i = 0; i < actualIndices.size(); i++) {
+            System.arraycopy(matrix[actualIndices.get(i)], 0, tempCleanMatrix[i], 0, tempCleanMatrix[i].length);
+        }
+        return tempCleanMatrix;
     }
 
     private int doSequentialOrdering(float[] correlationWithCentroid, int[] newIndexOrderAssignments, int startCounter) {
