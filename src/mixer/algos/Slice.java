@@ -55,6 +55,7 @@ public class Slice extends MixerCLT {
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
+    private NormalizationType[] normArray;
     public static SimilarityMetric metric = RobustCosineSimilarity.SINGLETON;
     private String prefix = "";
     private String[] referenceBedFiles;
@@ -62,7 +63,7 @@ public class Slice extends MixerCLT {
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
-        super("slice [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE]  [-w window] " +
+        super("slice [-r resolution] <-k NONE/VC/VC_SQRT/KR/SCALE>  [-w window] " +
                 "[--compare reference.bed] [--corr] [--verbose] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
         compareMaps = command.contains("dice");
@@ -94,8 +95,21 @@ public class Slice extends MixerCLT {
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
 
-        NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
-        if (preferredNorm != null) norm = preferredNorm;
+        normArray = new NormalizationType[datasetList.size()];
+        NormalizationType[] preferredNorm = mixerParser.getNormalizationTypeOption(datasetList);
+        if (preferredNorm != null && preferredNorm.length > 0) {
+            if (preferredNorm.length == normArray.length) {
+                normArray = preferredNorm;
+            } else {
+                for (int i = 0; i < normArray.length; i++) {
+                    normArray[i] = preferredNorm[0];
+                }
+            }
+        } else {
+            System.err.println("Normalization must be specified");
+            System.exit(9);
+        }
+
 
         List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
         if (possibleResolutions != null) {
@@ -149,7 +163,7 @@ public class Slice extends MixerCLT {
         if (datasetList.size() < 1) return;
 
         FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, norm, outputDirectory, generator.nextLong(), referenceBedFiles, metric);
+                chromosomeHandler, resolution, normArray, outputDirectory, generator.nextLong(), referenceBedFiles, metric);
         withinClusters.extractFinalGWSubcompartments(inputHicFilePaths, prefix, 0, compareMaps);
 
         System.out.println("\nClustering complete");

@@ -51,32 +51,32 @@ public class FullGenomeOEWithinClusters {
     protected final File outputDirectory;
     private final ChromosomeHandler chromosomeHandler;
     private final int resolution;
-    private final NormalizationType norm;
+    private final NormalizationType[] norms;
     private final SliceMatrix sliceMatrix;
     private final SimilarityMetric metric;
     private final Random generator = new Random(0);
 
-    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
+    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType[] norms,
                                       File outputDirectory, long seed, String[] referenceBedFiles,
                                       SimilarityMetric metric) {
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
-        this.norm = norm;
+        this.norms = norms;
         this.outputDirectory = outputDirectory;
         this.datasets = datasets;
         this.metric = metric;
         generator.setSeed(seed);
 
         BadIndexFinder badIndexFinder = new BadIndexFinder(datasets,
-                chromosomeHandler.getAutosomalChromosomesArray(), resolution, norm);
+                chromosomeHandler.getAutosomalChromosomesArray(), resolution, norms);
 
         sliceMatrix = new SliceMatrix(
-                chromosomeHandler, datasets.get(0), norm, resolution, outputDirectory, generator.nextLong(), referenceBedFiles,
+                chromosomeHandler, datasets.get(0), norms[0], resolution, outputDirectory, generator.nextLong(), referenceBedFiles,
                 badIndexFinder, 0, metric);
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
-                    norm, resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, dI, metric);
+                    norms[dI], resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, dI, metric);
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 
@@ -132,7 +132,7 @@ public class FullGenomeOEWithinClusters {
 
         if (!compareMaps) {
             System.out.println("Post processing");
-            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norm, resolution);
+            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norms[0], resolution);
             identifier.identify(numItersToResults, sliceMatrix.getBadIndices());
         }
 

@@ -44,15 +44,15 @@ public class BadIndexFinder {
     private final int resolution;
     private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     private final Map<Integer, Set<Integer>> worstIndices = new HashMap<>();
-    private final NormalizationType norm;
+    private final NormalizationType[] norms;
 
     private final double[] globalSum, globalSumOfSquares, GLOBAL_MAX_RAW_VALUE;
     private final long[] globalCounts;
 
     public BadIndexFinder(List<Dataset> datasets, Chromosome[] chromosomes, int resolution,
-                          NormalizationType norm) {
+                          NormalizationType[] norms) {
         this.resolution = resolution;
-        this.norm = norm;
+        this.norms = norms;
         for (Chromosome chrom : chromosomes) {
             badIndices.put(chrom.getIndex(), new HashSet<>());
             worstIndices.put(chrom.getIndex(), new HashSet<>());
@@ -133,7 +133,7 @@ public class BadIndexFinder {
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
 
         determineBadIndicesForRegion(chr1, chr2,
-                HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, isIntra),
+                HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norms[dIndex], isIntra),
                 lengthChr1, lengthChr2, isIntra, dIndex);
     }
 
