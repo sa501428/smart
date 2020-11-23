@@ -498,6 +498,28 @@ public class SliceUtils {
                 return 5;
             case "B4":
                 return 6;
+            case "A":
+                return 1;
+            case "B":
+                return 5;
+            case "C":
+                return 4;
+            case "D":
+                return 2;
+            case "E":
+                return 3;
+            case "F":
+                return 2;
+            case "G":
+                return 1;
+            case "H":
+                return 8;
+            case "I":
+                return 9;
+            case "J":
+                return 10;
+            case "K":
+                return 11;
             default:
                 try {
                     return Integer.parseInt(upperCaseID);
@@ -508,6 +530,31 @@ public class SliceUtils {
                 }
         }
     }
+
+    /**
+     * case "A":
+     * return 4;
+     * case "B":
+     * return 5;
+     * case "C":
+     * return 6;
+     * case "D":
+     * return 3;
+     * case "E":
+     * return 7;
+     * case "F":
+     * return 2;
+     * case "G":
+     * return 1;
+     * case "H":
+     * return 8;
+     * case "I":
+     * return 9;
+     * case "J":
+     * return 10;
+     * case "K":
+     * return 11;
+     */
 
     public static GenomeWideList<SubcompartmentInterval> redoAllIds(GenomeWideList<SubcompartmentInterval> intraSubcompartments) {
         AtomicInteger newIds = new AtomicInteger(1);

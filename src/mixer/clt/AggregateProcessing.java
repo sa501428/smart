@@ -51,25 +51,60 @@ public class AggregateProcessing {
                 "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        //MixerTools.main(strings);
         System.gc();
 
 
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
                 "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map1_30.hic",
+                //"/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_4_clusters_map1_30.subcompartment.bed," +
+                //       "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_5_clusters_map1_30.subcompartment.bed," +
                 "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_10_clusters_map1_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle4",
-                "collins1_10_again"
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle10",
+                //"collins1_c4,collins1_c5," +
+                "collins1_c10"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map2_30.hic",
+                "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_4_clusters_map1_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_5_clusters_map1_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_10_clusters_map1_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle10",
+                "collins2_c4,collins2_c5,collins2_c10"
         };
         System.out.println("-----------------------------------------------------");
         //MixerTools.main(strings);
         System.gc();
 
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map2_30.hic",
-                "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_10_clusters_map1_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle4",
-                "collins2_10_again"
+                file14,
+                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed," +
+                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed," +
+                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
+                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine2_clusters_gm12878_rh14_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine5_clusters_gm12878_rh14_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine6_clusters_gm12878_rh14_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine4_clusters_gm12878_rh14_30.subcompartment.bed," +
+                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine10_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle8",
+                "rh2014,sniper,sci,sliceNB2,sliceNB5,sliceNB6,sliceNB4,sliceNB10"
+        };
+        System.out.println("-----------------------------------------------------");
+        //MixerTools.main(strings);
+        System.gc();
+
+        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
+                //deriv image
+                file14,
+                "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_5_clusters_gm12878_rh14_reordered.bed," +
+                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle10",
+                //"sliceNB_5clusters_reorder_1_skipsmall"
+                "slice5_50,rh2014_50"
         };
         System.out.println("-----------------------------------------------------");
         //MixerTools.main(strings);

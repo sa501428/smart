@@ -26,6 +26,10 @@ package mixer.utils.common;
 
 import javastraw.tools.MatrixTools;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -250,5 +254,69 @@ public class FloatMatrixTools {
                 matrix[i][j] *= scalar;
             }
         }
+    }
+
+    public static void saveMatrixToPNG(File file, float[][] matrix, boolean useLog) {
+        double range = getMaxVal(matrix);
+        double minVal = 0;
+        if (useLog) {
+            minVal = Math.log(1 + getMinVal(matrix));
+            range = Math.log(1 + range) - minVal;
+        }
+
+        BufferedImage image = new BufferedImage(matrix.length, matrix[0].length, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (useLog) {
+                    image.setRGB(i, j, mixColors((Math.log(1 + matrix[i][j]) - minVal) / range));
+                } else {
+                    image.setRGB(i, j, mixColors(matrix[i][j] / range));
+                }
+            }
+        }
+
+        try {
+            ImageIO.write(image, "png", file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static float getMaxVal(float[][] matrix) {
+        float maxVal = matrix[0][0];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > maxVal) {
+                    maxVal = matrix[i][j];
+                }
+            }
+        }
+        return maxVal;
+    }
+
+    private static float getMinVal(float[][] matrix) {
+        float minVal = matrix[0][0];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] < minVal) {
+                    minVal = matrix[i][j];
+                }
+            }
+        }
+        return minVal;
+    }
+
+    public static int mixColors(double ratio) {
+        int color1 = Color.WHITE.getRGB();
+        int color2 = Color.RED.getRGB();
+
+        int mask1 = 0x00ff00ff;
+        int mask2 = 0xff00ff00;
+
+        int f2 = (int) (256 * ratio);
+        int f1 = 256 - f2;
+
+        return (((((color1 & mask1) * f1) + ((color2 & mask1) * f2)) >> 8) & mask1)
+                | (((((color1 & mask2) * f1) + ((color2 & mask2) * f2)) >> 8) & mask2);
     }
 }
