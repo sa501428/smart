@@ -22,14 +22,28 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.cleaning;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.09.03";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+import javastraw.reader.basics.Chromosome;
+
+public class NearDiagonalTrim {
+
+    private static final int DISTANCE_CUTOFF = 3000000;
+
+    public static void trim(Chromosome chrom, float[][] matrix, int resolution) {
+        if (chrom.getLength() > 5 * DISTANCE_CUTOFF) {
+            trimDiagonalWithin(matrix, resolution);
+        }
+    }
+
+    private static void trimDiagonalWithin(float[][] data, int resolution) {
+        int pixelDistance = DISTANCE_CUTOFF / resolution;
+        for (int i = 0; i < data.length; i++) {
+            int limit = Math.min(data[i].length, i + pixelDistance);
+            for (int j = i; j < limit; j++) {
+                data[i][j] = Float.NaN;
+                data[j][i] = Float.NaN;
+            }
+        }
+    }
 }

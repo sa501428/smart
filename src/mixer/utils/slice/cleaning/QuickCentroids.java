@@ -48,42 +48,41 @@ public class QuickCentroids {
         this.matrix = matrix;
         this.numClusters = numCentroids;
         generator.setSeed(seed);
+        if (matrix.length == 0 || matrix[0].length == 0) {
+            System.err.println("Empty matrix provided for quick centroids");
+            System.exit(5);
+        }
     }
 
     public float[][] generateCentroids() {
         ConcurrentKMeans.useNonNanVersion = true;
-        if (matrix.length > 0 && matrix[0].length > 0) {
 
-            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
+        ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
 
-            KMeansListener kMeansListener = new KMeansListener() {
-                @Override
-                public void kmeansMessage(String s) {
-                    if (MixerGlobals.printVerboseComments) {
-                        System.out.println(s);
-                    }
+        KMeansListener kMeansListener = new KMeansListener() {
+            @Override
+            public void kmeansMessage(String s) {
+                if (MixerGlobals.printVerboseComments) {
+                    System.out.println(s);
                 }
+            }
 
-                @Override
-                public void kmeansComplete(Cluster[] clusters, long l) {
-                    convertClustersToFloatMatrix(clusters);
-                    System.out.print(".");
-                    numActualClusters.set(clusters.length);
-                }
+            @Override
+            public void kmeansComplete(Cluster[] clusters, long l) {
+                convertClustersToFloatMatrix(clusters);
+                System.out.print(".");
+                numActualClusters.set(clusters.length);
+            }
 
-                @Override
-                public void kmeansError(Throwable throwable) {
-                    throwable.printStackTrace();
-                    System.err.println("Error - " + throwable.getLocalizedMessage());
-                    System.exit(18);
-                }
-            };
-            kMeans.addKMeansListener(kMeansListener);
-            kMeans.run();
-        } else {
-            System.err.println("Empty matrix provided for quick centroids");
-            System.exit(5);
-        }
+            @Override
+            public void kmeansError(Throwable throwable) {
+                throwable.printStackTrace();
+                System.err.println("Error - " + throwable.getLocalizedMessage());
+                System.exit(18);
+            }
+        };
+        kMeans.addKMeansListener(kMeansListener);
+        kMeans.run();
 
         waitUntilDone();
         ConcurrentKMeans.useNonNanVersion = false;

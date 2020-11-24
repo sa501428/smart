@@ -36,9 +36,7 @@ import mixer.utils.slice.structures.SubcompartmentInterval;
 import java.util.*;
 
 public class LeftOverClusterIdentifier {
-
-    private static final int DISTANCE_CUTOFF = 3000000;
-    public static final float threshold = 3f;
+    private final float threshold = 3f;
     private final ChromosomeHandler chromosomeHandler;
     private final Dataset dataset;
     private final NormalizationType norm;
@@ -64,11 +62,7 @@ public class LeftOverClusterIdentifier {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(dataset, zd, chr1, resolution,
                         norm, threshold, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0);
-
-                if (chr1.getLength() > 5 * DISTANCE_CUTOFF) {
-                    trimDiagonalWithin(allDataForRegion, resolution);
-                }
-                //allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
+                NearDiagonalTrim.trim(chr1, allDataForRegion, resolution);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -118,17 +112,6 @@ public class LeftOverClusterIdentifier {
             System.out.print(".");
         }
         System.out.println(".");
-    }
-
-    private void trimDiagonalWithin(float[][] data, int resolution) {
-        int pixelDistance = LeftOverClusterIdentifier.DISTANCE_CUTOFF / resolution;
-        for (int i = 0; i < data.length; i++) {
-            int limit = Math.min(data[i].length, i + pixelDistance);
-            for (int j = i; j < limit; j++) {
-                data[i][j] = Float.NaN;
-                data[j][i] = Float.NaN;
-            }
-        }
     }
 
     private Map<Integer, float[]> getClusterCenters(float[][] allDataForRegion, List<SubcompartmentInterval> intervals, int resolution) {

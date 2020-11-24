@@ -25,18 +25,15 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.ExpectedValueFunction;
+import javastraw.reader.ExtractingOEDataUtils;
 import javastraw.reader.HiCFileTools;
 import javastraw.reader.MatrixZoomData;
-import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
-import java.io.IOException;
 import java.util.*;
 
 public class IndexOrderer {
@@ -62,9 +59,12 @@ public class IndexOrderer {
         generator.setSeed(seed);
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
-            ExpectedValueFunction df = ds.getExpectedValuesOrExit(zd.getZoom(), normalizationType, chrom, true);
             try {
-                float[][] matrix = extractObsOverExpBoundedRegion(zd, chrom, normalizationType, df);
+                float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, resolution,
+                        normalizationType, 3f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                        true, 1, 0);
+                NearDiagonalTrim.trim(chrom, matrix, resolution);
+
                 int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndexLocations.getBadIndices(chrom));
                 chromToReorderedIndices.put(chrom, newOrderIndexes);
             } catch (Exception e) {
@@ -76,10 +76,6 @@ public class IndexOrderer {
 
     public Map<Integer, Integer> getIndexToRearrangedLength() {
         return indexToRearrangedLength;
-    }
-
-    private static double getExpected(int dist, ExpectedValueFunction df, int chrIndex) {
-        return df.getExpectedValue(chrIndex, dist);
     }
 
     public int[] get(Chromosome chrom) {
@@ -234,58 +230,5 @@ public class IndexOrderer {
             System.out.println("Num rounds " + numRoundsThatHappen);
         }
         return counter;
-    }
-
-    public float[][] extractObsOverExpBoundedRegion(MatrixZoomData zd, Chromosome chromosome,
-                                                    NormalizationType normalizationType,
-                                                    ExpectedValueFunction df) throws IOException {
-        if (df == null) {
-            System.err.println("DF is null");
-            return null;
-        }
-        // numRows/numCols is just to ensure a set size in case bounds are approximate
-        // left upper corner is reference for 0,0
-        int maxBin = (int) (chromosome.getLength() / resolution) + 1;
-        int maxCompressedBin = maxBin / numColsToJoin;
-        if (maxBin % numColsToJoin > 0) maxCompressedBin += 1;
-
-        List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, maxBin, 0, maxBin,
-                normalizationType, true);
-        float[][] data = new float[maxBin][maxCompressedBin];
-
-        if (blocks.size() > 0) {
-            for (Block b : blocks) {
-                if (b != null) {
-                    for (ContactRecord rec : b.getContactRecords()) {
-
-                        int dist = Math.abs(rec.getBinX() - rec.getBinY());
-                        if (dist < minDistanceThreshold) {
-                            addOEValInPosition(Float.NaN, rec, data);
-                        } else {
-                            double observed = rec.getCounts() + 1;
-                            double expected = getExpected(dist, df, chromosome.getIndex()) + 1;
-                            float answer = (float) (observed / expected);
-                            if (Float.isNaN(answer) || Float.isInfinite(answer)) {
-                                answer = Float.NaN;
-                            }
-                            addOEValInPosition(answer, rec, data);
-                        }
-                    }
-                }
-            }
-        }
-        // force cleanup
-        blocks = null;
-        return data;
-    }
-
-    private void addOEValInPosition(float oeVal, ContactRecord rec, float[][] data) {
-        int rX = rec.getBinX();
-        int rY = rec.getBinY() / numColsToJoin;
-        data[rX][rY] += oeVal;
-
-        rX = rec.getBinY();
-        rY = rec.getBinX() / numColsToJoin;
-        data[rX][rY] += oeVal;
     }
 }
