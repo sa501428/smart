@@ -22,14 +22,29 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.shuffle.scoring;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.10.02";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class ShannonEntropyColScoring extends ShuffleScore {
+    public ShannonEntropyColScoring(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        super(matrix, rBounds, cBounds);
+    }
+
+    @Override
+    public double score() {
+        double[] colSums = new double[matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                colSums[j] += matrix[i][j];
+            }
+        }
+
+        double entropy = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                double p = matrix[i][j] / colSums[j];
+                entropy += p * Math.log(p);
+            }
+        }
+        return -entropy / matrix[0].length;
+    }
 }

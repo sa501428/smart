@@ -22,14 +22,30 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.shuffle.scoring;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.10.02";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class KLDivergenceColScoring extends ShuffleScore {
+    public KLDivergenceColScoring(float[][] matrix, Integer[] rowIndices, Integer[] colIndices) {
+        super(matrix, rowIndices, colIndices);
+    }
+
+    @Override
+    public double score() {
+        double[] colSums = new double[matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                colSums[j] += matrix[i][j];
+            }
+        }
+
+        double entropy = 0;
+        double q = 1.0 / matrix.length;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                double p = matrix[i][j] / colSums[j];
+                entropy += p * Math.log(p / q);
+            }
+        }
+        return entropy / matrix[0].length;
+    }
 }

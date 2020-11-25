@@ -104,7 +104,7 @@ public class AggregateProcessing {
                         "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed",
                 "/Users/mss/Desktop/SLICE.work/tempslice/shuffle11",
                 //"sliceNB_5clusters_reorder_1_skipsmall"
-                "slice5,rh2014"
+                "slice5_v2,rh2014_v2"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);

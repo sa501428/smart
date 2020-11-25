@@ -64,10 +64,9 @@ public class AggregateMatrix {
 
     public synchronized void addBToA(float[][] matrix) {
         if (aggregate == null) {
-            aggregate = matrix;
-        } else {
-            addBToA(aggregate, matrix);
+            aggregate = new float[matrix.length][matrix[0].length];
         }
+        addBToA(aggregate, matrix);
     }
 
     public void scaleForNumberOfRounds(int numRounds) {
