@@ -65,7 +65,7 @@ public class AggregateProcessing {
                 "collins1_c10"
         };
         System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
+        //MixerTools.main(strings);
         System.gc();
 
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
@@ -102,12 +102,12 @@ public class AggregateProcessing {
                 file14,
                 "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_5_clusters_gm12878_rh14_reordered.bed," +
                         "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle10",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle11",
                 //"sliceNB_5clusters_reorder_1_skipsmall"
-                "slice5_50,rh2014_50"
+                "slice5,rh2014"
         };
         System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
 
     }

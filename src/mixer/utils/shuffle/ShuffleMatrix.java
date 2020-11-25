@@ -97,9 +97,9 @@ public class ShuffleMatrix {
                 myWriter.write(mapTypes[y].toString() + "------------------\n");
                 for (int z = 0; z < scoreTypes.length; z++) {
                     myWriter.write(scoreTypes[z] + " Score\n");
-                    myWriter.write("Shuffled  : " + shuffled[y][0] + "\n");
-                    myWriter.write("Baseline  : " + baselines[y][1] + "\n");
-                    myWriter.write("Ratio     : " + ratios[y][2] + "\n\n");
+                    myWriter.write("Shuffled  : " + shuffled[y][z] + "\n");
+                    myWriter.write("Baseline  : " + baselines[y][z] + "\n");
+                    myWriter.write("Ratio     : " + ratios[y][z] + "\n\n");
 
                 }
                 myWriter.write("----------------------------------------------------------------\n");
