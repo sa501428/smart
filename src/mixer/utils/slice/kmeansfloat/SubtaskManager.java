@@ -100,13 +100,11 @@ public class SubtaskManager {
 
             // Create a simple executor that directly calls the single
             // worker's run method.  Do not set the barrier.
-            mExecutor = new Executor() {
-                public void execute(Runnable runnable) {
-                    if (!Thread.interrupted()) {
-                        runnable.run();
-                    } else {
-                        throw new RejectedExecutionException();
-                    }
+            mExecutor = runnable -> {
+                if (!Thread.interrupted()) {
+                    runnable.run();
+                } else {
+                    throw new RejectedExecutionException();
                 }
             };
 

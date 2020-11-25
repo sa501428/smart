@@ -30,28 +30,27 @@ import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClusterTools {
 
     public static Cluster[] getSortedClusters(Cluster[] unsortedClusters) {
         List<Cluster> tempClusters = new ArrayList<>(Arrays.asList(unsortedClusters));
 
-        Collections.sort(tempClusters, new Comparator<Cluster>() {
-            @Override
-            public int compare(Cluster o1, Cluster o2) {
-                Integer size1 = o1.getMemberIndexes().length;
-                Integer size2 = o2.getMemberIndexes().length;
+        tempClusters.sort((o1, o2) -> {
+            Integer size1 = o1.getMemberIndexes().length;
+            Integer size2 = o2.getMemberIndexes().length;
 
-                int comparison = -size1.compareTo(size2);
-                if (comparison == 0) {
-                    Integer indx1 = o1.getMemberIndexes()[0];
-                    Integer indx2 = o2.getMemberIndexes()[0];
-                    comparison = indx1.compareTo(indx2);
-                }
-
-                return comparison;
+            int comparison = -size1.compareTo(size2);
+            if (comparison == 0) {
+                Integer indx1 = o1.getMemberIndexes()[0];
+                Integer indx2 = o2.getMemberIndexes()[0];
+                comparison = indx1.compareTo(indx2);
             }
+
+            return comparison;
         });
 
         Cluster[] sortedClusters = new Cluster[unsortedClusters.length];

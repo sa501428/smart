@@ -63,18 +63,15 @@ public class SmartInitialization {
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    int k = currRowIndex.getAndIncrement();
-                    while (k < data.length) {
-                        float newDist = 0;
-                        if (k != index) {
-                            newDist = RobustEuclideanDistance.SINGLETON.distance(data[k], data[index]);
-                        }
-                        distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
-                        k = currRowIndex.getAndIncrement();
+            executor.execute(() -> {
+                int k = currRowIndex.getAndIncrement();
+                while (k < data.length) {
+                    float newDist = 0;
+                    if (k != index) {
+                        newDist = RobustEuclideanDistance.SINGLETON.distance(data[k], data[index]);
                     }
+                    distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
+                    k = currRowIndex.getAndIncrement();
                 }
             });
         }

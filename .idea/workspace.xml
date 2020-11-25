@@ -27,16 +27,21 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/DerivativeScoring.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/EarthShiftScoring.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/GaussianKernelScoring.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KernelScoring.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/UniformKernelScoring.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="restructure scoring">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixDerivativeTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixDerivativeTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/EarthShiftScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/EarthShiftScoring.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ClusterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/ClusterTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/SmartInitialization.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/SmartInitialization.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/SubtaskManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeansfloat/SubtaskManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/walker/LocalGenomeRegion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/walker/LocalGenomeRegion.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,9 +89,9 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.shuffle.scoring" />
       <recent name="mixer.utils.slice.cleaning" />
-      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.slice.kmeansfloat" />
       <recent name="mixer.utils.slice.structures" />
     </key>
@@ -376,7 +381,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606182032576</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="restructure scoring">
+      <created>1606330700940</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1606330700940</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -398,7 +410,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="restructuring; initial shuffle codes" />
     <MESSAGE value="save intermediate data representation" />
     <MESSAGE value="additional metrics, saving of genomewide distance map, shuffle matrix initial code" />
     <MESSAGE value="overhaul of metric handling, umap code added" />
@@ -423,7 +434,8 @@
     <MESSAGE value="save directly to png, png file size calcs, std dev calcs, calc error only within region, reading bed with custom order" />
     <MESSAGE value="support different normalizations" />
     <MESSAGE value="fix initial orderer, change handling of intramatrix" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix initial orderer, change handling of intramatrix" />
+    <MESSAGE value="restructure scoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="restructure scoring" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -450,33 +462,34 @@
       <screen x="0" y="23" width="1440" height="812" />
     </state>
     <state x="12" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.812@0.23.1440.812" timestamp="1605561963583" />
-    <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1605726627686">
-      <screen x="0" y="23" width="1440" height="812" />
+    <state x="466" y="289" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1606332935140">
+      <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="466" y="285" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.804@0.23.1440.804" timestamp="1602984020850" />
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.811@0.23.1440.811" timestamp="1605084384344" />
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.812@0.23.1440.812" timestamp="1605726627686" />
-    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2" timestamp="1606182032442">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="466" y="289" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.816@0.23.1440.816" timestamp="1606332935140" />
+    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2" timestamp="1606330910612">
+      <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.801@0.23.1440.801" timestamp="1603366056339" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.804@0.23.1440.804" timestamp="1603387685926" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.810@0.23.1440.810" timestamp="1604595695388" />
     <state x="297" y="23" width="846" height="811" key="CommitChangelistDialog2/0.23.1440.811@0.23.1440.811" timestamp="1606182032442" />
-    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.812@0.23.1440.812" timestamp="1605686313444" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.812@0.23.1440.812" timestamp="1606330700763" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.814@0.23.1440.814" timestamp="1606168571471" />
-    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2/0.23.1440.816@0.23.1440.816" timestamp="1605827515077" />
+    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2/0.23.1440.816@0.23.1440.816" timestamp="1606330910612" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.821@0.23.1440.821" timestamp="1605821824457" />
-    <state x="100" y="124" width="1152" height="652" key="DiffContextDialog" timestamp="1606182024617">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="100" y="125" width="1152" height="652" key="DiffContextDialog" timestamp="1606330909565">
+      <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="100" y="123" width="1240" height="601" key="DiffContextDialog/0.23.1440.801@0.23.1440.801" timestamp="1603366047921" />
     <state x="100" y="123" key="DiffContextDialog/0.23.1440.804@0.23.1440.804" timestamp="1603387673194" />
     <state x="100" y="124" key="DiffContextDialog/0.23.1440.810@0.23.1440.810" timestamp="1604595677303" />
     <state x="100" y="124" width="1152" height="648" key="DiffContextDialog/0.23.1440.811@0.23.1440.811" timestamp="1606182024617" />
-    <state x="100" y="124" width="1152" height="649" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1605686307218" />
+    <state x="100" y="124" width="1152" height="649" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1606330694212" />
     <state x="288" y="80" width="1152" height="651" key="DiffContextDialog/0.23.1440.814@0.23.1440.814" timestamp="1606168566332" />
-    <state x="100" y="125" width="1152" height="652" key="DiffContextDialog/0.23.1440.816@0.23.1440.816" timestamp="1605852779265" />
+    <state x="100" y="125" width="1152" height="652" key="DiffContextDialog/0.23.1440.816@0.23.1440.816" timestamp="1606330909565" />
     <state x="100" y="126" key="DiffContextDialog/0.23.1440.821@0.23.1440.821" timestamp="1605821817846" />
     <state width="1398" height="236" key="GridCell.Tab.0.bottom" timestamp="1606328359799">
       <screen x="0" y="23" width="1440" height="812" />
@@ -531,14 +544,14 @@
     <state x="221" y="23" key="SettingsEditor/0.23.1440.811@0.23.1440.811" timestamp="1605647536019" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.814@0.23.1440.814" timestamp="1605038640405" />
     <state x="221" y="23" width="1024" height="816" key="SettingsEditor/0.23.1440.816@0.23.1440.816" timestamp="1605670469159" />
-    <state x="320" y="151" key="Vcs.Push.Dialog.v2" timestamp="1606182034019">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2" timestamp="1606330702145">
+      <screen x="0" y="23" width="1440" height="812" />
     </state>
     <state x="320" y="150" key="Vcs.Push.Dialog.v2/0.23.1440.801@0.23.1440.801" timestamp="1603346433518" />
     <state x="320" y="150" key="Vcs.Push.Dialog.v2/0.23.1440.804@0.23.1440.804" timestamp="1603387687043" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.810@0.23.1440.810" timestamp="1604595697335" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.811@0.23.1440.811" timestamp="1606182034019" />
-    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.812@0.23.1440.812" timestamp="1605686314710" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.812@0.23.1440.812" timestamp="1606330702145" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.814@0.23.1440.814" timestamp="1606168573675" />
     <state x="320" y="152" key="Vcs.Push.Dialog.v2/0.23.1440.816@0.23.1440.816" timestamp="1605827516126" />
     <state x="320" y="152" key="Vcs.Push.Dialog.v2/0.23.1440.821@0.23.1440.821" timestamp="1605821826481" />
@@ -553,8 +566,8 @@
     <state x="518" y="347" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.810@0.23.1440.810" timestamp="1604503326458" />
     <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.811@0.23.1440.811" timestamp="1605647133106" />
     <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.812@0.23.1440.812" timestamp="1605684321711" />
-    <state x="418" y="179" width="604" height="523" key="find.popup" timestamp="1606175706346">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="418" y="180" width="604" height="522" key="find.popup" timestamp="1606330831513">
+      <screen x="0" y="23" width="1440" height="816" />
     </state>
     <state x="418" y="178" width="604" height="490" key="find.popup/0.23.1440.801@0.23.1440.801" timestamp="1603346393967" />
     <state x="418" y="179" width="604" height="518" key="find.popup/0.23.1440.806@0.23.1440.806" timestamp="1603609702516" />
@@ -562,7 +575,7 @@
     <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.811@0.23.1440.811" timestamp="1606175706346" />
     <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.812@0.23.1440.812" timestamp="1605653743454" />
     <state x="418" y="180" width="604" height="524" key="find.popup/0.23.1440.814@0.23.1440.814" timestamp="1605810100635" />
-    <state x="418" y="180" width="604" height="526" key="find.popup/0.23.1440.816@0.23.1440.816" timestamp="1605825296259" />
+    <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.816@0.23.1440.816" timestamp="1606330831513" />
     <state x="418" y="181" width="604" height="529" key="find.popup/0.23.1440.821@0.23.1440.821" timestamp="1605822334385" />
     <state x="418" y="206" key="refactoring.ChangeSignatureDialog" timestamp="1605458027550">
       <screen x="0" y="23" width="1440" height="811" />

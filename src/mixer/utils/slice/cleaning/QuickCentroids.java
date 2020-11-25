@@ -107,14 +107,11 @@ public class QuickCentroids {
         centroids = new float[clusters.length][matrix[0].length];
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    int c = currRowIndex.getAndIncrement();
-                    while (c < clusters.length) {
-                        processCluster(clusters[c], c);
-                        c = currRowIndex.getAndIncrement();
-                    }
+            executor.execute(() -> {
+                int c = currRowIndex.getAndIncrement();
+                while (c < clusters.length) {
+                    processCluster(clusters[c], c);
+                    c = currRowIndex.getAndIncrement();
                 }
             });
         }

@@ -25,9 +25,9 @@
 package mixer.utils.shuffle.scoring;
 
 public abstract class ShuffleScore {
-    protected float[][] matrix;
-    protected Integer[] rBounds;
-    protected Integer[] cBounds;
+    protected final float[][] matrix;
+    protected final Integer[] rBounds;
+    protected final Integer[] cBounds;
 
     public ShuffleScore(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
         this.matrix = matrix;

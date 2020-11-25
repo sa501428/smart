@@ -235,27 +235,6 @@ public class FloatMatrixTools {
         return matrix;
     }
 
-    public static void addBToA(float[][] a, float[][] b) {
-        if (a.length == b.length && a[0].length == b[0].length) {
-            for (int i = 0; i < a.length; i++) {
-                for (int j = 0; j < a[i].length; j++) {
-                    a[i][j] += b[i][j];
-                }
-            }
-        } else {
-            System.err.println("dimensions incorrect " + a.length + "==" + b.length
-                    + "; " + a[0].length + "==" + b[0].length);
-        }
-    }
-
-    public static void scaleBy(float[][] matrix, float scalar) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                matrix[i][j] *= scalar;
-            }
-        }
-    }
-
     public static void saveMatrixToPNG(File file, float[][] matrix, boolean useLog) {
         double range = getMaxVal(matrix);
         double minVal = 0;

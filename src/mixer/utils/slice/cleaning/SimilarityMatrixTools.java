@@ -55,19 +55,16 @@ public class SimilarityMatrixTools {
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
-            Runnable worker = new Runnable() {
-                @Override
-                public void run() {
-                    int i = currRowIndex.getAndIncrement();
-                    while (i < matrix.length) {
-                        for (int j = 0; j < numCentroids; j++) {
-                            result[i][j] = metric.distance(matrix[i], centroids[j]);
-                            if (Float.isNaN(result[i][j])) {
-                                System.err.println("Error appearing in distance measure...");
-                            }
+            Runnable worker = () -> {
+                int i = currRowIndex.getAndIncrement();
+                while (i < matrix.length) {
+                    for (int j = 0; j < numCentroids; j++) {
+                        result[i][j] = metric.distance(matrix[i], centroids[j]);
+                        if (Float.isNaN(result[i][j])) {
+                            System.err.println("Error appearing in distance measure...");
                         }
-                        i = currRowIndex.getAndIncrement();
                     }
+                    i = currRowIndex.getAndIncrement();
                 }
             };
             executor.execute(worker);
@@ -88,17 +85,14 @@ public class SimilarityMatrixTools {
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
-            Runnable worker = new Runnable() {
-                @Override
-                public void run() {
-                    int i = currRowIndex.getAndIncrement();
-                    while (i < matrix.length) {
-                        for (int j = i; j < matrix.length; j++) {
-                            result[i][j] = metric.distance(matrix[i], matrix[j]);
-                            result[j][i] = result[i][j];
-                        }
-                        i = currRowIndex.getAndIncrement();
+            Runnable worker = () -> {
+                int i = currRowIndex.getAndIncrement();
+                while (i < matrix.length) {
+                    for (int j = i; j < matrix.length; j++) {
+                        result[i][j] = metric.distance(matrix[i], matrix[j]);
+                        result[j][i] = result[i][j];
                     }
+                    i = currRowIndex.getAndIncrement();
                 }
             };
             executor.execute(worker);
