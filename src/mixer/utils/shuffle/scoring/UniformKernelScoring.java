@@ -22,14 +22,13 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.shuffle.scoring;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.09.05";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class UniformKernelScoring extends KernelScoring {
+
+    private final static double val = 1.0 / 9.0;
+
+    public UniformKernelScoring(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        super(matrix, rBounds, cBounds, new double[][]{{val, val, val}, {val, val - 1, val}, {val, val, val}});
+    }
 }

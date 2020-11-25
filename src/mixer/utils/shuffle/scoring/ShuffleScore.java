@@ -22,14 +22,18 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.shuffle.scoring;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.09.05";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public abstract class ShuffleScore {
+    protected float[][] matrix;
+    protected Integer[] rBounds;
+    protected Integer[] cBounds;
+
+    public ShuffleScore(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        this.matrix = matrix;
+        this.rBounds = rBounds;
+        this.cBounds = cBounds;
+    }
+
+    public abstract double score();
 }

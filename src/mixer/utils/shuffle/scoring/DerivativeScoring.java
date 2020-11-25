@@ -22,14 +22,32 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.shuffle.scoring;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.09.05";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class DerivativeScoring extends ShuffleScore {
+
+    public DerivativeScoring(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        super(matrix, rBounds, cBounds);
+    }
+
+    @Override
+    public double score() {
+        double diff = 0;
+        int numElements = 0;
+        for (int rI = 0; rI < rBounds.length - 1; rI++) {
+            for (int i = rBounds[rI]; i < rBounds[rI + 1] - 1; i++) {
+
+                for (int cI = 0; cI < cBounds.length - 1; cI++) {
+                    for (int j = cBounds[cI]; j < cBounds[cI + 1] - 1; j++) {
+                        diff += Math.abs(matrix[i][j] - matrix[i + 1][j]);
+                        diff += Math.abs(matrix[i][j] - matrix[i][j + 1]);
+                        diff += Math.abs(matrix[i][j] - matrix[i + 1][j + 1]);
+                        diff += Math.abs(matrix[i + 1][j] - matrix[i][j + 1]);
+                        numElements++;
+                    }
+                }
+            }
+        }
+        return diff / numElements;
+    }
 }

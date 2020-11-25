@@ -22,14 +22,31 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.shuffle.scoring;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.09.05";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class EarthShiftScoring extends ShuffleScore {
+    public EarthShiftScoring(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        super(matrix, rBounds, cBounds);
+    }
+
+    @Override
+    public double score() {
+        int numElements = matrix.length * matrix[0].length;
+        double sum = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                sum += matrix[i][j];
+            }
+        }
+        sum /= numElements;
+
+        double diff = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                diff += Math.abs(matrix[i][j] - sum);
+            }
+        }
+        return diff / numElements;
+    }
+
 }
