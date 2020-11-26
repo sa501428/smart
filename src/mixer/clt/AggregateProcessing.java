@@ -101,10 +101,12 @@ public class AggregateProcessing {
                 //deriv image
                 file14,
                 "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_5_clusters_gm12878_rh14_reordered.bed," +
+                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed," +
+                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
                         "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle11",
+                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle14",
                 //"sliceNB_5clusters_reorder_1_skipsmall"
-                "slice5_v2,rh2014_v2"
+                "SLICE5,SNIPER,SCI,RH2014"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);

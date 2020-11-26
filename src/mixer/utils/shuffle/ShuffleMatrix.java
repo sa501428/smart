@@ -53,8 +53,7 @@ public class ShuffleMatrix {
     private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
             InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
     private final String[] scoreTypes = {"Derivative", "Variation", "Kernel (Uniform)", "Kernel (Gaussian)",
-            //"Baseline Shift", "Shannon Entropy (Rows)", "Shannon Entropy (Columns)","KL Divergence (Rows)", "KL Divergence (Columns)"
-            "KL Divergence"};
+            "KL Divergence Matrix||Baseline", "KL Divergence Baseline||Matrix"};
     private final double[][] baselines = new double[mapTypes.length][scoreTypes.length]; //[numRounds]
     private final double[][] shuffled = new double[mapTypes.length][scoreTypes.length];
     private final double[][] ratios = new double[mapTypes.length][scoreTypes.length];
@@ -164,10 +163,11 @@ public class ShuffleMatrix {
         scores[1][k] = (new VarianceScoring(matrix, rowBounds, colBounds)).score();
         scores[2][k] = (new UniformKernelScoring(matrix, rowBounds, colBounds)).score();
         scores[3][k] = (new GaussianKernelScoring(matrix, rowBounds, colBounds)).score();
-        scores[4][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds)).score();
+        scores[4][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true)).score();
+        scores[5][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, false)).score();
     }
 
-    private Pair<List<Integer>, Integer[]> getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean randomizeGW) {
+    private Pair<List<Integer>, Integer[]> getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean isBaseline) {
         List<Integer> allIndices = new ArrayList<>();
 
         List<Integer> order = new ArrayList<>(clusterToIndices.keySet());
@@ -187,8 +187,9 @@ public class ShuffleMatrix {
             count += (numToUse / compressionFactor);
             boundaries.add(count);
         }
-        if (randomizeGW) {
+        if (isBaseline) {
             Collections.shuffle(allIndices, generator);
+            return new Pair<>(allIndices, new Integer[]{0, count});
         }
         Integer[] output = new Integer[boundaries.size()];
         return new Pair<>(allIndices, boundaries.toArray(output));

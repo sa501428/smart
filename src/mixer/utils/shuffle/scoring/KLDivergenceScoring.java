@@ -24,15 +24,21 @@
 
 package mixer.utils.shuffle.scoring;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class KLDivergenceScoring extends ShuffleScore {
-    public KLDivergenceScoring(float[][] matrix, Integer[] rowBounds, Integer[] colBounds) {
+    private final boolean matrixIsP;
+
+    public KLDivergenceScoring(float[][] matrix, Integer[] rowBounds, Integer[] colBounds, boolean matrixIsP) {
         super(matrix, rowBounds, colBounds);
+        this.matrixIsP = matrixIsP;
     }
 
     @Override
     public double score() {
-        double klDivergence = 0;
-        int numRegions = 0;
+        double sumTotal = 0;
+        Map<String, Double> regionalAverage = new HashMap<>();
         for (int rI = 0; rI < rBounds.length - 1; rI++) {
             for (int cI = 0; cI < cBounds.length - 1; cI++) {
                 double sum = 0;
@@ -43,19 +49,32 @@ public class KLDivergenceScoring extends ShuffleScore {
                         numVals++;
                     }
                 }
-
-                double q = 1.0 / numVals;
-
-                for (int i = rBounds[rI]; i < rBounds[rI + 1]; i++) {
-                    for (int j = cBounds[cI]; j < cBounds[cI + 1]; j++) {
-                        double p = matrix[i][j] / sum;
-                        klDivergence += p * Math.log(p / q);
-                    }
-                }
-
-                numRegions++;
+                sumTotal += sum;
+                regionalAverage.put(getKey(rI, cI), sum / numVals);
             }
         }
-        return klDivergence / numRegions;
+
+        double klDivergence = 0;
+        for (int rI = 0; rI < rBounds.length - 1; rI++) {
+            for (int cI = 0; cI < cBounds.length - 1; cI++) {
+                double q = regionalAverage.get(getKey(rI, cI)) / sumTotal;
+                for (int i = rBounds[rI]; i < rBounds[rI + 1]; i++) {
+                    for (int j = cBounds[cI]; j < cBounds[cI + 1]; j++) {
+                        double p = matrix[i][j] / sumTotal;
+                        if (matrixIsP) {
+                            klDivergence += p * Math.log(p / q);
+                        } else {
+                            klDivergence += q * Math.log(q / p);
+                        }
+                    }
+                }
+            }
+        }
+
+        return klDivergence;
+    }
+
+    private String getKey(int rI, int cI) {
+        return rI + "_" + cI;
     }
 }
