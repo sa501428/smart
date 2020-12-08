@@ -72,8 +72,10 @@ public class ShuffleMatrix {
     public void runAnalysis(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
         SliceUtils.collapseGWList(subcompartments);
         // todo, using only big size? todo sorting picture
-        //GenomeWideStatistics statistics = new GenomeWideStatistics(ds,resolution,norm,defaultSubcompartments);
-        //float[][] interactionMap = statistics.getInteractionMap();
+        GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
+        statistics.saveInteractionMap(false, outfolder);
+        System.out.println("Interaction summary statistics saved");
+
         //GenomeWideList<SubcompartmentInterval> subcompartments = statistics.reorder(defaultSubcompartments);
         for (int y = 0; y < mapTypes.length; y++) {
             final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, mapTypes[y]);

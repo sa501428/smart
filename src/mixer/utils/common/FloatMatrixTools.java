@@ -261,6 +261,42 @@ public class FloatMatrixTools {
         }
     }
 
+    public static void saveOEMatrixToPNG(File file, float[][] matrix) {
+        double max = getMaxAbsLogVal(matrix);
+        int zoom = 50;
+
+        BufferedImage image = new BufferedImage(zoom * matrix.length, zoom * matrix[0].length, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                int color = mixOEColors(Math.log(matrix[i][j]), max);
+                for (int zi = zoom * i; zi < zoom * (i + 1); zi++) {
+                    for (int zj = zoom * j; zj < zoom * (j + 1); zj++) {
+                        image.setRGB(zi, zj, color);
+                    }
+                }
+            }
+        }
+
+        try {
+            ImageIO.write(image, "png", file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static float getMaxAbsLogVal(float[][] matrix) {
+        double maxVal = Math.abs(Math.log(matrix[0][0]));
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                double temp = Math.abs(Math.log(matrix[i][j]));
+                if (temp > maxVal) {
+                    maxVal = temp;
+                }
+            }
+        }
+        return (float) maxVal;
+    }
+
     private static float getMaxVal(float[][] matrix) {
         float maxVal = matrix[0][0];
         for (int i = 0; i < matrix.length; i++) {
@@ -288,6 +324,26 @@ public class FloatMatrixTools {
     public static int mixColors(double ratio) {
         int color1 = Color.WHITE.getRGB();
         int color2 = Color.RED.getRGB();
+
+        int mask1 = 0x00ff00ff;
+        int mask2 = 0xff00ff00;
+
+        int f2 = (int) (256 * ratio);
+        int f1 = 256 - f2;
+
+        return (((((color1 & mask1) * f1) + ((color2 & mask1) * f2)) >> 8) & mask1)
+                | (((((color1 & mask2) * f1) + ((color2 & mask2) * f2)) >> 8) & mask2);
+    }
+
+    private static int mixOEColors(double val0, double max) {
+        int color1 = Color.WHITE.getRGB();
+        int color2 = Color.RED.getRGB();
+        double val = Math.abs(val0);
+        if (val0 < 0) {
+            color2 = Color.BLUE.getRGB();
+        }
+
+        double ratio = val / max;
 
         int mask1 = 0x00ff00ff;
         int mask2 = 0xff00ff00;

@@ -114,8 +114,8 @@ public class InterOnlyMatrix {
     private void fillInInterChromosomeRegion(float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
                                              Chromosome chr2, int offsetIndex2, boolean needToFlip) {
 
-        int lengthChr1 = (int) (chr1.getLength() / resolution);
-        int lengthChr2 = (int) (chr2.getLength() / resolution);
+        int lengthChr1 = (int) Math.ceil((float) chr1.getLength() / resolution);
+        int lengthChr2 = (int) Math.ceil((float) chr2.getLength() / resolution);
 
         float[][] allDataForRegion = null;
         try {
