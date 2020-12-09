@@ -126,14 +126,4 @@ public class BadIndexFinder {
     public Set<Integer> getBadIndices(Chromosome chrom) {
         return badIndices.get(chrom.getIndex());
     }
-
-    private class RegionStatistics {
-        double[] rowSums;
-        double[] colSums;
-
-        RegionStatistics(int numRows, int numCols) {
-            rowSums = new double[numRows];
-            colSums = new double[numCols];
-        }
-    }
 }

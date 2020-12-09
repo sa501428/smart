@@ -22,20 +22,20 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.kmeans;
 
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
+import javastraw.tools.MatrixTools;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
-import mixer.utils.common.DoubleMatrixTools;
 import mixer.utils.common.IntMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
-import mixer.utils.slice.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
+import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -72,11 +72,11 @@ public class FullGenomeOEWithinClusters {
 
         sliceMatrix = new SliceMatrix(
                 chromosomeHandler, datasets.get(0), norms[0], resolution, outputDirectory, generator.nextLong(), referenceBedFiles,
-                badIndexFinder, 0, metric);
+                badIndexFinder, metric);
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
-                    norms[dI], resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, dI, metric);
+                    norms[dI], resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, metric);
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 
@@ -136,7 +136,7 @@ public class FullGenomeOEWithinClusters {
             identifier.identify(numItersToResults, sliceMatrix.getBadIndices());
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
+        MatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
 
         String hicFileName = SliceUtils.cleanUpPath(inputHicFilePaths.get(index));
         for (Integer key : numItersToResults.keySet()) {

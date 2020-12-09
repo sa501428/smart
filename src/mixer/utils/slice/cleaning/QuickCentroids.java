@@ -25,9 +25,9 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
-import mixer.utils.slice.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeansfloat.ConcurrentKMeans;
-import mixer.utils.slice.kmeansfloat.KMeansListener;
+import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
+import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
+import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
 
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -117,6 +117,7 @@ public class QuickCentroids {
         }
         executor.shutdown();
         // Wait until all threads finish
+        //noinspection StatementWithEmptyBody
         while (!executor.isTerminated()) {
         }
     }

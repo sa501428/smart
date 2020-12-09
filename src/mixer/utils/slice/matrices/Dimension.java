@@ -34,7 +34,8 @@ import java.util.Map;
 
 public class Dimension {
     public int length = 0;
-    public int[] offset, interval;
+    public final int[] offset;
+    public int[] interval;
 
     // simple binning
     public Dimension(Chromosome[] chromosomes, int resolution) {

@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
 /**
  * Defines object which register with implementation of <code>KMeans</code>

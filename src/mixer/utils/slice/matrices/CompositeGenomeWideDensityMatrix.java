@@ -34,7 +34,8 @@ import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
-import mixer.utils.slice.kmeansfloat.Cluster;
+import mixer.utils.slice.kmeans.KmeansResult;
+import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -51,19 +52,16 @@ public abstract class CompositeGenomeWideDensityMatrix {
     private float[][] gwCleanMatrix;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
     protected final BadIndexFinder badIndexLocations;
-    protected final int datasetIndex;
     protected final SimilarityMetric metric;
 
     public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                             File outputDirectory, long seed, String[] relativeTestFiles,
-                                            BadIndexFinder badIndexLocations, int datasetIndex,
-                                            SimilarityMetric metric) {
+                                            BadIndexFinder badIndexLocations, SimilarityMetric metric) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
         this.generator.setSeed(seed);
         this.badIndexLocations = badIndexLocations;
-        this.datasetIndex = datasetIndex;
         this.metric = metric;
 
         if (relativeTestFiles != null) {
@@ -157,17 +155,6 @@ public abstract class CompositeGenomeWideDensityMatrix {
         SliceUtils.reSort(subcompartments);
 
         return new KmeansResult(withinClusterSumOfSquares, ids, idsForIndex);
-    }
-
-    public class KmeansResult {
-        public int[][] ids, idsForIndex;
-        public double withinClusterSumOfSquares;
-
-        KmeansResult(double withinClusterSumOfSquares, int[][] ids, int[][] idsForIndex) {
-            this.withinClusterSumOfSquares = withinClusterSumOfSquares;
-            this.ids = ids;
-            this.idsForIndex = idsForIndex;
-        }
     }
 
     private double sumOfSquaresDistance(float[] center, float[] vector) {

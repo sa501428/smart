@@ -30,7 +30,7 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.*;
@@ -150,9 +150,7 @@ public class LeftOverClusterIdentifier {
             cIDToSize.put(cID, totalCounts);
         }
 
-        for (Integer key : cIDToCenter.keySet()) {
-            cIDToCenter.put(key, ClusterTools.normalize(cIDToCenter.get(key), cIDToSize.get(key)));
-        }
+        cIDToCenter.replaceAll((k, v) -> ClusterTools.normalize(cIDToCenter.get(k), cIDToSize.get(k)));
 
         return cIDToCenter;
     }

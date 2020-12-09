@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,7 +135,6 @@ public class ConcurrentKMeans implements KMeans {
     private void postKMeansMessage(String message) {
         if (mListeners.size() > 0) {
             synchronized (mListeners) {
-                int sz = mListeners.size();
                 for (KMeansListener mListener : mListeners) {
                     mListener.kmeansMessage(message);
                 }
@@ -152,7 +151,6 @@ public class ConcurrentKMeans implements KMeans {
     private void postKMeansComplete(Cluster[] clusters, long executionTime) {
         if (mListeners.size() > 0) {
             synchronized (mListeners) {
-                int sz = mListeners.size();
                 for (KMeansListener mListener : mListeners) {
                     mListener.kmeansComplete(clusters, executionTime);
                 }
@@ -169,7 +167,6 @@ public class ConcurrentKMeans implements KMeans {
     private void postKMeansError(Throwable err) {
         if (mListeners.size() > 0) {
             synchronized (mListeners) {
-                int sz = mListeners.size();
                 for (KMeansListener mListener : mListeners) {
                     mListener.kmeansError(err);
                 }
@@ -305,12 +302,11 @@ public class ConcurrentKMeans implements KMeans {
      */
     private void computeCenters() {
 
-        int numClusters = mProtoClusters.length;
-
         // Sets the update flags of the protoclusters that haven't been deleted and
         // whose memberships have changed in the iteration just completed.
         //
-        for (ProtoCluster cluster : mProtoClusters) {
+        for (int q = 0; q < mProtoClusters.length; q++) {
+            ProtoCluster cluster = mProtoClusters[q];
             if (cluster.getConsiderForAssignment()) {
                 if (cluster.isNotEmpty()) {
                     // This sets the protocluster's update flag to
@@ -371,8 +367,8 @@ public class ConcurrentKMeans implements KMeans {
         // Checkpoint the clusters, so we'll be able to tell
         // which one have changed after all the assignments have been
         // made.
-        int numClusters = mProtoClusters.length;
-        for (ProtoCluster mProtoCluster : mProtoClusters) {
+        for (int q = 0; q < mProtoClusters.length; q++) {
+            ProtoCluster mProtoCluster = mProtoClusters[q];
             if (mProtoCluster.getConsiderForAssignment()) {
                 mProtoCluster.checkPoint();
             }

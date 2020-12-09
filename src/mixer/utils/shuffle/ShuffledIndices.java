@@ -22,25 +22,16 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.shuffle;
 
-/**
- * Exception thrown when insufficient memory is available to
- * perform an operation.  Designed to be throw before doing
- * something that would cause a <code>java.lang.OutOfMemoryError</code>.
- */
-class InsufficientMemoryException extends Exception {
+import java.util.List;
 
-    private static final long serialVersionUID = 72138634L;
+class ShuffledIndices {
+    final List<Integer> allIndices;
+    final Integer[] boundaries;
 
-    /**
-     * Constructor.
-     *
-     * @param message an explanatory message.
-     */
-    public InsufficientMemoryException(String message) {
-        super(message);
+    ShuffledIndices(List<Integer> allIndices, Integer[] boundaries) {
+        this.allIndices = allIndices;
+        this.boundaries = boundaries;
     }
-
 }
-

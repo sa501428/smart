@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 
@@ -76,6 +76,7 @@ public class SmartInitialization {
             });
         }
         executor.shutdown();
+        //noinspection StatementWithEmptyBody
         while (!executor.isTerminated()) {
         }
     }

@@ -408,6 +408,7 @@ public class SliceUtils {
         return new ArrayList<>(anchors);
     }
 
+    @SuppressWarnings("DuplicateBranchesInSwitch")
     private static Integer getKnownSubcompartmentType(String upperCaseID) {
         switch (upperCaseID) {
             case "A1":

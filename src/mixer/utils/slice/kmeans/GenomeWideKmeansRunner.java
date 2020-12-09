@@ -22,16 +22,16 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.kmeans;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import mixer.MixerGlobals;
-import mixer.utils.slice.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeansfloat.ClusterTools;
-import mixer.utils.slice.kmeansfloat.ConcurrentKMeans;
-import mixer.utils.slice.kmeansfloat.KMeansListener;
+import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
+import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
+import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
 import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -88,7 +88,7 @@ public class GenomeWideKmeansRunner {
                 public void kmeansComplete(Cluster[] preSortedClusters, long l) {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
                     System.out.print(".");
-                    CompositeGenomeWideDensityMatrix.KmeansResult result = matrix.processGWKmeansResult(clusters, finalCompartments);
+                    KmeansResult result = matrix.processGWKmeansResult(clusters, finalCompartments);
                     recentClusters = ClusterTools.clone(clusters);
                     recentIDs = result.ids;
                     recentIDsForIndex = result.idsForIndex;

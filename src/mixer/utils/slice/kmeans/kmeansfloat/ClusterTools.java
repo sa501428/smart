@@ -22,9 +22,9 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
-import mixer.utils.common.DoubleMatrixTools;
+import javastraw.tools.MatrixTools;
 import mixer.utils.common.IntMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
@@ -89,8 +89,8 @@ public class ClusterTools {
             }
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "distances.npy").getAbsolutePath(), distances);
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "distances_normed.npy").getAbsolutePath(), distancesNormalized);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "distances.npy").getAbsolutePath(), distances);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "distances_normed.npy").getAbsolutePath(), distancesNormalized);
     }
 
     private static void saveChiSquarePvalComparisonBetweenClusters(File directory, Cluster[] clusters) {
@@ -102,7 +102,7 @@ public class ClusterTools {
                 pvalues[i][j] = getPvalueChiSquared(clusters[j], expected);
             }
         }
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.pval.npy").getAbsolutePath(), pvalues);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.pval.npy").getAbsolutePath(), pvalues);
     }
 
 
@@ -118,8 +118,8 @@ public class ClusterTools {
             }
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences.npy").getAbsolutePath(), numDiffEntries);
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences.npy").getAbsolutePath(), numDiffEntries);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
     }
 
     private static void saveChiSquareValComparisonBetweenClusters(File directory, Cluster[] clusters) {
@@ -131,7 +131,7 @@ public class ClusterTools {
                 chi2Val[i][j] = getValueChiSquared(clusters[j], expected);
             }
         }
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.npy").getAbsolutePath(), chi2Val);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.npy").getAbsolutePath(), chi2Val);
 
     }
 

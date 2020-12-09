@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 

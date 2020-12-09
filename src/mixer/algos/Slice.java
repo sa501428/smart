@@ -32,13 +32,14 @@ import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.FullGenomeOEWithinClusters;
 import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
+import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.HiCInterTools;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -101,9 +102,7 @@ public class Slice extends MixerCLT {
             if (preferredNorm.length == normArray.length) {
                 normArray = preferredNorm;
             } else {
-                for (int i = 0; i < normArray.length; i++) {
-                    normArray[i] = preferredNorm[0];
-                }
+                Arrays.fill(normArray, preferredNorm[0]);
             }
         } else {
             System.err.println("Normalization must be specified");

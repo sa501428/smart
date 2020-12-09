@@ -30,8 +30,10 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class IntMatrixTools {
 
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     public static int[] flattenedRowMajorOrderMatrix(int[][] matrix) {
         int m = matrix.length;
         int n = matrix[0].length;

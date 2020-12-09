@@ -50,9 +50,9 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
 
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                        File outputDirectory, long seed, String[] referenceBedFiles, BadIndexFinder badIndexLocations,
-                       int datasetIndex, SimilarityMetric metric) {
+                       SimilarityMetric metric) {
         super(chromosomeHandler, ds, norm, resolution, outputDirectory, seed, referenceBedFiles,
-                badIndexLocations, datasetIndex, metric);
+                badIndexLocations, metric);
     }
 
     float[][] makeCleanScaledInterMatrix(Dataset ds) {

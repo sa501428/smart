@@ -22,14 +22,34 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Simple K-Means clustering interface.
  */
-public class MixerGlobals {
-    public static final String versionNum = "3.11.07";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+interface KMeans extends Runnable {
+
+    /**
+     * Adds a KMeansListener to be notified of significant happenings.
+     *
+     * @param l the listener to be added.
+     */
+    void addKMeansListener(KMeansListener l);
+
+    /**
+     * Removes a KMeansListener from the listener list.
+     *
+     * @param l the listener to be removed.
+     */
+    void removeKMeansListener(KMeansListener l);
+
+    /**
+     * Get the clusters computed by the algorithm.  This method should
+     * not be called until clustering has completed successfully.
+     *
+     * @return an array of Cluster objects.
+     */
+    Cluster[] getClusters();
+
 }
+

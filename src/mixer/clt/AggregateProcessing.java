@@ -31,9 +31,8 @@ import mixer.MixerTools;
  * Created for testing multiple CLTs at once
  * Basically scratch space
  */
+@SuppressWarnings({"UnusedAssignment", "unused"})
 public class AggregateProcessing {
-
-    public static boolean useL1Norm = false;
 
     public static void main(String[] argv) throws Exception {
 

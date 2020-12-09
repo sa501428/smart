@@ -44,19 +44,20 @@ public class MatrixCleanupAndSimilarityMetric {
     protected final Random generator = new Random(0);
     private final SimilarityMetric metric;
 
-    public MatrixCleanupAndSimilarityMetric(float[][] interMatrix, long seed, File outputDirectory, SimilarityMetric metric) {
+    public MatrixCleanupAndSimilarityMetric(float[][] data, long seed, File outputDirectory, SimilarityMetric metric) {
         this.metric = metric;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
         // after this, there should be no zeros, no infinities, no negative numbers
         // just real numbers > 0 or NaNs
-        data = simpleLogWithCleanup(interMatrix);
+        this.data = data;
+        simpleLogWithCleanup(this.data);
         System.out.println("matrix size " + data.length + " x " + data[0].length);
     }
 
-    public static float[][] simpleLogWithCleanup(float[][] matrix) {
-        matrix = simpleLog(matrix);
+    public static void simpleLogWithCleanup(float[][] matrix) {
+        simpleLog(matrix);
 
         for (int i = 0; i < matrix.length; ++i) {
             for (int j = 0; j < matrix[0].length; ++j) {
@@ -65,11 +66,9 @@ public class MatrixCleanupAndSimilarityMetric {
                 }
             }
         }
-
-        return matrix;
     }
 
-    public static float[][] simpleLog(float[][] matrix) {
+    public static void simpleLog(float[][] matrix) {
         for (int i = 0; i < matrix.length; ++i) {
             for (int j = 0; j < matrix[i].length; ++j) {
                 float val = matrix[i][j];
@@ -78,7 +77,6 @@ public class MatrixCleanupAndSimilarityMetric {
                 }
             }
         }
-        return matrix;
     }
 
     public static Set<Integer> getBadIndices(float[][] matrix) {
@@ -160,8 +158,6 @@ public class MatrixCleanupAndSimilarityMetric {
     }
 
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        //FloatMatrixTools.thresholdNonZerosByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
-
         data = filterOutColumnsAndRowsNonSymmetricMatrix(data, rowIndexToIntervalMap);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("matrix size " + data.length + " x " + data[0].length);

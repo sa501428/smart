@@ -37,6 +37,7 @@ import java.util.List;
 /**
  * Helper methods to handle matrix operations
  */
+@SuppressWarnings("ALL")
 public class FloatMatrixTools {
 
     public static void thresholdNonZerosByZscoreToNanDownColumn(float[][] matrix, float threshold, int batchSize) {
@@ -117,11 +118,10 @@ public class FloatMatrixTools {
         return colMeans;
     }
 
-    public static float[][] fill(float[][] allDataForRegion, float val) {
+    public static void fill(float[][] allDataForRegion, float val) {
         for (int i = 0; i < allDataForRegion.length; i++) {
             Arrays.fill(allDataForRegion[i], val);
         }
-        return allDataForRegion;
     }
 
     public static void saveMatrixTextNumpy(String filename, float[][] matrix) {

@@ -22,14 +22,14 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.cleaning;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.11.07";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+class RegionStatistics {
+    final double[] rowSums;
+    final double[] colSums;
+
+    RegionStatistics(int numRows, int numCols) {
+        rowSums = new double[numRows];
+        colSums = new double[numCols];
+    }
 }

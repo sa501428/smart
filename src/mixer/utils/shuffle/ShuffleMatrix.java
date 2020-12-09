@@ -147,6 +147,7 @@ public class ShuffleMatrix {
             });
         }
         executor.shutdown();
+        //noinspection StatementWithEmptyBody
         while (!executor.isTerminated()) {
         }
 
@@ -248,15 +249,5 @@ public class ShuffleMatrix {
             sum += d;
         }
         return sum / data.length;
-    }
-
-    private class ShuffledIndices {
-        List<Integer> allIndices;
-        Integer[] boundaries;
-
-        ShuffledIndices(List<Integer> allIndices, Integer[] boundaries) {
-            this.allIndices = allIndices;
-            this.boundaries = boundaries;
-        }
     }
 }

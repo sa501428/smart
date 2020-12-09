@@ -22,14 +22,16 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.kmeans;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.11.07";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class KmeansResult {
+    public final int[][] ids;
+    public final int[][] idsForIndex;
+    public final double withinClusterSumOfSquares;
+
+    public KmeansResult(double withinClusterSumOfSquares, int[][] ids, int[][] idsForIndex) {
+        this.withinClusterSumOfSquares = withinClusterSumOfSquares;
+        this.ids = ids;
+        this.idsForIndex = idsForIndex;
+    }
 }

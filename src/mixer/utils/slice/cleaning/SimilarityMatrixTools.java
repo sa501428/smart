@@ -71,6 +71,7 @@ public class SimilarityMatrixTools {
         }
         executor.shutdown();
         // Wait until all threads finish
+        //noinspection StatementWithEmptyBody
         while (!executor.isTerminated()) {
         }
 
@@ -99,6 +100,7 @@ public class SimilarityMatrixTools {
         }
         executor.shutdown();
         // Wait until all threads finish
+        //noinspection StatementWithEmptyBody
         while (!executor.isTerminated()) {
         }
 
