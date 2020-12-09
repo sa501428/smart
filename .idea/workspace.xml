@@ -27,17 +27,19 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="simplify data filtering; use coverage;">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/ArrayTools.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup, use simpler data containers">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/Dimension.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/Pair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/ArrayTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanupAndSimilarityMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanupAndSimilarityMetric.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideDensityMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideDensityMatrix.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +62,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="changes_v2" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -420,7 +422,14 @@
       <option name="project" value="LOCAL" />
       <updated>1607462380144</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="simplify data filtering; use coverage; update UMAP settings">
+      <created>1607547055309</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1607547055309</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -442,7 +451,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="shuffle implemented" />
     <MESSAGE value="shuffle for multiple files added" />
     <MESSAGE value="code cleanup, bug fixes" />
     <MESSAGE value="bug fixes, code running" />
@@ -467,7 +475,8 @@
     <MESSAGE value="calculate on log matrix as well" />
     <MESSAGE value="code cleanup; KL reverse" />
     <MESSAGE value="shuffle, genomewide stats, bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="shuffle, genomewide stats, bug fixes" />
+    <MESSAGE value="simplify data filtering; use coverage; update UMAP settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="simplify data filtering; use coverage; update UMAP settings" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -503,26 +512,26 @@
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.811@0.23.1440.811" timestamp="1605084384344" />
     <state x="466" y="288" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.812@0.23.1440.812" timestamp="1605726627686" />
     <state x="466" y="289" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.816@0.23.1440.816" timestamp="1606332935140" />
-    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2" timestamp="1607543615294">
-      <screen x="0" y="23" width="1440" height="812" />
+    <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2" timestamp="1607552342672">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.801@0.23.1440.801" timestamp="1603366056339" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.804@0.23.1440.804" timestamp="1603387685926" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.810@0.23.1440.810" timestamp="1604595695388" />
     <state x="297" y="23" width="846" height="811" key="CommitChangelistDialog2/0.23.1440.811@0.23.1440.811" timestamp="1606182032442" />
-    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.812@0.23.1440.812" timestamp="1607543615294" />
-    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.814@0.23.1440.814" timestamp="1607066056736" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.812@0.23.1440.812" timestamp="1607547055140" />
+    <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.814@0.23.1440.814" timestamp="1607552342672" />
     <state x="297" y="23" width="846" height="814" key="CommitChangelistDialog2/0.23.1440.816@0.23.1440.816" timestamp="1607497279031" />
     <state x="297" y="23" key="CommitChangelistDialog2/0.23.1440.821@0.23.1440.821" timestamp="1607473795506" />
-    <state x="100" y="124" width="1152" height="652" key="DiffContextDialog" timestamp="1607543614351">
-      <screen x="0" y="23" width="1440" height="812" />
+    <state x="100" y="125" width="1152" height="652" key="DiffContextDialog" timestamp="1607552341151">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state x="100" y="123" width="1240" height="601" key="DiffContextDialog/0.23.1440.801@0.23.1440.801" timestamp="1603366047921" />
     <state x="100" y="123" key="DiffContextDialog/0.23.1440.804@0.23.1440.804" timestamp="1603387673194" />
     <state x="100" y="124" key="DiffContextDialog/0.23.1440.810@0.23.1440.810" timestamp="1604595677303" />
     <state x="100" y="124" width="1152" height="648" key="DiffContextDialog/0.23.1440.811@0.23.1440.811" timestamp="1606182024617" />
-    <state x="100" y="124" width="1152" height="649" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1607543614351" />
-    <state x="100" y="125" width="1152" height="651" key="DiffContextDialog/0.23.1440.814@0.23.1440.814" timestamp="1606378225658" />
+    <state x="100" y="124" width="1152" height="649" key="DiffContextDialog/0.23.1440.812@0.23.1440.812" timestamp="1607547044254" />
+    <state x="100" y="125" width="1152" height="651" key="DiffContextDialog/0.23.1440.814@0.23.1440.814" timestamp="1607552341151" />
     <state x="100" y="125" width="1152" height="652" key="DiffContextDialog/0.23.1440.816@0.23.1440.816" timestamp="1607497277818" />
     <state x="100" y="126" key="DiffContextDialog/0.23.1440.821@0.23.1440.821" timestamp="1607473794207" />
     <state width="1398" height="160" key="GridCell.Tab.0.bottom" timestamp="1607544770748">
@@ -587,14 +596,14 @@
     <state x="221" y="23" key="SettingsEditor/0.23.1440.811@0.23.1440.811" timestamp="1605647536019" />
     <state x="221" y="23" key="SettingsEditor/0.23.1440.814@0.23.1440.814" timestamp="1605038640405" />
     <state x="221" y="23" width="1024" height="816" key="SettingsEditor/0.23.1440.816@0.23.1440.816" timestamp="1605670469159" />
-    <state x="320" y="152" key="Vcs.Push.Dialog.v2" timestamp="1607462381727">
-      <screen x="0" y="23" width="1440" height="821" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2" timestamp="1607547058762">
+      <screen x="0" y="23" width="1440" height="812" />
     </state>
     <state x="320" y="150" key="Vcs.Push.Dialog.v2/0.23.1440.801@0.23.1440.801" timestamp="1603346433518" />
     <state x="320" y="150" key="Vcs.Push.Dialog.v2/0.23.1440.804@0.23.1440.804" timestamp="1603387687043" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.810@0.23.1440.810" timestamp="1604595697335" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.811@0.23.1440.811" timestamp="1606182034019" />
-    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.812@0.23.1440.812" timestamp="1606336197714" />
+    <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.812@0.23.1440.812" timestamp="1607547058762" />
     <state x="320" y="151" key="Vcs.Push.Dialog.v2/0.23.1440.814@0.23.1440.814" timestamp="1606378250146" />
     <state x="320" y="152" key="Vcs.Push.Dialog.v2/0.23.1440.816@0.23.1440.816" timestamp="1606345517355" />
     <state x="320" y="152" key="Vcs.Push.Dialog.v2/0.23.1440.821@0.23.1440.821" timestamp="1607462381727" />
@@ -609,21 +618,22 @@
     <state x="518" y="347" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.810@0.23.1440.810" timestamp="1604503326458" />
     <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.811@0.23.1440.811" timestamp="1605647133106" />
     <state x="518" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.812@0.23.1440.812" timestamp="1605684321711" />
-    <state x="418" y="180" width="604" height="522" key="find.popup" timestamp="1607543630711">
-      <screen x="0" y="23" width="1440" height="812" />
+    <state x="418" y="180" width="604" height="524" key="find.popup" timestamp="1607552195588">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state x="418" y="178" width="604" height="490" key="find.popup/0.23.1440.801@0.23.1440.801" timestamp="1603346393967" />
     <state x="418" y="179" width="604" height="518" key="find.popup/0.23.1440.806@0.23.1440.806" timestamp="1603609702516" />
     <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.810@0.23.1440.810" timestamp="1605165790562" />
     <state x="418" y="179" width="604" height="523" key="find.popup/0.23.1440.811@0.23.1440.811" timestamp="1606175706346" />
     <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.812@0.23.1440.812" timestamp="1607543630711" />
-    <state x="418" y="180" width="604" height="524" key="find.popup/0.23.1440.814@0.23.1440.814" timestamp="1606379053060" />
+    <state x="418" y="180" width="604" height="524" key="find.popup/0.23.1440.814@0.23.1440.814" timestamp="1607552195588" />
     <state x="418" y="180" width="604" height="522" key="find.popup/0.23.1440.816@0.23.1440.816" timestamp="1606330831513" />
     <state x="418" y="181" width="604" height="529" key="find.popup/0.23.1440.821@0.23.1440.821" timestamp="1607476933149" />
-    <state x="418" y="207" key="refactoring.ChangeSignatureDialog" timestamp="1607069036632">
-      <screen x="0" y="23" width="1440" height="816" />
+    <state x="418" y="207" key="refactoring.ChangeSignatureDialog" timestamp="1607552390941">
+      <screen x="0" y="23" width="1440" height="814" />
     </state>
     <state x="418" y="206" key="refactoring.ChangeSignatureDialog/0.23.1440.811@0.23.1440.811" timestamp="1605458027550" />
+    <state x="418" y="207" key="refactoring.ChangeSignatureDialog/0.23.1440.814@0.23.1440.814" timestamp="1607552390941" />
     <state x="418" y="207" key="refactoring.ChangeSignatureDialog/0.23.1440.816@0.23.1440.816" timestamp="1607069036632" />
     <state x="385" y="158" width="670" height="676" key="search.everywhere.popup" timestamp="1605077982217">
       <screen x="0" y="23" width="1440" height="811" />

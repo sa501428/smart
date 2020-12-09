@@ -31,6 +31,7 @@ import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
+import mixer.utils.common.ArrayTools;
 
 import java.io.IOException;
 import java.util.*;
@@ -41,8 +42,6 @@ public class BadIndexFinder {
     private final int resolution;
     private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     private final NormalizationType[] norms;
-    //private final double[] globalSum, globalSumOfSquares, GLOBAL_MAX_RAW_VALUE;
-    //private final long[] globalCounts;
 
     public BadIndexFinder(List<Dataset> datasets, Chromosome[] chromosomes, int resolution,
                           NormalizationType[] norms) {
@@ -52,37 +51,18 @@ public class BadIndexFinder {
             badIndices.put(chrom.getIndex(), new HashSet<>());
         }
 
-        /*
-        globalSum = new double[datasets.size()];
-        globalSumOfSquares = new double[datasets.size()];
-        GLOBAL_MAX_RAW_VALUE = new double[datasets.size()];
-        Arrays.fill(GLOBAL_MAX_RAW_VALUE, Double.MAX_VALUE);
-        globalCounts = new long[datasets.size()];
-         */
-
         createInternalBadList(datasets, chromosomes);
-
-        /*
-        float[] globalInterMean = new float[datasets.size()];
-        float[] globalInterStdDev = new float[datasets.size()];
-        for (int k = 0; k < datasets.size(); k++) {
-            globalInterMean[k] = (float) (globalSum[k] / globalCounts[k]);
-            double variance = (globalSumOfSquares[k] / globalCounts[k]) - globalInterMean[k] * globalInterMean[k];
-            globalInterStdDev[k] = (float) Math.sqrt(variance);
-            GLOBAL_MAX_RAW_VALUE[k] = Math.exp(ZSCORE_MAX_ALLOWED_INTER * globalInterStdDev[k] + globalInterMean[k]) - 1;
-        }
-         */
     }
 
     private void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
         for (int z = 0; z < datasets.size(); z++) {
             for (int i = 0; i < chromosomes.length; i++) {
                 Chromosome chr1 = chromosomes[i];
-                for (int j = i; j < chromosomes.length; j++) {
+                for (int j = i + 1; j < chromosomes.length; j++) {
                     Chromosome chr2 = chromosomes[j];
                     final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(datasets.get(z), chr1, chr2, resolution);
                     try {
-                        determineBadIndicesForRegion(chr1, chr2, zd, i == j, z);
+                        determineBadIndicesForRegion(chr1, chr2, zd, z);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -91,34 +71,31 @@ public class BadIndexFinder {
         }
     }
 
-    private RegionStatistics getNumberOfNonZeros(List<Block> blocks, int numRows, int numCols,
-                                                 boolean isIntra, int dIndex) {
+    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
+                                              int dIndex) throws IOException {
+        int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
+        int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
+
+        List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
+                norms[dIndex], false);
+        RegionStatistics stats = getSums(blocks, lengthChr1, lengthChr2);
+        removeExtremeCoverage(stats.rowSums, chr1);
+        removeExtremeCoverage(stats.colSums, chr2);
+    }
+
+    private RegionStatistics getSums(List<Block> blocks, int numRows, int numCols) {
         RegionStatistics stats = new RegionStatistics(numRows, numCols);
 
         for (Block b : blocks) {
             if (b != null) {
                 for (ContactRecord cr : b.getContactRecords()) {
+                    // todo check log after sum
                     float val = (float) Math.log(cr.getCounts() + 1);
                     if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
                         continue;
                     }
-
-                    stats.numNonZerosRows[cr.getBinX()]++;
-                    stats.numNonZerosCols[cr.getBinY()]++;
-
-                    if (isIntra) {
-                        if (cr.getBinX() != cr.getBinY()) {
-                            stats.numNonZerosRows[cr.getBinY()]++;
-                            stats.numNonZerosCols[cr.getBinX()]++;
-                        }
-                    } else {
-                        stats.rowSums[cr.getBinX()] += val;
-                        stats.colSums[cr.getBinY()] += val;
-
-                        //globalSum[dIndex] += val;
-                        //globalSumOfSquares[dIndex] += val * val;
-                        //globalCounts[dIndex] += 1;
-                    }
+                    stats.rowSums[cr.getBinX()] += val;
+                    stats.colSums[cr.getBinY()] += val;
                 }
             }
         }
@@ -126,46 +103,10 @@ public class BadIndexFinder {
         return stats;
     }
 
-    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
-                                              boolean isIntra, int dIndex) throws IOException {
-
-        int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
-        int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
-
-        determineBadIndicesForRegion(chr1, chr2,
-                HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norms[dIndex], isIntra),
-                lengthChr1, lengthChr2, isIntra, dIndex);
-    }
-
-    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, List<Block> blocks,
-                                              int numRows, int numCols, boolean isIntra, int dIndex) {
-        RegionStatistics stats = getNumberOfNonZeros(blocks, numRows, numCols, isIntra, dIndex);
-        removeSparserIndicesZscoredCount(chr1, stats.numNonZerosRows, isIntra);
-        if (!isIntra) {
-            removeExtremeCoverage(stats.rowSums, chr1);
-            removeExtremeCoverage(stats.colSums, chr2);
-            removeSparserIndicesZscoredCount(chr2, stats.numNonZerosCols, false);
-        }
-    }
-
     private void removeExtremeCoverage(double[] sums, Chromosome chrom) {
         double mean = ArrayTools.getNonZeroMean(sums);
         double stdDev = ArrayTools.getNonZeroStd(sums, mean);
         getBadCoverageIndicesByZscore(chrom, sums, mean, stdDev);
-    }
-
-    private void removeSparserIndicesZscoredCount(Chromosome chr1, int[] numNonZeros, boolean isIntra) {
-        float mean = ArrayTools.getNonZeroMeanIntArray(numNonZeros);
-        float stdDev = ArrayTools.getNonZeroStdIntArray(numNonZeros, mean);
-        getBadIndicesByZscore(chr1, numNonZeros, mean, stdDev, isIntra);
-    }
-
-    private void getBadIndicesByZscore(Chromosome chr1, int[] numNonZeros, float mean, float stdDev, boolean isIntra) {
-        for (int k = 0; k < numNonZeros.length; k++) {
-            if (numNonZeros[k] < 1) {
-                badIndices.get(chr1.getIndex()).add(k);
-            }
-        }
     }
 
     private void getBadCoverageIndicesByZscore(Chromosome chr1, double[] sums, double mean, double stdDev) {
@@ -187,14 +128,10 @@ public class BadIndexFinder {
     }
 
     private class RegionStatistics {
-        int[] numNonZerosRows;
-        int[] numNonZerosCols;
         double[] rowSums;
         double[] colSums;
 
         RegionStatistics(int numRows, int numCols) {
-            numNonZerosRows = new int[numRows];
-            numNonZerosCols = new int[numCols];
             rowSums = new double[numRows];
             colSums = new double[numCols];
         }

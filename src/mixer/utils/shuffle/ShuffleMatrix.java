@@ -29,7 +29,6 @@ import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.Pair;
 import mixer.utils.shuffle.scoring.*;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -134,14 +133,14 @@ public class ShuffleMatrix {
                 int k = currRowIndex.getAndIncrement();
                 while (k < numRounds) {
 
-                    Pair<List<Integer>, Integer[]> allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, isBaseline);
-                    Pair<List<Integer>, Integer[]> allColIndices = getShuffledByClusterIndices(clusterToColIndices, isBaseline);
-                    float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.getFirst(), allColIndices.getFirst());
+                    ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, isBaseline);
+                    ShuffledIndices allColIndices = getShuffledByClusterIndices(clusterToColIndices, isBaseline);
+                    float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices, allColIndices.allIndices);
 
                     aggregate.addBToA(matrix);
-                    updateMatrixScores(scoresForRound, k, matrix, allRowIndices.getSecond(), allColIndices.getSecond());
+                    updateMatrixScores(scoresForRound, k, matrix, allRowIndices.boundaries, allColIndices.boundaries);
                     FloatMatrixTools.log(matrix, 1);
-                    updateMatrixScores(logScoresForRound, k, matrix, allRowIndices.getSecond(), allColIndices.getSecond());
+                    updateMatrixScores(logScoresForRound, k, matrix, allRowIndices.boundaries, allColIndices.boundaries);
 
                     k = currRowIndex.getAndIncrement();
                 }
@@ -169,7 +168,7 @@ public class ShuffleMatrix {
         scores[5][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, false)).score();
     }
 
-    private Pair<List<Integer>, Integer[]> getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean isBaseline) {
+    private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean isBaseline) {
         List<Integer> allIndices = new ArrayList<>();
 
         List<Integer> order = new ArrayList<>(clusterToIndices.keySet());
@@ -191,10 +190,10 @@ public class ShuffleMatrix {
         }
         if (isBaseline) {
             Collections.shuffle(allIndices, generator);
-            return new Pair<>(allIndices, new Integer[]{0, count});
+            return new ShuffledIndices(allIndices, new Integer[]{0, count});
         }
         Integer[] output = new Integer[boundaries.size()];
-        return new Pair<>(allIndices, boundaries.toArray(output));
+        return new ShuffledIndices(allIndices, boundaries.toArray(output));
     }
 
     private float[][] getShuffledMatrix(InterOnlyMatrix interMatrix, List<Integer> allRowIndices, List<Integer> allColIndices) {
@@ -249,5 +248,15 @@ public class ShuffleMatrix {
             sum += d;
         }
         return sum / data.length;
+    }
+
+    private class ShuffledIndices {
+        List<Integer> allIndices;
+        Integer[] boundaries;
+
+        ShuffledIndices(List<Integer> allIndices, Integer[] boundaries) {
+            this.allIndices = allIndices;
+            this.boundaries = boundaries;
+        }
     }
 }

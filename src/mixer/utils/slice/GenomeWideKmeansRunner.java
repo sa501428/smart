@@ -28,7 +28,6 @@ import com.google.common.util.concurrent.AtomicDouble;
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import mixer.MixerGlobals;
-import mixer.utils.common.Pair;
 import mixer.utils.slice.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeansfloat.ClusterTools;
 import mixer.utils.slice.kmeansfloat.ConcurrentKMeans;
@@ -36,7 +35,6 @@ import mixer.utils.slice.kmeansfloat.KMeansListener;
 import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -88,15 +86,14 @@ public class GenomeWideKmeansRunner {
 
                 @Override
                 public void kmeansComplete(Cluster[] preSortedClusters, long l) {
-
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
                     System.out.print(".");
-                    Pair<Double, List<int[][]>> wcssAndIds = matrix.processGWKmeansResult(clusters, finalCompartments);
+                    CompositeGenomeWideDensityMatrix.KmeansResult result = matrix.processGWKmeansResult(clusters, finalCompartments);
                     recentClusters = ClusterTools.clone(clusters);
-                    recentIDs = wcssAndIds.getSecond().get(0);
-                    recentIDsForIndex = wcssAndIds.getSecond().get(1);
+                    recentIDs = result.ids;
+                    recentIDsForIndex = result.idsForIndex;
                     numActualClusters.set(clusters.length);
-                    withinClusterSumOfSquaresForRun.set(wcssAndIds.getFirst());
+                    withinClusterSumOfSquaresForRun.set(result.withinClusterSumOfSquares);
                 }
 
                 @Override

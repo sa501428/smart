@@ -24,48 +24,33 @@
 
 package mixer.utils.common;
 
-public class Pair<A, B> {
-    private final A first;
-    private final B second;
-
-    public Pair(A first, B second) {
-        this.first = first;
-        this.second = second;
-    }
-
-    public A getFirst() {
-        return this.first;
-    }
-
-    public B getSecond() {
-        return this.second;
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else if (o != null && this.getClass() == o.getClass()) {
-            @SuppressWarnings("unchecked")
-            Pair<A, B> pair = (Pair<A, B>) o;
-            if (this.first != null) {
-                if (!this.first.equals(pair.first)) {
-                    return false;
-                }
-            } else if (pair.first != null) {
-                return false;
+public class ArrayTools {
+    public static double getNonZeroStd(double[] numNonZeros, double mean) {
+        int count = 0;
+        double total = 0;
+        for (double val : numNonZeros) {
+            if (val > 0) {
+                double diff = val - mean;
+                total += (diff * diff);
+                count++;
             }
-
-            if (this.second != null) {
-                return this.second.equals(pair.second);
-            } else return pair.second == null;
-        } else {
-            return false;
         }
+        return Math.sqrt(total / count);
     }
 
-    public int hashCode() {
-        int result = this.first != null ? this.first.hashCode() : 0;
-        result = 31 * result + (this.second != null ? this.second.hashCode() : 0);
-        return result;
+    /**
+     * @param numNonZeros
+     * @return
+     */
+    public static double getNonZeroMean(double[] numNonZeros) {
+        int count = 0;
+        double total = 0;
+        for (double val : numNonZeros) {
+            if (val > 0) {
+                total += val;
+                count++;
+            }
+        }
+        return total / count;
     }
 }

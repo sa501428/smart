@@ -103,53 +103,7 @@ public class SliceUtils {
         return breakUpFileName[breakUpFileName.length - 1].replaceAll(".hic", "");
     }
 
-    /*
-    public static void saveFileBeforeAndAfterCollapsing(GenomeWideList<SubcompartmentInterval> subcompartments,
-                                                        File outputDirectory, String preCollapsingFileName,
-                                                        String postCollapsingFileName) {
-        File outputFile = new File(outputDirectory, preCollapsingFileName);
-        subcompartments.simpleExport(outputFile);
-
-        collapseGWList(subcompartments);
-
-        File outputFile2 = new File(outputDirectory, postCollapsingFileName);
-        subcompartments.simpleExport(outputFile2);
-    }
-
-    /*
-        // find the most common
-        List<SubcompartmentInterval> frequentFliers = new ArrayList();
-        for(Integer x : allSubcompartmentIntervalsMap.keySet()) {
-
-            Map<Integer, Integer> counts = new HashMap<>();
-            for (Pair<Integer, Integer> pair :allSubcompartmentIntervalsMap.get(x)){
-                int value = pair.getValue();
-                if(counts.containsKey(value)){
-                    counts.put(value,counts.get(value)+1);
-                }
-                else {
-                    counts.put(value,1);
-                }
-            }
-            int maxFrequency = Ints.max(Ints.toArray(counts.values()));
-            if(maxFrequency > 1){
-                int commonClusterID = -1;
-                for(Integer clusterID : counts.keySet()){
-                    if(counts.get(clusterID) >= maxFrequency){
-                        commonClusterID = clusterID;
-                        break;
-                    }
-                }
-
-                int x2 = x + getResolution();
-                frequentFliers.add(new SubcompartmentInterval(chromosome.getIndex(), chromosome.getName(), x, x2, commonClusterID));
-            }
-        }
-        mostFrequentSubcompartment.addAll(frequentFliers);
-        */
-
     public static void readInFileAndCollapse(String location, ChromosomeHandler handler) {
-
         GenomeWideList<SubcompartmentInterval> subc = loadFromSubcompartmentBEDFile(handler, location);
         SliceUtils.collapseGWList(subc);
         subc.simpleExport(new File(location + "_collapsed.bed"));

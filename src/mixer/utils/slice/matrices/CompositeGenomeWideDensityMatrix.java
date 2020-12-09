@@ -31,7 +31,6 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.Pair;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
@@ -84,7 +83,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
     }
 
-    public synchronized Pair<Double, List<int[][]>> processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
+    public synchronized KmeansResult processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
@@ -157,11 +156,18 @@ public abstract class CompositeGenomeWideDensityMatrix {
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
 
-        List<int[][]> outputs = new ArrayList<>();
-        outputs.add(ids);
-        outputs.add(idsForIndex);
+        return new KmeansResult(withinClusterSumOfSquares, ids, idsForIndex);
+    }
 
-        return new Pair<>(withinClusterSumOfSquares, outputs);
+    public class KmeansResult {
+        public int[][] ids, idsForIndex;
+        public double withinClusterSumOfSquares;
+
+        KmeansResult(double withinClusterSumOfSquares, int[][] ids, int[][] idsForIndex) {
+            this.withinClusterSumOfSquares = withinClusterSumOfSquares;
+            this.ids = ids;
+            this.idsForIndex = idsForIndex;
+        }
     }
 
     private double sumOfSquaresDistance(float[] center, float[] vector) {
@@ -171,22 +177,6 @@ public abstract class CompositeGenomeWideDensityMatrix {
             sumSquared += (v * v);
         }
         return sumSquared;
-    }
-
-    protected Pair<Integer, int[][]> calculateDimensionInterMatrix(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {
-        int total = 0;
-        int[][] indices = new int[2][chromosomes.length];
-
-        for (int i = 0; i < chromosomes.length; i++) {
-            int val = indexToFilteredLength.get(chromosomes[i].getIndex());
-            total += val;
-            if (i < chromosomes.length - 1) {
-                indices[0][i + 1] = total;
-            }
-            indices[1][i] = val;
-        }
-
-        return new Pair<>(total, indices);
     }
 
     public float[][] getCleanedData() {

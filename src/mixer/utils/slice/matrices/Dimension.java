@@ -22,14 +22,42 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.matrices;
+
+import javastraw.reader.basics.Chromosome;
+
+import java.util.Map;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Container class for dimensions of a matrix and tracking indices
  */
-public class MixerGlobals {
-    public static final String versionNum = "3.11.05";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+
+public class Dimension {
+    public int length = 0;
+    public int[] offset, interval;
+
+    // simple binning
+    public Dimension(Chromosome[] chromosomes, int resolution) {
+        offset = new int[chromosomes.length];
+        for (int i = 0; i < chromosomes.length; i++) {
+            length += (int) (chromosomes[i].getLength() / resolution + 1);
+            if (i < chromosomes.length - 1) {
+                offset[i + 1] = length;
+            }
+        }
+    }
+
+    // compressed binning
+    public Dimension(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {
+        offset = new int[chromosomes.length];
+        interval = new int[chromosomes.length];
+        for (int i = 0; i < chromosomes.length; i++) {
+            int val = indexToFilteredLength.get(chromosomes[i].getIndex());
+            length += val;
+            if (i < chromosomes.length - 1) {
+                offset[i + 1] = length;
+            }
+            interval[i] = val;
+        }
+    }
 }
