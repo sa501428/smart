@@ -58,7 +58,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
     private final Option sliceMetricTypeOption = addStringOption("type");
-
+    private final Option translocationOption = addBooleanOption("has-translocation");
 
     public CommandLineParserForMixer() {
     }
@@ -232,5 +232,9 @@ public class CommandLineParserForMixer extends CmdLineParser {
         System.out.println("Using zscore-cosine similarity by default: " + potentialType);
         MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
         return RobustCosineSimilarity.SINGLETON;
+    }
+
+    public boolean getHasTranslocation() {
+        return optionToBoolean(translocationOption);
     }
 }

@@ -24,7 +24,6 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.reader.ExtractingOEDataUtils;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.IntMatrixTools;
@@ -38,8 +37,7 @@ import java.util.*;
 public class MatrixCleanupAndSimilarityMetric {
     public static final int BATCHED_NUM_ROWS = 1; // 10
     public static int NUM_PER_CENTROID = 1;
-    protected static final float zScoreThreshold = 3f;
-    private final static float PERCENT_NAN_ALLOWED = .5f;
+    private final static float PERCENT_NAN_ALLOWED = .7f; //todo? was .5
     protected final File outputDirectory;
     public static boolean USE_ZSCORE = false;
     protected float[][] data;
@@ -51,8 +49,36 @@ public class MatrixCleanupAndSimilarityMetric {
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
-        data = ExtractingOEDataUtils.simpleLogWithCleanup(interMatrix, 1);
+        // after this, there should be no zeros, no infinities, no negative numbers
+        // just real numbers > 0 or NaNs
+        data = simpleLogWithCleanup(interMatrix);
         System.out.println("matrix size " + data.length + " x " + data[0].length);
+    }
+
+    public static float[][] simpleLogWithCleanup(float[][] matrix) {
+        matrix = simpleLog(matrix);
+
+        for (int i = 0; i < matrix.length; ++i) {
+            for (int j = 0; j < matrix[0].length; ++j) {
+                if (Float.isInfinite(matrix[i][j]) || matrix[i][j] < 1E-10) {
+                    matrix[i][j] = Float.NaN;
+                }
+            }
+        }
+
+        return matrix;
+    }
+
+    public static float[][] simpleLog(float[][] matrix) {
+        for (int i = 0; i < matrix.length; ++i) {
+            for (int j = 0; j < matrix[i].length; ++j) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    matrix[i][j] = (float) Math.log(val + 1);
+                }
+            }
+        }
+        return matrix;
     }
 
     public static Set<Integer> getBadIndices(float[][] matrix) {
@@ -64,8 +90,12 @@ public class MatrixCleanupAndSimilarityMetric {
 
         float n = matrix[0].length;
 
+        int maxBadEntriesAllowed = (int) Math.ceil(PERCENT_NAN_ALLOWED * n);
         for (int i = 0; i < numNans.length; i++) {
-            if ((float) (numNans[i] + numZerosNotNans[i]) / n > PERCENT_NAN_ALLOWED) {
+            if (numZerosNotNans[i] > 0) {
+                System.err.println("how is there still a 0?? index: " + i);
+            }
+            if (numNans[i] + numZerosNotNans[i] > maxBadEntriesAllowed) {
                 badIndices.add(i);
             }
         }
@@ -109,7 +139,7 @@ public class MatrixCleanupAndSimilarityMetric {
         int[] numZeros = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (!Float.isNaN(matrix[i][j]) && matrix[i][j] < 1e-5) {
+                if (!Float.isNaN(matrix[i][j]) && matrix[i][j] < 1e-10) {
                     numZeros[i]++;
                 }
             }
@@ -130,7 +160,7 @@ public class MatrixCleanupAndSimilarityMetric {
     }
 
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        FloatMatrixTools.thresholdNonZerosByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
+        //FloatMatrixTools.thresholdNonZerosByZscoreToNanDownColumn(data, zScoreThreshold, BATCHED_NUM_ROWS);
 
         data = filterOutColumnsAndRowsNonSymmetricMatrix(data, rowIndexToIntervalMap);
         if (MixerGlobals.printVerboseComments) {
@@ -139,8 +169,10 @@ public class MatrixCleanupAndSimilarityMetric {
 
         if (USE_ZSCORE) {
             FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
-            File temp = new File(outputDirectory, "zscore_new.npy");
-            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
+            if (MixerGlobals.printVerboseComments) {
+                File temp = new File(outputDirectory, "zscore_new.npy");
+                FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
+            }
         }
 
         System.out.println("Generating similarity matrix");
@@ -158,13 +190,16 @@ public class MatrixCleanupAndSimilarityMetric {
 
     private void runUmapAndSaveMatrices(float[][] data, File outputDirectory,
                                         Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+        int numThreads = Math.max(1, Runtime.getRuntime().availableProcessors());
         for (int dimensions = 2; dimensions < 4; dimensions++) {
-            System.out.println("Dimensions: " + dimensions);
+            System.out.println("Running UMAP with " + dimensions + " dimensions");
             final Umap umap = new Umap();
             umap.setNumberComponents(dimensions);
-            umap.setNumberNearestNeighbours(15);
-            umap.setThreads(20);                  // use > 1 to enable parallelism
-            umap.setVerbose(true);
+            umap.setNumberNearestNeighbours(50); // 15 -> 50 for more global picture
+            umap.setThreads(numThreads);
+            umap.setMinDist(0.2f);  //0.1f -> 0.2f for more general features
+            umap.setVerbose(false);
+            umap.setSeed(generator.nextLong());
             final float[][] result = umap.fitTransform(data);
             File temp = new File(outputDirectory, "umap_" + dimensions + "d_embedding.npy");
             FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);

@@ -64,7 +64,7 @@ public class Slice extends MixerCLT {
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
         super("slice [-r resolution] <-k NONE/VC/VC_SQRT/KR/SCALE>  [-w window] " +
-                "[--compare reference.bed] [--corr] [--verbose] " +
+                "[--compare reference.bed] [--corr] [--verbose] " + //"[--has-translocation] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
         compareMaps = command.contains("dice");
     }
@@ -151,6 +151,7 @@ public class Slice extends MixerCLT {
         }
 
         metric = mixerParser.getMetricTypeOption();
+        //todo BadIndexFinder.CHECK_FOR_TRANSLOCATION = mixerParser.getHasTranslocation();
     }
 
     @Override

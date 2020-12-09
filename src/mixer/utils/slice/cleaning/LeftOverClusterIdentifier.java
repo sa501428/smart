@@ -74,7 +74,7 @@ public class LeftOverClusterIdentifier {
                 return;
             }
 
-            Set<Integer> worstIndices = badIndexFinder.getWorstIndices(chr1);
+            Set<Integer> worstIndices = badIndexFinder.getBadIndices(chr1);
             Set<Integer> indicesMissing = new HashSet<>();
 
 

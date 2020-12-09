@@ -209,9 +209,11 @@ public class SliceMatrix extends CompositeGenomeWideDensityMatrix {
                 if (b != null) {
                     for (ContactRecord cr : b.getContactRecords()) {
                         float val = cr.getCounts();
+                        /*
                         if (badIndices.getExceedsAllowedGlobalValue(val, datasetIndex)) {
                             val = Float.NaN;
                         }
+                         */
 
                         int binX = cr.getBinX();
                         int binY = cr.getBinY();
