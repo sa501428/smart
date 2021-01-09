@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
 import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
+import javastraw.tools.MatrixTools;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -44,11 +45,13 @@ public class GenomeWideStatistics {
     private final GenomeWideList<SubcompartmentInterval> subcompartments;
     private final Set<Integer> clusterIDs = new HashSet<>();
     private final Map<String, Double> contacts = new HashMap<>();
+    private final Map<String, Double> logContacts = new HashMap<>();
     private final Map<String, Long> counts = new HashMap<>();
 
     private double totalContact = 0.0;
+    private double totalLogContact = 0.0;
     private long totalCounts = 0L;
-    private double[][] contactsMatrix;
+    private double[][] contactsMatrix, contactsLogMatrix;
     private long[][] countsMatrix;
 
     public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm, GenomeWideList<SubcompartmentInterval> subcompartments) {
@@ -99,20 +102,26 @@ public class GenomeWideStatistics {
                 int yEnd = interval2.getX2() / resolution;
 
                 String key = makeKey(interval1, interval2);
-                double contact = 0;
+                double contact = 0, logContact = 0, geoContact = 1.0;
                 long count = 0;
                 if (contacts.containsKey(key)) {
                     contact = contacts.get(key);
                     count = counts.get(key);
+                    logContact = logContacts.get(key);
                 }
 
                 for (int r = xStart; r < xEnd; r++) {
                     for (int c = yStart; c < yEnd; c++) {
                         float val = data[r][c];
                         if (val > 0) {
+                            double logVal = Math.log(val); //1+
                             contact += val;
-                            totalContact += val;
+                            logContact += logVal;
+                            geoContact *= val;
                             count++;
+
+                            totalContact += val;
+                            totalLogContact += logVal;
                             totalCounts++;
                         }
                     }
@@ -120,6 +129,7 @@ public class GenomeWideStatistics {
 
                 contacts.put(key, contact);
                 counts.put(key, count);
+                logContacts.put(key, logContact);
             }
         }
     }
@@ -138,6 +148,7 @@ public class GenomeWideStatistics {
         List<Integer> ids = new ArrayList<>(clusterIDs);
         Collections.sort(ids);
         contactsMatrix = new double[ids.size()][ids.size()];
+        contactsLogMatrix = new double[ids.size()][ids.size()];
         countsMatrix = new long[ids.size()][ids.size()];
         for (int i = 0; i < ids.size(); i++) {
             for (int j = 0; j < ids.size(); j++) {
@@ -145,36 +156,41 @@ public class GenomeWideStatistics {
                 if (contacts.containsKey(key)) {
                     contactsMatrix[i][j] = contacts.get(key);
                     countsMatrix[i][j] = counts.get(key);
+                    contactsLogMatrix[i][j] = logContacts.get(key);
                 }
             }
         }
     }
 
-    public void saveInteractionMap(boolean useLog, File outfolder) {
-        float averageContact = (float) (totalContact / totalCounts);
-        if (useLog) {
-            averageContact = (float) (Math.log(totalContact) / totalCounts);
-        }
+    public void saveInteractionMap(File outfolder) {
+        double averageContact = totalContact / totalCounts;
+        double averageLogContact = totalLogContact / totalCounts;
+        double averageGeometricContact = Math.exp(averageLogContact);
 
-        float[][] result = new float[countsMatrix.length][countsMatrix.length];
+        double[][] result = new double[countsMatrix.length][countsMatrix.length];
+        double[][] resultLog = new double[countsMatrix.length][countsMatrix.length];
+        double[][] resultGeo = new double[countsMatrix.length][countsMatrix.length];
+
         for (int i = 0; i < result.length; i++) {
             for (int j = 0; j < result[i].length; j++) {
-                if (useLog) {
-                    result[i][j] = (float) (Math.log(contactsMatrix[i][j]) / countsMatrix[i][j]);
-                } else {
-                    result[i][j] = (float) (contactsMatrix[i][j] / countsMatrix[i][j]);
-                }
-                result[i][j] /= averageContact;
+                result[i][j] = (contactsMatrix[i][j] / countsMatrix[i][j]) / averageContact;
+                resultLog[i][j] = (contactsLogMatrix[i][j] / countsMatrix[i][j]) / averageLogContact;
+                resultGeo[i][j] = Math.exp(contactsLogMatrix[i][j] / countsMatrix[i][j]) / averageGeometricContact;
             }
         }
 
-        File temp = new File(outfolder, "cluster_interactions.npy");
-        File png = new File(outfolder, "cluster_interactions.png");
-        if (useLog) {
-            temp = new File(outfolder, "cluster_log_interactions.npy");
-            png = new File(outfolder, "cluster_log_interactions.png");
+        String[] stems = new String[]{"", "_log", "_geo"};
+        List<double[][]> results = new ArrayList<>();
+        results.add(result);
+        results.add(resultLog);
+        results.add(resultGeo);
+
+        for (int q = 0; q < stems.length; q++) {
+            File temp = new File(outfolder, "cluster" + stems[q] + "_interactions.npy");
+            File png = new File(outfolder, "cluster" + stems[q] + "_interactions.png");
+
+            MatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), results.get(q));
+            FloatMatrixTools.saveOEMatrixToPNG(png, results.get(q));
         }
-        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
-        FloatMatrixTools.saveOEMatrixToPNG(png, result);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -261,9 +261,9 @@ public class FloatMatrixTools {
         }
     }
 
-    public static void saveOEMatrixToPNG(File file, float[][] matrix) {
+    public static void saveOEMatrixToPNG(File file, double[][] matrix) {
         double max = getMaxAbsLogVal(matrix);
-        int zoom = 50;
+        int zoom = 100;
 
         BufferedImage image = new BufferedImage(zoom * matrix.length, zoom * matrix[0].length, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < matrix.length; i++) {
@@ -284,7 +284,7 @@ public class FloatMatrixTools {
         }
     }
 
-    private static float getMaxAbsLogVal(float[][] matrix) {
+    private static float getMaxAbsLogVal(double[][] matrix) {
         double maxVal = Math.abs(Math.log(matrix[0][0]));
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
