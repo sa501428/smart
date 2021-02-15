@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
+    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
+                                                      long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
             return getAsymmetricMatrix(matrix, metric, numPerCentroid, seed);
         }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
+import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
 import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.HiCInterTools;
@@ -65,7 +65,7 @@ public class Slice extends MixerCLT {
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
         super("slice [-r resolution] <-k NONE/VC/VC_SQRT/KR/SCALE>  [-w window] " +
-                "[--compare reference.bed] [--corr] [--verbose] " + //"[--has-translocation] " +
+                "[--compare reference.bed] [--verbose] " + //"[--has-translocation] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
         compareMaps = command.contains("dice");
     }
@@ -140,17 +140,14 @@ public class Slice extends MixerCLT {
         }
 
         int subsampling = mixerParser.getSubsamplingOption();
-        if (subsampling > 1) {
-            MatrixCleanupAndSimilarityMetric.NUM_PER_CENTROID = subsampling;
+        if (subsampling > 0) {
+            MatrixCleanerAndProjector.NUM_PER_CENTROID = subsampling;
         }
 
         String bedFiles = mixerParser.getCompareReferenceOption();
         if (bedFiles != null && bedFiles.length() > 1) {
             referenceBedFiles = bedFiles.split(",");
         }
-
-        metric = mixerParser.getMetricTypeOption();
-        //todo BadIndexFinder.CHECK_FOR_TRANSLOCATION = mixerParser.getHasTranslocation();
     }
 
     @Override

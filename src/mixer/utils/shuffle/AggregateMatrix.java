@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -78,10 +78,5 @@ public class AggregateMatrix {
         File mapLogFile = new File(outfolder, mapType.toString() + "_log_" + stem + ".png");
         FloatMatrixTools.saveMatrixToPNG(mapFile, aggregate, false);
         FloatMatrixTools.saveMatrixToPNG(mapLogFile, aggregate, true);
-
-        //FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_baseline.npy").getAbsolutePath(), baselineM);
-        //FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_shuffle.npy").getAbsolutePath(), shuffleM);
-        //FloatMatrixTools.saveMatrixTextNumpy(new File(outfolder, mapTypes[y].toString() + "_matrix.npy").getAbsolutePath(), interMatrix.getMatrix());
-        //EntropyCalculations ec = new EntropyCalculations(shuffleFile, baselineFile, shuffleLogFile, baselineLogFile, shuffleM);
     }
 }

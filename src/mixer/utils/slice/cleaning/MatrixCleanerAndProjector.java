@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,10 @@
 
 package mixer.utils.slice.cleaning;
 
+import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.IntMatrixTools;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import tagbio.umap.Umap;
@@ -34,66 +35,51 @@ import tagbio.umap.Umap;
 import java.io.File;
 import java.util.*;
 
-public class MatrixCleanupAndSimilarityMetric {
-    public static final int BATCHED_NUM_ROWS = 1; // 10
-    public static int NUM_PER_CENTROID = 1;
-    private final static float PERCENT_NAN_ALLOWED = .7f; //todo? was .5
+public class MatrixCleanerAndProjector {
+    private final static float PERCENT_NAN_ALLOWED = .5f;
+    public static int NUM_PER_CENTROID = 10;
     protected final File outputDirectory;
-    public static boolean USE_ZSCORE = false;
     protected float[][] data;
     protected final Random generator = new Random(0);
     private final SimilarityMetric metric;
 
-    public MatrixCleanupAndSimilarityMetric(float[][] data, long seed, File outputDirectory, SimilarityMetric metric) {
+    public MatrixCleanerAndProjector(float[][] data, long seed, File outputDirectory, SimilarityMetric metric) {
         this.metric = metric;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
-        // after this, there should be no zeros, no infinities, no negative numbers
-        // just real numbers > 0 or NaNs
+        // after this, there should be no infinities, no negative numbers
+        // just real numbers >= 0 or NaNs
         this.data = data;
         simpleLogWithCleanup(this.data);
         System.out.println("matrix size " + data.length + " x " + data[0].length);
     }
 
     public static void simpleLogWithCleanup(float[][] matrix) {
-        simpleLog(matrix);
-
-        for (int i = 0; i < matrix.length; ++i) {
-            for (int j = 0; j < matrix[0].length; ++j) {
-                if (Float.isInfinite(matrix[i][j]) || matrix[i][j] < 1E-10) {
-                    matrix[i][j] = Float.NaN;
-                }
-            }
-        }
-    }
-
-    public static void simpleLog(float[][] matrix) {
-        for (int i = 0; i < matrix.length; ++i) {
-            for (int j = 0; j < matrix[i].length; ++j) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
-                    matrix[i][j] = (float) Math.log(val + 1);
+                    val = (float) Math.log(val + 1);
+                    if (Float.isInfinite(val)) {
+                        matrix[i][j] = Float.NaN;
+                    } else {
+                        matrix[i][j] = val;
+                    }
                 }
             }
         }
     }
 
     public static Set<Integer> getBadIndices(float[][] matrix) {
-
         Set<Integer> badIndices = new HashSet<>();
-
         int[] numNans = getNumberOfNansInRow(matrix);
-        int[] numZerosNotNans = getNumberZerosNotNansInRow(matrix);
 
         float n = matrix[0].length;
 
         int maxBadEntriesAllowed = (int) Math.ceil(PERCENT_NAN_ALLOWED * n);
         for (int i = 0; i < numNans.length; i++) {
-            if (numZerosNotNans[i] > 0) {
-                System.err.println("how is there still a 0?? index: " + i);
-            }
-            if (numNans[i] + numZerosNotNans[i] > maxBadEntriesAllowed) {
+            if (numNans[i] > maxBadEntriesAllowed) {
                 badIndices.add(i);
             }
         }
@@ -133,18 +119,6 @@ public class MatrixCleanupAndSimilarityMetric {
         return newMatrix;
     }
 
-    private static int[] getNumberZerosNotNansInRow(float[][] matrix) {
-        int[] numZeros = new int[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (!Float.isNaN(matrix[i][j]) && matrix[i][j] < 1e-10) {
-                    numZeros[i]++;
-                }
-            }
-        }
-        return numZeros;
-    }
-
     private static int[] getNumberOfNansInRow(float[][] matrix) {
         int[] numNans = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
@@ -163,12 +137,10 @@ public class MatrixCleanupAndSimilarityMetric {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
         }
 
-        if (USE_ZSCORE) {
-            FloatMatrixTools.inPlaceZscoreDownColsNoNan(data, BATCHED_NUM_ROWS);
-            if (MixerGlobals.printVerboseComments) {
-                File temp = new File(outputDirectory, "zscore_new.npy");
-                FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
-            }
+        ZScoreTools.inPlaceTwoStageZscoreDownCol(data);
+        if (MixerGlobals.printVerboseComments) {
+            File temp = new File(outputDirectory, "zscore_new.npy");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
         }
 
         System.out.println("Generating similarity matrix");
@@ -209,6 +181,6 @@ public class MatrixCleanupAndSimilarityMetric {
             indices[i][1] = interval.getX1();
         }
         File temp = new File(outputDirectory, "genome_indices.npy");
-        IntMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indices);
+        MatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indices);
     }
 }

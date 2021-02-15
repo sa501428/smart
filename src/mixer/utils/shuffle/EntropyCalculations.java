@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,17 +48,6 @@ public class EntropyCalculations {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //myWriter.write(mapTypes[y].toString() + " pngEntropyRatio      : " + entropyRatios[y] + "\n");
-        //myWriter.write(mapTypes[y].toString() + " pngLogEntropyRatio   : " + entropyLogRatios[y] + "\n");
-        //myWriter.write(mapTypes[y].toString() + " pngEntropyPerPixel   : " + entropyPerPixel[y] + "\n");
-        //myWriter.write(mapTypes[y].toString() + " pngLogEntropyPerPixel: " + entropyLogPerPixel[y] + "\n\n");
-
-
-        //System.out.println("Scores: " + sumN + "  baseline: " + sumD + "  ratio:" + (sumN / sumD));
-        //TTest test = new TTest();
-        //System.out.println("Ttest " + test.pairedTTest(baseline, scores) / 2);
-        //System.out.println("Ttest " + test.pairedTTest(baseline, scores, 0.1));
     }
 
     private double getFileSize(File fileName) throws IOException {

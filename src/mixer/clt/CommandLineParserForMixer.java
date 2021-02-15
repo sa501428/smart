@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,6 @@ import jargs.gnu.CmdLineParser;
 import javastraw.reader.Dataset;
 import javastraw.type.NormalizationHandler;
 import javastraw.type.NormalizationType;
-import mixer.utils.similaritymeasures.RobustCosineSimilarity;
-import mixer.utils.similaritymeasures.RobustJensenShannonDivergence;
-import mixer.utils.similaritymeasures.RobustKullbackLeiblerDivergence;
-import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +52,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
-    private final Option sliceMetricTypeOption = addStringOption("type");
     private final Option translocationOption = addBooleanOption("has-translocation");
 
     public CommandLineParserForMixer() {
@@ -209,29 +203,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
             System.exit(7);
         }
         return null;
-    }
-
-    public SimilarityMetric getMetricTypeOption() {
-        return getMetricType(optionToString(sliceMetricTypeOption));
-    }
-
-    private SimilarityMetric getMetricType(String potentialType) {
-        if (potentialType != null) {
-            String name = potentialType.toLowerCase();
-            if (name.contains("zscore")) {
-                MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
-            }
-            if (name.contains("cosine")) {
-                return RobustCosineSimilarity.SINGLETON;
-            } else if (name.contains("js")) {
-                return RobustJensenShannonDivergence.SINGLETON;
-            } else if (name.contains("kl")) {
-                return RobustKullbackLeiblerDivergence.SINGLETON;
-            }
-        }
-        System.out.println("Using zscore-cosine similarity by default: " + potentialType);
-        MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
-        return RobustCosineSimilarity.SINGLETON;
     }
 
     public boolean getHasTranslocation() {

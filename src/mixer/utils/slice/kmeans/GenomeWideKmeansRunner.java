@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
 import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
-import mixer.utils.slice.matrices.CompositeGenomeWideDensityMatrix;
+import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GenomeWideKmeansRunner {
 
     private static Cluster[] recentClusters;
-    private final CompositeGenomeWideDensityMatrix matrix;
+    private final CompositeGenomeWideMatrix matrix;
     private final ChromosomeHandler chromosomeHandler;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private final AtomicDouble withinClusterSumOfSquaresForRun = new AtomicDouble(0);
@@ -51,7 +51,7 @@ public class GenomeWideKmeansRunner {
     private GenomeWideList<SubcompartmentInterval> finalCompartments;
     private int numClusters = 0;
 
-    public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideDensityMatrix interMatrix) {
+    public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideMatrix interMatrix) {
         matrix = interMatrix;
         this.chromosomeHandler = chromosomeHandler;
     }

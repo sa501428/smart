@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
+import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
 import mixer.utils.slice.kmeans.KmeansResult;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
@@ -42,7 +42,7 @@ import mixer.utils.slice.structures.SubcompartmentInterval;
 import java.io.File;
 import java.util.*;
 
-public abstract class CompositeGenomeWideDensityMatrix {
+public abstract class CompositeGenomeWideMatrix {
     protected final NormalizationType norm;
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
@@ -54,9 +54,9 @@ public abstract class CompositeGenomeWideDensityMatrix {
     protected final BadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
 
-    public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                            File outputDirectory, long seed, String[] relativeTestFiles,
-                                            BadIndexFinder badIndexLocations, SimilarityMetric metric) {
+    public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
+                                     File outputDirectory, long seed, String[] relativeTestFiles,
+                                     BadIndexFinder badIndexLocations, SimilarityMetric metric) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
@@ -77,7 +77,8 @@ public abstract class CompositeGenomeWideDensityMatrix {
     abstract float[][] makeCleanScaledInterMatrix(Dataset ds);
 
     public void cleanUpMatricesBySparsity() {
-        MatrixCleanupAndSimilarityMetric matrixCleanupReduction = new MatrixCleanupAndSimilarityMetric(gwCleanMatrix, generator.nextLong(), outputDirectory, metric);
+        MatrixCleanerAndProjector matrixCleanupReduction = new MatrixCleanerAndProjector(gwCleanMatrix,
+                generator.nextLong(), outputDirectory, metric);
         gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
     }
 
@@ -183,7 +184,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
     }
 
-    public void appendDataAlongExistingRows(CompositeGenomeWideDensityMatrix additionalData) {
+    public void appendDataAlongExistingRows(CompositeGenomeWideMatrix additionalData) {
         if (gwCleanMatrix.length != additionalData.gwCleanMatrix.length) {
             System.err.println("***************************************\n" +
                     "Dimension mismatch: " + getLength() + " != " + additionalData.getLength());

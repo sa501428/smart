@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,6 @@ import javastraw.reader.Dataset;
 import javastraw.tools.MatrixTools;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
-import mixer.utils.common.IntMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
@@ -126,7 +125,7 @@ public class FullGenomeOEWithinClusters {
             }
 
             ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs, metric);
-            IntMatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
+            MatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
         }
         System.out.println(".");
 

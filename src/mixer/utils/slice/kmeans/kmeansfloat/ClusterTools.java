@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package mixer.utils.slice.kmeans.kmeansfloat;
 
 import javastraw.tools.MatrixTools;
-import mixer.utils.common.IntMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
@@ -68,7 +67,7 @@ public class ClusterTools {
 
         File statsFolder = new File(directory, description + "_cluster_stats");
         if (statsFolder.mkdir()) {
-            IntMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
+            MatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
             saveClusterSizes(statsFolder, clusters);
             saveDistComparisonBetweenClusters(statsFolder, clusters, metric);
             saveComparisonBetweenClusters(statsFolder, clusters);
@@ -143,7 +142,7 @@ public class ClusterTools {
             sizeClusters[0][i] = clusters[i].getMemberIndexes().length;
         }
 
-        IntMatrixTools.saveMatrixTextNumpy(new File(directory, "sizes.npy").getAbsolutePath(), sizeClusters);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "sizes.npy").getAbsolutePath(), sizeClusters);
     }
 
     public static float[] normalize(float[] vector, int[] counts) {
