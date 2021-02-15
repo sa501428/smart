@@ -24,94 +24,117 @@
 
 package mixer.utils.common;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class ZScoreTools {
 
-    private static final int UPPER_ZSCORE = 3;
     private static final float ZERO = 1e-10f;
+    private static final int numCPUThreads = 30;
 
-    public static void inPlaceTwoStageZscoreDownCol(float[][] matrix) {
-        float[] initialCutoff = new float[matrix[0].length];
-        Arrays.fill(initialCutoff, Float.MAX_VALUE);
-
-        float[] colMeans = getColNonZeroMean(matrix, initialCutoff);
-        float[] colStdDevs = getColNonZeroStdDev(matrix, colMeans, initialCutoff);
-        float[] zscoreThresholds = getZscoreUpperThresholds(colMeans, colStdDevs);
-
-        postFilterZscoreDownCol(matrix, zscoreThresholds);
-    }
-
-    public static void postFilterZscoreDownCol(float[][] matrix, float[] thresholds) {
-        float[] colMeans = getColNonZeroMean(matrix, thresholds);
-        float[] colStdDevs = getColNonZeroStdDev(matrix, colMeans, thresholds);
+    public static void inPlaceRobustZscoreDownCol(float[][] matrix) {
+        float[] colMedians = getColNonZeroMedian(matrix);
+        float[] colMADs = getColNonZeroMedianAbsoluteDeviations(matrix, colMedians);
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
-                    matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+                    matrix[i][j] = (val - colMedians[j]) / colMADs[j];
                 }
             }
         }
     }
 
-    private static float[] getZscoreUpperThresholds(float[] means, float[] std) {
-        float[] cutoffs = new float[means.length];
-        for (int k = 0; k < cutoffs.length; k++) {
-            cutoffs[k] = means[k] + (UPPER_ZSCORE * std[k]);
+    public static float[] getColNonZeroMedian(float[][] matrix) {
+        float[] colMedians = new float[matrix[0].length];
+        for (int j = 0; j < matrix[0].length; j++) {
+            colMedians[j] = getMedian(matrix, j);
         }
-        return cutoffs;
+        return colMedians;
     }
 
-    public static float[] getColNonZeroMean(float[][] matrix, float[] cutoffs) {
-        double[] colSums = new double[matrix[0].length];
-        int[] colSize = new int[colSums.length];
+    private static float[] getColNonZeroMedianAbsoluteDeviations(float[][] matrix, float[] medians) {
+        float[] colMADs = new float[medians.length];
+        for (int j = 0; j < medians.length; j++) {
+            colMADs[j] = getMedianAbsoluteDeviation(matrix, j, medians[j]);
+        }
+        return colMADs;
+    }
 
+    public static float[] getParColNonZeroMedian(float[][] matrix) {
+        float[] colMedians = new float[matrix[0].length];
+        AtomicInteger currColIndex = new AtomicInteger(0);
+        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
+        for (int l = 0; l < numCPUThreads; l++) {
+            Runnable worker = () -> {
+                int j = currColIndex.getAndIncrement();
+                while (j < colMedians.length) {
+                    colMedians[j] = getMedian(matrix, j);
+                    j = currColIndex.getAndIncrement();
+                }
+            };
+            executor.execute(worker);
+        }
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+        }
+        return colMedians;
+    }
+
+    private static float[] getParColNonZeroMedianAbsoluteDeviations(float[][] matrix, float[] medians) {
+        float[] colMADs = new float[medians.length];
+        AtomicInteger currColIndex = new AtomicInteger(0);
+        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
+        for (int l = 0; l < numCPUThreads; l++) {
+            Runnable worker = () -> {
+                int j = currColIndex.getAndIncrement();
+                while (j < colMADs.length) {
+                    colMADs[j] = getMedianAbsoluteDeviation(matrix, j, medians[j]);
+                    j = currColIndex.getAndIncrement();
+                }
+            };
+            executor.execute(worker);
+        }
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+        }
+        return colMADs;
+    }
+
+    private static float getMedian(float[][] matrix, int col) {
+        List<Float> vals = new ArrayList<>();
         for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (isValid(val, cutoffs[j])) {
-                    colSums[j] += val;
-                    colSize[j] += 1;
-                }
+            float val = matrix[i][col];
+            if (isValid(val)) {
+                vals.add(val);
             }
         }
-
-        float[] colMeans = new float[colSums.length];
-        for (int k = 0; k < colSums.length; k++) {
-            colMeans[k] = (float) (colSums[k] / Math.max(colSize[k], 1));
-        }
-
-        return colMeans;
+        return sortedMidpoint(vals);
     }
 
-    public static float[] getColNonZeroStdDev(float[][] matrix, float[] means, float[] cutoffs) {
-
-        double[] squares = new double[means.length];
-        int[] colSize = new int[means.length];
-
+    private static float getMedianAbsoluteDeviation(float[][] matrix, int col, float median) {
+        List<Float> vals = new ArrayList<>();
         for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (isValid(val, cutoffs[j])) {
-                    float diff = val - means[j];
-                    squares[j] += diff * diff;
-                    colSize[j] += 1;
-                }
+            float val = matrix[i][col];
+            if (isValid(val)) {
+                vals.add(Math.abs(val - median));
             }
         }
-
-        float[] stdDev = new float[means.length];
-        for (int k = 0; k < squares.length; k++) {
-            stdDev[k] = (float) Math.sqrt(squares[k] / Math.max(colSize[k], 1));
-        }
-
-        return stdDev;
+        return sortedMidpoint(vals);
     }
 
-    private static boolean isValid(float val, float threshold) {
-        return !Float.isNaN(val) && val > ZERO && val < threshold;
+    private static float sortedMidpoint(List<Float> vals) {
+        int size = vals.size();
+        vals.sort(null);
+        return (vals.get(size / 2) + vals.get((size - 1) / 2)) / 2;
+    }
+
+    private static boolean isValid(float val) {
+        return !Float.isNaN(val) && val > ZERO;
     }
 }

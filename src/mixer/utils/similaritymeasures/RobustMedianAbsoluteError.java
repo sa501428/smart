@@ -22,14 +22,44 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.similaritymeasures;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author Muhammad Shamim
- * @since 11/25/14
+ * Euclidean distance.
  */
-public class MixerGlobals {
-    public static final String versionNum = "3.13.03";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public final class RobustMedianAbsoluteError extends SimilarityMetric {
+
+  /**
+   * Euclidean metric.
+   */
+  public static final RobustMedianAbsoluteError SINGLETON = new RobustMedianAbsoluteError();
+
+  private RobustMedianAbsoluteError() {
+    super(true);
+  }
+
+  private static float sortedMidpoint(List<Float> vals) {
+    int size = vals.size();
+    vals.sort(null);
+    return (vals.get(size / 2) + vals.get((size - 1) / 2)) / 2;
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    return getNonNanMedianAbsDeviation(x, y);
+  }
+
+  private float getNonNanMedianAbsDeviation(float[] x, float[] y) {
+    List<Float> vals = new ArrayList<>();
+    for (int i = 0; i < x.length; i++) {
+      final float v = Math.abs(x[i] - y[i]);
+      if (!Float.isNaN(v)) {
+        vals.add(v);
+      }
+    }
+    return sortedMidpoint(vals);
+  }
 }

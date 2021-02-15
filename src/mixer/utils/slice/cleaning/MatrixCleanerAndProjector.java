@@ -137,7 +137,7 @@ public class MatrixCleanerAndProjector {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
         }
 
-        ZScoreTools.inPlaceTwoStageZscoreDownCol(data);
+        ZScoreTools.inPlaceRobustZscoreDownCol(data);
         if (MixerGlobals.printVerboseComments) {
             File temp = new File(outputDirectory, "zscore_new.npy");
             FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
