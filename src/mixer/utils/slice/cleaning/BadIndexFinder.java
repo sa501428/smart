@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ import javastraw.reader.HiCFileTools;
 import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.ArrayTools;
 
@@ -38,7 +37,8 @@ import java.util.*;
 
 public class BadIndexFinder {
     // ridiculously high coverage filter
-    private static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 10;
+    private static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 5;
+    private static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -2;
     private final int resolution;
     private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     private final NormalizationType[] norms;
@@ -78,43 +78,31 @@ public class BadIndexFinder {
 
         List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
                 norms[dIndex], false);
-        RegionStatistics stats = getSums(blocks, lengthChr1, lengthChr2);
-        removeExtremeCoverage(stats.rowSums, chr1);
-        removeExtremeCoverage(stats.colSums, chr2);
+        RegionStatistics stats = new RegionStatistics(lengthChr1, lengthChr2, blocks);
+
+        removeExtremeCoverage(stats.rowSums, chr1, false);
+        removeExtremeCoverage(stats.colSums, chr2, false);
+        removeExtremeCoverage(stats.rowNonZeros, chr1, true);
+        removeExtremeCoverage(stats.colNonZeros, chr2, true);
     }
 
-    private RegionStatistics getSums(List<Block> blocks, int numRows, int numCols) {
-        RegionStatistics stats = new RegionStatistics(numRows, numCols);
-
-        for (Block b : blocks) {
-            if (b != null) {
-                for (ContactRecord cr : b.getContactRecords()) {
-                    // todo check log after sum
-                    float val = (float) Math.log(cr.getCounts() + 1);
-                    if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
-                        continue;
-                    }
-                    stats.rowSums[cr.getBinX()] += val;
-                    stats.colSums[cr.getBinY()] += val;
-                }
-            }
-        }
-
-        return stats;
+    private void removeExtremeCoverage(float[] sums, Chromosome chrom, boolean removeLowCoverage) {
+        float mean = ArrayTools.getNonZeroMean(sums);
+        float stdDev = ArrayTools.getNonZeroStd(sums, mean);
+        getBadCoverageIndicesByZscore(chrom, sums, mean, stdDev, removeLowCoverage);
     }
 
-    private void removeExtremeCoverage(double[] sums, Chromosome chrom) {
-        double mean = ArrayTools.getNonZeroMean(sums);
-        double stdDev = ArrayTools.getNonZeroStd(sums, mean);
-        getBadCoverageIndicesByZscore(chrom, sums, mean, stdDev);
-    }
-
-    private void getBadCoverageIndicesByZscore(Chromosome chr1, double[] sums, double mean, double stdDev) {
+    private void getBadCoverageIndicesByZscore(Chromosome chr1, float[] sums, double mean, double stdDev,
+                                               boolean removeLowCoverage) {
         // todo ideally needs to be genome wide check
         for (int k = 0; k < sums.length; k++) {
             if (sums[k] > 0) {
                 double zval = (sums[k] - mean) / stdDev;
-                if (zval > ZSCORE_COVERAGE_MAX_ALLOWED_INTER) {
+                if (removeLowCoverage) {
+                    if (zval < ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER) {
+                        badIndices.get(chr1.getIndex()).add(k);
+                    }
+                } else if (zval > ZSCORE_COVERAGE_MAX_ALLOWED_INTER) {
                     badIndices.get(chr1.getIndex()).add(k);
                 }
             } else {

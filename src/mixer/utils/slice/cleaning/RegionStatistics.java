@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,42 @@
 
 package mixer.utils.slice.cleaning;
 
-class RegionStatistics {
-    final double[] rowSums;
-    final double[] colSums;
+import javastraw.reader.basics.Block;
+import javastraw.reader.basics.ContactRecord;
 
-    RegionStatistics(int numRows, int numCols) {
-        rowSums = new double[numRows];
-        colSums = new double[numCols];
+import java.util.List;
+
+class RegionStatistics {
+    final float[] rowSums;
+    final float[] colSums;
+    final float[] rowNonZeros;
+    final float[] colNonZeros;
+
+    RegionStatistics(int numRows, int numCols, List<Block> blocks) {
+        rowSums = new float[numRows];
+        colSums = new float[numCols];
+        rowNonZeros = new float[numRows];
+        colNonZeros = new float[numCols];
+
+        for (Block b : blocks) {
+            if (b != null) {
+                for (ContactRecord cr : b.getContactRecords()) {
+                    add(cr);
+                }
+            }
+        }
+    }
+
+    public void add(ContactRecord cr) {
+        float val = (float) Math.log(cr.getCounts() + 1);
+        if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
+            return;
+        }
+        int x = cr.getBinX();
+        int y = cr.getBinY();
+        rowSums[x] += val;
+        colSums[y] += val;
+        rowNonZeros[x]++;
+        colNonZeros[y]++;
     }
 }

@@ -44,7 +44,7 @@ public class AggregateProcessing {
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
-        String folder = "new_test_again_v" + MixerGlobals.versionNum;
+        String folder = "new_test_v" + MixerGlobals.versionNum;
         strings = new String[]{"slice", "-r", "100000", "-k", "KR", "--verbose",
                 file14, "2,11,10",
                 "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
@@ -54,8 +54,9 @@ public class AggregateProcessing {
         System.gc();
 
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16", file14,
-                refs + ",/Users/mshamim/Desktop/SLICE.Reboot/new_test_v3.13.04/new_test_again_v3.13.04_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_again_v" + MixerGlobals.versionNum,
+                refs + ",/Users/mshamim/Desktop/SLICE.Reboot/new_test_v" + MixerGlobals.versionNum +
+                        "/new_test_v" + MixerGlobals.versionNum + "_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_v" + MixerGlobals.versionNum,
                 "RH2014,SCI,SNIPER,SLICE3"
         };
         System.out.println("-----------------------------------------------------");

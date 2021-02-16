@@ -32,9 +32,20 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerGlobals.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerGlobals.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerTools.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerTools.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/algos/Slice.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/algos/Slice.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/AggregateProcessing.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/AggregateProcessing.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/CLTFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/CLTFactory.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/common/ZScoreTools.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/common/ZScoreTools.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/RegionStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/RegionStatistics.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +148,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="10201000" />
+      <workItem from="1613352901469" duration="13044000" />
     </task>
     <task id="LOCAL-00001" summary="ranking of indices">
       <created>1603178935775</created>
@@ -475,7 +486,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613428597386</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="using L1">
+      <created>1613445852888</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1613445852888</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -500,7 +518,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="fix umap, compression calculation, code cleanup, bug fixes" />
     <MESSAGE value="add kl divergence" />
     <MESSAGE value="indexing bug fix" />
     <MESSAGE value="bug fixes, fix edge case handling, code cleanup" />
@@ -525,7 +542,8 @@
     <MESSAGE value="extracting local subcompartment" />
     <MESSAGE value="code cleanup, use simpler data containers" />
     <MESSAGE value="switch to robust zscore and median absolute error" />
-    <option name="LAST_COMMIT_MESSAGE" value="switch to robust zscore and median absolute error" />
+    <MESSAGE value="using L1" />
+    <option name="LAST_COMMIT_MESSAGE" value="using L1" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

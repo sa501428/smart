@@ -37,8 +37,8 @@ public class ZScoreTools {
     private static final int numCPUThreads = 30;
 
     public static void inPlaceRobustZscoreDownCol(float[][] matrix) {
-        float[] colMedians = getColNonZeroMedian(matrix);
-        float[] colMADs = getColNonZeroMedianAbsoluteDeviations(matrix, colMedians);
+        float[] colMedians = getParColNonZeroMedian(matrix);
+        float[] colMADs = getParColNonZeroMedianAbsoluteDeviations(matrix, colMedians);
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {

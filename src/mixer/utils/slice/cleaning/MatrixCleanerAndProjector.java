@@ -146,6 +146,8 @@ public class MatrixCleanerAndProjector {
         System.out.println("Generating similarity matrix");
         data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
+        ZScoreTools.inPlaceRobustZscoreDownCol(data);
+
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
 

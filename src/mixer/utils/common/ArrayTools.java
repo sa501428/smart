@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,28 +25,31 @@
 package mixer.utils.common;
 
 public class ArrayTools {
-    public static double getNonZeroStd(double[] numNonZeros, double mean) {
+
+    private static final float ZERO = 1e-10f;
+
+    public static float getNonZeroStd(float[] numNonZeros, float mean) {
         int count = 0;
-        double total = 0;
-        for (double val : numNonZeros) {
+        float total = 0;
+        for (float val : numNonZeros) {
             if (val > 0) {
-                double diff = val - mean;
+                float diff = val - mean;
                 total += (diff * diff);
                 count++;
             }
         }
-        return Math.sqrt(total / count);
+        return (float) Math.sqrt(total / count);
     }
 
     /**
      * @param numNonZeros
      * @return
      */
-    public static double getNonZeroMean(double[] numNonZeros) {
+    public static float getNonZeroMean(float[] numNonZeros) {
         int count = 0;
-        double total = 0;
-        for (double val : numNonZeros) {
-            if (val > 0) {
+        float total = 0;
+        for (float val : numNonZeros) {
+            if (val > ZERO) {
                 total += val;
                 count++;
             }
