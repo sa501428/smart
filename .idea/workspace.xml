@@ -30,17 +30,12 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="remove low coverage">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/GWBadIndexFinder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/GWRegionStatistics.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerGlobals.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerGlobals.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerTools.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/MixerTools.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/AggregateProcessing.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/AggregateProcessing.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/CLTFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/clt/CLTFactory.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/common/ArrayTools.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/common/ArrayTools.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/slice/cleaning/BadIndexFinder.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/slice/cleaning/BadIndexFinder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/slice/cleaning/RegionStatistics.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Mixer/mixer/utils/slice/cleaning/RegionStatistics.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/RegionStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/RegionStatistics.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -144,14 +139,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="15763000" />
-    </task>
-    <task id="LOCAL-00002" summary="update straw, cache handling, fix usage, fix architecture">
-      <created>1603245417754</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1603245417754</updated>
+      <workItem from="1613352901469" duration="20331000" />
     </task>
     <task id="LOCAL-00003" summary="add flags to parametrize slice">
       <created>1603346089801</created>
@@ -489,7 +477,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613451766898</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="adjust low coverage removal, defaults">
+      <created>1613459248646</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1613459248646</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -514,7 +509,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="indexing bug fix" />
     <MESSAGE value="bug fixes, fix edge case handling, code cleanup" />
     <MESSAGE value="Dice implemented; shuffle ordering fixed; bed file parsing changed" />
     <MESSAGE value="maxiters now at 1000 (prev 20000), print thread count" />
@@ -539,7 +533,8 @@
     <MESSAGE value="switch to robust zscore and median absolute error" />
     <MESSAGE value="using L1" />
     <MESSAGE value="remove low coverage" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove low coverage" />
+    <MESSAGE value="adjust low coverage removal, defaults" />
+    <option name="LAST_COMMIT_MESSAGE" value="adjust low coverage removal, defaults" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -37,11 +37,11 @@ import java.util.*;
 
 public class BadIndexFinder {
     // ridiculously high coverage filter
-    private static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 5;
-    private static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -3;
-    private final int resolution;
-    private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
-    private final NormalizationType[] norms;
+    protected static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 5;
+    protected static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -3;
+    protected final int resolution;
+    protected final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
+    protected final NormalizationType[] norms;
 
     public BadIndexFinder(List<Dataset> datasets, Chromosome[] chromosomes, int resolution,
                           NormalizationType[] norms) {
@@ -54,7 +54,7 @@ public class BadIndexFinder {
         createInternalBadList(datasets, chromosomes);
     }
 
-    private void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
+    protected void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
         for (int z = 0; z < datasets.size(); z++) {
             for (int i = 0; i < chromosomes.length; i++) {
                 Chromosome chr1 = chromosomes[i];
@@ -69,10 +69,15 @@ public class BadIndexFinder {
                 }
             }
         }
+        postprocess(chromosomes);
     }
 
-    private void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
-                                              int dIndex) throws IOException {
+    protected void postprocess(Chromosome[] chromosomes) {
+        // todo
+    }
+
+    protected void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
+                                                int dIndex) throws IOException {
         int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
 
@@ -92,9 +97,8 @@ public class BadIndexFinder {
         getBadCoverageIndicesByZscore(chrom, sums, mean, stdDev, removeLowCoverage);
     }
 
-    private void getBadCoverageIndicesByZscore(Chromosome chr1, float[] sums, double mean, double stdDev,
-                                               boolean removeLowCoverage) {
-        // todo ideally needs to be genome wide check
+    protected void getBadCoverageIndicesByZscore(Chromosome chr1, float[] sums, double mean, double stdDev,
+                                                 boolean removeLowCoverage) {
         for (int k = 0; k < sums.length; k++) {
             if (sums[k] > 0) {
                 double zval = (sums[k] - mean) / stdDev;

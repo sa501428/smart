@@ -24,6 +24,8 @@
 
 package mixer.utils.common;
 
+import java.util.Collection;
+
 public class ArrayTools {
 
     private static final float ZERO = 1e-10f;
@@ -55,5 +57,35 @@ public class ArrayTools {
             }
         }
         return total / count;
+    }
+
+    public static float getNonZeroMean(Collection<float[]> allArrays) {
+        double total = 0;
+        long count = 0;
+
+        for (float[] array : allArrays) {
+            for (float val : array) {
+                if (val > ZERO) {
+                    total += val;
+                    count++;
+                }
+            }
+        }
+        return (float) (total / count);
+    }
+
+    public static float getNonZeroStd(Collection<float[]> allArrays, float mean) {
+        long count = 0;
+        double total = 0;
+        for (float[] array : allArrays) {
+            for (float val : array) {
+                if (val > 0) {
+                    float diff = val - mean;
+                    total += (diff * diff);
+                    count++;
+                }
+            }
+        }
+        return (float) Math.sqrt(total / count);
     }
 }

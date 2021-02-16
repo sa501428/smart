@@ -44,13 +44,13 @@ class RegionStatistics {
         for (Block b : blocks) {
             if (b != null) {
                 for (ContactRecord cr : b.getContactRecords()) {
-                    add(cr);
+                    add(cr, rowSums, colSums, rowNonZeros, colNonZeros);
                 }
             }
         }
     }
 
-    public void add(ContactRecord cr) {
+    public static void add(ContactRecord cr, float[] rowSums, float[] colSums, float[] rowNonZeros, float[] colNonZeros) {
         float val = (float) Math.log(cr.getCounts() + 1);
         if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
             return;

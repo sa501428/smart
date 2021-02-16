@@ -32,6 +32,7 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.BadIndexFinder;
+import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
@@ -66,7 +67,7 @@ public class FullGenomeOEWithinClusters {
         this.metric = metric;
         generator.setSeed(seed);
 
-        BadIndexFinder badIndexFinder = new BadIndexFinder(datasets,
+        BadIndexFinder badIndexFinder = new GWBadIndexFinder(datasets,
                 chromosomeHandler.getAutosomalChromosomesArray(), resolution, norms);
 
         sliceMatrix = new SliceMatrix(
