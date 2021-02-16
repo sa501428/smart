@@ -67,8 +67,9 @@ public class FullGenomeOEWithinClusters {
         this.metric = metric;
         generator.setSeed(seed);
 
-        BadIndexFinder badIndexFinder = new GWBadIndexFinder(datasets,
-                chromosomeHandler.getAutosomalChromosomesArray(), resolution, norms);
+        BadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
+                resolution, norms);
+        badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
         sliceMatrix = new SliceMatrix(
                 chromosomeHandler, datasets.get(0), norms[0], resolution, outputDirectory, generator.nextLong(), referenceBedFiles,

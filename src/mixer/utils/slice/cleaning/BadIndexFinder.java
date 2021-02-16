@@ -43,18 +43,16 @@ public class BadIndexFinder {
     protected final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     protected final NormalizationType[] norms;
 
-    public BadIndexFinder(List<Dataset> datasets, Chromosome[] chromosomes, int resolution,
+    public BadIndexFinder(Chromosome[] chromosomes, int resolution,
                           NormalizationType[] norms) {
         this.resolution = resolution;
         this.norms = norms;
         for (Chromosome chrom : chromosomes) {
             badIndices.put(chrom.getIndex(), new HashSet<>());
         }
-
-        createInternalBadList(datasets, chromosomes);
     }
 
-    protected void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
+    public void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
         for (int z = 0; z < datasets.size(); z++) {
             for (int i = 0; i < chromosomes.length; i++) {
                 Chromosome chr1 = chromosomes[i];

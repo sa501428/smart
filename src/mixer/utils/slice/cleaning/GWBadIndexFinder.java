@@ -24,7 +24,6 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
 import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Block;
@@ -35,10 +34,11 @@ import java.io.IOException;
 import java.util.List;
 
 public class GWBadIndexFinder extends BadIndexFinder {
-    private final GWRegionStatistics stats = new GWRegionStatistics();
 
-    public GWBadIndexFinder(List<Dataset> datasets, Chromosome[] chromosomes, int resolution, NormalizationType[] norms) {
-        super(datasets, chromosomes, resolution, norms);
+    private final GWRegionStatistics gwStats = new GWRegionStatistics();
+
+    public GWBadIndexFinder(Chromosome[] chromosomes, int resolution, NormalizationType[] norms) {
+        super(chromosomes, resolution, norms);
     }
 
     @Override
@@ -49,18 +49,18 @@ public class GWBadIndexFinder extends BadIndexFinder {
 
         List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
                 norms[dIndex], false);
-        stats.update(chr1.getIndex(), chr2.getIndex(), lengthChr1, lengthChr2, blocks);
+        gwStats.update(chr1.getIndex(), chr2.getIndex(), lengthChr1, lengthChr2, blocks);
     }
 
     @Override
     protected void postprocess(Chromosome[] chromosomes) {
-        stats.postprocess();
+        gwStats.postprocess();
 
         for (Chromosome chromosome : chromosomes) {
             getBadCoverageIndicesByZscore(chromosome,
-                    stats.getSums(chromosome), stats.getSumMean(), stats.getSumStd(), false);
+                    gwStats.getSums(chromosome), gwStats.getSumMean(), gwStats.getSumStd(), false);
             getBadCoverageIndicesByZscore(chromosome,
-                    stats.getNonZeros(chromosome), stats.getNonZeroMean(), stats.getNonZeroStd(), true);
+                    gwStats.getNonZeros(chromosome), gwStats.getNonZeroMean(), gwStats.getNonZeroStd(), true);
         }
     }
 
