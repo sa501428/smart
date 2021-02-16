@@ -43,9 +43,9 @@ import java.io.File;
 import java.util.*;
 
 public class FullGenomeOEWithinClusters {
-    public static int startingClusterSizeK = 5;
-    public static int numClusterSizeKValsUsed = 2;//10
-    public static int numAttemptsForKMeans = 10;
+    public static int startingClusterSizeK = 2;
+    public static int numClusterSizeKValsUsed = 10;
+    public static int numAttemptsForKMeans = 3;
     private final List<Dataset> datasets;
     protected final File outputDirectory;
     private final ChromosomeHandler chromosomeHandler;

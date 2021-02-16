@@ -38,7 +38,7 @@ import java.util.*;
 public class BadIndexFinder {
     // ridiculously high coverage filter
     private static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 5;
-    private static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -2;
+    private static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -3;
     private final int resolution;
     private final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     private final NormalizationType[] norms;
