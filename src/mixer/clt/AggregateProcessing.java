@@ -24,7 +24,8 @@
 
 package mixer.clt;
 
-import mixer.utils.custom.ExtractionB4;
+import mixer.MixerGlobals;
+import mixer.MixerTools;
 
 
 /**
@@ -36,7 +37,32 @@ public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
 
-        ExtractionB4.extract();
+        String[] strings;
+
+        String refs = "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed";
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+
+        String folder = "new_test_again_v" + MixerGlobals.versionNum;
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "--verbose",
+                file14, "2,11,10",
+                "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16", file14,
+                refs + ",/Users/mshamim/Desktop/SLICE.Reboot/new_test_v3.13.04/new_test_again_v3.13.04_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_again_v" + MixerGlobals.versionNum,
+                "RH2014,SCI,SNIPER,SLICE3"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        //ExtractionB4.extract();
 
         /*
         String[] strings;

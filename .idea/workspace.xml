@@ -31,11 +31,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/common/QuickMedian.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteDeviation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +137,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="4488000" />
+      <workItem from="1613352901469" duration="10201000" />
     </task>
     <task id="LOCAL-00001" summary="ranking of indices">
       <created>1603178935775</created>
@@ -469,7 +468,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613423901826</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="switch to robust zscore and median absolute error">
+      <created>1613428597386</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1613428597386</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -494,7 +500,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fixes, code running" />
     <MESSAGE value="fix umap, compression calculation, code cleanup, bug fixes" />
     <MESSAGE value="add kl divergence" />
     <MESSAGE value="indexing bug fix" />
@@ -519,7 +524,8 @@
     <MESSAGE value="simplify data filtering; use coverage; update UMAP settings" />
     <MESSAGE value="extracting local subcompartment" />
     <MESSAGE value="code cleanup, use simpler data containers" />
-    <option name="LAST_COMMIT_MESSAGE" value="code cleanup, use simpler data containers" />
+    <MESSAGE value="switch to robust zscore and median absolute error" />
+    <option name="LAST_COMMIT_MESSAGE" value="switch to robust zscore and median absolute error" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
