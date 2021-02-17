@@ -22,14 +22,30 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.similaritymeasures;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.14.05";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public final class RobustImprovedCosineSimilarity extends SimilarityMetric {
+
+  public static final RobustImprovedCosineSimilarity SINGLETON = new RobustImprovedCosineSimilarity();
+
+  private RobustImprovedCosineSimilarity() {
+    super(true);
+  }
+
+  @Override
+  public float distance(final float[] x, final float[] y) {
+    double dotProduct = 0.0;
+    double norm1X = 0.0;
+    double norm1Y = 0.0;
+    for (int i = 0; i < x.length; i++) {
+      double product = Math.sqrt(x[i] * y[i]);
+      if (!Double.isNaN(product)) {
+        dotProduct += product;
+        norm1X += x[i];
+        norm1Y += y[i];
+      }
+    }
+
+    return (float) (dotProduct / Math.sqrt(norm1X * norm1Y));
+  }
 }

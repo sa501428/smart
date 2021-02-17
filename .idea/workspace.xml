@@ -31,9 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustImprovedCosineSimilarity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,14 +135,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="26962000" />
-    </task>
-    <task id="LOCAL-00008" summary="fix todos; use faster correlation">
-      <created>1603910239344</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1603910239344</updated>
+      <workItem from="1613352901469" duration="27850000" />
     </task>
     <task id="LOCAL-00009" summary="cosine similarity, code cleanup">
       <created>1603989730386</created>
@@ -481,7 +473,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613545719827</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="remove second zscore">
+      <created>1613547319399</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1613547319399</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -506,7 +505,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="separation and restructuring of kmeans" />
     <MESSAGE value="removing gaussian, code cleanup/optimizations" />
     <MESSAGE value="pass seeds instead of random, use parallel kmeans for quick centroids" />
     <MESSAGE value="parallelize centroid re-calculation" />
@@ -531,7 +529,8 @@
     <MESSAGE value="bug fixes" />
     <MESSAGE value="larger initial group size" />
     <MESSAGE value="try cosine, positive zscore" />
-    <option name="LAST_COMMIT_MESSAGE" value="try cosine, positive zscore" />
+    <MESSAGE value="remove second zscore" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove second zscore" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
