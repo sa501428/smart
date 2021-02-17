@@ -54,10 +54,12 @@ public class AggregateProcessing {
         System.gc();
 
         strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16", file14,
-                refs + ",/Users/mshamim/Desktop/SLICE.Reboot/new_test_v" + MixerGlobals.versionNum +
+                //refs + "," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/new_test_v" + MixerGlobals.versionNum +
                         "/new_test_v" + MixerGlobals.versionNum + "_5_clusters_gm12878_rh14_30.subcompartment.bed",
                 "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_v" + MixerGlobals.versionNum,
-                "RH2014,SCI,SNIPER,SLICE3"
+                //"RH2014,SCI,SNIPER," +
+                "SLICE3"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
