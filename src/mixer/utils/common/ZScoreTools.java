@@ -44,7 +44,8 @@ public class ZScoreTools {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
-                    matrix[i][j] = (val - colMedians[j]) / colMADs[j];
+                    //matrix[i][j] = (val - colMedians[j]) / colMADs[j];
+                    matrix[i][j] = val / colMADs[j];
                 }
             }
         }

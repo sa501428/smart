@@ -30,7 +30,7 @@ import javastraw.reader.HiCFileTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.similaritymeasures.RobustManhattanDistance;
+import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
 import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
@@ -57,7 +57,7 @@ public class Slice extends MixerCLT {
     private Dataset ds;
     private File outputDirectory;
     private NormalizationType[] normArray;
-    public static SimilarityMetric metric = RobustManhattanDistance.SINGLETON;
+    public static SimilarityMetric metric = RobustCosineSimilarity.SINGLETON; //RobustManhattanDistance
     private String prefix = "";
     private String[] referenceBedFiles;
     private final boolean compareMaps;
