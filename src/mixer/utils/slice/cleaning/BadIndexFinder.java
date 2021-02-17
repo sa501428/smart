@@ -67,11 +67,6 @@ public class BadIndexFinder {
                 }
             }
         }
-        postprocess(chromosomes);
-    }
-
-    protected void postprocess(Chromosome[] chromosomes) {
-        // todo
     }
 
     protected void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
@@ -83,20 +78,24 @@ public class BadIndexFinder {
                 norms[dIndex], false);
         RegionStatistics stats = new RegionStatistics(lengthChr1, lengthChr2, blocks);
 
-        removeExtremeCoverage(stats.rowSums, chr1, false);
-        removeExtremeCoverage(stats.colSums, chr2, false);
-        removeExtremeCoverage(stats.rowNonZeros, chr1, true);
-        removeExtremeCoverage(stats.colNonZeros, chr2, true);
+        removeExtremeCoverages(stats.rowSums, chr1, false);
+        removeExtremeCoverages(stats.colSums, chr2, false);
+        removeExtremeCoverages(stats.rowNonZeros, chr1, true);
+        removeExtremeCoverages(stats.colNonZeros, chr2, true);
     }
 
-    private void removeExtremeCoverage(float[] sums, Chromosome chrom, boolean removeLowCoverage) {
+    private void removeExtremeCoverages(float[] sums, Chromosome chrom, boolean removeLowCoverage) {
         float mean = ArrayTools.getNonZeroMean(sums);
         float stdDev = ArrayTools.getNonZeroStd(sums, mean);
-        getBadCoverageIndicesByZscore(chrom, sums, mean, stdDev, removeLowCoverage);
+        getBadCoverageIndices(chrom, sums, mean, stdDev, removeLowCoverage);
     }
 
-    protected void getBadCoverageIndicesByZscore(Chromosome chr1, float[] sums, double mean, double stdDev,
-                                                 boolean removeLowCoverage) {
+    protected void getBadCoverageIndices(Chromosome chr1, float[] sums, double mean, double stdDev,
+                                         boolean removeLowCoverage) {
+        if (sums == null) {
+            System.err.println("Skipping 0 " + chr1.getName() + " " + removeLowCoverage);
+            return;
+        }
         for (int k = 0; k < sums.length; k++) {
             if (sums[k] > 0) {
                 double zval = (sums[k] - mean) / stdDev;

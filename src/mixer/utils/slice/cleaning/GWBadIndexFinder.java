@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
+import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
 import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Block;
@@ -31,17 +32,25 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
-public class GWBadIndexFinder extends BadIndexFinder {
+public class GWBadIndexFinder {
 
+    protected static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 5;
+    protected static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -3;
+    protected final int resolution;
+    protected final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
+    protected final NormalizationType[] norms;
     private final GWRegionStatistics gwStats = new GWRegionStatistics();
 
     public GWBadIndexFinder(Chromosome[] chromosomes, int resolution, NormalizationType[] norms) {
-        super(chromosomes, resolution, norms);
+        this.resolution = resolution;
+        this.norms = norms;
+        for (Chromosome chrom : chromosomes) {
+            badIndices.put(chrom.getIndex(), new HashSet<>());
+        }
     }
 
-    @Override
     protected void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
                                                 int dIndex) throws IOException {
         int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
@@ -52,16 +61,58 @@ public class GWBadIndexFinder extends BadIndexFinder {
         gwStats.update(chr1.getIndex(), chr2.getIndex(), lengthChr1, lengthChr2, blocks);
     }
 
-    @Override
+    public void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
+        for (int z = 0; z < datasets.size(); z++) {
+            for (int i = 0; i < chromosomes.length; i++) {
+                Chromosome chr1 = chromosomes[i];
+                for (int j = i + 1; j < chromosomes.length; j++) {
+                    Chromosome chr2 = chromosomes[j];
+                    final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(datasets.get(z), chr1, chr2, resolution);
+                    try {
+                        determineBadIndicesForRegion(chr1, chr2, zd, z);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        postprocess(chromosomes);
+    }
+
     protected void postprocess(Chromosome[] chromosomes) {
         gwStats.postprocess();
 
         for (Chromosome chromosome : chromosomes) {
-            getBadCoverageIndicesByZscore(chromosome,
+            getBadCoverageIndices(chromosome,
                     gwStats.getSums(chromosome), gwStats.getSumMean(), gwStats.getSumStd(), false);
-            getBadCoverageIndicesByZscore(chromosome,
+            getBadCoverageIndices(chromosome,
                     gwStats.getNonZeros(chromosome), gwStats.getNonZeroMean(), gwStats.getNonZeroStd(), true);
         }
     }
 
+    protected void getBadCoverageIndices(Chromosome chr1, float[] sums, double mean, double stdDev,
+                                         boolean removeLowCoverage) {
+        if (sums == null) {
+            System.err.println("Skipping " + chr1.getName() + " " + removeLowCoverage);
+            return;
+        }
+        for (int k = 0; k < sums.length; k++) {
+            if (sums[k] > 0) {
+                double zval = (sums[k] - mean) / stdDev;
+                if (removeLowCoverage) {
+                    if (zval < ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER) {
+                        badIndices.get(chr1.getIndex()).add(k);
+                    }
+                } else if (zval > ZSCORE_COVERAGE_MAX_ALLOWED_INTER) {
+                    badIndices.get(chr1.getIndex()).add(k);
+                }
+            } else {
+                badIndices.get(chr1.getIndex()).add(k);
+            }
+        }
+    }
+
+    public Set<Integer> getBadIndices(Chromosome chrom) {
+        return badIndices.get(chrom.getIndex());
+    }
 }

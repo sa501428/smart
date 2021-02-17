@@ -34,7 +34,7 @@ import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.BadIndexFinder;
+import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -49,7 +49,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
     public static int numColumnsToPutTogether = 2;
 
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                       File outputDirectory, long seed, String[] referenceBedFiles, BadIndexFinder badIndexLocations,
+                       File outputDirectory, long seed, String[] referenceBedFiles, GWBadIndexFinder badIndexLocations,
                        SimilarityMetric metric) {
         super(chromosomeHandler, ds, norm, resolution, outputDirectory, seed, referenceBedFiles,
                 badIndexLocations, metric);
@@ -121,7 +121,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         return indexToCompressedLength;
     }
 
-    private void fillInChromosomeRegion(float[][] matrix, BadIndexFinder badIndices,
+    private void fillInChromosomeRegion(float[][] matrix, GWBadIndexFinder badIndices,
                                         MatrixZoomData zd, boolean isIntra, IndexOrderer orderer,
                                         Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
                                         Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2) {
@@ -160,12 +160,12 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
             updateSubcompartmentMap(chr1, badIndices.getBadIndices(chr1), offsetIndex1, rowIndexToIntervalMap);
         }
 
-        copyValuesToArea(matrix, blocks, badIndices,
+        copyValuesToArea(matrix, blocks,
                 rowPosChrom1, colPosChrom1, rowPosChrom2, colPosChrom2, isIntra);
     }
 
 
-    private void copyValuesToArea(float[][] matrix, List<Block> blocks, BadIndexFinder badIndices,
+    private void copyValuesToArea(float[][] matrix, List<Block> blocks,
                                   Map<Integer, Integer> rowPosChrom1, Map<Integer, Integer> colPosChrom1,
                                   Map<Integer, Integer> rowPosChrom2, Map<Integer, Integer> colPosChrom2, boolean isIntra) {
         if (isIntra) {

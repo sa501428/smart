@@ -32,7 +32,7 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.BadIndexFinder;
+import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
 import mixer.utils.slice.kmeans.KmeansResult;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
@@ -51,12 +51,12 @@ public abstract class CompositeGenomeWideMatrix {
     protected final File outputDirectory;
     private float[][] gwCleanMatrix;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
-    protected final BadIndexFinder badIndexLocations;
+    protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                      File outputDirectory, long seed, String[] relativeTestFiles,
-                                     BadIndexFinder badIndexLocations, SimilarityMetric metric) {
+                                     GWBadIndexFinder badIndexLocations, SimilarityMetric metric) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
@@ -193,7 +193,7 @@ public abstract class CompositeGenomeWideMatrix {
         }
     }
 
-    public BadIndexFinder getBadIndices() {
+    public GWBadIndexFinder getBadIndices() {
         return badIndexLocations;
     }
 }

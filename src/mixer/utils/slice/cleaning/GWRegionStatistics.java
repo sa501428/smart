@@ -94,11 +94,11 @@ public class GWRegionStatistics {
     }
 
     public float[] getSums(Chromosome chromosome) {
-        return sums.get(chromosome);
+        return sums.get(chromosome.getIndex());
     }
 
     public float[] getNonZeros(Chromosome chromosome) {
-        return nonZeros.get(chromosome);
+        return nonZeros.get(chromosome.getIndex());
     }
 
     public float getSumMean() {
