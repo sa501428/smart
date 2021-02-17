@@ -45,8 +45,8 @@ public class AggregateProcessing {
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
         String folder = "new_test_v" + MixerGlobals.versionNum;
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", "--verbose",
-                file14, "2,11,10",
+        strings = new String[]{"slice", "-r", "100000", "-k", "KR", //"--verbose",
+                file14, "2,11,3",
                 "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
         };
         System.out.println("-----------------------------------------------------");
