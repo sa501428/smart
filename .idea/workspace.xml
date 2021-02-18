@@ -32,7 +32,8 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/QuickMedian.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/QuickMedian.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,14 +136,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="29917000" />
-    </task>
-    <task id="LOCAL-00010" summary="fix up defaults">
-      <created>1604001479754</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1604001479754</updated>
+      <workItem from="1613352901469" duration="30619000" />
     </task>
     <task id="LOCAL-00011" summary="bug fix">
       <created>1604002058281</created>
@@ -480,7 +474,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613548367093</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="use median abs error">
+      <created>1613683648827</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1613683648827</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -505,7 +506,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="pass seeds instead of random, use parallel kmeans for quick centroids" />
     <MESSAGE value="parallelize centroid re-calculation" />
     <MESSAGE value="change l2 default error, fix bugs in quick centroids" />
     <MESSAGE value="save directly to png, png file size calcs, std dev calcs, calc error only within region, reading bed with custom order" />
@@ -530,7 +530,8 @@
     <MESSAGE value="try cosine, positive zscore" />
     <MESSAGE value="remove second zscore" />
     <MESSAGE value="use ICS" />
-    <option name="LAST_COMMIT_MESSAGE" value="use ICS" />
+    <MESSAGE value="use median abs error" />
+    <option name="LAST_COMMIT_MESSAGE" value="use median abs error" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
