@@ -31,8 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustImprovedCosineSimilarity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/QuickMedian.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/QuickMedian.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,14 +135,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="27850000" />
-    </task>
-    <task id="LOCAL-00009" summary="cosine similarity, code cleanup">
-      <created>1603989730386</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1603989730386</updated>
+      <workItem from="1613352901469" duration="29917000" />
     </task>
     <task id="LOCAL-00010" summary="fix up defaults">
       <created>1604001479754</created>
@@ -480,7 +473,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613547319399</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="use ICS">
+      <created>1613548367093</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1613548367093</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -505,7 +505,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="removing gaussian, code cleanup/optimizations" />
     <MESSAGE value="pass seeds instead of random, use parallel kmeans for quick centroids" />
     <MESSAGE value="parallelize centroid re-calculation" />
     <MESSAGE value="change l2 default error, fix bugs in quick centroids" />
@@ -530,7 +529,8 @@
     <MESSAGE value="larger initial group size" />
     <MESSAGE value="try cosine, positive zscore" />
     <MESSAGE value="remove second zscore" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove second zscore" />
+    <MESSAGE value="use ICS" />
+    <option name="LAST_COMMIT_MESSAGE" value="use ICS" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

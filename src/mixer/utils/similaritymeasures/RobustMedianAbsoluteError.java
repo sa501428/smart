@@ -24,6 +24,8 @@
 
 package mixer.utils.similaritymeasures;
 
+import mixer.utils.common.QuickMedian;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +62,7 @@ public final class RobustMedianAbsoluteError extends SimilarityMetric {
         vals.add(v);
       }
     }
-    return sortedMidpoint(vals);
+    //return sortedMidpoint(vals);
+    return QuickMedian.fastMedian(vals);
   }
 }

@@ -24,27 +24,29 @@
 
 package mixer.utils.common;
 
+import java.util.List;
+
 public class QuickMedian {
 
-    static int partition(int[] arr, int low, int high) {
-        int pivot = arr[high];          //taken pivot element as last element
+    static int partition(float[] arr, int low, int high) {
+        float pivot = arr[high];          //taken pivot element as last element
         int z = (low - 1);
         for (int j = low; j < high; j++) {
             if (arr[j] < pivot) {                                  //arranging all elements that are less than pivot
                 z++;
-                int temp = arr[z];
+                float temp = arr[z];
                 arr[z] = arr[j];
                 arr[j] = temp;
             }
         }
-        int temp = arr[z + 1];
+        float temp = arr[z + 1];
         arr[z + 1] = arr[high];     //finalizing th position of piviot element in array which is sorted position
         arr[high] = temp;
 
         return z + 1;
     }
 
-    public static int kselection(int[] arr, int low, int high, int k) {
+    public static float kselection(float[] arr, int low, int high, int k) {
         int partitionSortingValue = partition(arr, low, high);
         if (partitionSortingValue == k)           //comparing the position returned with the desired position k
             return arr[partitionSortingValue];
@@ -54,14 +56,22 @@ public class QuickMedian {
             return kselection(arr, low, partitionSortingValue - 1, k);
     }
 
-    static void fastMedian(int[] arr) {
+    public static float fastMedian(float[] arr) {
         int len = arr.length;
         if (len % 2 == 1) {
-            System.out.println(kselection(arr, 0, len - 1, len / 2));  //median is at n/2 position if length is odd
+            return kselection(arr, 0, len - 1, len / 2);  //median is at n/2 position if length is odd
         } else {
-            int a = kselection(arr, 0, len - 1, len / 2);
-            int b = kselection(arr, 0, len - 1, len / 2 - 1);
-            System.out.println((a + b) / 2);       //median by performing average between n/2 and n/2-1
+            float a = kselection(arr, 0, len - 1, len / 2);
+            float b = kselection(arr, 0, len - 1, len / 2 - 1);
+            return (a + b) / 2;       //median by performing average between n/2 and n/2-1
         }
+    }
+
+    public static float fastMedian(List<Float> list) {
+        float[] arr = new float[list.size()];
+        for (int k = 0; k < arr.length; k++) {
+            arr[k] = list.get(k);
+        }
+        return fastMedian(arr);
     }
 }
