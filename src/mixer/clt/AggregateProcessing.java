@@ -44,26 +44,28 @@ public class AggregateProcessing {
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
-        String folder = "new_test_v" + MixerGlobals.versionNum;
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR", //"--verbose",
-                file14, "2,11,3",
-                "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
-        };
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
+        for (int res : new int[]{50000}) {
+            String folder = "new_test_res_" + res + "v" + MixerGlobals.versionNum;
+            strings = new String[]{"slice", "-r", res + "", "-k", "KR", //"--verbose",
+                    file14, "2,11,3",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
 
-        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16", file14,
-                //refs + "," +
-                "/Users/mshamim/Desktop/SLICE.Reboot/new_test_v" + MixerGlobals.versionNum +
-                        "/new_test_v" + MixerGlobals.versionNum + "_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_v" + MixerGlobals.versionNum,
-                //"RH2014,SCI,SNIPER," +
-                "SLICE3"
-        };
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
+            strings = new String[]{"shuffle", "-r", res + "", "-k", "KR", "-w", "" + (16 * (100000 / res)), file14,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
+                            "/" + folder + "_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_res_" + res + "v" + MixerGlobals.versionNum,
+                    //"RH2014,SCI,SNIPER," +
+                    "SLICE3"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
 
         //ExtractionB4.extract();
 
