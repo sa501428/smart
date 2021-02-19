@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,19 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice;
+package mixer.utils.slice.kmeans;
 
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
+import javastraw.tools.MatrixTools;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
-import mixer.utils.common.DoubleMatrixTools;
-import mixer.utils.common.IntMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.BadIndexFinder;
+import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
-import mixer.utils.slice.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
+import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -44,44 +43,46 @@ import java.io.File;
 import java.util.*;
 
 public class FullGenomeOEWithinClusters {
-    public static int startingClusterSizeK = 5;
-    public static int numClusterSizeKValsUsed = 2;//10
-    public static int numAttemptsForKMeans = 10;
+    public static int startingClusterSizeK = 2;
+    public static int numClusterSizeKValsUsed = 10;
+    public static int numAttemptsForKMeans = 3;
     private final List<Dataset> datasets;
     protected final File outputDirectory;
     private final ChromosomeHandler chromosomeHandler;
     private final int resolution;
-    private final NormalizationType norm;
+    private final NormalizationType[] norms;
     private final SliceMatrix sliceMatrix;
-    private final SimilarityMetric metric;
 
-    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType norm,
-                                      File outputDirectory, Random generator, String[] referenceBedFiles,
+    private final Random generator = new Random(0);
+
+    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType[] norms,
+                                      File outputDirectory, long seed, String[] referenceBedFiles,
                                       SimilarityMetric metric) {
         this.chromosomeHandler = chromosomeHandler;
         this.resolution = resolution;
-        this.norm = norm;
+        this.norms = norms;
         this.outputDirectory = outputDirectory;
         this.datasets = datasets;
-        this.metric = metric;
+        generator.setSeed(seed);
 
-        BadIndexFinder badIndexFinder = new BadIndexFinder(datasets,
-                chromosomeHandler.getAutosomalChromosomesArray(), resolution, norm);
+        GWBadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
+                resolution, norms);
+        badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
         sliceMatrix = new SliceMatrix(
-                chromosomeHandler, datasets.get(0), norm, resolution, outputDirectory, generator, referenceBedFiles,
-                badIndexFinder, 0, metric);
+                chromosomeHandler, datasets.get(0), norms[0], resolution, outputDirectory, generator.nextLong(), referenceBedFiles,
+                badIndexFinder, metric);
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
-                    norm, resolution, outputDirectory, generator, new String[]{}, badIndexFinder, dI, metric);
+                    norms[dI], resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, metric);
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 
         sliceMatrix.cleanUpMatricesBySparsity();
     }
 
-    public void extractFinalGWSubcompartments(Random generator, List<String> inputHicFilePaths,
+    public void extractFinalGWSubcompartments(List<String> inputHicFilePaths,
                                               String prefix, int index, boolean compareMaps) {
 
         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
@@ -123,18 +124,18 @@ public class FullGenomeOEWithinClusters {
                 System.out.print(".");
             }
 
-            ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs, metric);
-            IntMatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
+            ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs);
+            MatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
         }
         System.out.println(".");
 
         if (!compareMaps) {
             System.out.println("Post processing");
-            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norm, resolution);
+            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norms[0], resolution);
             identifier.identify(numItersToResults, sliceMatrix.getBadIndices());
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
+        MatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
 
         String hicFileName = SliceUtils.cleanUpPath(inputHicFilePaths.get(index));
         for (Integer key : numItersToResults.keySet()) {

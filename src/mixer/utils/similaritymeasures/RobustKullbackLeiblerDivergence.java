@@ -33,10 +33,9 @@ public class RobustKullbackLeiblerDivergence extends SimilarityMetric {
 
     private static float nonNanKLDistance(float[] a, float[] b) {
         double sumA = 0, sumB = 0;
-        boolean[] isValid = new boolean[a.length];
         for (int k = 0; k < a.length; k++) {
-            isValid[k] = !(Float.isNaN(a[k]) || Float.isNaN(b[k]));
-            if (isValid[k]) {
+            boolean isBad = Float.isNaN(a[k] + b[k]);
+            if (!isBad) {
                 sumA += a[k];
                 sumB += b[k];
             }
@@ -44,7 +43,8 @@ public class RobustKullbackLeiblerDivergence extends SimilarityMetric {
 
         double distP = 0;
         for (int i = 0; i < a.length; i++) {
-            if (isValid[i]) {
+            boolean isBad = Float.isNaN(a[i] + b[i]);
+            if (!isBad) {
                 final double p = a[i] / sumA;
                 final double q = b[i] / sumB;
 

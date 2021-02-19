@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +25,15 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.ExpectedValueFunction;
+import javastraw.reader.ExtractingOEDataUtils;
 import javastraw.reader.HiCFileTools;
 import javastraw.reader.MatrixZoomData;
-import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ContactRecord;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
-import java.io.IOException;
 import java.util.*;
 
 public class IndexOrderer {
@@ -51,18 +48,25 @@ public class IndexOrderer {
     private final int CHECK_VAL = -2;
     private final float CORR_MIN = 0.2f;
     private final float INCREMENT = .1f;
+    private final Random generator = new Random(0);
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
+    private final Map<Integer, int[]> indexToWeights = new HashMap<>();
+    private final int[] weights;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
-                        int numColumnsToPutTogether, BadIndexFinder badIndexLocations) {
+                        int numColumnsToPutTogether, GWBadIndexFinder badIndexLocations, long seed) {
         this.resolution = resolution;
         minDistanceThreshold = DISTANCE / resolution;
         numColsToJoin = numColumnsToPutTogether;
+        generator.setSeed(seed);
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
-            ExpectedValueFunction df = ds.getExpectedValuesOrExit(zd.getZoom(), normalizationType, chrom, true);
             try {
-                float[][] matrix = extractObsOverExpBoundedRegion(zd, chrom, normalizationType, df);
+                float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, resolution,
+                        normalizationType, 3f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                        true, 1, 0);
+                NearDiagonalTrim.trim(chrom, matrix, resolution);
+
                 int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndexLocations.getBadIndices(chrom));
                 chromToReorderedIndices.put(chrom, newOrderIndexes);
             } catch (Exception e) {
@@ -70,14 +74,26 @@ public class IndexOrderer {
             }
             System.out.print(".");
         }
+        weights = appendWeights(chromosomes);
+    }
+
+    private int[] appendWeights(Chromosome[] chromosomes) {
+        int totalLength = 0;
+        for (Chromosome chromosome : chromosomes) {
+            totalLength += indexToWeights.get(chromosome.getIndex()).length;
+        }
+        int[] finalWeights = new int[totalLength];
+        int offset = 0;
+        for (Chromosome chromosome : chromosomes) {
+            int[] region = indexToWeights.get(chromosome.getIndex());
+            System.arraycopy(region, 0, finalWeights, offset, region.length);
+            offset += region.length;
+        }
+        return finalWeights;
     }
 
     public Map<Integer, Integer> getIndexToRearrangedLength() {
         return indexToRearrangedLength;
-    }
-
-    private static double getExpected(int dist, ExpectedValueFunction df, int chrIndex) {
-        return df.getExpectedValue(chrIndex, dist);
     }
 
     public int[] get(Chromosome chrom) {
@@ -89,21 +105,33 @@ public class IndexOrderer {
         Arrays.fill(newIndexOrderAssignments, DEFAULT);
         eraseTheRowsColumnsWeDontWant(badIndices, matrix, newIndexOrderAssignments);
 
-        int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments);
+        int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments, chromosome.getName());
         gCounter = doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
         indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
+        indexToWeights.put(chromosome.getIndex(), generateWeights(gCounter, newIndexOrderAssignments));
         return newIndexOrderAssignments;
     }
 
+    private int[] generateWeights(int maxlength, int[] assignments) {
+        int length = (int) Math.ceil((double) maxlength / numColsToJoin);
+        int[] weightsForChrom = new int[length];
+        for (int i : assignments) {
+            if (i > -1) {
+                weightsForChrom[i / numColsToJoin]++;
+            }
+        }
+        return weightsForChrom;
+    }
+
     private void eraseTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix, int[] newIndexOrderAssignments) {
-        Set<Integer> columnsToErase = new HashSet<>();
+        if (badIndices.size() < 1) return;
+
         for (int k : badIndices) {
             newIndexOrderAssignments[k] = IGNORE;
-            columnsToErase.add(k / numColsToJoin);
         }
 
         for (int i = 0; i < matrix.length; i++) {
-            for (int j : columnsToErase) {
+            for (int j : badIndices) {
                 matrix[i][j] = Float.NaN;
             }
         }
@@ -113,16 +141,19 @@ public class IndexOrderer {
         }
     }
 
-    private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
+    private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName) {
+        int numInitialCentroids = 10;
+        float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments), numInitialCentroids, generator.nextLong()).generateCentroids();
 
-        int numCentroids = 10;
-        float[][] centroids = QuickCentroids.generateCentroids(matrix, numCentroids, 5);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("IndexOrderer: Planned centroids for " + chromName + ": " + numInitialCentroids + " Actual centroids: " + centroids.length);
+        }
         SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
 
         int vectorLength = newIndexOrderAssignments.length;
-        int[] numDecentRelations = new int[numCentroids];
-        float[][] correlationCentroidsWithData = new float[numCentroids][vectorLength];
-        for (int k = 0; k < numCentroids; k++) {
+        int[] numDecentRelations = new int[centroids.length];
+        float[][] correlationCentroidsWithData = new float[centroids.length][vectorLength];
+        for (int k = 0; k < centroids.length; k++) {
             for (int z = 0; z < vectorLength; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL) {
                     float corr = corrMetric.distance(centroids[k], matrix[z]);
@@ -144,13 +175,31 @@ public class IndexOrderer {
         }
 
         int gCounter = doSequentialOrdering(correlationCentroidsWithData[maxIndex], newIndexOrderAssignments, 0);
-        for (int c = 0; c < numCentroids; c++) {
+        for (int c = 0; c < centroids.length; c++) {
             if (c == maxIndex) continue;
             gCounter = doSequentialOrdering(correlationCentroidsWithData[c],
                     newIndexOrderAssignments, gCounter);
         }
 
         return gCounter;
+    }
+
+    private float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
+        List<Integer> actualIndices = new ArrayList<>();
+        for (int z = 0; z < newIndexOrderAssignments.length; z++) {
+            if (newIndexOrderAssignments[z] < CHECK_VAL) {
+                actualIndices.add(z);
+            }
+        }
+
+        float[][] tempCleanMatrix = new float[actualIndices.size()][matrix[0].length];
+        for (int i = 0; i < actualIndices.size(); i++) {
+            System.arraycopy(matrix[actualIndices.get(i)], 0, tempCleanMatrix[i], 0, tempCleanMatrix[i].length);
+        }
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("New clean matrix: " + tempCleanMatrix.length + " rows kept from " + matrix.length);
+        }
+        return tempCleanMatrix;
     }
 
     private int doSequentialOrdering(float[] correlationWithCentroid, int[] newIndexOrderAssignments, int startCounter) {
@@ -217,56 +266,7 @@ public class IndexOrderer {
         return counter;
     }
 
-    public float[][] extractObsOverExpBoundedRegion(MatrixZoomData zd, Chromosome chromosome,
-                                                    NormalizationType normalizationType,
-                                                    ExpectedValueFunction df) throws IOException {
-        if (df == null) {
-            System.err.println("DF is null");
-            return null;
-        }
-        // numRows/numCols is just to ensure a set size in case bounds are approximate
-        // left upper corner is reference for 0,0
-        int maxBin = (int) (chromosome.getLength() / resolution) + 1;
-        int maxCompressedBin = maxBin / numColsToJoin;
-        if (maxBin % numColsToJoin > 0) maxCompressedBin += 1;
-
-        List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, maxBin, 0, maxBin,
-                normalizationType, true);
-        float[][] data = new float[maxBin][maxCompressedBin];
-
-        if (blocks.size() > 0) {
-            for (Block b : blocks) {
-                if (b != null) {
-                    for (ContactRecord rec : b.getContactRecords()) {
-
-                        int dist = Math.abs(rec.getBinX() - rec.getBinY());
-                        if (dist < minDistanceThreshold) {
-                            addOEValInPosition(Float.NaN, rec, data);
-                        } else {
-                            double observed = rec.getCounts() + 1;
-                            double expected = getExpected(dist, df, chromosome.getIndex()) + 1;
-                            float answer = (float) (observed / expected);
-                            if (Float.isNaN(answer) || Float.isInfinite(answer)) {
-                                answer = Float.NaN;
-                            }
-                            addOEValInPosition(answer, rec, data);
-                        }
-                    }
-                }
-            }
-        }
-        // force cleanup
-        blocks = null;
-        return data;
-    }
-
-    private void addOEValInPosition(float oeVal, ContactRecord rec, float[][] data) {
-        int rX = rec.getBinX();
-        int rY = rec.getBinY() / numColsToJoin;
-        data[rX][rY] += oeVal;
-
-        rX = rec.getBinY();
-        rY = rec.getBinX() / numColsToJoin;
-        data[rX][rY] += oeVal;
+    public int[] getWeights() {
+        return weights;
     }
 }

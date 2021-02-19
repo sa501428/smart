@@ -37,12 +37,12 @@ public class ParallelizedMixerTools {
     public static void launchParallelizedCode(int numCPUThreads, Runnable runnable) {
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
-            Runnable worker = runnable::run;
-            executor.execute(worker);
+            executor.execute(runnable);
         }
         executor.shutdown();
 
         // Wait until all threads finish
+        //noinspection StatementWithEmptyBody
         while (!executor.isTerminated()) {
         }
     }

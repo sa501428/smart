@@ -22,40 +22,13 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.similaritymeasures;
+package mixer.utils.shuffle.scoring;
 
-public final class RobustCosineSimilarity extends SimilarityMetric {
+public class UniformKernelScoring extends KernelScoring {
 
-  public static final RobustCosineSimilarity SINGLETON = new RobustCosineSimilarity();
+    private final static double val = 1.0 / 9.0;
 
-  private RobustCosineSimilarity() {
-    super(true);
-  }
-
-  private static float arctanh(double x) {
-    float val = (float) Math.max(x, -.99f);
-    val = Math.min(val, .99f);
-    val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2f;
-    if (Float.isInfinite(val)) {
-      val = Float.NaN;
+    public UniformKernelScoring(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        super(matrix, rBounds, cBounds, new double[][]{{val, val, val}, {val, val - 1, val}, {val, val, val}});
     }
-    return val;
-  }
-
-  @Override
-  public float distance(final float[] x, final float[] y) {
-    double dotProduct = 0.0;
-    double normX = 0.0;
-    double normY = 0.0;
-    for (int i = 0; i < x.length; i++) {
-      float product = x[i] * y[i];
-      if (!Float.isNaN(product)) {
-        dotProduct += product;
-        normX += x[i] * x[i];
-        normY += y[i] * y[i];
-      }
-    }
-
-    return arctanh(dotProduct / Math.sqrt(normX * normY));
-  }
 }

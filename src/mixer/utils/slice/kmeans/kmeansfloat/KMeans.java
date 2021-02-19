@@ -22,40 +22,34 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.similaritymeasures;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
-public final class RobustCosineSimilarity extends SimilarityMetric {
+/**
+ * Simple K-Means clustering interface.
+ */
+interface KMeans extends Runnable {
 
-  public static final RobustCosineSimilarity SINGLETON = new RobustCosineSimilarity();
+    /**
+     * Adds a KMeansListener to be notified of significant happenings.
+     *
+     * @param l the listener to be added.
+     */
+    void addKMeansListener(KMeansListener l);
 
-  private RobustCosineSimilarity() {
-    super(true);
-  }
+    /**
+     * Removes a KMeansListener from the listener list.
+     *
+     * @param l the listener to be removed.
+     */
+    void removeKMeansListener(KMeansListener l);
 
-  private static float arctanh(double x) {
-    float val = (float) Math.max(x, -.99f);
-    val = Math.min(val, .99f);
-    val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2f;
-    if (Float.isInfinite(val)) {
-      val = Float.NaN;
-    }
-    return val;
-  }
+    /**
+     * Get the clusters computed by the algorithm.  This method should
+     * not be called until clustering has completed successfully.
+     *
+     * @return an array of Cluster objects.
+     */
+    Cluster[] getClusters();
 
-  @Override
-  public float distance(final float[] x, final float[] y) {
-    double dotProduct = 0.0;
-    double normX = 0.0;
-    double normY = 0.0;
-    for (int i = 0; i < x.length; i++) {
-      float product = x[i] * y[i];
-      if (!Float.isNaN(product)) {
-        dotProduct += product;
-        normX += x[i] * x[i];
-        normY += y[i] * y[i];
-      }
-    }
-
-    return arctanh(dotProduct / Math.sqrt(normX * normY));
-  }
 }
+

@@ -22,35 +22,17 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.shuffle.scoring;
 
-/**
- * Defines object which register with implementation of <code>KMeans</code>
- * to be notified of significant events during clustering.
- */
-public interface KMeansListener {
+public class GaussianKernelScoring extends KernelScoring {
 
-    /**
-     * A message has been received.
-     *
-     * @param message
-     */
-    void kmeansMessage(String message);
+    private final static double val1 = 1.0 / 16.0;
+    private final static double val2 = 1.0 / 8.0;
+    private final static double valM = -.75;
 
-    /**
-     * KMeans is complete.
-     *
-     * @param clusters      the output of clustering.
-     * @param executionTime the time in milliseconds taken to cluster.
-     */
-    void kmeansComplete(Cluster[] clusters, long executionTime);
-
-    /**
-     * An error occurred during KMeans clustering.
-     *
-     * @param t
-     */
-    void kmeansError(Throwable t);
-
+    public GaussianKernelScoring(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        super(matrix, rBounds, cBounds, new double[][]{{val1, val2, val1},
+                {val2, valM, val2},
+                {val1, val2, val1}});
+    }
 }
-

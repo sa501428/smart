@@ -22,40 +22,18 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.similaritymeasures;
+package mixer.utils.shuffle.scoring;
 
-public final class RobustCosineSimilarity extends SimilarityMetric {
+public abstract class ShuffleScore {
+    protected final float[][] matrix;
+    protected final Integer[] rBounds;
+    protected final Integer[] cBounds;
 
-  public static final RobustCosineSimilarity SINGLETON = new RobustCosineSimilarity();
-
-  private RobustCosineSimilarity() {
-    super(true);
-  }
-
-  private static float arctanh(double x) {
-    float val = (float) Math.max(x, -.99f);
-    val = Math.min(val, .99f);
-    val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2f;
-    if (Float.isInfinite(val)) {
-      val = Float.NaN;
-    }
-    return val;
-  }
-
-  @Override
-  public float distance(final float[] x, final float[] y) {
-    double dotProduct = 0.0;
-    double normX = 0.0;
-    double normY = 0.0;
-    for (int i = 0; i < x.length; i++) {
-      float product = x[i] * y[i];
-      if (!Float.isNaN(product)) {
-        dotProduct += product;
-        normX += x[i] * x[i];
-        normY += y[i] * y[i];
-      }
+    public ShuffleScore(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        this.matrix = matrix;
+        this.rBounds = rBounds;
+        this.cBounds = cBounds;
     }
 
-    return arctanh(dotProduct / Math.sqrt(normX * normY));
-  }
+    public abstract double score();
 }

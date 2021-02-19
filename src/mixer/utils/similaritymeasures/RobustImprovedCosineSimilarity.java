@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,28 @@
 
 package mixer.utils.similaritymeasures;
 
-public final class RobustCosineSimilarity extends SimilarityMetric {
+public final class RobustImprovedCosineSimilarity extends SimilarityMetric {
 
-  public static final RobustCosineSimilarity SINGLETON = new RobustCosineSimilarity();
+  public static final RobustImprovedCosineSimilarity SINGLETON = new RobustImprovedCosineSimilarity();
 
-  private RobustCosineSimilarity() {
+  private RobustImprovedCosineSimilarity() {
     super(true);
-  }
-
-  private static float arctanh(double x) {
-    float val = (float) Math.max(x, -.99f);
-    val = Math.min(val, .99f);
-    val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2f;
-    if (Float.isInfinite(val)) {
-      val = Float.NaN;
-    }
-    return val;
   }
 
   @Override
   public float distance(final float[] x, final float[] y) {
     double dotProduct = 0.0;
-    double normX = 0.0;
-    double normY = 0.0;
+    double norm1X = 0.0;
+    double norm1Y = 0.0;
     for (int i = 0; i < x.length; i++) {
-      float product = x[i] * y[i];
-      if (!Float.isNaN(product)) {
+      double product = Math.sqrt(x[i] * y[i]);
+      if (!Double.isNaN(product)) {
         dotProduct += product;
-        normX += x[i] * x[i];
-        normY += y[i] * y[i];
+        norm1X += x[i];
+        norm1Y += y[i];
       }
     }
 
-    return arctanh(dotProduct / Math.sqrt(normX * normY));
+    return (float) (dotProduct / Math.sqrt(norm1X * norm1Y));
   }
 }

@@ -22,33 +22,35 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.similaritymeasures;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
-public final class RobustGaussianSimilarity extends SimilarityMetric {
+/**
+ * Defines object which register with implementation of <code>KMeans</code>
+ * to be notified of significant events during clustering.
+ */
+public interface KMeansListener {
 
-  public static final RobustGaussianSimilarity SINGLETON = new RobustGaussianSimilarity();
+    /**
+     * A message has been received.
+     *
+     * @param message
+     */
+    void kmeansMessage(String message);
 
-  private RobustGaussianSimilarity() {
-    super(true);
-  }
+    /**
+     * KMeans is complete.
+     *
+     * @param clusters      the output of clustering.
+     * @param executionTime the time in milliseconds taken to cluster.
+     */
+    void kmeansComplete(Cluster[] clusters, long executionTime);
 
-  @Override
-  public float distance(final float[] x, final float[] y) {
-    return (float) Math.exp(-getNonNanMeanSquaredError(x, y) / 2);
-  }
+    /**
+     * An error occurred during KMeans clustering.
+     *
+     * @param t
+     */
+    void kmeansError(Throwable t);
 
-  private float getNonNanMeanSquaredError(float[] x, float[] y) {
-    double sumOfSquares = 0;
-    int numDiffs = 0;
-    for (int i = 0; i < x.length; i++) {
-      boolean entryIsBad = Float.isNaN(x[i]) || Float.isNaN(y[i]);
-      if (!entryIsBad) {
-        final float v = x[i] - y[i];
-        sumOfSquares += (v * v);
-        numDiffs++;
-      }
-    }
-    numDiffs = Math.max(numDiffs, 1);
-    return (float) (x.length * sumOfSquares / numDiffs);
-  }
 }
+

@@ -43,7 +43,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
         double sumX = 0;
         double sumY = 0;
         for (int i = 0; i < x.length; i++) {
-            boolean entryIsBad = Float.isNaN(x[i]) || Float.isNaN(y[i]);
+            boolean entryIsBad = Float.isNaN(x[i] + y[i]);
             if (!entryIsBad) {
                 sumX += x[i];
                 sumY += y[i];
@@ -57,7 +57,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
         double normX = 0.0;
         double normY = 0.0;
         for (int i = 0; i < x.length; i++) {
-            boolean entryIsBad = Float.isNaN(x[i]) || Float.isNaN(y[i]);
+            boolean entryIsBad = Float.isNaN(x[i] + y[i]);
             if (!entryIsBad) {
                 double nX = x[i] - muX;
                 double nY = y[i] - muY;

@@ -24,8 +24,6 @@
 
 package mixer.utils.slice.structures;
 
-import javastraw.featurelist.FeatureFilter;
-import javastraw.featurelist.FeatureFunction;
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.basics.Chromosome;
@@ -42,22 +40,14 @@ import java.util.regex.Pattern;
 public class SliceUtils {
 
     public static void reSort(GenomeWideList<SubcompartmentInterval> subcompartments) {
-        subcompartments.filterLists(new FeatureFilter<SubcompartmentInterval>() {
-            @Override
-            public List<SubcompartmentInterval> filter(String chr, List<SubcompartmentInterval> featureList) {
-                Collections.sort(featureList);
-                return featureList;
-            }
+        subcompartments.filterLists((chr, featureList) -> {
+            Collections.sort(featureList);
+            return featureList;
         });
     }
 
     public static void collapseGWList(GenomeWideList<SubcompartmentInterval> intraSubcompartments) {
-        intraSubcompartments.filterLists(new FeatureFilter<SubcompartmentInterval>() {
-            @Override
-            public List<SubcompartmentInterval> filter(String chr, List<SubcompartmentInterval> featureList) {
-                return collapseSubcompartmentIntervals(featureList);
-            }
-        });
+        intraSubcompartments.filterLists((chr, featureList) -> collapseSubcompartmentIntervals(featureList));
     }
 
     private static List<SubcompartmentInterval> collapseSubcompartmentIntervals(List<SubcompartmentInterval> intervals) {
@@ -86,12 +76,7 @@ public class SliceUtils {
     }
 
     public static void splitGWList(GenomeWideList<SubcompartmentInterval> intraSubcompartments, int width) {
-        intraSubcompartments.filterLists(new FeatureFilter<SubcompartmentInterval>() {
-            @Override
-            public List<SubcompartmentInterval> filter(String chr, List<SubcompartmentInterval> featureList) {
-                return splitSubcompartmentIntervals(featureList, width);
-            }
-        });
+        intraSubcompartments.filterLists((chr, featureList) -> splitSubcompartmentIntervals(featureList, width));
     }
 
     private static List<SubcompartmentInterval> splitSubcompartmentIntervals(List<SubcompartmentInterval> intervals, int width) {
@@ -118,53 +103,7 @@ public class SliceUtils {
         return breakUpFileName[breakUpFileName.length - 1].replaceAll(".hic", "");
     }
 
-    /*
-    public static void saveFileBeforeAndAfterCollapsing(GenomeWideList<SubcompartmentInterval> subcompartments,
-                                                        File outputDirectory, String preCollapsingFileName,
-                                                        String postCollapsingFileName) {
-        File outputFile = new File(outputDirectory, preCollapsingFileName);
-        subcompartments.simpleExport(outputFile);
-
-        collapseGWList(subcompartments);
-
-        File outputFile2 = new File(outputDirectory, postCollapsingFileName);
-        subcompartments.simpleExport(outputFile2);
-    }
-
-    /*
-        // find the most common
-        List<SubcompartmentInterval> frequentFliers = new ArrayList();
-        for(Integer x : allSubcompartmentIntervalsMap.keySet()) {
-
-            Map<Integer, Integer> counts = new HashMap<>();
-            for (Pair<Integer, Integer> pair :allSubcompartmentIntervalsMap.get(x)){
-                int value = pair.getValue();
-                if(counts.containsKey(value)){
-                    counts.put(value,counts.get(value)+1);
-                }
-                else {
-                    counts.put(value,1);
-                }
-            }
-            int maxFrequency = Ints.max(Ints.toArray(counts.values()));
-            if(maxFrequency > 1){
-                int commonClusterID = -1;
-                for(Integer clusterID : counts.keySet()){
-                    if(counts.get(clusterID) >= maxFrequency){
-                        commonClusterID = clusterID;
-                        break;
-                    }
-                }
-
-                int x2 = x + getResolution();
-                frequentFliers.add(new SubcompartmentInterval(chromosome.getIndex(), chromosome.getName(), x, x2, commonClusterID));
-            }
-        }
-        mostFrequentSubcompartment.addAll(frequentFliers);
-        */
-
     public static void readInFileAndCollapse(String location, ChromosomeHandler handler) {
-
         GenomeWideList<SubcompartmentInterval> subc = loadFromSubcompartmentBEDFile(handler, location);
         SliceUtils.collapseGWList(subc);
         subc.simpleExport(new File(location + "_collapsed.bed"));
@@ -194,37 +133,33 @@ public class SliceUtils {
 
         GenomeWideList<SubcompartmentInterval> resultList = loadFromSubcompartmentBEDFile(handler, locationHuntley);
 
-        resultList.filterLists(new FeatureFilter<SubcompartmentInterval>() {
-            @Override
-            public List<SubcompartmentInterval> filter(String key, List<SubcompartmentInterval> features) {
-                if (features.size() > 0) {
-                    List<SubcompartmentInterval> featureHuntley = subcHuntley.getFeatures(key);
-                    List<SubcompartmentInterval> featureSNIPER = subcSNIPER.getFeatures(key);
-                    List<SubcompartmentInterval> featureSCI = subcSCI.getFeatures(key);
+        resultList.filterLists((key, features) -> {
+            if (features.size() > 0) {
+                List<SubcompartmentInterval> featureHuntley = subcHuntley.getFeatures(key);
+                List<SubcompartmentInterval> featureSNIPER = subcSNIPER.getFeatures(key);
+                List<SubcompartmentInterval> featureSCI = subcSCI.getFeatures(key);
 
-                    Map<Integer, List<Integer>> positionToID = new HashMap<>();
+                Map<Integer, List<Integer>> positionToID = new HashMap<>();
 
-                    updateMapWithIDsFromList(positionToID, featureHuntley);
-                    updateMapWithIDsFromList(positionToID, featureSNIPER);
-                    updateMapWithIDsFromList(positionToID, featureSCI);
+                updateMapWithIDsFromList(positionToID, featureHuntley);
+                updateMapWithIDsFromList(positionToID, featureSNIPER);
+                updateMapWithIDsFromList(positionToID, featureSCI);
 
-                    List<SubcompartmentInterval> result = new ArrayList<>();
+                List<SubcompartmentInterval> result = new ArrayList<>();
 
-                    int chrIndex = features.get(0).getChrIndex();
-                    String chrName = features.get(0).getChrName();
+                int chrIndex = features.get(0).getChrIndex();
+                String chrName = features.get(0).getChrName();
 
-
-                    for (Integer x1 : positionToID.keySet()) {
-                        int winnerID = getModeID(positionToID.get(x1));
-                        if (winnerID > 0) {
-                            result.add(new SubcompartmentInterval(chrIndex, chrName, x1, x1 + resolution, winnerID));
-                        }
+                for (Integer x1 : positionToID.keySet()) {
+                    int winnerID = getModeID(positionToID.get(x1));
+                    if (winnerID > 0) {
+                        result.add(new SubcompartmentInterval(chrIndex, chrName, x1, x1 + resolution, winnerID));
                     }
-
-                    return result;
                 }
-                return new ArrayList<>();
+
+                return result;
             }
+            return new ArrayList<>();
         });
 
         collapseGWList(resultList);
@@ -247,37 +182,34 @@ public class SliceUtils {
 
         GenomeWideList<SubcompartmentInterval> resultList = loadFromSubcompartmentBEDFile(handler, locationHuntley);
 
-        resultList.filterLists(new FeatureFilter<SubcompartmentInterval>() {
-            @Override
-            public List<SubcompartmentInterval> filter(String key, List<SubcompartmentInterval> features) {
-                if (features.size() > 0) {
-                    List<SubcompartmentInterval> featureHuntley = subcHuntley.getFeatures(key);
-                    List<SubcompartmentInterval> featureSNIPER = subcSNIPER.getFeatures(key);
-                    List<SubcompartmentInterval> featureSCI = subcSCI.getFeatures(key);
+        resultList.filterLists((key, features) -> {
+            if (features.size() > 0) {
+                List<SubcompartmentInterval> featureHuntley = subcHuntley.getFeatures(key);
+                List<SubcompartmentInterval> featureSNIPER = subcSNIPER.getFeatures(key);
+                List<SubcompartmentInterval> featureSCI = subcSCI.getFeatures(key);
 
-                    Map<Integer, List<Integer>> positionToID = new HashMap<>();
+                Map<Integer, List<Integer>> positionToID = new HashMap<>();
 
-                    updateMapWithIDsFromList(positionToID, featureHuntley);
-                    updateMapWithIDsFromList(positionToID, featureSNIPER);
-                    updateMapWithIDsFromList(positionToID, featureSCI);
+                updateMapWithIDsFromList(positionToID, featureHuntley);
+                updateMapWithIDsFromList(positionToID, featureSNIPER);
+                updateMapWithIDsFromList(positionToID, featureSCI);
 
-                    List<SubcompartmentInterval> result = new ArrayList<>();
+                List<SubcompartmentInterval> result = new ArrayList<>();
 
-                    int chrIndex = features.get(0).getChrIndex();
-                    String chrName = features.get(0).getChrName();
+                int chrIndex = features.get(0).getChrIndex();
+                String chrName = features.get(0).getChrName();
 
 
-                    for (Integer x1 : positionToID.keySet()) {
-                        int winnerID = getUnanimousID(positionToID.get(x1));
-                        if (winnerID > 0) {
-                            result.add(new SubcompartmentInterval(chrIndex, chrName, x1, x1 + resolution, winnerID));
-                        }
+                for (Integer x1 : positionToID.keySet()) {
+                    int winnerID = getUnanimousID(positionToID.get(x1));
+                    if (winnerID > 0) {
+                        result.add(new SubcompartmentInterval(chrIndex, chrName, x1, x1 + resolution, winnerID));
                     }
-
-                    return result;
                 }
-                return new ArrayList<>();
+
+                return result;
             }
+            return new ArrayList<>();
         });
 
         collapseGWList(resultList);
@@ -301,49 +233,46 @@ public class SliceUtils {
 
         GenomeWideList<SubcompartmentInterval> resultList = loadFromSubcompartmentBEDFile(handler, locationHuntley);
 
-        resultList.filterLists(new FeatureFilter<SubcompartmentInterval>() {
-            @Override
-            public List<SubcompartmentInterval> filter(String key, List<SubcompartmentInterval> features) {
-                if (features.size() > 0) {
-                    List<SubcompartmentInterval> featureHuntley = subcHuntley.getFeatures(key);
-                    List<SubcompartmentInterval> featureSNIPER = subcSNIPER.getFeatures(key);
-                    List<SubcompartmentInterval> featureSCI = subcSCI.getFeatures(key);
+        resultList.filterLists((key, features) -> {
+            if (features.size() > 0) {
+                List<SubcompartmentInterval> featureHuntley = subcHuntley.getFeatures(key);
+                List<SubcompartmentInterval> featureSNIPER = subcSNIPER.getFeatures(key);
+                List<SubcompartmentInterval> featureSCI = subcSCI.getFeatures(key);
 
-                    Map<Integer, List<Integer>> positionToIDHuntleySCI = new HashMap<>();
-                    Map<Integer, List<Integer>> positionToIDSNIPERSCI = new HashMap<>();
-                    Map<Integer, List<Integer>> allPositionToID = new HashMap<>();
+                Map<Integer, List<Integer>> positionToIDHuntleySCI = new HashMap<>();
+                Map<Integer, List<Integer>> positionToIDSNIPERSCI = new HashMap<>();
+                Map<Integer, List<Integer>> allPositionToID = new HashMap<>();
 
-                    updateMapWithIDsFromList(positionToIDHuntleySCI, featureHuntley);
-                    updateMapWithIDsFromList(positionToIDHuntleySCI, featureSCI);
+                updateMapWithIDsFromList(positionToIDHuntleySCI, featureHuntley);
+                updateMapWithIDsFromList(positionToIDHuntleySCI, featureSCI);
 
-                    updateMapWithIDsFromList(positionToIDSNIPERSCI, featureSNIPER);
-                    updateMapWithIDsFromList(positionToIDSNIPERSCI, featureSCI);
+                updateMapWithIDsFromList(positionToIDSNIPERSCI, featureSNIPER);
+                updateMapWithIDsFromList(positionToIDSNIPERSCI, featureSCI);
 
-                    updateMapWithIDsFromList(allPositionToID, featureHuntley);
-                    updateMapWithIDsFromList(allPositionToID, featureSNIPER);
-                    updateMapWithIDsFromList(allPositionToID, featureSCI);
+                updateMapWithIDsFromList(allPositionToID, featureHuntley);
+                updateMapWithIDsFromList(allPositionToID, featureSNIPER);
+                updateMapWithIDsFromList(allPositionToID, featureSCI);
 
-                    List<SubcompartmentInterval> result = new ArrayList<>();
+                List<SubcompartmentInterval> result = new ArrayList<>();
 
-                    int chrIndex = features.get(0).getChrIndex();
-                    String chrName = features.get(0).getChrName();
+                int chrIndex = features.get(0).getChrIndex();
+                String chrName = features.get(0).getChrName();
 
-                    for (Integer x1 : allPositionToID.keySet()) {
-                        int winnerID = getModeID(positionToIDHuntleySCI.get(x1));
+                for (Integer x1 : allPositionToID.keySet()) {
+                    int winnerID = getModeID(positionToIDHuntleySCI.get(x1));
+                    if (winnerID > 0) {
+                        result.add(new SubcompartmentInterval(chrIndex, chrName, x1, x1 + resolution, winnerID));
+                    } else {
+                        winnerID = getModeID(positionToIDSNIPERSCI.get(x1));
                         if (winnerID > 0) {
                             result.add(new SubcompartmentInterval(chrIndex, chrName, x1, x1 + resolution, winnerID));
-                        } else {
-                            winnerID = getModeID(positionToIDSNIPERSCI.get(x1));
-                            if (winnerID > 0) {
-                                result.add(new SubcompartmentInterval(chrIndex, chrName, x1, x1 + resolution, winnerID));
-                            }
                         }
                     }
-
-                    return result;
                 }
-                return new ArrayList<>();
+
+                return result;
             }
+            return new ArrayList<>();
         });
 
         collapseGWList(resultList);
@@ -479,6 +408,7 @@ public class SliceUtils {
         return new ArrayList<>(anchors);
     }
 
+    @SuppressWarnings("DuplicateBranchesInSwitch")
     private static Integer getKnownSubcompartmentType(String upperCaseID) {
         switch (upperCaseID) {
             case "A1":
@@ -498,6 +428,28 @@ public class SliceUtils {
                 return 5;
             case "B4":
                 return 6;
+            case "A":
+                return 1;
+            case "B":
+                return 5;
+            case "C":
+                return 4;
+            case "D":
+                return 2;
+            case "E":
+                return 3;
+            case "F":
+                return 2;
+            case "G":
+                return 1;
+            case "H":
+                return 8;
+            case "I":
+                return 9;
+            case "J":
+                return 10;
+            case "K":
+                return 11;
             default:
                 try {
                     return Integer.parseInt(upperCaseID);
@@ -509,21 +461,43 @@ public class SliceUtils {
         }
     }
 
+    /**
+     * case "A":
+     * return 4;
+     * case "B":
+     * return 5;
+     * case "C":
+     * return 6;
+     * case "D":
+     * return 3;
+     * case "E":
+     * return 7;
+     * case "F":
+     * return 2;
+     * case "G":
+     * return 1;
+     * case "H":
+     * return 8;
+     * case "I":
+     * return 9;
+     * case "J":
+     * return 10;
+     * case "K":
+     * return 11;
+     */
+
     public static GenomeWideList<SubcompartmentInterval> redoAllIds(GenomeWideList<SubcompartmentInterval> intraSubcompartments) {
         AtomicInteger newIds = new AtomicInteger(1);
-        intraSubcompartments.filterLists(new FeatureFilter<SubcompartmentInterval>() {
-            @Override
-            public List<SubcompartmentInterval> filter(String chr, List<SubcompartmentInterval> featureList) {
-                List<SubcompartmentInterval> newIdIntervals = new ArrayList<>();
+        intraSubcompartments.filterLists((chr, featureList) -> {
+            List<SubcompartmentInterval> newIdIntervals = new ArrayList<>();
 
-                for (SubcompartmentInterval interval : featureList) {
-                    SubcompartmentInterval interval2 = (SubcompartmentInterval) interval.deepClone();
-                    interval2.setClusterID(newIds.getAndIncrement());
-                    newIdIntervals.add(interval2);
-                }
-
-                return newIdIntervals;
+            for (SubcompartmentInterval interval : featureList) {
+                SubcompartmentInterval interval2 = (SubcompartmentInterval) interval.deepClone();
+                interval2.setClusterID(newIds.getAndIncrement());
+                newIdIntervals.add(interval2);
             }
+
+            return newIdIntervals;
         });
         return intraSubcompartments;
     }
@@ -534,17 +508,14 @@ public class SliceUtils {
         GenomeWideList<SubcompartmentInterval> subcHuntley = loadFromSubcompartmentBEDFile(handler, locationHuntley);
         splitGWList(subcHuntley, resolution);
 
-        subcHuntley.processLists(new FeatureFunction<SubcompartmentInterval>() {
-            @Override
-            public void process(String chr, List<SubcompartmentInterval> featureList) {
-                if (featureList.size() > 0) {
-                    int chrIndex = featureList.get(0).getChrIndex();
-                    Map<Integer, Integer> indxToId = new HashMap<>();
-                    for (SubcompartmentInterval interval : featureList) {
-                        indxToId.put(interval.getX1(), interval.getClusterID());
-                    }
-                    goldenMap.put(chrIndex, indxToId);
+        subcHuntley.processLists((chr, featureList) -> {
+            if (featureList.size() > 0) {
+                int chrIndex = featureList.get(0).getChrIndex();
+                Map<Integer, Integer> indxToId = new HashMap<>();
+                for (SubcompartmentInterval interval : featureList) {
+                    indxToId.put(interval.getX1(), interval.getClusterID());
                 }
+                goldenMap.put(chrIndex, indxToId);
             }
         });
         return goldenMap;

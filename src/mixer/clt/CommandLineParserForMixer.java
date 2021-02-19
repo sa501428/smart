@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,9 @@
 package mixer.clt;
 
 import jargs.gnu.CmdLineParser;
+import javastraw.reader.Dataset;
 import javastraw.type.NormalizationHandler;
 import javastraw.type.NormalizationType;
-import mixer.utils.similaritymeasures.*;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,8 +52,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
-    private final Option sliceMetricTypeOption = addStringOption("type");
-
+    private final Option translocationOption = addBooleanOption("has-translocation");
 
     public CommandLineParserForMixer() {
     }
@@ -64,6 +62,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
      */
     public NormalizationType getNormalizationTypeOption(NormalizationHandler normalizationHandler) {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
+    }
+
+    public NormalizationType[] getNormalizationTypeOption(List<Dataset> dsList) {
+        return retrieveNormalizationArray(optionToString(normalizationTypeOption), dsList);
     }
 
     public String getCompareReferenceOption() {
@@ -185,28 +187,25 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return null;
     }
 
-    public SimilarityMetric getMetricTypeOption() {
-        return getMetricType(optionToString(sliceMetricTypeOption));
+    private NormalizationType[] retrieveNormalizationArray(String norm, List<Dataset> dsList) {
+        if (norm == null || norm.length() < 1)
+            return null;
+
+        try {
+            String[] strArray = norm.split(",");
+            NormalizationType[] norms = new NormalizationType[strArray.length];
+            for (int i = 0; i < strArray.length; i++) {
+                norms[i] = dsList.get(i).getNormalizationHandler().getNormTypeFromString(strArray[i]);
+            }
+            return norms;
+        } catch (IllegalArgumentException error) {
+            System.err.println("Normalization must be one of \"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\", \"GW_VC\", \"INTER_KR\", or \"INTER_VC\".");
+            System.exit(7);
+        }
+        return null;
     }
 
-    private SimilarityMetric getMetricType(String potentialType) {
-        if (potentialType != null) {
-            String name = potentialType.toLowerCase();
-            if (name.contains("zscore")) {
-                MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
-            }
-            if (name.contains("cosine")) {
-                return RobustCosineSimilarity.SINGLETON;
-            } else if (name.contains("gaussian")) {
-                return RobustGaussianSimilarity.SINGLETON;
-            } else if (name.contains("js")) {
-                return RobustJensenShannonDivergence.SINGLETON;
-            } else if (name.contains("kl")) {
-                return RobustKullbackLeiblerDivergence.SINGLETON;
-            }
-        }
-        System.out.println("Using zscore-cosine similarity by default: " + potentialType);
-        MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
-        return RobustCosineSimilarity.SINGLETON;
+    public boolean getHasTranslocation() {
+        return optionToBoolean(translocationOption);
     }
 }

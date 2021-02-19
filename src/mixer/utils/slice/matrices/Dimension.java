@@ -22,50 +22,43 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.common;
+package mixer.utils.slice.matrices;
 
-public class Pair<A, B> {
-    private final A first;
-    private final B second;
+import javastraw.reader.basics.Chromosome;
 
-    public Pair(A first, B second) {
-        this.first = first;
-        this.second = second;
-    }
+import java.util.Map;
 
-    public A getFirst() {
-        return this.first;
-    }
+/**
+ * Container class for dimensions of a matrix and tracking indices
+ */
 
-    public B getSecond() {
-        return this.second;
-    }
+public class Dimension {
+    public int length = 0;
+    public final int[] offset;
+    public int[] interval;
 
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else if (o != null && this.getClass() == o.getClass()) {
-            @SuppressWarnings("unchecked")
-            Pair<A, B> pair = (Pair<A, B>) o;
-            if (this.first != null) {
-                if (!this.first.equals(pair.first)) {
-                    return false;
-                }
-            } else if (pair.first != null) {
-                return false;
+    // simple binning
+    public Dimension(Chromosome[] chromosomes, int resolution) {
+        offset = new int[chromosomes.length];
+        for (int i = 0; i < chromosomes.length; i++) {
+            length += (int) (chromosomes[i].getLength() / resolution + 1);
+            if (i < chromosomes.length - 1) {
+                offset[i + 1] = length;
             }
-
-            if (this.second != null) {
-                return this.second.equals(pair.second);
-            } else return pair.second == null;
-        } else {
-            return false;
         }
     }
 
-    public int hashCode() {
-        int result = this.first != null ? this.first.hashCode() : 0;
-        result = 31 * result + (this.second != null ? this.second.hashCode() : 0);
-        return result;
+    // compressed binning
+    public Dimension(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {
+        offset = new int[chromosomes.length];
+        interval = new int[chromosomes.length];
+        for (int i = 0; i < chromosomes.length; i++) {
+            int val = indexToFilteredLength.get(chromosomes[i].getIndex());
+            length += val;
+            if (i < chromosomes.length - 1) {
+                offset[i + 1] = length;
+            }
+            interval[i] = val;
+        }
     }
 }

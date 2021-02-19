@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,20 +30,18 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.*;
 
 public class LeftOverClusterIdentifier {
-
-    private static final int DISTANCE_CUTOFF = 3000000;
-    public static final float threshold = 3f;
+    private final float threshold = 3f;
     private final ChromosomeHandler chromosomeHandler;
     private final Dataset dataset;
     private final NormalizationType norm;
     private final int resolution;
-    public static final SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
+    private static final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
 
     public LeftOverClusterIdentifier(ChromosomeHandler chromosomeHandler, Dataset dataset, NormalizationType norm, int resolution) {
         this.chromosomeHandler = chromosomeHandler;
@@ -53,7 +51,7 @@ public class LeftOverClusterIdentifier {
     }
 
     public void identify(Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
-                         BadIndexFinder badIndexFinder) {
+                         GWBadIndexFinder badIndexFinder) {
 
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(dataset, chr1, chr1, resolution);
@@ -64,11 +62,7 @@ public class LeftOverClusterIdentifier {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(dataset, zd, chr1, resolution,
                         norm, threshold, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0);
-
-                if (chr1.getLength() > 5 * DISTANCE_CUTOFF) {
-                    trimDiagonalWithin(allDataForRegion, resolution);
-                }
-                //allDataForRegion = DoubleMatrixTools.convertToFloatMatrix(DoubleMatrixTools.cleanUpMatrix(localizedRegionData.getData()));
+                NearDiagonalTrim.trim(chr1, allDataForRegion, resolution);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -80,7 +74,7 @@ public class LeftOverClusterIdentifier {
                 return;
             }
 
-            Set<Integer> worstIndices = badIndexFinder.getWorstIndices(chr1);
+            Set<Integer> worstIndices = badIndexFinder.getBadIndices(chr1);
             Set<Integer> indicesMissing = new HashSet<>();
 
 
@@ -120,17 +114,6 @@ public class LeftOverClusterIdentifier {
         System.out.println(".");
     }
 
-    private void trimDiagonalWithin(float[][] data, int resolution) {
-        int pixelDistance = LeftOverClusterIdentifier.DISTANCE_CUTOFF / resolution;
-        for (int i = 0; i < data.length; i++) {
-            int limit = Math.min(data[i].length, i + pixelDistance);
-            for (int j = i; j < limit; j++) {
-                data[i][j] = Float.NaN;
-                data[j][i] = Float.NaN;
-            }
-        }
-    }
-
     private Map<Integer, float[]> getClusterCenters(float[][] allDataForRegion, List<SubcompartmentInterval> intervals, int resolution) {
 
         Map<Integer, float[]> cIDToCenter = new HashMap<>();
@@ -167,9 +150,7 @@ public class LeftOverClusterIdentifier {
             cIDToSize.put(cID, totalCounts);
         }
 
-        for (Integer key : cIDToCenter.keySet()) {
-            cIDToCenter.put(key, ClusterTools.normalize(cIDToCenter.get(key), cIDToSize.get(key)));
-        }
+        cIDToCenter.replaceAll((k, v) -> ClusterTools.normalize(cIDToCenter.get(k), cIDToSize.get(k)));
 
         return cIDToCenter;
     }
@@ -198,7 +179,7 @@ public class LeftOverClusterIdentifier {
         boolean nothingChanged = true;
 
         for (Integer key : cIDToCenter.keySet()) {
-            double newDistance = metric.distance(cIDToCenter.get(key), vector);
+            double newDistance = euclidean.distance(cIDToCenter.get(key), vector);
 
             if (newDistance < overallDistance) {
                 overallDistance = newDistance;

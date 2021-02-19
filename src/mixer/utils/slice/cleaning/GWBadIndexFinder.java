@@ -30,26 +30,35 @@ import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
-import mixer.utils.common.ArrayTools;
 
 import java.io.IOException;
 import java.util.*;
 
-public class BadIndexFinder {
-    // ridiculously high coverage filter
+public class GWBadIndexFinder {
+
     protected static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 5;
     protected static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -3;
     protected final int resolution;
     protected final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     protected final NormalizationType[] norms;
+    private final GWRegionStatistics gwStats = new GWRegionStatistics();
 
-    public BadIndexFinder(Chromosome[] chromosomes, int resolution,
-                          NormalizationType[] norms) {
+    public GWBadIndexFinder(Chromosome[] chromosomes, int resolution, NormalizationType[] norms) {
         this.resolution = resolution;
         this.norms = norms;
         for (Chromosome chrom : chromosomes) {
             badIndices.put(chrom.getIndex(), new HashSet<>());
         }
+    }
+
+    protected void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
+                                                int dIndex) throws IOException {
+        int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
+        int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
+
+        List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
+                norms[dIndex], false);
+        gwStats.update(chr1.getIndex(), chr2.getIndex(), lengthChr1, lengthChr2, blocks);
     }
 
     public void createInternalBadList(List<Dataset> datasets, Chromosome[] chromosomes) {
@@ -67,33 +76,24 @@ public class BadIndexFinder {
                 }
             }
         }
+        postprocess(chromosomes);
     }
 
-    protected void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
-                                                int dIndex) throws IOException {
-        int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
-        int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
+    protected void postprocess(Chromosome[] chromosomes) {
+        gwStats.postprocess();
 
-        List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
-                norms[dIndex], false);
-        RegionStatistics stats = new RegionStatistics(lengthChr1, lengthChr2, blocks);
-
-        removeExtremeCoverages(stats.rowSums, chr1, false);
-        removeExtremeCoverages(stats.colSums, chr2, false);
-        removeExtremeCoverages(stats.rowNonZeros, chr1, true);
-        removeExtremeCoverages(stats.colNonZeros, chr2, true);
-    }
-
-    private void removeExtremeCoverages(float[] sums, Chromosome chrom, boolean removeLowCoverage) {
-        float mean = ArrayTools.getNonZeroMean(sums);
-        float stdDev = ArrayTools.getNonZeroStd(sums, mean);
-        getBadCoverageIndices(chrom, sums, mean, stdDev, removeLowCoverage);
+        for (Chromosome chromosome : chromosomes) {
+            getBadCoverageIndices(chromosome,
+                    gwStats.getSums(chromosome), gwStats.getSumMean(), gwStats.getSumStd(), false);
+            getBadCoverageIndices(chromosome,
+                    gwStats.getNonZeros(chromosome), gwStats.getNonZeroMean(), gwStats.getNonZeroStd(), true);
+        }
     }
 
     protected void getBadCoverageIndices(Chromosome chr1, float[] sums, double mean, double stdDev,
                                          boolean removeLowCoverage) {
         if (sums == null) {
-            System.err.println("Skipping 0 " + chr1.getName() + " " + removeLowCoverage);
+            System.err.println("Skipping " + chr1.getName() + " " + removeLowCoverage);
             return;
         }
         for (int k = 0; k < sums.length; k++) {

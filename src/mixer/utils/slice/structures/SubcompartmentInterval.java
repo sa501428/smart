@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package mixer.utils.slice.structures;
 
 import javastraw.featurelist.Feature;
+import javastraw.reader.basics.Chromosome;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -73,6 +74,10 @@ public class SubcompartmentInterval extends SimpleInterval {
     public SubcompartmentInterval(int chrIndex, String chrName, int x1, int x2, Integer clusterID) {
         super(chrIndex, chrName, x1, x2);
         this.clusterID = clusterID;
+    }
+
+    public SubcompartmentInterval(Chromosome chromosome, int x1, int x2, Integer clusterID) {
+        this(chromosome.getIndex(), chromosome.getName(), x1, x2, clusterID);
     }
 
     public Integer getClusterID() {

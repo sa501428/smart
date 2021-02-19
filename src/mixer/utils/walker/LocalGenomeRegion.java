@@ -42,13 +42,13 @@ public class LocalGenomeRegion {
     public synchronized void addNeighbor(int y, float counts) {
         neighbors.add(new Neighbor(y, counts));
         if (neighbors.size() > maxNumValsToStore) {
-            Collections.sort(neighbors, Collections.reverseOrder());
+            neighbors.sort(Collections.reverseOrder());
             neighbors.remove(neighbors.size() - 1);
         }
     }
 
     public synchronized void filterDownValues(int numNeighborsAllowed) {
-        Collections.sort(neighbors, Collections.reverseOrder());
+        neighbors.sort(Collections.reverseOrder());
         if (neighbors.size() > numNeighborsAllowed) {
             float valueToKeep = neighbors.get(numNeighborsAllowed - 1).value;
             int willKeepUpTo = neighbors.size();
@@ -73,7 +73,7 @@ public class LocalGenomeRegion {
 
     public synchronized int getOutlierContacts(boolean isBadUpstream, int cliqueSize) {
 
-        Collections.sort(neighbors, Collections.reverseOrder());
+        neighbors.sort(Collections.reverseOrder());
 
         for (Neighbor neighbor : neighbors) {
             if (Math.abs(neighbor.index - initialIndex) > cliqueSize) {
@@ -95,7 +95,7 @@ public class LocalGenomeRegion {
     @Override
     public String toString() {
         StringBuilder nei = new StringBuilder();
-        Collections.sort(neighbors, Collections.reverseOrder());
+        neighbors.sort(Collections.reverseOrder());
         for (Neighbor neighbor : neighbors) {
             nei.append(neighbor.index).append("-").append(neighbor.value).append("__");
         }

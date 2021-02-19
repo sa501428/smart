@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,40 +31,38 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.Pair;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.BadIndexFinder;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
-import mixer.utils.slice.kmeansfloat.Cluster;
+import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
+import mixer.utils.slice.kmeans.KmeansResult;
+import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.*;
 
-public abstract class CompositeGenomeWideDensityMatrix {
+public abstract class CompositeGenomeWideMatrix {
     protected final NormalizationType norm;
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
-    protected final Random generator;
+    protected final Random generator = new Random(0);
     protected final File outputDirectory;
     private float[][] gwCleanMatrix;
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
-    protected final BadIndexFinder badIndexLocations;
-    protected final int datasetIndex;
+    protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
+    protected int[] weights;
 
-    public CompositeGenomeWideDensityMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                                            File outputDirectory, Random generator, String[] relativeTestFiles,
-                                            BadIndexFinder badIndexLocations, int datasetIndex,
-                                            SimilarityMetric metric) {
+    public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
+                                     File outputDirectory, long seed, String[] relativeTestFiles,
+                                     GWBadIndexFinder badIndexLocations, SimilarityMetric metric) {
         this.norm = norm;
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
-        this.generator = generator;
+        this.generator.setSeed(seed);
         this.badIndexLocations = badIndexLocations;
-        this.datasetIndex = datasetIndex;
         this.metric = metric;
 
         if (relativeTestFiles != null) {
@@ -80,11 +78,12 @@ public abstract class CompositeGenomeWideDensityMatrix {
     abstract float[][] makeCleanScaledInterMatrix(Dataset ds);
 
     public void cleanUpMatricesBySparsity() {
-        MatrixCleanupAndSimilarityMetric matrixCleanupReduction = new MatrixCleanupAndSimilarityMetric(gwCleanMatrix, generator.nextLong(), outputDirectory, metric);
-        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
+        MatrixCleanerAndProjector matrixCleanupReduction = new MatrixCleanerAndProjector(gwCleanMatrix,
+                generator.nextLong(), outputDirectory, metric);
+        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap, weights);
     }
 
-    public synchronized Pair<Double, List<int[][]>> processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
+    public synchronized KmeansResult processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
@@ -96,8 +95,8 @@ public abstract class CompositeGenomeWideDensityMatrix {
 
         int[][] ids = new int[1][clusters.length];
         int[][] idsForIndex = new int[chrIndxTorowIndexToGoldIDMapList.size() + 1][gwCleanMatrix.length];
-        for (int q = 0; q < idsForIndex.length; q++) {
-            Arrays.fill(idsForIndex[q], -1);
+        for (int[] forIndex : idsForIndex) {
+            Arrays.fill(forIndex, -1);
         }
 
         for (int z = 0; z < clusters.length; z++) {
@@ -157,11 +156,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
 
-        List<int[][]> outputs = new ArrayList<>();
-        outputs.add(ids);
-        outputs.add(idsForIndex);
-
-        return new Pair<>(withinClusterSumOfSquares, outputs);
+        return new KmeansResult(withinClusterSumOfSquares, ids, idsForIndex);
     }
 
     private double sumOfSquaresDistance(float[] center, float[] vector) {
@@ -171,22 +166,6 @@ public abstract class CompositeGenomeWideDensityMatrix {
             sumSquared += (v * v);
         }
         return sumSquared;
-    }
-
-    protected Pair<Integer, int[][]> calculateDimensionInterMatrix(Chromosome[] chromosomes, Map<Integer, Integer> indexToFilteredLength) {
-        int total = 0;
-        int[][] indices = new int[2][chromosomes.length];
-
-        for (int i = 0; i < chromosomes.length; i++) {
-            int val = indexToFilteredLength.get(chromosomes[i].getIndex());
-            total += val;
-            if (i < chromosomes.length - 1) {
-                indices[0][i + 1] = total;
-            }
-            indices[1][i] = val;
-        }
-
-        return new Pair<>(total, indices);
     }
 
     public float[][] getCleanedData() {
@@ -206,7 +185,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
     }
 
-    public void appendDataAlongExistingRows(CompositeGenomeWideDensityMatrix additionalData) {
+    public void appendDataAlongExistingRows(CompositeGenomeWideMatrix additionalData) {
         if (gwCleanMatrix.length != additionalData.gwCleanMatrix.length) {
             System.err.println("***************************************\n" +
                     "Dimension mismatch: " + getLength() + " != " + additionalData.getLength());
@@ -215,7 +194,7 @@ public abstract class CompositeGenomeWideDensityMatrix {
         }
     }
 
-    public BadIndexFinder getBadIndices() {
+    public GWBadIndexFinder getBadIndices() {
         return badIndexLocations;
     }
 }

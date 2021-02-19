@@ -22,33 +22,31 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.cleaning;
+package mixer.utils.custom;
 
 import mixer.MixerGlobals;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class QuickCentroids {
+public class QuickClustering {
 
-    private final int maxIters = 5;
+    private final int maxIters;
     private final float[][] matrix;
-    private final int initialNumClusters;
+    private final int numClusters;
     private final Random generator = new Random(0);
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
-    private float[][] centroids = null;
+    private int[] assignments = null;
 
-    public QuickCentroids(float[][] matrix, int numCentroids, long seed) {
+    public QuickClustering(float[][] matrix, int numCentroids, long seed, int maxIters) {
         this.matrix = matrix;
-        this.initialNumClusters = numCentroids;
+        this.numClusters = numCentroids;
+        this.maxIters = maxIters;
         generator.setSeed(seed);
         if (matrix.length == 0 || matrix[0].length == 0) {
             System.err.println("Empty matrix provided for quick centroids");
@@ -56,8 +54,8 @@ public class QuickCentroids {
         }
     }
 
-    public float[][] generateCentroids() {
-        ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
+    public int[] cluster() {
+        ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
@@ -69,8 +67,9 @@ public class QuickCentroids {
 
             @Override
             public void kmeansComplete(Cluster[] clusters, long l) {
-                convertClustersToFloatMatrix(clusters);
+                setAssignments(clusters);
                 System.out.print(".");
+                numActualClusters.set(clusters.length);
             }
 
             @Override
@@ -84,7 +83,7 @@ public class QuickCentroids {
         kMeans.run();
 
         waitUntilDone();
-        return centroids;
+        return assignments;
     }
 
     private void waitUntilDone() {
@@ -98,62 +97,13 @@ public class QuickCentroids {
         }
     }
 
-    private void convertClustersToFloatMatrix(Cluster[] initialClusters) {
-        List<Cluster> actualClusters = new ArrayList<>();
-        for (Cluster c : initialClusters) {
-            if (c.getMemberIndexes().length > 2) {
-                actualClusters.add(c);
+    private void setAssignments(Cluster[] clusters) {
+        assignments = new int[matrix[0].length];
+        Arrays.fill(assignments, -1);
+        for (int i = 0; i < clusters.length; i++) {
+            for (int k : clusters[i].getMemberIndexes()) {
+                assignments[k] = i;
             }
         }
-
-        int numCPUThreads = Runtime.getRuntime().availableProcessors();
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("Using " + numCPUThreads + " threads");
-        }
-        AtomicInteger currRowIndex = new AtomicInteger(0);
-        centroids = new float[actualClusters.size()][matrix[0].length];
-        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
-        for (int l = 0; l < numCPUThreads; l++) {
-            executor.execute(() -> {
-                int c = currRowIndex.getAndIncrement();
-                while (c < actualClusters.size()) {
-                    processCluster(actualClusters.get(c), c);
-                    c = currRowIndex.getAndIncrement();
-                }
-            });
-        }
-        executor.shutdown();
-        // Wait until all threads finish
-        //noinspection StatementWithEmptyBody
-        while (!executor.isTerminated()) {
-        }
-
-        numActualClusters.set(actualClusters.size());
-    }
-
-    private boolean processCluster(Cluster cluster, int cIndex) {
-        if (cluster.getMemberIndexes().length < 3) {
-            // likely an outlier / too small a cluster
-            return false;
-        }
-
-        int[] counts = new int[matrix[0].length];
-        for (int i : cluster.getMemberIndexes()) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
-                    centroids[cIndex][j] += val;
-                    counts[j]++;
-                }
-            }
-        }
-        for (int j = 0; j < counts.length; j++) {
-            if (counts[j] > 0) {
-                centroids[cIndex][j] /= counts[j];
-            } else {
-                centroids[cIndex][j] = Float.NaN;
-            }
-        }
-        return true;
     }
 }

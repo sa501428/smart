@@ -22,34 +22,25 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
 /**
- * Simple K-Means clustering interface.
+ * Exception thrown when insufficient memory is available to
+ * perform an operation.  Designed to be throw before doing
+ * something that would cause a <code>java.lang.OutOfMemoryError</code>.
  */
-interface KMeans extends Runnable {
+class InsufficientMemoryException extends Exception {
+
+    private static final long serialVersionUID = 72138634L;
 
     /**
-     * Adds a KMeansListener to be notified of significant happenings.
+     * Constructor.
      *
-     * @param l the listener to be added.
+     * @param message an explanatory message.
      */
-    void addKMeansListener(KMeansListener l);
-
-    /**
-     * Removes a KMeansListener from the listener list.
-     *
-     * @param l the listener to be removed.
-     */
-    void removeKMeansListener(KMeansListener l);
-
-    /**
-     * Get the clusters computed by the algorithm.  This method should
-     * not be called until clustering has completed successfully.
-     *
-     * @return an array of Cluster objects.
-     */
-    Cluster[] getClusters();
+    public InsufficientMemoryException(String message) {
+        super(message);
+    }
 
 }
 

@@ -22,42 +22,28 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.similaritymeasures;
+package mixer.utils.slice.cleaning;
 
-public class RobustJensenShannonDivergence extends SimilarityMetric {
-    public static final RobustJensenShannonDivergence SINGLETON = new RobustJensenShannonDivergence();
+import javastraw.reader.basics.Chromosome;
 
-    private RobustJensenShannonDivergence() {
-        super(true);
+public class NearDiagonalTrim {
+
+    private static final int DISTANCE_CUTOFF = 3000000;
+
+    public static void trim(Chromosome chrom, float[][] matrix, int resolution) {
+        if (chrom.getLength() > 5 * DISTANCE_CUTOFF) {
+            trimDiagonalWithin(matrix, resolution);
+        }
     }
 
-    private static float nonNanJSDistance(float[] a, float[] b) {
-        double sumA = 0, sumB = 0;
-        for (int k = 0; k < a.length; k++) {
-            boolean isBad = Float.isNaN(a[k] + b[k]);
-            if (!isBad) {
-                sumA += a[k];
-                sumB += b[k];
+    private static void trimDiagonalWithin(float[][] data, int resolution) {
+        int pixelDistance = DISTANCE_CUTOFF / resolution;
+        for (int i = 0; i < data.length; i++) {
+            int limit = Math.min(data[i].length, i + pixelDistance);
+            for (int j = i; j < limit; j++) {
+                data[i][j] = Float.NaN;
+                data[j][i] = Float.NaN;
             }
         }
-        final double sumC = sumA + sumB;
-
-        double distP = 0, distQ = 0;
-        for (int i = 0; i < a.length; i++) {
-            boolean isBad = Float.isNaN(a[i] + b[i]);
-            if (!isBad) {
-                final double p = a[i] / sumA;
-                final double q = b[i] / sumB;
-                final double m = (a[i] + b[i]) / sumC;
-                distP += (p * Math.log(p / m));
-                distQ += (q * Math.log(q / m));
-            }
-        }
-        return (float) ((distP + distQ) / 2f);
-    }
-
-    @Override
-    public float distance(final float[] x, final float[] y) {
-        return nonNanJSDistance(x, y);
     }
 }

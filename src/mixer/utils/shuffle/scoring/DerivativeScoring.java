@@ -22,42 +22,32 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.similaritymeasures;
+package mixer.utils.shuffle.scoring;
 
-public class RobustJensenShannonDivergence extends SimilarityMetric {
-    public static final RobustJensenShannonDivergence SINGLETON = new RobustJensenShannonDivergence();
+public class DerivativeScoring extends ShuffleScore {
 
-    private RobustJensenShannonDivergence() {
-        super(true);
-    }
-
-    private static float nonNanJSDistance(float[] a, float[] b) {
-        double sumA = 0, sumB = 0;
-        for (int k = 0; k < a.length; k++) {
-            boolean isBad = Float.isNaN(a[k] + b[k]);
-            if (!isBad) {
-                sumA += a[k];
-                sumB += b[k];
-            }
-        }
-        final double sumC = sumA + sumB;
-
-        double distP = 0, distQ = 0;
-        for (int i = 0; i < a.length; i++) {
-            boolean isBad = Float.isNaN(a[i] + b[i]);
-            if (!isBad) {
-                final double p = a[i] / sumA;
-                final double q = b[i] / sumB;
-                final double m = (a[i] + b[i]) / sumC;
-                distP += (p * Math.log(p / m));
-                distQ += (q * Math.log(q / m));
-            }
-        }
-        return (float) ((distP + distQ) / 2f);
+    public DerivativeScoring(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        super(matrix, rBounds, cBounds);
     }
 
     @Override
-    public float distance(final float[] x, final float[] y) {
-        return nonNanJSDistance(x, y);
+    public double score() {
+        double diff = 0;
+        int numElements = 0;
+        for (int rI = 0; rI < rBounds.length - 1; rI++) {
+            for (int i = rBounds[rI]; i < rBounds[rI + 1] - 1; i++) {
+
+                for (int cI = 0; cI < cBounds.length - 1; cI++) {
+                    for (int j = cBounds[cI]; j < cBounds[cI + 1] - 1; j++) {
+                        diff += Math.abs(matrix[i][j] - matrix[i + 1][j]);
+                        diff += Math.abs(matrix[i][j] - matrix[i][j + 1]);
+                        diff += Math.abs(matrix[i][j] - matrix[i + 1][j + 1]);
+                        diff += Math.abs(matrix[i + 1][j] - matrix[i][j + 1]);
+                        numElements++;
+                    }
+                }
+            }
+        }
+        return diff / numElements;
     }
 }

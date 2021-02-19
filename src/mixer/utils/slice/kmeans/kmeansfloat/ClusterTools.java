@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +22,35 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeansfloat;
+package mixer.utils.slice.kmeans.kmeansfloat;
 
-import mixer.utils.common.DoubleMatrixTools;
-import mixer.utils.common.IntMatrixTools;
+import javastraw.tools.MatrixTools;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClusterTools {
 
     public static Cluster[] getSortedClusters(Cluster[] unsortedClusters) {
         List<Cluster> tempClusters = new ArrayList<>(Arrays.asList(unsortedClusters));
 
-        Collections.sort(tempClusters, new Comparator<Cluster>() {
-            @Override
-            public int compare(Cluster o1, Cluster o2) {
-                Integer size1 = o1.getMemberIndexes().length;
-                Integer size2 = o2.getMemberIndexes().length;
+        tempClusters.sort((o1, o2) -> {
+            Integer size1 = o1.getMemberIndexes().length;
+            Integer size2 = o2.getMemberIndexes().length;
 
-                int comparison = -size1.compareTo(size2);
-                if (comparison == 0) {
-                    Integer indx1 = o1.getMemberIndexes()[0];
-                    Integer indx2 = o2.getMemberIndexes()[0];
-                    comparison = indx1.compareTo(indx2);
-                }
-
-                return comparison;
+            int comparison = -size1.compareTo(size2);
+            if (comparison == 0) {
+                Integer indx1 = o1.getMemberIndexes()[0];
+                Integer indx2 = o2.getMemberIndexes()[0];
+                comparison = indx1.compareTo(indx2);
             }
+
+            return comparison;
         });
 
         Cluster[] sortedClusters = new Cluster[unsortedClusters.length];
@@ -65,33 +64,35 @@ public class ClusterTools {
 
 
     public static void performStatisticalAnalysisBetweenClusters(File directory, String description, Cluster[] clusters,
-                                                                 int[] ids, SimilarityMetric metric) {
+                                                                 int[] ids) {
 
         File statsFolder = new File(directory, description + "_cluster_stats");
         if (statsFolder.mkdir()) {
-            IntMatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
+            MatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
             saveClusterSizes(statsFolder, clusters);
-            saveDistComparisonBetweenClusters(statsFolder, clusters, metric);
+            saveDistComparisonBetweenClusters(statsFolder, clusters);
             saveComparisonBetweenClusters(statsFolder, clusters);
             saveChiSquarePvalComparisonBetweenClusters(statsFolder, clusters);
             saveChiSquareValComparisonBetweenClusters(statsFolder, clusters);
         }
     }
 
-    private static void saveDistComparisonBetweenClusters(File directory, Cluster[] clusters, SimilarityMetric metric) {
+    private static void saveDistComparisonBetweenClusters(File directory, Cluster[] clusters) {
+
+        final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
         int n = clusters.length;
         double[][] distances = new double[n][n];
         double[][] distancesNormalized = new double[n][n];
         for (int i = 0; i < n; i++) {
             Cluster expected = clusters[i];
             for (int j = 0; j < n; j++) {
-                distances[i][j] = metric.distance(clusters[j].getCenter(), expected.getCenter());
+                distances[i][j] = euclidean.distance(clusters[j].getCenter(), expected.getCenter());
                 distancesNormalized[i][j] = distances[i][j] / clusters[j].getCenter().length;
             }
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "distances.npy").getAbsolutePath(), distances);
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "distances_normed.npy").getAbsolutePath(), distancesNormalized);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "distances.npy").getAbsolutePath(), distances);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "distances_normed.npy").getAbsolutePath(), distancesNormalized);
     }
 
     private static void saveChiSquarePvalComparisonBetweenClusters(File directory, Cluster[] clusters) {
@@ -103,7 +104,7 @@ public class ClusterTools {
                 pvalues[i][j] = getPvalueChiSquared(clusters[j], expected);
             }
         }
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.pval.npy").getAbsolutePath(), pvalues);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.pval.npy").getAbsolutePath(), pvalues);
     }
 
 
@@ -119,8 +120,8 @@ public class ClusterTools {
             }
         }
 
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences.npy").getAbsolutePath(), numDiffEntries);
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences.npy").getAbsolutePath(), numDiffEntries);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "num.differences_normed.npy").getAbsolutePath(), numDiffEntriesNormalized);
     }
 
     private static void saveChiSquareValComparisonBetweenClusters(File directory, Cluster[] clusters) {
@@ -132,7 +133,7 @@ public class ClusterTools {
                 chi2Val[i][j] = getValueChiSquared(clusters[j], expected);
             }
         }
-        DoubleMatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.npy").getAbsolutePath(), chi2Val);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "chi2.npy").getAbsolutePath(), chi2Val);
 
     }
 
@@ -144,7 +145,7 @@ public class ClusterTools {
             sizeClusters[0][i] = clusters[i].getMemberIndexes().length;
         }
 
-        IntMatrixTools.saveMatrixTextNumpy(new File(directory, "sizes.npy").getAbsolutePath(), sizeClusters);
+        MatrixTools.saveMatrixTextNumpy(new File(directory, "sizes.npy").getAbsolutePath(), sizeClusters);
     }
 
     public static float[] normalize(float[] vector, int[] counts) {

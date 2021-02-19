@@ -111,7 +111,7 @@ public class Shuffle extends MixerCLT {
             UNIXTools.makeDir(newFolder);
             ShuffleMatrix matrix = new ShuffleMatrix(ds, norm, resolution, compressionFactor);
             matrix.runAnalysis(subcompartments, newFolder);
-            matrix.savePlotsAndResults(newFolder);
+            matrix.savePlotsAndResults(newFolder, prefix[i]);
         }
         System.out.println("Shuffle complete");
     }

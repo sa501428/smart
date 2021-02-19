@@ -40,22 +40,23 @@ public final class RobustEuclideanDistance extends SimilarityMetric {
 
   @Override
   public float distance(final float[] x, final float[] y) {
-    //  D(x, y) = \sqrt{\sum_i (x_i - y_i)^2}
-    double result = getNonNanMeanSquaredError(x, y);
-    return (float) Math.sqrt(result * x.length);
+    return (float) Math.sqrt(getNonNanMeanSquaredError(x, y));
   }
 
   private double getNonNanMeanSquaredError(float[] x, float[] y) {
     double sumOfSquares = 0;
-    int numDiffs = 0;
+    int numVals = 0;
     for (int i = 0; i < x.length; i++) {
-      if (!Float.isNaN(x[i]) && !Float.isNaN(y[i])) {
-        final float v = x[i] - y[i];
+      final float v = x[i] - y[i];
+      if (!Float.isNaN(v)) {
         sumOfSquares += (v * v);
-        numDiffs++;
+        numVals++;
       }
     }
-    numDiffs = Math.max(numDiffs, 1);
-    return (sumOfSquares / numDiffs);
+    if (numVals < 1) {
+      System.err.println("Vector too sparse");
+      return Float.MAX_VALUE;
+    }
+    return x.length * sumOfSquares / numVals;
   }
 }
