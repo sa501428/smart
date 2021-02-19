@@ -38,6 +38,7 @@ public final class RobustMedianAbsoluteError extends SimilarityMetric {
    * Euclidean metric.
    */
   public static final RobustMedianAbsoluteError SINGLETON = new RobustMedianAbsoluteError();
+  private static final float ZERO = 1e-10f;
 
   private RobustMedianAbsoluteError() {
     super(true);
@@ -58,11 +59,15 @@ public final class RobustMedianAbsoluteError extends SimilarityMetric {
     List<Float> vals = new ArrayList<>();
     for (int i = 0; i < x.length; i++) {
       final float v = Math.abs(x[i] - y[i]);
-      if (!Float.isNaN(v)) {
+      if (!Float.isNaN(v) && v > ZERO) {
         vals.add(v);
       }
     }
     //return sortedMidpoint(vals);
-    return QuickMedian.fastMedian(vals);
+    if (vals.size() > 0) {
+      return QuickMedian.fastMedian(vals);
+    } else {
+      return 0f;
+    }
   }
 }

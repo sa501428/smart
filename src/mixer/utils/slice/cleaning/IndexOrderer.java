@@ -105,7 +105,7 @@ public class IndexOrderer {
         Arrays.fill(newIndexOrderAssignments, DEFAULT);
         eraseTheRowsColumnsWeDontWant(badIndices, matrix, newIndexOrderAssignments);
 
-        int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments);
+        int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments, chromosome.getName());
         gCounter = doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
         indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
         indexToWeights.put(chromosome.getIndex(), generateWeights(gCounter, newIndexOrderAssignments));
@@ -141,16 +141,19 @@ public class IndexOrderer {
         }
     }
 
-    private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
-        int numCentroids = 10;
-        float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments), numCentroids, generator.nextLong()).generateCentroids();
-        System.out.println("Planned centroids: " + numCentroids + " Actual centroids: " + centroids.length);
+    private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName) {
+        int numInitialCentroids = 10;
+        float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments), numInitialCentroids, generator.nextLong()).generateCentroids();
+
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("IndexOrderer: Planned centroids for " + chromName + ": " + numInitialCentroids + " Actual centroids: " + centroids.length);
+        }
         SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
 
         int vectorLength = newIndexOrderAssignments.length;
-        int[] numDecentRelations = new int[numCentroids];
-        float[][] correlationCentroidsWithData = new float[numCentroids][vectorLength];
-        for (int k = 0; k < numCentroids; k++) {
+        int[] numDecentRelations = new int[centroids.length];
+        float[][] correlationCentroidsWithData = new float[centroids.length][vectorLength];
+        for (int k = 0; k < centroids.length; k++) {
             for (int z = 0; z < vectorLength; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL) {
                     float corr = corrMetric.distance(centroids[k], matrix[z]);
@@ -172,7 +175,7 @@ public class IndexOrderer {
         }
 
         int gCounter = doSequentialOrdering(correlationCentroidsWithData[maxIndex], newIndexOrderAssignments, 0);
-        for (int c = 0; c < numCentroids; c++) {
+        for (int c = 0; c < centroids.length; c++) {
             if (c == maxIndex) continue;
             gCounter = doSequentialOrdering(correlationCentroidsWithData[c],
                     newIndexOrderAssignments, gCounter);
@@ -192,6 +195,9 @@ public class IndexOrderer {
         float[][] tempCleanMatrix = new float[actualIndices.size()][matrix[0].length];
         for (int i = 0; i < actualIndices.size(); i++) {
             System.arraycopy(matrix[actualIndices.get(i)], 0, tempCleanMatrix[i], 0, tempCleanMatrix[i].length);
+        }
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("New clean matrix: " + tempCleanMatrix.length + " rows kept from " + matrix.length);
         }
         return tempCleanMatrix;
     }

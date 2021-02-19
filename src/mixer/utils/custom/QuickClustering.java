@@ -55,8 +55,6 @@ public class QuickClustering {
     }
 
     public int[] cluster() {
-        ConcurrentKMeans.useNonNanVersion = true;
-
         ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
@@ -85,7 +83,6 @@ public class QuickClustering {
         kMeans.run();
 
         waitUntilDone();
-        ConcurrentKMeans.useNonNanVersion = false;
         return assignments;
     }
 

@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
+import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.concurrent.ExecutorService;
@@ -42,12 +43,17 @@ public class SimilarityMatrixTools {
     }
 
     private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
-        final int numCentroids = matrix.length / numPerCentroid;
+        final int numInitialCentroids = matrix.length / numPerCentroid;
         final float[][] centroids;
         if (numPerCentroid > 1) {
-            centroids = new QuickCentroids(matrix, numCentroids, seed).generateCentroids();
+            centroids = new QuickCentroids(matrix, numInitialCentroids, seed).generateCentroids();
         } else {
             centroids = matrix;
+        }
+
+        int numCentroids = centroids.length;
+        if (MixerGlobals.printVerboseComments || centroids.length != numInitialCentroids) {
+            System.out.println("AsymMatrix: Was initially " + numInitialCentroids + " centroids, but using " + numCentroids);
         }
 
         float[][] result = new float[matrix.length][numCentroids];

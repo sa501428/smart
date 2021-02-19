@@ -41,7 +41,7 @@ public class LeftOverClusterIdentifier {
     private final Dataset dataset;
     private final NormalizationType norm;
     private final int resolution;
-    public static final SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
+    private static final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
 
     public LeftOverClusterIdentifier(ChromosomeHandler chromosomeHandler, Dataset dataset, NormalizationType norm, int resolution) {
         this.chromosomeHandler = chromosomeHandler;
@@ -179,7 +179,7 @@ public class LeftOverClusterIdentifier {
         boolean nothingChanged = true;
 
         for (Integer key : cIDToCenter.keySet()) {
-            double newDistance = metric.distance(cIDToCenter.get(key), vector);
+            double newDistance = euclidean.distance(cIDToCenter.get(key), vector);
 
             if (newDistance < overallDistance) {
                 overallDistance = newDistance;

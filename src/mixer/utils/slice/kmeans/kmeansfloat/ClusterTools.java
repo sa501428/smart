@@ -25,6 +25,7 @@
 package mixer.utils.slice.kmeans.kmeansfloat;
 
 import javastraw.tools.MatrixTools;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 
@@ -63,27 +64,29 @@ public class ClusterTools {
 
 
     public static void performStatisticalAnalysisBetweenClusters(File directory, String description, Cluster[] clusters,
-                                                                 int[] ids, SimilarityMetric metric) {
+                                                                 int[] ids) {
 
         File statsFolder = new File(directory, description + "_cluster_stats");
         if (statsFolder.mkdir()) {
             MatrixTools.saveMatrixTextNumpy(new File(statsFolder, description + "cluster.ids.npy").getAbsolutePath(), ids);
             saveClusterSizes(statsFolder, clusters);
-            saveDistComparisonBetweenClusters(statsFolder, clusters, metric);
+            saveDistComparisonBetweenClusters(statsFolder, clusters);
             saveComparisonBetweenClusters(statsFolder, clusters);
             saveChiSquarePvalComparisonBetweenClusters(statsFolder, clusters);
             saveChiSquareValComparisonBetweenClusters(statsFolder, clusters);
         }
     }
 
-    private static void saveDistComparisonBetweenClusters(File directory, Cluster[] clusters, SimilarityMetric metric) {
+    private static void saveDistComparisonBetweenClusters(File directory, Cluster[] clusters) {
+
+        final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
         int n = clusters.length;
         double[][] distances = new double[n][n];
         double[][] distancesNormalized = new double[n][n];
         for (int i = 0; i < n; i++) {
             Cluster expected = clusters[i];
             for (int j = 0; j < n; j++) {
-                distances[i][j] = metric.distance(clusters[j].getCenter(), expected.getCenter());
+                distances[i][j] = euclidean.distance(clusters[j].getCenter(), expected.getCenter());
                 distancesNormalized[i][j] = distances[i][j] / clusters[j].getCenter().length;
             }
         }

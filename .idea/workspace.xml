@@ -33,9 +33,21 @@
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/custom/QuickClustering.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/custom/QuickClustering.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ClusterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ClusterTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ConcurrentKMeans.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ConcurrentKMeans.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/SmartInitialization.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/SmartInitialization.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/Worker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/Worker.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,14 +150,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="38389000" />
-    </task>
-    <task id="LOCAL-00013" summary="save intermediate data representation">
-      <created>1604595695559</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1604595695559</updated>
+      <workItem from="1613352901469" duration="46167000" />
     </task>
     <task id="LOCAL-00014" summary="additional metrics, saving of genomewide distance map, shuffle matrix initial code">
       <created>1604983056588</created>
@@ -483,7 +488,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613715763529</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="try something else">
+      <created>1613755001431</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1613755001431</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -508,7 +520,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="save directly to png, png file size calcs, std dev calcs, calc error only within region, reading bed with custom order" />
     <MESSAGE value="support different normalizations" />
     <MESSAGE value="fix initial orderer, change handling of intramatrix" />
     <MESSAGE value="restructure scoring" />
@@ -533,7 +544,8 @@
     <MESSAGE value="use median abs error" />
     <MESSAGE value="use median abs error, but with additional post-zscore" />
     <MESSAGE value="fixed bug in indexer, using weights based on column compression" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed bug in indexer, using weights based on column compression" />
+    <MESSAGE value="try something else" />
+    <option name="LAST_COMMIT_MESSAGE" value="try something else" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

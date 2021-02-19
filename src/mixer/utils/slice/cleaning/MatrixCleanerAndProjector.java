@@ -42,6 +42,7 @@ public class MatrixCleanerAndProjector {
     protected float[][] data;
     protected final Random generator = new Random(0);
     private final SimilarityMetric metric;
+    private static final float ZERO = 1e-10f;
 
     public MatrixCleanerAndProjector(float[][] data, long seed, File outputDirectory, SimilarityMetric metric) {
         this.metric = metric;
@@ -73,11 +74,8 @@ public class MatrixCleanerAndProjector {
 
     public static Set<Integer> getBadIndices(float[][] matrix) {
         Set<Integer> badIndices = new HashSet<>();
-        int[] numNans = getNumberOfNansInRow(matrix);
-
-        float n = matrix[0].length;
-
-        int maxBadEntriesAllowed = (int) Math.ceil(PERCENT_NAN_ALLOWED * n);
+        int[] numNans = getNumberOfNansOrZerosInRow(matrix);
+        int maxBadEntriesAllowed = (int) Math.ceil(PERCENT_NAN_ALLOWED * matrix[0].length);
         for (int i = 0; i < numNans.length; i++) {
             if (numNans[i] > maxBadEntriesAllowed) {
                 badIndices.add(i);
@@ -119,16 +117,17 @@ public class MatrixCleanerAndProjector {
         return newMatrix;
     }
 
-    private static int[] getNumberOfNansInRow(float[][] matrix) {
-        int[] numNans = new int[matrix.length];
+    private static int[] getNumberOfNansOrZerosInRow(float[][] matrix) {
+        int[] numInvalids = new int[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (Float.isNaN(matrix[i][j])) {
-                    numNans[i]++;
+                float val = matrix[i][j];
+                if (Float.isNaN(val) || val < ZERO) {
+                    numInvalids[i]++;
                 }
             }
         }
-        return numNans;
+        return numInvalids;
     }
 
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,

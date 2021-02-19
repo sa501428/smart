@@ -52,7 +52,7 @@ public class FullGenomeOEWithinClusters {
     private final int resolution;
     private final NormalizationType[] norms;
     private final SliceMatrix sliceMatrix;
-    private final SimilarityMetric metric;
+
     private final Random generator = new Random(0);
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType[] norms,
@@ -63,7 +63,6 @@ public class FullGenomeOEWithinClusters {
         this.norms = norms;
         this.outputDirectory = outputDirectory;
         this.datasets = datasets;
-        this.metric = metric;
         generator.setSeed(seed);
 
         GWBadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
@@ -125,7 +124,7 @@ public class FullGenomeOEWithinClusters {
                 System.out.print(".");
             }
 
-            ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs, metric);
+            ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k, bestClusters, bestIDs);
             MatrixTools.saveMatrixTextNumpy((new File(outputDirectory, "novel_ids_for_index_" + k + ".npy")).getAbsolutePath(), novelIDsForIndx);
         }
         System.out.println(".");

@@ -40,7 +40,7 @@ public class ConcurrentKMeans implements KMeans {
 
     // 2D array holding the coordinates to be clustered.
     public static float[][] mCoordinates;
-    public static boolean useNonNanVersion = false;
+    public static final boolean useNonNanVersion = true;
     // The desired number of clusters and maximum number
     // of iterations.
     private final int mK;

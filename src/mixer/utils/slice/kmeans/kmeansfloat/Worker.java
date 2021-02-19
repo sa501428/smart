@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package mixer.utils.slice.kmeans.kmeansfloat;
 
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.concurrent.BrokenBarrierException;
 
@@ -46,6 +47,7 @@ public class Worker implements Runnable {
     // to workerMakeAssignments().  The SubtaskManager totals up
     // this value from all the workers in numberOfMoves().
     private int mMoves;
+    private final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
 
     /**
      * Constructor
@@ -135,7 +137,7 @@ public class Worker implements Runnable {
      */
     private float distanceL2Norm(float[] coord, float[] center) {
         if (ConcurrentKMeans.useNonNanVersion) {
-            return RobustEuclideanDistance.SINGLETON.distance(coord, center);
+            return euclidean.distance(coord, center);
         }
         double sumSquared = 0.0;
         for (int i = 0; i < coord.length; i++) {

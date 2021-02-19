@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package mixer.utils.slice.kmeans.kmeansfloat;
 
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -59,6 +60,7 @@ public class SmartInitialization {
 
     private void updateDistances(Integer index) {
 
+        final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
@@ -68,7 +70,7 @@ public class SmartInitialization {
                 while (k < data.length) {
                     float newDist = 0;
                     if (k != index) {
-                        newDist = RobustEuclideanDistance.SINGLETON.distance(data[k], data[index]);
+                        newDist = euclidean.distance(data[k], data[index]);
                     }
                     distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
                     k = currRowIndex.getAndIncrement();
