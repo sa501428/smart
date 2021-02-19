@@ -50,6 +50,8 @@ public class IndexOrderer {
     private final float INCREMENT = .1f;
     private final Random generator = new Random(0);
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
+    private final Map<Integer, int[]> indexToWeights = new HashMap<>();
+    private final int[] weights;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
                         int numColumnsToPutTogether, GWBadIndexFinder badIndexLocations, long seed) {
@@ -72,6 +74,22 @@ public class IndexOrderer {
             }
             System.out.print(".");
         }
+        weights = appendWeights(chromosomes);
+    }
+
+    private int[] appendWeights(Chromosome[] chromosomes) {
+        int totalLength = 0;
+        for (Chromosome chromosome : chromosomes) {
+            totalLength += indexToWeights.get(chromosome.getIndex()).length;
+        }
+        int[] finalWeights = new int[totalLength];
+        int offset = 0;
+        for (Chromosome chromosome : chromosomes) {
+            int[] region = indexToWeights.get(chromosome.getIndex());
+            System.arraycopy(region, 0, finalWeights, offset, region.length);
+            offset += region.length;
+        }
+        return finalWeights;
     }
 
     public Map<Integer, Integer> getIndexToRearrangedLength() {
@@ -90,18 +108,30 @@ public class IndexOrderer {
         int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments);
         gCounter = doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
         indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
+        indexToWeights.put(chromosome.getIndex(), generateWeights(gCounter, newIndexOrderAssignments));
         return newIndexOrderAssignments;
     }
 
+    private int[] generateWeights(int maxlength, int[] assignments) {
+        int length = (int) Math.ceil((double) maxlength / numColsToJoin);
+        int[] weightsForChrom = new int[length];
+        for (int i : assignments) {
+            if (i > -1) {
+                weightsForChrom[i / numColsToJoin]++;
+            }
+        }
+        return weightsForChrom;
+    }
+
     private void eraseTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix, int[] newIndexOrderAssignments) {
-        Set<Integer> columnsToErase = new HashSet<>();
+        if (badIndices.size() < 1) return;
+
         for (int k : badIndices) {
             newIndexOrderAssignments[k] = IGNORE;
-            columnsToErase.add(k / numColsToJoin);
         }
 
         for (int i = 0; i < matrix.length; i++) {
-            for (int j : columnsToErase) {
+            for (int j : badIndices) {
                 matrix[i][j] = Float.NaN;
             }
         }
@@ -112,9 +142,7 @@ public class IndexOrderer {
     }
 
     private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments) {
-
         int numCentroids = 10;
-
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments), numCentroids, generator.nextLong()).generateCentroids();
         System.out.println("Planned centroids: " + numCentroids + " Actual centroids: " + centroids.length);
         SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
@@ -230,5 +258,9 @@ public class IndexOrderer {
             System.out.println("Num rounds " + numRoundsThatHappen);
         }
         return counter;
+    }
+
+    public int[] getWeights() {
+        return weights;
     }
 }

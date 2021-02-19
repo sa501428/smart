@@ -131,13 +131,14 @@ public class MatrixCleanerAndProjector {
         return numNans;
     }
 
-    public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+    public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
+                                                int[] weights) {
         data = filterOutColumnsAndRowsNonSymmetricMatrix(data, rowIndexToIntervalMap);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
         }
 
-        ZScoreTools.inPlaceRobustZscoreDownCol(data);
+        ZScoreTools.inPlaceRobustZscoreDownCol(data, weights);
         if (MixerGlobals.printVerboseComments) {
             File temp = new File(outputDirectory, "zscore_new.npy");
             FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
@@ -146,7 +147,7 @@ public class MatrixCleanerAndProjector {
         System.out.println("Generating similarity matrix");
         data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
-        ZScoreTools.inPlaceRobustZscoreDownCol(data);
+        ZScoreTools.inPlaceRobustZscoreDownCol(data, weights);
 
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);

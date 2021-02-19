@@ -53,6 +53,7 @@ public abstract class CompositeGenomeWideMatrix {
     private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
     protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
+    protected int[] weights;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
                                      File outputDirectory, long seed, String[] relativeTestFiles,
@@ -79,7 +80,7 @@ public abstract class CompositeGenomeWideMatrix {
     public void cleanUpMatricesBySparsity() {
         MatrixCleanerAndProjector matrixCleanupReduction = new MatrixCleanerAndProjector(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
-        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
+        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap, weights);
     }
 
     public synchronized KmeansResult processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {

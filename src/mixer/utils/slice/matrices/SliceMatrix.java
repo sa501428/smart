@@ -39,10 +39,7 @@ import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SliceMatrix extends CompositeGenomeWideMatrix {
 
@@ -64,12 +61,25 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
             orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
                     badIndexLocations, generator.nextLong());
             indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
+            weights = orderer.getWeights();
         } else {
             indexToCompressedLength = calculateCompressedLengthForChromosomes(indexToLength);
         }
 
         Dimension dimensions = new Dimension(chromosomes, indexToLength);
         Dimension compressedDimensions = new Dimension(chromosomes, indexToCompressedLength);
+
+        if (numColumnsToPutTogether < 2) {
+            weights = new int[compressedDimensions.length];
+            Arrays.fill(weights, 1);
+        }
+
+        if (weights.length != compressedDimensions.length) {
+            System.err.println("Incompatible set of weights - error encountered " + weights.length + " - " + compressedDimensions.length);
+            System.exit(-4);
+        } else {
+            System.out.println("Weights check passed");
+        }
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println(dimensions.length + " by " + compressedDimensions.length);
