@@ -115,7 +115,7 @@ public class ZScoreTools {
                 vals.add(val);
             }
         }
-        return sortedMidpoint(vals);
+        return QuickMedian.fastMedian(vals);
     }
 
     private static float getMedianAbsoluteDeviation(float[][] matrix, int col, float median) {
@@ -126,13 +126,11 @@ public class ZScoreTools {
                 vals.add(Math.abs(val - median));
             }
         }
-        return sortedMidpoint(vals);
-    }
-
-    private static float sortedMidpoint(List<Float> vals) {
-        int size = vals.size();
-        vals.sort(null);
-        return (vals.get(size / 2) + vals.get((size - 1) / 2)) / 2;
+        float mad = QuickMedian.fastMedian(vals);
+        if (mad > ZERO) {
+            return mad;
+        }
+        return 1;
     }
 
     private static boolean isValid(float val) {

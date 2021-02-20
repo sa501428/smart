@@ -65,9 +65,10 @@ public class IndexOrderer {
                 float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, resolution,
                         normalizationType, 3f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0);
-                NearDiagonalTrim.trim(chrom, matrix, resolution);
+                Set<Integer> badIndices = badIndexLocations.getBadIndices(chrom);
 
-                int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndexLocations.getBadIndices(chrom));
+                matrix = IntraMatrixCleaner.clean(chrom, matrix, resolution, numColsToJoin, badIndices);
+                int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices);
                 chromToReorderedIndices.put(chrom, newOrderIndexes);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -101,14 +102,21 @@ public class IndexOrderer {
     }
 
     private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] matrix, Set<Integer> badIndices) {
-        int[] newIndexOrderAssignments = new int[matrix.length];
-        Arrays.fill(newIndexOrderAssignments, DEFAULT);
-        eraseTheRowsColumnsWeDontWant(badIndices, matrix, newIndexOrderAssignments);
+        int[] newIndexOrderAssignments = generateNewAssignments(matrix.length, badIndices);
 
         int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments, chromosome.getName());
         gCounter = doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
         indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
         indexToWeights.put(chromosome.getIndex(), generateWeights(gCounter, newIndexOrderAssignments));
+        return newIndexOrderAssignments;
+    }
+
+    private int[] generateNewAssignments(int length, Set<Integer> badIndices) {
+        int[] newIndexOrderAssignments = new int[length];
+        Arrays.fill(newIndexOrderAssignments, DEFAULT);
+        for (int k : badIndices) {
+            newIndexOrderAssignments[k] = IGNORE;
+        }
         return newIndexOrderAssignments;
     }
 
@@ -121,24 +129,6 @@ public class IndexOrderer {
             }
         }
         return weightsForChrom;
-    }
-
-    private void eraseTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix, int[] newIndexOrderAssignments) {
-        if (badIndices.size() < 1) return;
-
-        for (int k : badIndices) {
-            newIndexOrderAssignments[k] = IGNORE;
-        }
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j : badIndices) {
-                matrix[i][j] = Float.NaN;
-            }
-        }
-
-        for (int i : badIndices) {
-            Arrays.fill(matrix[i], Float.NaN);
-        }
     }
 
     private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName) {
