@@ -68,7 +68,14 @@ public class QuickMedian {
     }
 
     public static float fastMedian(List<Float> list) {
-        float[] arr = new float[list.size()];
+        int lsize = list.size();
+        if (lsize < 1) {
+            return 0f;
+        } else if (lsize == 1) {
+            return list.get(0);
+        }
+
+        float[] arr = new float[lsize];
         for (int k = 0; k < arr.length; k++) {
             arr[k] = list.get(k);
         }

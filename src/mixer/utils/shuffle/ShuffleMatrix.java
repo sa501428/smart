@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ public class ShuffleMatrix {
         SliceUtils.collapseGWList(subcompartments);
         // todo, using only big size? todo sorting picture
         GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
-        statistics.saveInteractionMap(false, outfolder);
+        statistics.saveInteractionMap(outfolder);
         System.out.println("Interaction summary statistics saved");
 
         //GenomeWideList<SubcompartmentInterval> subcompartments = statistics.reorder(defaultSubcompartments);

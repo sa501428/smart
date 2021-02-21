@@ -44,12 +44,6 @@ public final class RobustMedianAbsoluteError extends SimilarityMetric {
     super(true);
   }
 
-  private static float sortedMidpoint(List<Float> vals) {
-    int size = vals.size();
-    vals.sort(null);
-    return (vals.get(size / 2) + vals.get((size - 1) / 2)) / 2;
-  }
-
   @Override
   public float distance(final float[] x, final float[] y) {
     return getNonNanMedianAbsDeviation(x, y);
@@ -64,10 +58,6 @@ public final class RobustMedianAbsoluteError extends SimilarityMetric {
       }
     }
     //return sortedMidpoint(vals);
-    if (vals.size() > 0) {
-      return QuickMedian.fastMedian(vals);
-    } else {
-      return 0f;
-    }
+    return QuickMedian.fastMedian(vals);
   }
 }
