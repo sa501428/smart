@@ -36,7 +36,7 @@ public class ZScoreTools {
     private static final float ZERO = 1e-10f;
     private static final int numCPUThreads = 30;
 
-    public static void inPlaceRobustZscoreDownCol(float[][] matrix, int[] weights) {
+    public static void inPlaceRobustZscoreDownCol(float[][] matrix) {
         float[] colMedians = getParColNonZeroMedian(matrix);
         float[] colMADs = getParColNonZeroMedianAbsoluteDeviations(matrix, colMedians);
 
@@ -45,7 +45,7 @@ public class ZScoreTools {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
                     //matrix[i][j] = (val - colMedians[j]) / colMADs[j];
-                    matrix[i][j] = weights[j] * val / colMADs[j];
+                    matrix[i][j] = val / colMADs[j]; //weights[j] *
                 }
             }
         }

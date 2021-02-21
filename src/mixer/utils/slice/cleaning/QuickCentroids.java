@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class QuickCentroids {
 
-    private final int maxIters = 5;
+    private final int maxIters = 3;
     private final float[][] matrix;
     private final int initialNumClusters;
     private final Random generator = new Random(0);
