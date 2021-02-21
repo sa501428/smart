@@ -30,13 +30,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="no log, remove first zscore, change centroid/50 -&gt; centroid per 10; remove weighing columns, maxiters to 3">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,14 +139,7 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="66121000" />
-    </task>
-    <task id="LOCAL-00018" summary="shuffle implemented">
-      <created>1605428587917</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1605428587917</updated>
+      <workItem from="1613352901469" duration="69848000" />
     </task>
     <task id="LOCAL-00019" summary="shuffle for multiple files added">
       <created>1605560422437</created>
@@ -484,7 +477,14 @@
       <option name="project" value="LOCAL" />
       <updated>1613894144249</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="remove post processor; 1-shot centroids; regular zscore">
+      <created>1613896903872</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1613896903873</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -509,7 +509,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="calculate on log matrix as well" />
     <MESSAGE value="code cleanup; KL reverse" />
     <MESSAGE value="shuffle, genomewide stats, bug fixes" />
     <MESSAGE value="simplify data filtering; use coverage; update UMAP settings" />
@@ -534,7 +533,8 @@
     <MESSAGE value="intra matrix cleaning; bug fixes" />
     <MESSAGE value="fix aggregate statistics" />
     <MESSAGE value="no log, remove first zscore, change centroid/50 -&gt; centroid per 10; remove weighing columns, maxiters to 3" />
-    <option name="LAST_COMMIT_MESSAGE" value="no log, remove first zscore, change centroid/50 -&gt; centroid per 10; remove weighing columns, maxiters to 3" />
+    <MESSAGE value="remove post processor; 1-shot centroids; regular zscore" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove post processor; 1-shot centroids; regular zscore" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

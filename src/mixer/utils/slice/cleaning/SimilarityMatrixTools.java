@@ -25,16 +25,18 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
-                                                      long seed) {
+    public static float[][] getZscoredNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
+                                                             long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
             return getAsymmetricMatrix(matrix, metric, numPerCentroid, seed);
         }
@@ -45,10 +47,15 @@ public class SimilarityMatrixTools {
     private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
         final int numInitialCentroids = matrix.length / numPerCentroid;
         final float[][] centroids;
+        final int[] weights;
         if (numPerCentroid > 1) {
-            centroids = new QuickCentroids(matrix, numInitialCentroids, seed).generateCentroids();
+            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed);
+            centroids = centroidMaker.generateCentroids();
+            weights = centroidMaker.getWeights();
         } else {
             centroids = matrix;
+            weights = new int[centroids.length];
+            Arrays.fill(weights, 1);
         }
 
         int numCentroids = centroids.length;
@@ -82,6 +89,9 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
+        //ZScoreTools.inPlaceRobustZscoreDownCol(data);
+        ZScoreTools.inPlaceZscoreDownCol(result, weights);
+
         return result;
     }
 
@@ -111,6 +121,9 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
+        int[] weights = new int[result[0].length];
+        Arrays.fill(weights, 1);
+        ZScoreTools.inPlaceZscoreDownCol(result, weights);
         return result;
     }
 }

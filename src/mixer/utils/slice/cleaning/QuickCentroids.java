@@ -45,6 +45,7 @@ public class QuickCentroids {
     private final Random generator = new Random(0);
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private float[][] centroids = null;
+    private int[] weights = null;
 
     public QuickCentroids(float[][] matrix, int numCentroids, long seed) {
         this.matrix = matrix;
@@ -112,6 +113,7 @@ public class QuickCentroids {
         }
         AtomicInteger currRowIndex = new AtomicInteger(0);
         centroids = new float[actualClusters.size()][matrix[0].length];
+        weights = new int[actualClusters.size()];
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
             executor.execute(() -> {
@@ -137,6 +139,8 @@ public class QuickCentroids {
             return false;
         }
 
+        weights[cIndex] = cluster.getMemberIndexes().length;
+
         int[] counts = new int[matrix[0].length];
         for (int i : cluster.getMemberIndexes()) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -155,5 +159,9 @@ public class QuickCentroids {
             }
         }
         return true;
+    }
+
+    public int[] getWeights() {
+        return weights;
     }
 }

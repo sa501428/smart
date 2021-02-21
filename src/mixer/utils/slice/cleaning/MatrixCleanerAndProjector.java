@@ -27,7 +27,6 @@ package mixer.utils.slice.cleaning;
 import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import tagbio.umap.Umap;
@@ -144,14 +143,11 @@ public class MatrixCleanerAndProjector {
         }
 
         System.out.println("Generating similarity matrix");
-        data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
+        data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("similarity matrix size " + data.length + " x " + data[0].length);
         }
-
-        //ZScoreTools.inPlaceRobustZscoreDownCol(data);
-        ZScoreTools.inPlaceZscoreDownCol(data);
 
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
