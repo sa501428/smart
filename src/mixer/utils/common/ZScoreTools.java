@@ -36,6 +36,68 @@ public class ZScoreTools {
     private static final float ZERO = 1e-10f;
     private static final int numCPUThreads = 30;
 
+    public static void inPlaceZscoreDownCol(float[][] matrix) {
+        float[] colMeans = getColNonZeroMean(matrix);
+        float[] colStdDevs = getColNonZeroStdDev(matrix, colMeans);
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+                }
+            }
+        }
+    }
+
+    public static float[] getColNonZeroMean(float[][] matrix) {
+        double[] colSums = new double[matrix[0].length];
+        int[] colSize = new int[colSums.length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (isValid(val)) {
+                    colSums[j] += val;
+                    colSize[j] += 1;
+                }
+            }
+        }
+
+        float[] colMeans = new float[colSums.length];
+        for (int k = 0; k < colSums.length; k++) {
+            colMeans[k] = (float) (colSums[k] / Math.max(colSize[k], 1));
+        }
+        return colMeans;
+    }
+
+    public static float[] getColNonZeroStdDev(float[][] matrix, float[] means) {
+
+        double[] squares = new double[means.length];
+        int[] colSize = new int[means.length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (isValid(val)) {
+                    float diff = val - means[j];
+                    squares[j] += diff * diff;
+                    colSize[j] += 1;
+                }
+            }
+        }
+
+        float[] stdDev = new float[means.length];
+        for (int k = 0; k < squares.length; k++) {
+            stdDev[k] = (float) Math.sqrt(squares[k] / Math.max(colSize[k], 1));
+        }
+        return stdDev;
+    }
+
+
+    /**
+     * Robust Zscore Methods
+     */
     public static void inPlaceRobustZscoreDownCol(float[][] matrix) {
         float[] colMedians = getParColNonZeroMedian(matrix);
         float[] colMADs = getParColNonZeroMedianAbsoluteDeviations(matrix, colMedians);
@@ -49,22 +111,6 @@ public class ZScoreTools {
                 }
             }
         }
-    }
-
-    public static float[] getColNonZeroMedian(float[][] matrix) {
-        float[] colMedians = new float[matrix[0].length];
-        for (int j = 0; j < matrix[0].length; j++) {
-            colMedians[j] = getMedian(matrix, j);
-        }
-        return colMedians;
-    }
-
-    private static float[] getColNonZeroMedianAbsoluteDeviations(float[][] matrix, float[] medians) {
-        float[] colMADs = new float[medians.length];
-        for (int j = 0; j < medians.length; j++) {
-            colMADs[j] = getMedianAbsoluteDeviation(matrix, j, medians[j]);
-        }
-        return colMADs;
     }
 
     public static float[] getParColNonZeroMedian(float[][] matrix) {

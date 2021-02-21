@@ -150,7 +150,8 @@ public class MatrixCleanerAndProjector {
             System.out.println("similarity matrix size " + data.length + " x " + data[0].length);
         }
 
-        ZScoreTools.inPlaceRobustZscoreDownCol(data);
+        //ZScoreTools.inPlaceRobustZscoreDownCol(data);
+        ZScoreTools.inPlaceZscoreDownCol(data);
 
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
