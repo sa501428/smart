@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ public class GenomeWideStatistics {
     private final GenomeWideList<SubcompartmentInterval> subcompartments;
     private final Set<Integer> clusterIDs = new HashSet<>();
     private final Map<String, Double> contacts = new HashMap<>();
-    private final Map<String, Long> counts = new HashMap<>();
+    private final Map<String, Long> areas = new HashMap<>();
 
     private double totalContact = 0.0;
     private long totalCounts = 0L;
@@ -100,26 +100,25 @@ public class GenomeWideStatistics {
 
                 String key = makeKey(interval1, interval2);
                 double contact = 0;
-                long count = 0;
+                long area = 0;
                 if (contacts.containsKey(key)) {
                     contact = contacts.get(key);
-                    count = counts.get(key);
+                    area = areas.get(key);
                 }
 
                 for (int r = xStart; r < xEnd; r++) {
                     for (int c = yStart; c < yEnd; c++) {
                         float val = data[r][c];
-                        if (val > 0) {
-                            contact += val;
-                            totalContact += val;
-                            count++;
-                            totalCounts++;
-                        }
+                        contact += val;
+                        totalContact += val;
                     }
                 }
+                int localArea = (xEnd - xStart) * (yEnd - yStart);
+                area += localArea;
+                totalCounts += localArea;
 
                 contacts.put(key, contact);
-                counts.put(key, count);
+                areas.put(key, area);
             }
         }
     }
@@ -144,37 +143,56 @@ public class GenomeWideStatistics {
                 String key = makeKey(ids.get(i), ids.get(j));
                 if (contacts.containsKey(key)) {
                     contactsMatrix[i][j] = contacts.get(key);
-                    countsMatrix[i][j] = counts.get(key);
+                    countsMatrix[i][j] = areas.get(key);
                 }
             }
         }
     }
 
-    public void saveInteractionMap(boolean useLog, File outfolder) {
-        float averageContact = (float) (totalContact / totalCounts);
-        if (useLog) {
-            averageContact = (float) (Math.log(totalContact) / totalCounts);
-        }
+    public void saveInteractionMap(File outfolder) {
 
-        float[][] result = new float[countsMatrix.length][countsMatrix.length];
-        for (int i = 0; i < result.length; i++) {
-            for (int j = 0; j < result[i].length; j++) {
-                if (useLog) {
-                    result[i][j] = (float) (Math.log(contactsMatrix[i][j]) / countsMatrix[i][j]);
+        boolean useLog = false;
+        for (boolean useSymm : new boolean[]{true, false}) {
+            double averageContact = totalContact / totalCounts;
+            if (useLog) {
+                if (useSymm) {
+                    averageContact = (Math.log(2 * totalContact) / (2 * totalCounts));
                 } else {
-                    result[i][j] = (float) (contactsMatrix[i][j] / countsMatrix[i][j]);
+                    averageContact = (Math.log(totalContact) / totalCounts);
                 }
-                result[i][j] /= averageContact;
             }
-        }
 
-        File temp = new File(outfolder, "cluster_interactions.npy");
-        File png = new File(outfolder, "cluster_interactions.png");
-        if (useLog) {
-            temp = new File(outfolder, "cluster_log_interactions.npy");
-            png = new File(outfolder, "cluster_log_interactions.png");
+            float[][] result = new float[countsMatrix.length][countsMatrix.length];
+            for (int i = 0; i < result.length; i++) {
+                for (int j = 0; j < result[i].length; j++) {
+                    double contacts = contactsMatrix[i][j];
+                    long counts = countsMatrix[i][j];
+
+                    if (useSymm) {
+                        contacts += contactsMatrix[j][i];
+                        counts += countsMatrix[j][i];
+                    }
+
+                    if (useLog) {
+                        contacts = Math.log(contacts);
+                    }
+
+                    result[i][j] = (float) ((contacts / counts) / averageContact);
+                }
+            }
+
+            String name = "cluster_interactions";
+            if (useLog) {
+                name = "cluster_log_interactions";
+            }
+            if (useSymm) {
+                name = "symm_" + name;
+            }
+
+            File temp = new File(outfolder, name + ".npy");
+            File png = new File(outfolder, name + ".png");
+            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+            FloatMatrixTools.saveOEMatrixToPNG(png, result);
         }
-        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
-        FloatMatrixTools.saveOEMatrixToPNG(png, result);
     }
 }

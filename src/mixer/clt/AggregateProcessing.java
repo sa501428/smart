@@ -44,14 +44,14 @@ public class AggregateProcessing {
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed";
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
-        for (int res : new int[]{25000}) { //100000,50000,
+        for (int res : new int[]{100000, 50000, 25000}) { //
             String folder = "new_test_res_" + res + "v" + MixerGlobals.versionNum;
             strings = new String[]{"slice", "-r", res + "", "-k", "KR", //"--verbose",
                     file14, "2,11,3",
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
             };
             System.out.println("-----------------------------------------------------");
-            MixerTools.main(strings);
+            //MixerTools.main(strings);
             System.gc();
 
             strings = new String[]{"shuffle", "-r", res + "", "-k", "KR", "-w", "" + (16 * (100000 / res)), file14,
