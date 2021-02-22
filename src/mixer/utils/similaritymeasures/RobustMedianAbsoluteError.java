@@ -53,7 +53,7 @@ public final class RobustMedianAbsoluteError extends SimilarityMetric {
     List<Float> vals = new ArrayList<>();
     for (int i = 0; i < x.length; i++) {
       final float v = Math.abs(x[i] - y[i]);
-      if (!Float.isNaN(v)) { // && v > ZERO
+      if (!Float.isNaN(v) && v > ZERO) { //
         vals.add(v);
       }
     }

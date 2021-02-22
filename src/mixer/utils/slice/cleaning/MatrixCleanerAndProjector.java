@@ -36,7 +36,7 @@ import java.util.*;
 
 public class MatrixCleanerAndProjector {
     private final static float PERCENT_NAN_ALLOWED = .5f;
-    public static int NUM_PER_CENTROID = 10;
+    public static int NUM_PER_CENTROID = 10, NUM_CENTROIDS = 1000;
     protected final File outputDirectory;
     protected float[][] data;
     protected final Random generator = new Random(0);

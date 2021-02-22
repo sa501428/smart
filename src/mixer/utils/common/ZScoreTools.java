@@ -180,6 +180,6 @@ public class ZScoreTools {
     }
 
     private static boolean isValid(float val) {
-        return !Float.isNaN(val); // && val > ZERO
+        return !Float.isNaN(val) && val > ZERO; //
     }
 }

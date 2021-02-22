@@ -35,10 +35,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getZscoredNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
+    public static float[][] getZscoredNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numCentroid,
                                                              long seed) {
-        if ((!metric.isSymmetric()) || numPerCentroid > 1) {
-            return getAsymmetricMatrix(matrix, metric, numPerCentroid, seed);
+        if ((!metric.isSymmetric()) || numCentroid > 1) {
+            return getAsymmetricMatrix(matrix, metric, numCentroid, seed);
         }
 
         return getSymmetricMatrix(matrix, metric);
@@ -46,9 +46,10 @@ public class SimilarityMatrixTools {
 
     private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
         final int numInitialCentroids = matrix.length / numPerCentroid;
+
         final float[][] centroids;
         final int[] weights;
-        if (numPerCentroid > 1) {
+        if (numInitialCentroids > 1) {
             QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed);
             centroids = centroidMaker.generateCentroids();
             weights = centroidMaker.getWeights();
