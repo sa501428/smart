@@ -29,35 +29,36 @@ import mixer.utils.common.QuickMedian;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Euclidean distance.
- */
-public final class RobustMedianAbsoluteError extends SimilarityMetric {
+public class TheilSenMetric extends SimilarityMetric {
 
-  /**
-   * Euclidean metric.
-   */
-  public static final RobustMedianAbsoluteError SINGLETON = new RobustMedianAbsoluteError();
-  private static final float ZERO = 1e-10f;
+    public static final TheilSenMetric SINGLETON = new TheilSenMetric();
+    private static final float ZERO = 1e-10f;
 
-  private RobustMedianAbsoluteError() {
-    super(true);
-  }
-
-  @Override
-  public float distance(final float[] x, final float[] y) {
-    return getNonNanMedianAbsDeviation(x, y);
-  }
-
-  private float getNonNanMedianAbsDeviation(float[] x, float[] y) {
-    List<Float> vals = new ArrayList<>();
-    for (int i = 0; i < x.length; i++) {
-      final float v = Math.abs(x[i] - y[i]);
-      if (!Float.isNaN(v) && v > ZERO) { //
-        vals.add(v);
-      }
+    private TheilSenMetric() {
+        super(false);
     }
-    //return sortedMidpoint(vals);
-    return QuickMedian.fastMedian(vals);
-  }
+
+    private static float getTheilSenSlope(float[] xx, float[] yy) {
+        List<Float> slopesList = new ArrayList<>();
+        for (int i = 0; i < xx.length; i++) {
+            float x = xx[i];
+            float y = yy[i];
+            if (Float.isNaN(x) || Float.isNaN(y)) continue;
+            for (int j = i + 1; j < xx.length; j++) {
+                if (x != xx[j]) { // x must be different, otherwise slope becomes infinite
+                    float slope = (yy[j] - y) / (xx[j] - x);
+                    if (!Float.isNaN(slope)) {
+                        slopesList.add(slope);
+                    }
+                }
+            }
+        }
+
+        return QuickMedian.fastMedian(slopesList);
+    }
+
+    @Override
+    public float distance(float[] x, float[] y) {
+        return getTheilSenSlope(x, y);
+    }
 }

@@ -25,18 +25,20 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
-                                                      long seed) {
-        if ((!metric.isSymmetric()) || numPerCentroid > 1) {
-            return getAsymmetricMatrix(matrix, metric, numPerCentroid, seed);
+    public static float[][] getZscoredNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numCentroid,
+                                                             long seed) {
+        if ((!metric.isSymmetric()) || numCentroid > 1) {
+            return getAsymmetricMatrix(matrix, metric, numCentroid, seed);
         }
 
         return getSymmetricMatrix(matrix, metric);
@@ -44,11 +46,17 @@ public class SimilarityMatrixTools {
 
     private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
         final int numInitialCentroids = matrix.length / numPerCentroid;
+
         final float[][] centroids;
-        if (numPerCentroid > 1) {
-            centroids = new QuickCentroids(matrix, numInitialCentroids, seed).generateCentroids();
+        final int[] weights;
+        if (numInitialCentroids > 1) {
+            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed);
+            centroids = centroidMaker.generateCentroids();
+            weights = centroidMaker.getWeights();
         } else {
             centroids = matrix;
+            weights = new int[centroids.length];
+            Arrays.fill(weights, 1);
         }
 
         int numCentroids = centroids.length;
@@ -66,7 +74,7 @@ public class SimilarityMatrixTools {
                 int i = currRowIndex.getAndIncrement();
                 while (i < matrix.length) {
                     for (int j = 0; j < numCentroids; j++) {
-                        result[i][j] = metric.distance(matrix[i], centroids[j]);
+                        result[i][j] = metric.distance(centroids[j], matrix[i]);
                         if (Float.isNaN(result[i][j])) {
                             System.err.println("Error appearing in distance measure...");
                         }
@@ -82,13 +90,16 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
+        //ZScoreTools.inPlaceRobustZscoreDownCol(data);
+        ZScoreTools.inPlaceZscoreDownCol(result, weights);
+
         return result;
     }
 
     private static float[][] getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
         float[][] result = new float[matrix.length][matrix.length]; // *2
 
-        int numCPUThreads = Runtime.getRuntime().availableProcessors();
+        int numCPUThreads = Runtime.getRuntime().availableProcessors() * 2;
         System.out.println(" .. ");
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
@@ -111,6 +122,9 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
+        int[] weights = new int[result[0].length];
+        Arrays.fill(weights, 1);
+        ZScoreTools.inPlaceZscoreDownCol(result, weights);
         return result;
     }
 }

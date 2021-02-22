@@ -32,10 +32,8 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Rename.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Rename.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,6 +94,7 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.algos" />
       <recent name="mixer.utils.similaritymeasures" />
       <recent name="mixer.utils.custom" />
       <recent name="mixer.utils.shuffle.scoring" />
@@ -107,17 +106,6 @@
       <option name="MAIN_CLASS_NAME" value="mixer.clt.AggregateProcessing" />
       <module name="Mixer" />
       <option name="VM_PARAMETERS" value="-Xmx20G" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -138,56 +126,8 @@
       <workItem from="1612807162748" duration="9376000" />
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
-      <workItem from="1613352901469" duration="61108000" />
-    </task>
-    <task id="LOCAL-00016" summary="overhaul of metric handling, umap code added">
-      <created>1605081035886</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1605081035886</updated>
-    </task>
-    <task id="LOCAL-00017" summary="prelim shuffle implemented">
-      <created>1605171321961</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1605171321961</updated>
-    </task>
-    <task id="LOCAL-00018" summary="shuffle implemented">
-      <created>1605428587917</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1605428587917</updated>
-    </task>
-    <task id="LOCAL-00019" summary="shuffle for multiple files added">
-      <created>1605560422437</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1605560422437</updated>
-    </task>
-    <task id="LOCAL-00020" summary="code cleanup, bug fixes">
-      <created>1605643453740</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1605643453740</updated>
-    </task>
-    <task id="LOCAL-00021" summary="bug fixes, code running">
-      <created>1605674244242</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1605674244242</updated>
-    </task>
-    <task id="LOCAL-00022" summary="fix umap, compression calculation, code cleanup, bug fixes">
-      <created>1605682907027</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1605682907027</updated>
+      <workItem from="1613352901469" duration="86719000" />
+      <workItem from="1614022924990" duration="2607000" />
     </task>
     <task id="LOCAL-00023" summary="add kl divergence">
       <created>1605686313596</created>
@@ -483,7 +423,56 @@
       <option name="project" value="LOCAL" />
       <updated>1613803835021</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="fix aggregate statistics">
+      <created>1613890514158</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1613890514158</updated>
+    </task>
+    <task id="LOCAL-00066" summary="no log, remove first zscore, change centroid/50 -&gt; centroid per 10; remove weighing columns, maxiters to 3">
+      <created>1613894144249</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1613894144249</updated>
+    </task>
+    <task id="LOCAL-00067" summary="remove post processor; 1-shot centroids; regular zscore">
+      <created>1613896903872</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1613896903873</updated>
+    </task>
+    <task id="LOCAL-00068" summary="weigh by centroids cluster size">
+      <created>1613949034302</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1613949034303</updated>
+    </task>
+    <task id="LOCAL-00069" summary="add TSMetric">
+      <created>1613962623485</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1613962623485</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Functional version">
+      <created>1613975526718</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1613975526718</updated>
+    </task>
+    <task id="LOCAL-00071" summary="add renaming method">
+      <created>1614024036243</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1614024036243</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -508,13 +497,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="restructure scoring" />
-    <MESSAGE value="optimizations" />
-    <MESSAGE value="calculate on log matrix as well" />
-    <MESSAGE value="code cleanup; KL reverse" />
-    <MESSAGE value="shuffle, genomewide stats, bug fixes" />
-    <MESSAGE value="simplify data filtering; use coverage; update UMAP settings" />
-    <MESSAGE value="extracting local subcompartment" />
     <MESSAGE value="code cleanup, use simpler data containers" />
     <MESSAGE value="switch to robust zscore and median absolute error" />
     <MESSAGE value="using L1" />
@@ -533,7 +515,14 @@
     <MESSAGE value="try something else" />
     <MESSAGE value="bug fixes with centroids, filter out if too many zeros" />
     <MESSAGE value="intra matrix cleaning; bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="intra matrix cleaning; bug fixes" />
+    <MESSAGE value="fix aggregate statistics" />
+    <MESSAGE value="no log, remove first zscore, change centroid/50 -&gt; centroid per 10; remove weighing columns, maxiters to 3" />
+    <MESSAGE value="remove post processor; 1-shot centroids; regular zscore" />
+    <MESSAGE value="weigh by centroids cluster size" />
+    <MESSAGE value="add TSMetric" />
+    <MESSAGE value="Functional version" />
+    <MESSAGE value="add renaming method" />
+    <option name="LAST_COMMIT_MESSAGE" value="add renaming method" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

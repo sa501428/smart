@@ -27,7 +27,6 @@ package mixer.utils.slice.cleaning;
 import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import tagbio.umap.Umap;
@@ -37,7 +36,7 @@ import java.util.*;
 
 public class MatrixCleanerAndProjector {
     private final static float PERCENT_NAN_ALLOWED = .5f;
-    public static int NUM_PER_CENTROID = 50;
+    public static int NUM_PER_CENTROID = 10, NUM_CENTROIDS = 1000;
     protected final File outputDirectory;
     protected float[][] data;
     protected final Random generator = new Random(0);
@@ -52,7 +51,7 @@ public class MatrixCleanerAndProjector {
         // after this, there should be no infinities, no negative numbers
         // just real numbers >= 0 or NaNs
         this.data = data;
-        simpleLogWithCleanup(this.data);
+        //simpleLogWithCleanup(this.data);
         System.out.println("matrix size " + data.length + " x " + data[0].length);
     }
 
@@ -137,16 +136,18 @@ public class MatrixCleanerAndProjector {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
         }
 
-        ZScoreTools.inPlaceRobustZscoreDownCol(data, weights);
+        //ZScoreTools.inPlaceRobustZscoreDownCol(data, weights);
         if (MixerGlobals.printVerboseComments) {
             File temp = new File(outputDirectory, "zscore_new.npy");
             FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
         }
 
         System.out.println("Generating similarity matrix");
-        data = SimilarityMatrixTools.getNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
+        data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
-        ZScoreTools.inPlaceRobustZscoreDownCol(data, weights);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("similarity matrix size " + data.length + " x " + data[0].length);
+        }
 
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
