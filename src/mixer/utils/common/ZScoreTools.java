@@ -37,8 +37,8 @@ public class ZScoreTools {
     private static final int numCPUThreads = 30;
 
     public static void inPlaceZscoreDownCol(float[][] matrix, int[] weights) {
-        float[] colMeans = getColNonZeroMean(matrix);
-        float[] colStdDevs = getColNonZeroStdDev(matrix, colMeans);
+        float[] colMeans = getColMean(matrix);
+        float[] colStdDevs = getColStdDev(matrix, colMeans);
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -50,7 +50,7 @@ public class ZScoreTools {
         }
     }
 
-    public static float[] getColNonZeroMean(float[][] matrix) {
+    public static float[] getColMean(float[][] matrix) {
         double[] colSums = new double[matrix[0].length];
         int[] colSize = new int[colSums.length];
 
@@ -71,7 +71,7 @@ public class ZScoreTools {
         return colMeans;
     }
 
-    public static float[] getColNonZeroStdDev(float[][] matrix, float[] means) {
+    public static float[] getColStdDev(float[][] matrix, float[] means) {
 
         double[] squares = new double[means.length];
         int[] colSize = new int[means.length];
@@ -180,6 +180,6 @@ public class ZScoreTools {
     }
 
     private static boolean isValid(float val) {
-        return !Float.isNaN(val) && val > ZERO;
+        return !Float.isNaN(val); // && val > ZERO
     }
 }

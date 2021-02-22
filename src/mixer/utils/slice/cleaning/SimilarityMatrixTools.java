@@ -73,7 +73,7 @@ public class SimilarityMatrixTools {
                 int i = currRowIndex.getAndIncrement();
                 while (i < matrix.length) {
                     for (int j = 0; j < numCentroids; j++) {
-                        result[i][j] = metric.distance(matrix[i], centroids[j]);
+                        result[i][j] = metric.distance(centroids[j], matrix[i]);
                         if (Float.isNaN(result[i][j])) {
                             System.err.println("Error appearing in distance measure...");
                         }
@@ -98,7 +98,7 @@ public class SimilarityMatrixTools {
     private static float[][] getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
         float[][] result = new float[matrix.length][matrix.length]; // *2
 
-        int numCPUThreads = Runtime.getRuntime().availableProcessors();
+        int numCPUThreads = Runtime.getRuntime().availableProcessors() * 2;
         System.out.println(" .. ");
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
