@@ -37,8 +37,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Rename extends MixerCLT {
-    Map<String, String> oldNameToNewName = new HashMap<>();
-    Map<String, String> oldNameToNewColor = new HashMap<>();
+    private final Map<String, Integer> oldNameToScore = new HashMap<>();
+    private final Map<String, String> oldNameToNewName = new HashMap<>();
+    private final Map<String, String> oldNameToNewColor = new HashMap<>();
     private String inputBedFile, outputBedFile;
     private String[] changes;
 
@@ -68,6 +69,7 @@ public class Rename extends MixerCLT {
     }
 
     private void populateChanges() {
+        int counter = 1;
         for (String change : changes) {
             String[] values = change.split(",");
             String oldID = values[0].toUpperCase();
@@ -75,6 +77,7 @@ public class Rename extends MixerCLT {
             String rgb = values[2] + "," + values[3] + "," + values[4];
             oldNameToNewName.put(oldID, newID);
             oldNameToNewColor.put(oldID, rgb);
+            oldNameToScore.put(oldID, counter++);
         }
     }
 
@@ -89,6 +92,7 @@ public class Rename extends MixerCLT {
 
             if (nextLine.startsWith("#")) {
                 bufferedWriter.write(nextLine);
+                bufferedWriter.newLine();
                 continue;
             }
 
@@ -100,15 +104,17 @@ public class Rename extends MixerCLT {
                 String oldID = tokens[3].toUpperCase();
                 String newID = oldNameToNewName.get(oldID);
                 String newColor = oldNameToNewColor.get(oldID);
-                String outLine = generateOutputLine(tokens, newID, newColor);
+                int score = oldNameToScore.get(oldID);
+                String outLine = generateOutputLine(tokens, newID, newColor, score);
                 bufferedWriter.write(outLine);
+                bufferedWriter.newLine();
             }
         }
     }
 
-    private String generateOutputLine(String[] tokens, String newID, String newColor) {
+    private String generateOutputLine(String[] tokens, String newID, String newColor, int score) {
         return tokens[0] + "\t" + tokens[1] + "\t" + tokens[2] +
-                "\t" + newID + "\t" + newID + "\t.\t" +
-                tokens[1] + "\t" + tokens[2] + newColor;
+                "\t" + newID + "\t" + score + "\t.\t" +
+                tokens[1] + "\t" + tokens[2] + "\t" + newColor;
     }
 }
