@@ -36,7 +36,7 @@ public class ZScoreTools {
     private static final float ZERO = 1e-10f;
     private static final int numCPUThreads = 30;
 
-    public static void inPlaceScaleCol(float[][] matrix, int[] weights) {
+    public static void inPlaceScaleCol(float[][] matrix, float[] weights) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];

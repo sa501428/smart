@@ -36,7 +36,7 @@ import java.util.*;
 
 public class MatrixCleanerAndProjector {
     private final static float PERCENT_NAN_ALLOWED = .5f;
-    public static int NUM_PER_CENTROID = 10, NUM_CENTROIDS = 1000;
+    public static int NUM_PER_CENTROID = 100, NUM_CENTROIDS = 1000;
     protected final File outputDirectory;
     protected float[][] data;
     protected final Random generator = new Random(0);
@@ -135,22 +135,16 @@ public class MatrixCleanerAndProjector {
 
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                 int[] weights) {
-        //simpleLogWithCleanup(this.data);
+        simpleLogWithCleanup(this.data);
         data = filterOutColumnsAndRows(data, rowIndexToIntervalMap);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
         }
 
-        //ZScoreTools.inPlaceRobustZscoreDownCol(data, weights);
-        if (MixerGlobals.printVerboseComments) {
-            File temp = new File(outputDirectory, "zscore_new.npy");
-            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
-        }
+        //System.out.println("Generating similarity matrix");
+        //data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
-        System.out.println("Generating similarity matrix");
-        data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
-
-        if (MixerGlobals.printVerboseComments) {
+        if (false && MixerGlobals.printVerboseComments) {
             System.out.println("similarity matrix size " + data.length + " x " + data[0].length);
         }
 
@@ -158,14 +152,8 @@ public class MatrixCleanerAndProjector {
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
 
         System.out.println("Running UMAP");
-        runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
+        //runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
         System.out.println("Done running UMAP");
-
-        /*
-        int[] weights0 = new int[data[0].length];
-        Arrays.fill(weights0, 1);
-        ZScoreTools.inPlaceZscoreDownCol(data, weights0);
-         */
 
         return data;
     }

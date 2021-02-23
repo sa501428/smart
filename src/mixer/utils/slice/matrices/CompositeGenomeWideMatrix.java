@@ -98,6 +98,7 @@ public abstract class CompositeGenomeWideMatrix {
         }
 
         double withinClusterSumOfSquares = 0;
+        int numGoodClusters = 0;
         int genomewideCompartmentID = 0;
 
         int[][] ids = new int[1][clusters.length];
@@ -122,6 +123,8 @@ public abstract class CompositeGenomeWideMatrix {
                     badIndices.add(badIndex);
                 }
                 withinClusterSumOfSquares += Float.MAX_VALUE;
+            } else {
+                numGoodClusters++;
             }
 
             for (int i : cluster.getMemberIndexes()) {
@@ -166,6 +169,7 @@ public abstract class CompositeGenomeWideMatrix {
             }
         }
 
+        withinClusterSumOfSquares = withinClusterSumOfSquares / numGoodClusters;
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Final WCSS " + withinClusterSumOfSquares);
         }

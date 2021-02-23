@@ -25,7 +25,7 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
-import mixer.utils.common.ZScoreTools;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.Arrays;
@@ -48,14 +48,17 @@ public class SimilarityMatrixTools {
         final int numInitialCentroids = matrix.length / numPerCentroid;
 
         final float[][] centroids;
-        final int[] weights;
+        final float[] weights;
         if (numInitialCentroids > 1) {
-            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed);
+            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed, 100);
             centroids = centroidMaker.generateCentroids();
             weights = centroidMaker.getWeights();
+            for (int i = 0; i < weights.length; i++) {
+                weights[i] = (float) Math.sqrt(weights[i]);
+            }
         } else {
             centroids = matrix;
-            weights = new int[centroids.length];
+            weights = new float[centroids.length];
             Arrays.fill(weights, 1);
         }
 
@@ -66,9 +69,8 @@ public class SimilarityMatrixTools {
 
         float[][] result = new float[matrix.length][numCentroids];
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
-        //int offset1 = numCentroids;
-        //int offset2 = 2 * numCentroids;
-        System.out.println(" ... ");
+
+        System.out.println("... generating sym matrix");
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
@@ -77,8 +79,6 @@ public class SimilarityMatrixTools {
                 while (i < matrix.length) {
                     for (int j = 0; j < numCentroids; j++) {
                         result[i][j] = metric.distance(centroids[j], matrix[i], 0, 3);
-                        //result[i][offset1 + j] = metric.distance(centroids[j], matrix[i], 1, 3);
-                        //result[i][offset2 + j] = metric.distance(centroids[j], matrix[i], 2, 3);
 
                         if (Float.isNaN(result[i][j])) {
                             System.err.println("Error appearing in distance measure...");
@@ -102,10 +102,10 @@ public class SimilarityMatrixTools {
         System.arraycopy(weights, 0, weights3, offset2, weights.length);
          */
 
-        ZScoreTools.inPlaceZscoreDownCol(result, weights);
+        //ZScoreTools.inPlaceScaleCol(result, weights);
         //ZScoreTools.inPlaceScaleCol(result, weights);
 
-        return result;
+        return FloatMatrixTools.concatenate(matrix, result);
     }
 
     private static float[][] getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
