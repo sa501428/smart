@@ -80,7 +80,7 @@ public class GenomeWideKmeansRunner {
                 @Override
                 public void kmeansMessage(String s) {
                     if (MixerGlobals.printVerboseComments) {
-                        System.out.println(s);
+                        //System.out.println(s);
                     }
                 }
 

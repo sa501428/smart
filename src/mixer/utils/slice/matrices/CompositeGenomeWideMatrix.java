@@ -31,6 +31,7 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
@@ -83,6 +84,12 @@ public abstract class CompositeGenomeWideMatrix {
         gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap, weights);
     }
 
+    public void emergencyCleanUpSpecificBadRows(Set<Integer> badIndices) {
+        MatrixCleanerAndProjector matrixCleanupReduction = new MatrixCleanerAndProjector(gwCleanMatrix,
+                generator.nextLong(), outputDirectory, metric);
+        gwCleanMatrix = matrixCleanupReduction.justRemoveBadRows(badIndices, rowIndexToIntervalMap, weights);
+    }
+
     public synchronized KmeansResult processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
@@ -99,6 +106,8 @@ public abstract class CompositeGenomeWideMatrix {
             Arrays.fill(forIndex, -1);
         }
 
+        Set<Integer> badIndices = new HashSet<>();
+
         for (int z = 0; z < clusters.length; z++) {
             Cluster cluster = clusters[z];
             int currentClusterID = ++genomewideCompartmentID;
@@ -108,8 +117,16 @@ public abstract class CompositeGenomeWideMatrix {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
             }
 
+            if (cluster.getMemberIndexes().length < 5) {
+                for (int badIndex : cluster.getMemberIndexes()) {
+                    badIndices.add(badIndex);
+                }
+                withinClusterSumOfSquares += Float.MAX_VALUE;
+            }
+
             for (int i : cluster.getMemberIndexes()) {
-                withinClusterSumOfSquares += sumOfSquaresDistance(cluster.getCenter(), gwCleanMatrix[i]);
+                withinClusterSumOfSquares +=
+                        RobustEuclideanDistance.getNonNanMeanSquaredError(cluster.getCenter(), gwCleanMatrix[i]);
 
                 try {
                     SubcompartmentInterval interv;
@@ -153,19 +170,15 @@ public abstract class CompositeGenomeWideMatrix {
             System.out.println("Final WCSS " + withinClusterSumOfSquares);
         }
 
+        if (badIndices.size() > 0) {
+            emergencyCleanUpSpecificBadRows(badIndices);
+            System.out.println("bad matrices removed; newer matrix size " + gwCleanMatrix.length + " x " + gwCleanMatrix[0].length);
+        }
+
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
 
         return new KmeansResult(withinClusterSumOfSquares, ids, idsForIndex);
-    }
-
-    private double sumOfSquaresDistance(float[] center, float[] vector) {
-        double sumSquared = 0.0;
-        for (int i = 0; i < center.length; i++) {
-            double v = vector[i] - center[i];
-            sumSquared += (v * v);
-        }
-        return sumSquared;
     }
 
     public float[][] getCleanedData() {

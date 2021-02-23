@@ -43,7 +43,7 @@ public final class RobustEuclideanDistance extends SimilarityMetric {
     return (float) Math.sqrt(getNonNanMeanSquaredError(x, y));
   }
 
-  private double getNonNanMeanSquaredError(float[] x, float[] y) {
+  public static double getNonNanMeanSquaredError(float[] x, float[] y) {
     double sumOfSquares = 0;
     int numVals = 0;
     for (int i = 0; i < x.length; i++) {

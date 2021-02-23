@@ -71,7 +71,7 @@ public class AggregateProcessing {
         for (int res : new int[]{100000}) { //50000
             String folder = "new_test_res_" + res + "v" + MixerGlobals.versionNum;
             strings = new String[]{"slice", "-r", res + "", "-k", "KR", //"--verbose",
-                    file14, "2,11,3",
+                    file14, "2,7,10",
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
             };
             System.out.println("-----------------------------------------------------");
