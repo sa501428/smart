@@ -61,6 +61,22 @@ public class ZScoreTools {
         }
     }
 
+    public static void inPlaceZscoreRows(float[][] matrix) {
+        float[] rowMeans = getRowMean(matrix);
+        float[] rowStdDevs = getRowStdDev(matrix, rowMeans);
+
+        for (int i = 0; i < matrix.length; i++) {
+            float rowMean = rowMeans[i];
+            float rowStd = rowStdDevs[i];
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (!Float.isNaN(val)) {
+                    matrix[i][j] = (val - rowMean) / rowStd;
+                }
+            }
+        }
+    }
+
     public static float[] getColMean(float[][] matrix) {
         double[] colSums = new double[matrix[0].length];
         int[] colSize = new int[colSums.length];
@@ -82,6 +98,27 @@ public class ZScoreTools {
         return colMeans;
     }
 
+    public static float[] getRowMean(float[][] matrix) {
+        double[] rowSums = new double[matrix.length];
+        int[] rowSize = new int[rowSums.length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (isValid(val)) {
+                    rowSums[i] += val;
+                    rowSize[i] += 1;
+                }
+            }
+        }
+
+        float[] rowMeans = new float[rowSums.length];
+        for (int k = 0; k < rowSums.length; k++) {
+            rowMeans[k] = (float) (rowSums[k] / Math.max(rowSize[k], 1));
+        }
+        return rowMeans;
+    }
+
     public static float[] getColStdDev(float[][] matrix, float[] means) {
 
         double[] squares = new double[means.length];
@@ -101,6 +138,29 @@ public class ZScoreTools {
         float[] stdDev = new float[means.length];
         for (int k = 0; k < squares.length; k++) {
             stdDev[k] = (float) Math.sqrt(squares[k] / Math.max(colSize[k], 1));
+        }
+        return stdDev;
+    }
+
+    public static float[] getRowStdDev(float[][] matrix, float[] means) {
+
+        double[] squares = new double[means.length];
+        int[] rowSize = new int[means.length];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j];
+                if (isValid(val)) {
+                    float diff = val - means[i];
+                    squares[i] += diff * diff;
+                    rowSize[i] += 1;
+                }
+            }
+        }
+
+        float[] stdDev = new float[means.length];
+        for (int k = 0; k < squares.length; k++) {
+            stdDev[k] = (float) Math.sqrt(squares[k] / Math.max(rowSize[k], 1));
         }
         return stdDev;
     }
