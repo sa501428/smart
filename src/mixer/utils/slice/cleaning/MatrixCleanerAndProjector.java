@@ -27,7 +27,6 @@ package mixer.utils.slice.cleaning;
 import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import tagbio.umap.Umap;
@@ -136,7 +135,7 @@ public class MatrixCleanerAndProjector {
 
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                 int[] weights) {
-        simpleLogWithCleanup(this.data);
+        //simpleLogWithCleanup(this.data);
         data = filterOutColumnsAndRows(data, rowIndexToIntervalMap);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
@@ -149,7 +148,7 @@ public class MatrixCleanerAndProjector {
         }
 
         System.out.println("Generating similarity matrix");
-        // data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
+        data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("similarity matrix size " + data.length + " x " + data[0].length);
@@ -159,12 +158,14 @@ public class MatrixCleanerAndProjector {
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
 
         System.out.println("Running UMAP");
-        //runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
+        runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
         System.out.println("Done running UMAP");
 
+        /*
         int[] weights0 = new int[data[0].length];
         Arrays.fill(weights0, 1);
         ZScoreTools.inPlaceZscoreDownCol(data, weights0);
+         */
 
         return data;
     }

@@ -33,11 +33,10 @@
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,14 +143,7 @@
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
       <workItem from="1613352901469" duration="86719000" />
-      <workItem from="1614022924990" duration="12239000" />
-    </task>
-    <task id="LOCAL-00026" summary="Dice implemented; shuffle ordering fixed; bed file parsing changed">
-      <created>1605758940454</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1605758940454</updated>
+      <workItem from="1614022924990" duration="15391000" />
     </task>
     <task id="LOCAL-00027" summary="maxiters now at 1000 (prev 20000), print thread count">
       <created>1605810257833</created>
@@ -489,7 +481,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614056554516</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="allow emergency filtering if outliers made into cluster; simple log with zscore approach">
+      <created>1614063627489</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1614063627489</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -514,7 +513,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="using L1" />
     <MESSAGE value="remove low coverage" />
     <MESSAGE value="adjust low coverage removal, defaults" />
     <MESSAGE value="use genomewide coverage removal" />
@@ -539,7 +537,8 @@
     <MESSAGE value="add renaming method" />
     <MESSAGE value="multi-sampled centroid" />
     <MESSAGE value="split up centroid" />
-    <option name="LAST_COMMIT_MESSAGE" value="split up centroid" />
+    <MESSAGE value="allow emergency filtering if outliers made into cluster; simple log with zscore approach" />
+    <option name="LAST_COMMIT_MESSAGE" value="allow emergency filtering if outliers made into cluster; simple log with zscore approach" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

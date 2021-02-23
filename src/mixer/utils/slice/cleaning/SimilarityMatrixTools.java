@@ -64,10 +64,10 @@ public class SimilarityMatrixTools {
             System.out.println("AsymMatrix: Was initially " + numInitialCentroids + " centroids, but using " + numCentroids);
         }
 
-        float[][] result = new float[matrix.length][numCentroids * 3];
+        float[][] result = new float[matrix.length][numCentroids];
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
-        int offset1 = numCentroids;
-        int offset2 = 2 * numCentroids;
+        //int offset1 = numCentroids;
+        //int offset2 = 2 * numCentroids;
         System.out.println(" ... ");
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
@@ -77,8 +77,8 @@ public class SimilarityMatrixTools {
                 while (i < matrix.length) {
                     for (int j = 0; j < numCentroids; j++) {
                         result[i][j] = metric.distance(centroids[j], matrix[i], 0, 3);
-                        result[i][offset1 + j] = metric.distance(centroids[j], matrix[i], 1, 3);
-                        result[i][offset2 + j] = metric.distance(centroids[j], matrix[i], 2, 3);
+                        //result[i][offset1 + j] = metric.distance(centroids[j], matrix[i], 1, 3);
+                        //result[i][offset2 + j] = metric.distance(centroids[j], matrix[i], 2, 3);
 
                         if (Float.isNaN(result[i][j])) {
                             System.err.println("Error appearing in distance measure...");
@@ -95,13 +95,15 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
+        /*
         int[] weights3 = new int[weights.length * 3];
         System.arraycopy(weights, 0, weights3, 0, weights.length);
         System.arraycopy(weights, 0, weights3, offset1, weights.length);
         System.arraycopy(weights, 0, weights3, offset2, weights.length);
+         */
 
-        //ZScoreTools.inPlaceRobustZscoreDownCol(data);
-        ZScoreTools.inPlaceZscoreDownCol(result, weights3);
+        ZScoreTools.inPlaceZscoreDownCol(result, weights);
+        //ZScoreTools.inPlaceScaleCol(result, weights);
 
         return result;
     }
@@ -132,9 +134,9 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
-        int[] weights = new int[result[0].length];
-        Arrays.fill(weights, 1);
-        ZScoreTools.inPlaceZscoreDownCol(result, weights);
+        //int[] weights = new int[result[0].length];
+        //Arrays.fill(weights, 1);
+        //ZScoreTools.inPlaceZscoreDownCol(result, weights);
         return result;
     }
 }
