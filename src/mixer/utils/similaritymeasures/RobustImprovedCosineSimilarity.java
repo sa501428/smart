@@ -33,7 +33,7 @@ public final class RobustImprovedCosineSimilarity extends SimilarityMetric {
   }
 
   @Override
-  public float distance(final float[] x, final float[] y) {
+  public float distance(final float[] x, final float[] y, int index, int skip) {
     double dotProduct = 0.0;
     double norm1X = 0.0;
     double norm1Y = 0.0;
