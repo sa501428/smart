@@ -110,6 +110,7 @@ public class Rename extends MixerCLT {
                 bufferedWriter.newLine();
             }
         }
+        bufferedWriter.close();
     }
 
     private String generateOutputLine(String[] tokens, String newID, String newColor, int score) {

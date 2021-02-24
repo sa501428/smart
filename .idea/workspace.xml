@@ -33,9 +33,8 @@
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Rename.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Rename.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/GWBadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/GWBadIndexFinder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -143,14 +142,7 @@
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
       <workItem from="1613352901469" duration="86719000" />
-      <workItem from="1614022924990" duration="26499000" />
-    </task>
-    <task id="LOCAL-00030" summary="removing gaussian, code cleanup/optimizations">
-      <created>1605821824641</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1605821824641</updated>
+      <workItem from="1614022924990" duration="30375000" />
     </task>
     <task id="LOCAL-00031" summary="pass seeds instead of random, use parallel kmeans for quick centroids">
       <created>1605824918951</created>
@@ -488,7 +480,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614116362194</updated>
     </task>
-    <option name="localTasksCounter" value="79" />
+    <task id="LOCAL-00079" summary="add back left over clustering">
+      <created>1614171629901</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1614171629901</updated>
+    </task>
+    <option name="localTasksCounter" value="80" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -513,7 +512,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fix" />
     <MESSAGE value="bug fixes" />
     <MESSAGE value="larger initial group size" />
     <MESSAGE value="try cosine, positive zscore" />
@@ -538,7 +536,8 @@
     <MESSAGE value="options for direct column scaling, segmenting centroid" />
     <MESSAGE value="restore to a working version" />
     <MESSAGE value="go in reverse order for clustering" />
-    <option name="LAST_COMMIT_MESSAGE" value="go in reverse order for clustering" />
+    <MESSAGE value="add back left over clustering" />
+    <option name="LAST_COMMIT_MESSAGE" value="add back left over clustering" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

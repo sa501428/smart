@@ -43,6 +43,78 @@ public class AggregateProcessing {
                 "4,B2,255,255,0;" +
                 "1,B3,112,128,144";
 
+        changes = "4,A1,34,139,34;" +
+                "2,A2,152,251,152;" +
+                "3,B1,220,20,60;" +
+                "5,B2,255,255,0;" +
+                "1,B3,112,128,144";
+
+        strings = new String[]{"rename",
+                changes,
+                "/Users/mshamim/Desktop/SLICE.Reboot/calls/HAP1_res_100000v3.17.03/HAP1_res_100000v3.17.03_5_clusters_hap1_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_HAP1_100K.bed"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/hap1_30.hic";
+        strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_HAP1_100K.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/SLICE_HAP1_100K_FIN",
+                "SLICE3"
+        };
+        MixerTools.main(strings);
+        System.gc();
+
+        /*
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/imr90_rh14_30.hic";
+        strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/sniper/IMR90_track_hg19.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/sniper/IMR90_100K_Shuffle",
+                "SNIPER"
+        };
+        MixerTools.main(strings);
+        System.gc();
+
+        file14 = "/Users/mshamim/Desktop/hicfiles/hap1_30.hic";
+        strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/sniper/HAP1_track_hg19.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/sniper/HAP1_100K_Shuffle",
+                "SNIPER"
+        };
+        MixerTools.main(strings);
+        System.gc();
+
+/*
+
+        strings = new String[]{"rename",
+                changes,
+                "/Users/mshamim/Desktop/SLICE.Reboot/calls/GM_100000v3.17.01/new_test_res_100000v3.17.01_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/archive/SLICE_GM_100K.bed"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/archive/SLICE_GM_100K.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/archive/SLICE_GM_100K_FIN",
+                "SLICE3"
+        };
+        MixerTools.main(strings);
+        System.gc();
+
+/*
+
+
+
         strings = new String[]{"rename",
                 changes,
                 "/Users/mshamim/Desktop/SLICE.Reboot/GM_Final_res_100000v3.17.04/GM_Final_res_100000v3.17.04_5_clusters_gm12878_rh14_30.subcompartment.bed",
@@ -56,11 +128,13 @@ public class AggregateProcessing {
         strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
                 file14,
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K.bed",
-                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/SLICE_GM_100K_FIN",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/SLICE_GM_100K_FIN2",
                 "SLICE3"
         };
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
+
+
 
         strings = new String[]{"rename",
                 changes,
@@ -68,6 +142,17 @@ public class AggregateProcessing {
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_50K.bed"
         };
         System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        strings = new String[]{"shuffle", "-r", 50000 + "", "-k", "KR", "-w", "" + 32,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_50K.bed," +
+                        "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K.bed," +
+                        "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/SLICE_GM_50K_FIN2",
+                "SLICE50,SLICE100,RH2014"
+        };
         MixerTools.main(strings);
         System.gc();
 

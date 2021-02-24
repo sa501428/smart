@@ -32,7 +32,6 @@ import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
-import mixer.utils.slice.cleaning.LeftOverClusterIdentifier;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
 import mixer.utils.slice.matrices.SliceMatrix;
@@ -129,11 +128,13 @@ public class FullGenomeOEWithinClusters {
         }
         System.out.println(".");
 
+        /*
         if (!compareMaps) {
             System.out.println("Post processing");
             LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norms[0], resolution);
             identifier.identify(numItersToResults, sliceMatrix.getBadIndices());
         }
+         */
 
         MatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath(), iterToWcssAicBic);
 
