@@ -31,11 +31,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/algos/UmapProjection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPMatrices.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Rename.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Rename.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,11 +98,11 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.algos" />
       <recent name="mixer.utils.similaritymeasures" />
       <recent name="mixer.utils.custom" />
       <recent name="mixer.utils.shuffle.scoring" />
-      <recent name="mixer.utils.slice.kmeansfloat" />
     </key>
   </component>
   <component name="RunManager">
@@ -142,14 +144,7 @@
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
       <workItem from="1613352901469" duration="86719000" />
-      <workItem from="1614022924990" duration="30375000" />
-    </task>
-    <task id="LOCAL-00031" summary="pass seeds instead of random, use parallel kmeans for quick centroids">
-      <created>1605824918951</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1605824918951</updated>
+      <workItem from="1614022924990" duration="37843000" />
     </task>
     <task id="LOCAL-00032" summary="parallelize centroid re-calculation">
       <created>1605825418095</created>
@@ -487,7 +482,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614171629901</updated>
     </task>
-    <option name="localTasksCounter" value="80" />
+    <task id="LOCAL-00080" summary="bug fix, roll back leftover clusterer">
+      <created>1614178242716</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1614178242716</updated>
+    </task>
+    <option name="localTasksCounter" value="81" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -512,7 +514,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fixes" />
     <MESSAGE value="larger initial group size" />
     <MESSAGE value="try cosine, positive zscore" />
     <MESSAGE value="remove second zscore" />
@@ -537,7 +538,8 @@
     <MESSAGE value="restore to a working version" />
     <MESSAGE value="go in reverse order for clustering" />
     <MESSAGE value="add back left over clustering" />
-    <option name="LAST_COMMIT_MESSAGE" value="add back left over clustering" />
+    <MESSAGE value="bug fix, roll back leftover clusterer" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix, roll back leftover clusterer" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

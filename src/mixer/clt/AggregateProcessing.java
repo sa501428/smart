@@ -43,12 +43,89 @@ public class AggregateProcessing {
                 "4,B2,255,255,0;" +
                 "1,B3,112,128,144";
 
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        String bedfiles = "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed";
+
+        strings = new String[]{"umap",
+                "-r", "100000", "-k", "KR", "-w", "2",
+                file14,
+                bedfiles,
+                "/Users/mshamim/Desktop/SLICE.Reboot/UMAP_GM2"
+        };
+        MixerTools.main(strings);
+        System.gc();
+
+
+        /*
+
+        strings = new String[]{"rename",
+                changes,
+                "/Users/mshamim/Desktop/SLICE.Reboot/GMPrimary_Final_100000_v3.17.05/GMPrimary_Final_100000_v3.17.05_5_clusters_GM12878_primary14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed"
+        };
+        //MixerTools.main(strings);
+        System.gc();
+
+        strings = new String[]{"rename",
+                changes,
+                "/Users/mshamim/Desktop/SLICE.Reboot/GMPrimary_Final_50000_v3.17.05/GMPrimary_Final_50000_v3.17.05_5_clusters_GM12878_primary14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_50K.bed"
+        };
+        //MixerTools.main(strings);
+        System.gc();
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/PRIMARY_BED_Mega14_HIC_" + 100 + "K_v" + MixerGlobals.versionNum,
+                "SLICE_PRIMARY"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+
+
+/*
+
+        String primary = "/Users/mshamim/Desktop/hicfiles/GM12878_primary14_30.hic";
+
+        for (int res : new int[]{100000,50000}) { //
+            String folder = "GMPrimary_Final_" + res + "_v" + MixerGlobals.versionNum;
+            strings = new String[]{"slice", "-r", res + "", "-k", "KR", //"--verbose",
+                    primary, "2,8,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+
+            strings = new String[]{"shuffle", "-r", res + "", "-k", "KR", "-w", "" + (16 * (100000 / res)),
+                    primary,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
+                            "/" + folder + "_5_clusters_GM12878_primary14_30.subcompartment.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_Primary_" + res + "v" + MixerGlobals.versionNum,
+                    "SLICE3"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
+
+
+        /*
         changes = "4,A1,34,139,34;" +
                 "2,A2,152,251,152;" +
                 "3,B1,220,20,60;" +
                 "5,B2,255,255,0;" +
                 "1,B3,112,128,144";
-
         strings = new String[]{"rename",
                 changes,
                 "/Users/mshamim/Desktop/SLICE.Reboot/calls/HAP1_res_100000v3.17.03/HAP1_res_100000v3.17.03_5_clusters_hap1_30.subcompartment.bed",
