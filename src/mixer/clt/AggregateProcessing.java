@@ -24,7 +24,6 @@
 
 package mixer.clt;
 
-import mixer.MixerGlobals;
 import mixer.MixerTools;
 
 
@@ -38,40 +37,53 @@ public class AggregateProcessing {
     public static void main(String[] argv) throws Exception {
 
         String[] strings;
-        String changes = "5,A1,34,139,34;" +
-                "3,A2,152,251,152;" +
-                "4,B1,220,20,60;" +
-                "2,B2,255,255,0;" +
+        String changes = "3,A1,34,139,34;" +
+                "2,A2,152,251,152;" +
+                "5,B1,220,20,60;" +
+                "4,B2,255,255,0;" +
                 "1,B3,112,128,144";
 
         strings = new String[]{"rename",
                 changes,
-                "/Users/mshamim/Desktop/SLICE.Reboot/new_test_res_100000v3.15.19/new_test_res_100000v3.15.19_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_3.15.19.bed"
+                "/Users/mshamim/Desktop/SLICE.Reboot/GM_Final_res_100000v3.17.04/GM_Final_res_100000v3.17.04_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K.bed"
         };
         System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/SLICE_GM_100K_FIN",
+                "SLICE3"
+        };
         //MixerTools.main(strings);
         System.gc();
 
         strings = new String[]{"rename",
                 changes,
-                "/Users/mshamim/Desktop/SLICE.Reboot/new_test_res_50000v3.16.01/new_test_res_50000v3.16.01_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_50K_3.15.19.bed"
+                "/Users/mshamim/Desktop/SLICE.Reboot/GM_Final_res_50000v3.17.04/GM_Final_res_50000v3.17.04_5_clusters_gm12878_rh14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_50K.bed"
         };
         System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
+        MixerTools.main(strings);
         System.gc();
 
+        /*
 
         String refs = "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed," +
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed";
-        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
-        for (int res : new int[]{100000}) { //
-            String folder = "new_test_res_" + res + "v" + MixerGlobals.versionNum;
+        //file14 = "/Users/mshamim/Desktop/hicfiles/hap1_30.hic";
+
+        for (int res : new int[]{50000}) { //
+            String folder = "GM_Final_res_" + res + "v" + MixerGlobals.versionNum;
             strings = new String[]{"slice", "-r", res + "", "-k", "KR", //"--verbose",
-                    file14, "2,7,10",
+                    file14, "2,8,10",
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
             };
             System.out.println("-----------------------------------------------------");
@@ -82,8 +94,7 @@ public class AggregateProcessing {
                     //refs + "," +
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
                             "/" + folder + "_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_res_" + res + "v" + MixerGlobals.versionNum,
-                    //"RH2014,SCI,SNIPER," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_Final_res_" + res + "v" + MixerGlobals.versionNum,
                     "SLICE3"
             };
             System.out.println("-----------------------------------------------------");

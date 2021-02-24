@@ -129,7 +129,7 @@ public class FullGenomeOEWithinClusters {
         }
         System.out.println(".");
 
-        if (!compareMaps && false) {
+        if (!compareMaps) {
             System.out.println("Post processing");
             LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norms[0], resolution);
             identifier.identify(numItersToResults, sliceMatrix.getBadIndices());

@@ -40,6 +40,7 @@ public class GWBadIndexFinder {
     protected static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -3;
     protected final int resolution;
     protected final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
+    protected final Map<Integer, Set<Integer>> emptyIndices = new HashMap<>();
     protected final NormalizationType[] norms;
     private final GWRegionStatistics gwStats = new GWRegionStatistics();
 
@@ -48,6 +49,7 @@ public class GWBadIndexFinder {
         this.norms = norms;
         for (Chromosome chrom : chromosomes) {
             badIndices.put(chrom.getIndex(), new HashSet<>());
+            emptyIndices.put(chrom.getIndex(), new HashSet<>());
         }
     }
 
@@ -107,6 +109,7 @@ public class GWBadIndexFinder {
                     badIndices.get(chr1.getIndex()).add(k);
                 }
             } else {
+                emptyIndices.get(chr1.getIndex()).add(k);
                 badIndices.get(chr1.getIndex()).add(k);
             }
         }
@@ -114,5 +117,9 @@ public class GWBadIndexFinder {
 
     public Set<Integer> getBadIndices(Chromosome chrom) {
         return badIndices.get(chrom.getIndex());
+    }
+
+    public Set<Integer> getEmptyIndices(Chromosome chrom) {
+        return emptyIndices.get(chrom.getIndex());
     }
 }
