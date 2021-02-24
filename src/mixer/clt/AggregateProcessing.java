@@ -43,7 +43,7 @@ public class AggregateProcessing {
                 "4,B2,255,255,0;" +
                 "1,B3,112,128,144";
 
-        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        String file14 = "/Users/mshamim/Desktop/hicfiles/imr90_rh14_30.hic";
         String bedfiles = "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed," +
@@ -51,11 +51,28 @@ public class AggregateProcessing {
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed";
 
+        file14 = "/Users/mshamim/Desktop/hicfiles/imr90_rh14_30.hic";
+        bedfiles = "/Users/mshamim/Desktop/SLICE.Reboot/existing/sniper/IMR90_track_hg19.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_IMR90_100K.bed";
+
         strings = new String[]{"umap",
-                "-r", "100000", "-k", "KR", "-w", "2",
+                "-r", "100000", "-k", "KR", "-w", "8",
                 file14,
                 bedfiles,
-                "/Users/mshamim/Desktop/SLICE.Reboot/UMAP_GM2"
+                "/Users/mshamim/Desktop/SLICE.Reboot/UMAP_IMR90"
+        };
+        MixerTools.main(strings);
+        System.gc();
+
+        file14 = "/Users/mshamim/Desktop/hicfiles/hap1_30.hic";
+        bedfiles = "/Users/mshamim/Desktop/SLICE.Reboot/existing/sniper/HAP1_track_hg19.bed," +
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_HAP1_100K.bed";
+
+        strings = new String[]{"umap",
+                "-r", "100000", "-k", "KR", "-w", "8",
+                file14,
+                bedfiles,
+                "/Users/mshamim/Desktop/SLICE.Reboot/UMAP_HAP1"
         };
         MixerTools.main(strings);
         System.gc();

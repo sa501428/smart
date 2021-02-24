@@ -31,13 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/algos/UmapProjection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPMatrices.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,19 +109,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -144,14 +126,7 @@
       <workItem from="1612921739914" duration="460000" />
       <workItem from="1612930015690" duration="555000" />
       <workItem from="1613352901469" duration="86719000" />
-      <workItem from="1614022924990" duration="37843000" />
-    </task>
-    <task id="LOCAL-00032" summary="parallelize centroid re-calculation">
-      <created>1605825418095</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1605825418095</updated>
+      <workItem from="1614022924990" duration="39078000" />
     </task>
     <task id="LOCAL-00033" summary="bug fix">
       <created>1605827515239</created>
@@ -489,7 +464,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614178242716</updated>
     </task>
-    <option name="localTasksCounter" value="81" />
+    <task id="LOCAL-00081" summary="umap tools">
+      <created>1614190402318</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1614190402319</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -514,7 +496,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="larger initial group size" />
     <MESSAGE value="try cosine, positive zscore" />
     <MESSAGE value="remove second zscore" />
     <MESSAGE value="use ICS" />
@@ -539,7 +520,8 @@
     <MESSAGE value="go in reverse order for clustering" />
     <MESSAGE value="add back left over clustering" />
     <MESSAGE value="bug fix, roll back leftover clusterer" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix, roll back leftover clusterer" />
+    <MESSAGE value="umap tools" />
+    <option name="LAST_COMMIT_MESSAGE" value="umap tools" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
