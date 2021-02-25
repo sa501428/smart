@@ -98,15 +98,13 @@ public class FullGenomeOEWithinClusters {
         Arrays.fill(iterToWcssAicBic[3], Double.MAX_VALUE);
 
         System.out.println("Genomewide clustering");
-        for (int z = numClusterSizeKValsUsed - 1; z >= 0; z--) {
-
+        for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             int k = z + startingClusterSizeK;
             Cluster[] bestClusters = null;
             int[] bestIDs = null;
             int[][] novelIDsForIndx = null;
 
             for (int p = 0; p < numAttemptsForKMeans; p++) {
-
                 kmeansRunner.prepareForNewRun(k);
                 kmeansRunner.launchKmeansGWMatrix(generator.nextLong());
 
