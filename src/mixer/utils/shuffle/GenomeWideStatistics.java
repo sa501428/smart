@@ -31,6 +31,7 @@ import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.InterMatrixBalancer;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -152,47 +153,79 @@ public class GenomeWideStatistics {
     public void saveInteractionMap(File outfolder) {
 
         boolean useLog = false;
-        for (boolean useSymm : new boolean[]{true, false}) {
-            double averageContact = totalContact / totalCounts;
-            if (useLog) {
-                if (useSymm) {
-                    averageContact = (Math.log(2 * totalContact) / (2 * totalCounts));
-                } else {
-                    averageContact = (Math.log(totalContact) / totalCounts);
-                }
-            }
-
-            float[][] result = new float[countsMatrix.length][countsMatrix.length];
-            for (int i = 0; i < result.length; i++) {
-                for (int j = 0; j < result[i].length; j++) {
-                    double contacts = contactsMatrix[i][j];
-                    long counts = countsMatrix[i][j];
-
+        for (boolean useBalancing : new boolean[]{false, true}) {
+            for (boolean useSymm : new boolean[]{true, false}) {
+                double averageContact = totalContact / totalCounts;
+                if (useLog) {
                     if (useSymm) {
-                        contacts += contactsMatrix[j][i];
-                        counts += countsMatrix[j][i];
+                        averageContact = (Math.log(2 * totalContact) / (2 * totalCounts));
+                    } else {
+                        averageContact = (Math.log(totalContact) / totalCounts);
+                    }
+                }
+
+                float[][] result = new float[countsMatrix.length][countsMatrix.length];
+                for (int i = 0; i < result.length; i++) {
+                    for (int j = 0; j < result[i].length; j++) {
+                        double contacts = contactsMatrix[i][j];
+                        if (useSymm) {
+                            contacts += contactsMatrix[j][i];
+                        }
+                        if (useLog) {
+                            contacts = Math.log(contacts);
+                        }
+                        result[i][j] = (float) contacts;
+                    }
+                }
+
+                if (useBalancing) {
+                    InterMatrixBalancer balancer = new InterMatrixBalancer(result, useSymm);
+                    float[][] balanced = balancer.getNormalizedMatrix();
+                    if (balanced != null) {
+                        result = balanced;
+                    } else {
+                        System.err.println("Unable to balance summary statistics");
+                    }
+                } else {
+
+                    for (int i = 0; i < result.length; i++) {
+                        for (int j = 0; j < result[i].length; j++) {
+                            long counts = countsMatrix[i][j];
+                            if (useSymm) {
+                                counts += countsMatrix[j][i];
+                            }
+                            result[i][j] = result[i][j] / counts;
+                        }
                     }
 
-                    if (useLog) {
-                        contacts = Math.log(contacts);
+                    for (int i = 0; i < result.length; i++) {
+                        for (int j = 0; j < result[i].length; j++) {
+                            result[i][j] = (float) (result[i][j] / averageContact);
+                        }
                     }
+                }
 
-                    result[i][j] = (float) ((contacts / counts) / averageContact);
+
+                String name = "cluster_interactions";
+                if (useLog) {
+                    name = "cluster_log_interactions";
+                }
+                if (useSymm) {
+                    name = "symm_" + name;
+                }
+                if (useBalancing) {
+                    name = "balanced_" + name;
+                }
+
+                File temp = new File(outfolder, name + ".npy");
+                File png = new File(outfolder, name + ".png");
+                FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
+                if (useBalancing) {
+                    FloatMatrixTools.saveMatrixToPNG(png, result, false);
+                } else {
+                    FloatMatrixTools.saveOEMatrixToPNG(png, result);
                 }
             }
-
-            String name = "cluster_interactions";
-            if (useLog) {
-                name = "cluster_log_interactions";
-            }
-            if (useSymm) {
-                name = "symm_" + name;
-            }
-
-            File temp = new File(outfolder, name + ".npy");
-            File png = new File(outfolder, name + ".png");
-            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
-            FloatMatrixTools.saveOEMatrixToPNG(png, result);
         }
     }
 }

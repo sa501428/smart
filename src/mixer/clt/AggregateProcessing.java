@@ -43,6 +43,19 @@ public class AggregateProcessing {
                 "4,B2,255,255,0;" +
                 "1,B3,112,128,144";
 
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 40,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/PRIMARY_Balanced7_BED_Mega14_HIC_" + 100 + "K_v",
+                "SLICE_PRIMARY"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+        /*
+
         String file14 = "/Users/mshamim/Desktop/hicfiles/imr90_rh14_30.hic";
         String bedfiles = "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
