@@ -106,7 +106,13 @@ public class FloatMatrixTools {
     }
 
     public static void saveMatrixTextNumpy(String filename, float[][] matrix) {
-        MatrixTools.saveMatrixTextNumpy(filename, matrix);
+        long size = matrix.length;
+        size *= matrix[0].length;
+        if (size > Integer.MAX_VALUE - 10) {
+            System.err.println("Matrix is too big to save :(");
+        } else {
+            MatrixTools.saveMatrixTextNumpy(filename, matrix);
+        }
     }
 
     public static float[][] concatenate(float[][] matrix1, float[][] matrix2) {

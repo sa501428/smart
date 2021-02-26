@@ -45,7 +45,6 @@ public class GenomeWideKmeansRunner {
     private final ChromosomeHandler chromosomeHandler;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private final AtomicDouble withinClusterSumOfSquaresForRun = new AtomicDouble(0);
-    private final int maxIters = 1000; // changed from 20,000
     private int[][] recentIDs;
     private int[][] recentIDsForIndex;
     private GenomeWideList<SubcompartmentInterval> finalCompartments;
@@ -65,7 +64,7 @@ public class GenomeWideKmeansRunner {
         finalCompartments = new GenomeWideList<>(chromosomeHandler);
     }
 
-    public void launchKmeansGWMatrix(long seed) {
+    public void launchKmeansGWMatrix(long seed, int maxIters) {
 
         if (matrix.getLength() > 0 && matrix.getWidth() > 0) {
 

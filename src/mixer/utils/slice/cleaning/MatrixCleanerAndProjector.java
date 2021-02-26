@@ -144,7 +144,7 @@ public class MatrixCleanerAndProjector {
         //System.out.println("Generating similarity matrix");
         //data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
-        if (false && MixerGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("similarity matrix size " + data.length + " x " + data[0].length);
         }
 

@@ -176,7 +176,9 @@ public abstract class CompositeGenomeWideMatrix {
 
         if (badIndices.size() > 0) {
             emergencyCleanUpSpecificBadRows(badIndices);
-            System.out.println("bad matrices removed; newer matrix size " + gwCleanMatrix.length + " x " + gwCleanMatrix[0].length);
+            if (MixerGlobals.printVerboseComments) {
+                System.out.println("bad matrices removed; newer matrix size " + gwCleanMatrix.length + " x " + gwCleanMatrix[0].length);
+            }
         }
 
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
