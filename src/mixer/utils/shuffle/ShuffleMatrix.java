@@ -48,7 +48,7 @@ public class ShuffleMatrix {
     private final NormalizationType norm;
     private final int compressionFactor;
     private final int resolution;
-    private final int numRounds = 10; // 50
+    private final int numRounds = 50;
     private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
             InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
     private final String[] scoreTypes = {"Derivative", "Variation", "Kernel (Uniform)", "Kernel (Gaussian)",
