@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ public final class RobustManhattanDistance extends SimilarityMetric {
   }
 
   @Override
-  public float distance(final float[] x, final float[] y) {
+  public float distance(final float[] x, final float[] y, int index, int skip) {
     //  D(x, y) = \sqrt{\sum_i (x_i - y_i)^2}
     double result = getNonNanMeanAbsoluteError(x, y);
     return (float) (result * x.length);

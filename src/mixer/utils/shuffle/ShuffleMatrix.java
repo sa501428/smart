@@ -158,6 +158,8 @@ public class ShuffleMatrix {
 
         aggregate.scaleForNumberOfRounds(numRounds);
         aggregate.saveToPNG(outfolder, mapType);
+
+        //aggregate.balanceAndSave(outfolder, mapType);
     }
 
     private void updateMatrixScores(double[][] scores, int k, float[][] matrix, Integer[] rowBounds, Integer[] colBounds) {

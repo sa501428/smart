@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -138,6 +138,24 @@ public class InterOnlyMatrix {
 
     public int[] getColOffsets() {
         return colsDimension.offset;
+    }
+
+    public void applySimpleLog() {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (Float.isNaN(val)) {
+                    interMatrix[i][j] = 0;
+                } else {
+                    val = (float) Math.log(val + 1);
+                    if (Float.isInfinite(val)) {
+                        interMatrix[i][j] = 0;
+                    } else {
+                        interMatrix[i][j] = val;
+                    }
+                }
+            }
+        }
     }
 
     public enum InterMapType {ODDS_VS_EVENS, FIRST_HALF_VS_SECOND_HALF, SKIP_BY_TWOS}

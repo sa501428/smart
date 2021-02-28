@@ -45,11 +45,19 @@ public final class RobustMedianAbsoluteError extends SimilarityMetric {
   }
 
   @Override
-  public float distance(final float[] x, final float[] y) {
-    return getNonNanMedianAbsDeviation(x, y);
+  public float distance(final float[] x, final float[] y, int index, int skip) {
+    return getNonNanMedianAbsDeviation(x, y, index, skip);
   }
 
-  private float getNonNanMedianAbsDeviation(float[] x, float[] y) {
+  private float getNonNanMedianAbsDeviation(float[] x, float[] y, int index, int skip) {
+    /*
+    int newWidth = x.length / 3;
+    int[] breaks = new int[4];
+    breaks[1] = newWidth;
+    breaks[2] = 2 * newWidth;
+    breaks[3] = x.length;
+     */
+
     List<Float> vals = new ArrayList<>();
     for (int i = 0; i < x.length; i++) {
       final float v = Math.abs(x[i] - y[i]);

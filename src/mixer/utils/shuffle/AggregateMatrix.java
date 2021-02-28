@@ -25,6 +25,7 @@
 package mixer.utils.shuffle;
 
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.InterMatrixBalancer;
 
 import java.io.File;
 
@@ -74,9 +75,24 @@ public class AggregateMatrix {
     }
 
     public void saveToPNG(File outfolder, InterOnlyMatrix.InterMapType mapType) {
-        File mapFile = new File(outfolder, mapType.toString() + "_" + stem + ".png");
-        File mapLogFile = new File(outfolder, mapType.toString() + "_log_" + stem + ".png");
-        FloatMatrixTools.saveMatrixToPNG(mapFile, aggregate, false);
-        FloatMatrixTools.saveMatrixToPNG(mapLogFile, aggregate, true);
+        saveToPNG(aggregate, outfolder, mapType, "");
+    }
+
+    public void saveToPNG(float[][] matrix, File outfolder, InterOnlyMatrix.InterMapType mapType,
+                          String stem2) {
+        File mapFile = new File(outfolder, stem2 + mapType.toString() + "_" + stem + ".png");
+        File mapLogFile = new File(outfolder, stem2 + mapType.toString() + "_log_" + stem + ".png");
+        FloatMatrixTools.saveMatrixToPNG(mapFile, matrix, false);
+        FloatMatrixTools.saveMatrixToPNG(mapLogFile, matrix, true);
+    }
+
+    public void balanceAndSave(File outfolder, InterOnlyMatrix.InterMapType mapType) {
+        InterMatrixBalancer balancer = new InterMatrixBalancer(aggregate, false);
+        float[][] balanced = balancer.getNormalizedMatrix();
+        if (balanced != null) {
+            saveToPNG(balanced, outfolder, mapType, "balanced_");
+        } else {
+            System.err.println("unable to balance " + mapType);
+        }
     }
 }

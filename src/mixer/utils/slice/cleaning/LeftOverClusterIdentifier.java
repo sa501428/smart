@@ -74,9 +74,8 @@ public class LeftOverClusterIdentifier {
                 return;
             }
 
-            Set<Integer> worstIndices = badIndexFinder.getBadIndices(chr1);
+            Set<Integer> worstIndices = badIndexFinder.getEmptyIndices(chr1);
             Set<Integer> indicesMissing = new HashSet<>();
-
 
             for (int k = 0; k < chr1.getLength() / resolution + 1; k++) {
                 if (worstIndices.contains(k)) {
@@ -179,7 +178,7 @@ public class LeftOverClusterIdentifier {
         boolean nothingChanged = true;
 
         for (Integer key : cIDToCenter.keySet()) {
-            double newDistance = euclidean.distance(cIDToCenter.get(key), vector);
+            double newDistance = euclidean.distance(cIDToCenter.get(key), vector, 0, 0);
 
             if (newDistance < overallDistance) {
                 overallDistance = newDistance;

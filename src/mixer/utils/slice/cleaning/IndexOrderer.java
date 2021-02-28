@@ -146,7 +146,7 @@ public class IndexOrderer {
         for (int k = 0; k < centroids.length; k++) {
             for (int z = 0; z < vectorLength; z++) {
                 if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                    float corr = corrMetric.distance(centroids[k], matrix[z]);
+                    float corr = corrMetric.distance(centroids[k], matrix[z], 0, 0);
                     correlationCentroidsWithData[k][z] = corr;
                     if (corr > CORR_MIN || corr < -CORR_MIN) {
                         numDecentRelations[k]++;
@@ -239,7 +239,7 @@ public class IndexOrderer {
 
                 for (int z = cI + 1; z < vectorLength; z++) {
                     if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                        float val = corrMetric.distance(matrix[cI], matrix[z]);
+                        float val = corrMetric.distance(matrix[cI], matrix[z], 0, 0);
                         if (val >= CORR_MIN) {
                             newIndexOrderAssignments[z] = counter++;
                         }

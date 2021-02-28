@@ -58,7 +58,7 @@ public class TheilSenMetric extends SimilarityMetric {
     }
 
     @Override
-    public float distance(float[] x, float[] y) {
+    public float distance(float[] x, float[] y, int index, int skip) {
         return getTheilSenSlope(x, y);
     }
 }

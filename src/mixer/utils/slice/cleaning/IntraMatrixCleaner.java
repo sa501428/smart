@@ -48,7 +48,11 @@ public class IntraMatrixCleaner {
     public static float[][] clean(Chromosome chrom, float[][] matrix, int resolution, int numColsToJoin, Set<Integer> badIndices) {
         NearDiagonalTrim.trim(chrom, matrix, resolution);
         eraseTheRowsColumnsWeDontWant(badIndices, matrix);
+        return rollingAverage(matrix, numColsToJoin);
 
+    }
+
+    public static float[][] rollingAverage(float[][] matrix, int numColsToJoin) {
         int bufferWidth = numColsToJoin / 2;
         for (int i = 0; i < matrix.length; i++) {
             float[] tempRow = new float[matrix[i].length];

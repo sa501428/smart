@@ -70,7 +70,7 @@ public class SmartInitialization {
                 while (k < data.length) {
                     float newDist = 0;
                     if (k != index) {
-                        newDist = euclidean.distance(data[k], data[index]);
+                        newDist = euclidean.distance(data[k], data[index], 0, 0);
                     }
                     distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
                     k = currRowIndex.getAndIncrement();

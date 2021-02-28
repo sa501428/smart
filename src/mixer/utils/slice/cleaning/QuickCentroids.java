@@ -39,13 +39,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class QuickCentroids {
 
-    private final int maxIters = 1;
+    private int maxIters = 1;
     private final float[][] matrix;
     private final int initialNumClusters;
     private final Random generator = new Random(0);
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private float[][] centroids = null;
-    private int[] weights = null;
+    private float[] weights = null;
 
     public QuickCentroids(float[][] matrix, int numCentroids, long seed) {
         this.matrix = matrix;
@@ -55,6 +55,11 @@ public class QuickCentroids {
             System.err.println("Empty matrix provided for quick centroids");
             System.exit(5);
         }
+    }
+
+    public QuickCentroids(float[][] matrix, int numCentroids, long seed, int numIters) {
+        this(matrix, numCentroids, seed);
+        this.maxIters = numIters;
     }
 
     public float[][] generateCentroids() {
@@ -113,7 +118,7 @@ public class QuickCentroids {
         }
         AtomicInteger currRowIndex = new AtomicInteger(0);
         centroids = new float[actualClusters.size()][matrix[0].length];
-        weights = new int[actualClusters.size()];
+        weights = new float[actualClusters.size()];
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
             executor.execute(() -> {
@@ -161,7 +166,7 @@ public class QuickCentroids {
         return true;
     }
 
-    public int[] getWeights() {
+    public float[] getWeights() {
         return weights;
     }
 }
