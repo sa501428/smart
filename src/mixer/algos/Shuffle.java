@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,10 @@ import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.shuffle.InterOnlyMatrix;
+import mixer.utils.shuffle.IntraShuffleMatrix;
 import mixer.utils.shuffle.ShuffleMatrix;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -54,11 +57,15 @@ public class Shuffle extends MixerCLT {
     private File outputDirectory;
     private String[] prefix;
     private String[] referenceBedFiles;
+    private final boolean useIntraMap;
+    private InterOnlyMatrix.INTRA_TYPE intra_type;
+    private SimilarityMetric metric;
 
     // subcompartment lanscape identification via clustering enrichment
-    public Shuffle() {
+    public Shuffle(String name) {
         super("shuffle [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
                 "<file.hic> <subcompartment.bed> <outfolder> <prefix>");
+        useIntraMap = name.contains("intra");
     }
 
     @Override
@@ -82,6 +89,9 @@ public class Shuffle extends MixerCLT {
                 System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
             resolution = possibleResolutions.get(0);
         }
+
+        intra_type = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
+        SimilarityMetric metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
 
         long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
         if (possibleSeeds != null && possibleSeeds.length > 0) {
@@ -109,9 +119,16 @@ public class Shuffle extends MixerCLT {
             System.out.println("Processing " + prefix[i]);
             File newFolder = new File(outputDirectory, prefix[i]);
             UNIXTools.makeDir(newFolder);
-            ShuffleMatrix matrix = new ShuffleMatrix(ds, norm, resolution, compressionFactor);
-            matrix.runAnalysis(subcompartments, newFolder);
-            matrix.savePlotsAndResults(newFolder, prefix[i]);
+            if (useIntraMap) {
+                IntraShuffleMatrix matrix = new IntraShuffleMatrix(ds, norm, resolution, compressionFactor,
+                        intra_type, metric);
+                matrix.runAnalysis(subcompartments, newFolder);
+                matrix.savePlotsAndResults(newFolder, prefix[i]);
+            } else {
+                ShuffleMatrix matrix = new ShuffleMatrix(ds, norm, resolution, compressionFactor, metric);
+                matrix.runAnalysis(subcompartments, newFolder);
+                matrix.savePlotsAndResults(newFolder, prefix[i]);
+            }
         }
         System.out.println("Shuffle complete");
     }

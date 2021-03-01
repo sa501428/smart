@@ -53,6 +53,8 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option sliceWindowOption = addIntegerOption('w', "window");
     private final Option sliceCompareOption = addStringOption("compare");
     private final Option translocationOption = addBooleanOption("has-translocation");
+    private final Option mapTypeOption = addIntegerOption("type");
+    private final Option correlationTypeOption = addIntegerOption("corr");
 
     public CommandLineParserForMixer() {
     }
@@ -89,6 +91,14 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public int getSubsamplingOption() {
         return optionToInt(subsampleNumOption);
+    }
+
+    public int getMapTypeOption() {
+        return optionToInt(mapTypeOption);
+    }
+
+    public int getCorrelationTypeOption() {
+        return optionToInt(correlationTypeOption);
     }
 
     /**

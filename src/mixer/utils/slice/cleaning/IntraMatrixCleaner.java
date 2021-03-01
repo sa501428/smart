@@ -60,7 +60,7 @@ public class IntraMatrixCleaner {
             for (int j = 0; j < tempRow.length; j++) {
                 if (Float.isNaN(tempRow[j])) continue;
                 int startK = Math.max(j - bufferWidth, 0);
-                int endK = Math.min(j + bufferWidth, tempRow.length);
+                int endK = Math.min(j + 1 + bufferWidth, tempRow.length);
                 float total = 0;
                 int numVals = 0;
                 for (int k = startK; k < endK; k++) {

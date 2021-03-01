@@ -42,34 +42,44 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ShuffleMatrix {
+public class IntraShuffleMatrix {
 
     private final Random generator = new Random(0);
     private final Dataset ds;
     private final NormalizationType norm;
     private final int compressionFactor;
     private final int resolution;
-    private final int numRounds = 50;
-    private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
-            InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
+    private final int numRounds = 1;
+    private final Chromosome[] chromosomes;
     private final String[] scoreTypes = {"Derivative", "Variation", "Kernel (Uniform)", "Kernel (Gaussian)",
             "KL Divergence Matrix||Baseline", "KL Divergence Baseline||Matrix"};
-    private final double[][] baselines = new double[mapTypes.length][scoreTypes.length]; //[numRounds]
-    private final double[][] shuffled = new double[mapTypes.length][scoreTypes.length];
-    private final double[][] ratios = new double[mapTypes.length][scoreTypes.length];
+    private final double[][] baselines;
+    private final double[][] shuffled;
+    private final double[][] ratios;
 
-    private final double[][] logBaselines = new double[mapTypes.length][scoreTypes.length];
-    private final double[][] logShuffled = new double[mapTypes.length][scoreTypes.length];
-    private final double[][] logRatios = new double[mapTypes.length][scoreTypes.length];
+    private final double[][] logBaselines;
+    private final double[][] logShuffled;
+    private final double[][] logRatios;
+    private final InterOnlyMatrix.INTRA_TYPE intra_type;
     private final SimilarityMetric metric;
 
-    public ShuffleMatrix(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
-                         SimilarityMetric metric) {
+    public IntraShuffleMatrix(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
+                              InterOnlyMatrix.INTRA_TYPE intra_type, SimilarityMetric metric) {
         this.resolution = resolution;
         this.compressionFactor = compressionFactor;
         this.ds = ds;
         this.norm = norm;
+        this.intra_type = intra_type;
         this.metric = metric;
+        chromosomes = ds.getChromosomeHandler().getAutosomalChromosomesArray();
+
+        baselines = new double[chromosomes.length][scoreTypes.length]; //[numRounds]
+        shuffled = new double[chromosomes.length][scoreTypes.length];
+        ratios = new double[chromosomes.length][scoreTypes.length];
+
+        logBaselines = new double[chromosomes.length][scoreTypes.length];
+        logShuffled = new double[chromosomes.length][scoreTypes.length];
+        logRatios = new double[chromosomes.length][scoreTypes.length];
     }
 
     public void runAnalysis(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
@@ -80,15 +90,15 @@ public class ShuffleMatrix {
         System.out.println("Interaction summary statistics saved");
 
         //GenomeWideList<SubcompartmentInterval> subcompartments = statistics.reorder(defaultSubcompartments);
-        for (int y = 0; y < mapTypes.length; y++) {
-            final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, mapTypes[y], metric);
+        for (int y = 0; y < chromosomes.length; y++) {
+            final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, chromosomes[y],
+                    intra_type, metric);
             Map<Integer, List<Integer>> clusterToRowIndices = populateCluster(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(), subcompartments);
-            Map<Integer, List<Integer>> clusterToColIndices = populateCluster(interMatrix.getColChromosomes(), interMatrix.getColOffsets(), subcompartments);
 
-            shuffleMap(interMatrix, clusterToRowIndices, clusterToColIndices, true, baselines[y],
-                    logBaselines[y], outfolder, mapTypes[y]);
-            shuffleMap(interMatrix, clusterToRowIndices, clusterToColIndices, false, shuffled[y],
-                    logShuffled[y], outfolder, mapTypes[y]);
+            shuffleMap(interMatrix, clusterToRowIndices, true, baselines[y],
+                    logBaselines[y], outfolder, chromosomes[y]);
+            shuffleMap(interMatrix, clusterToRowIndices, false, shuffled[y],
+                    logShuffled[y], outfolder, chromosomes[y]);
 
             for (int l = 0; l < scoreTypes.length; l++) {
                 ratios[y][l] = shuffled[y][l] / baselines[y][l];
@@ -108,8 +118,8 @@ public class ShuffleMatrix {
 
     private void writeToFile(File outfolder, String filename, double[][] shuffle, double[][] baseline, double[][] ratio) throws IOException {
         FileWriter myWriter = new FileWriter(new File(outfolder, filename));
-        for (int y = 0; y < mapTypes.length; y++) {
-            myWriter.write(mapTypes[y].toString() + "------------------\n");
+        for (int y = 0; y < chromosomes.length; y++) {
+            myWriter.write(chromosomes[y].toString() + "------------------\n");
             for (int z = 0; z < scoreTypes.length; z++) {
                 myWriter.write(scoreTypes[z] + " Score\n");
                 myWriter.write("Shuffled  : " + shuffle[y][z] + "\n");
@@ -123,8 +133,8 @@ public class ShuffleMatrix {
     }
 
     private void shuffleMap(InterOnlyMatrix interMatrix, Map<Integer, List<Integer>> clusterToRowIndices,
-                            Map<Integer, List<Integer>> clusterToColIndices, boolean isBaseline,
-                            double[] scorings, double[] logScorings, File outfolder, InterOnlyMatrix.InterMapType mapType) {
+                            boolean isBaseline, double[] scorings, double[] logScorings,
+                            File outfolder, Chromosome mapType) {
         final AggregateMatrix aggregate = new AggregateMatrix(isBaseline);
         double[][] scoresForRound = new double[scoreTypes.length][numRounds];
         double[][] logScoresForRound = new double[scoreTypes.length][numRounds];
@@ -138,13 +148,12 @@ public class ShuffleMatrix {
                 while (k < numRounds) {
 
                     ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, isBaseline);
-                    ShuffledIndices allColIndices = getShuffledByClusterIndices(clusterToColIndices, isBaseline);
-                    float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices, allColIndices.allIndices);
+                    float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices);
 
                     aggregate.addBToA(matrix);
-                    updateMatrixScores(scoresForRound, k, matrix, allRowIndices.boundaries, allColIndices.boundaries);
+                    updateMatrixScores(scoresForRound, k, matrix, allRowIndices.boundaries);
                     FloatMatrixTools.log(matrix, 1);
-                    updateMatrixScores(logScoresForRound, k, matrix, allRowIndices.boundaries, allColIndices.boundaries);
+                    updateMatrixScores(logScoresForRound, k, matrix, allRowIndices.boundaries);
 
                     k = currRowIndex.getAndIncrement();
                 }
@@ -161,17 +170,17 @@ public class ShuffleMatrix {
         }
 
         aggregate.scaleForNumberOfRounds(numRounds);
-        aggregate.saveToPNG(outfolder, mapType.toString());
+        aggregate.saveToPNG(outfolder, mapType.getName());
         //aggregate.balanceAndSave(outfolder, mapType);
     }
 
-    private void updateMatrixScores(double[][] scores, int k, float[][] matrix, Integer[] rowBounds, Integer[] colBounds) {
-        scores[0][k] = (new DerivativeScoring(matrix, rowBounds, colBounds)).score();
-        scores[1][k] = (new VarianceScoring(matrix, rowBounds, colBounds)).score();
-        scores[2][k] = (new UniformKernelScoring(matrix, rowBounds, colBounds)).score();
-        scores[3][k] = (new GaussianKernelScoring(matrix, rowBounds, colBounds)).score();
-        scores[4][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true)).score();
-        scores[5][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, false)).score();
+    private void updateMatrixScores(double[][] scores, int k, float[][] matrix, Integer[] rowBounds) {
+        scores[0][k] = (new DerivativeScoring(matrix, rowBounds, rowBounds)).score();
+        scores[1][k] = (new VarianceScoring(matrix, rowBounds, rowBounds)).score();
+        scores[2][k] = (new UniformKernelScoring(matrix, rowBounds, rowBounds)).score();
+        scores[3][k] = (new GaussianKernelScoring(matrix, rowBounds, rowBounds)).score();
+        scores[4][k] = (new KLDivergenceScoring(matrix, rowBounds, rowBounds, true)).score();
+        scores[5][k] = (new KLDivergenceScoring(matrix, rowBounds, rowBounds, false)).score();
     }
 
     private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean isBaseline) {
@@ -202,18 +211,16 @@ public class ShuffleMatrix {
         return new ShuffledIndices(allIndices, boundaries.toArray(output));
     }
 
-    private float[][] getShuffledMatrix(InterOnlyMatrix interMatrix, List<Integer> allRowIndices, List<Integer> allColIndices) {
+    private float[][] getShuffledMatrix(InterOnlyMatrix interMatrix, List<Integer> allRowIndices) {
         int numRows = allRowIndices.size() / compressionFactor;
-        int numCols = allColIndices.size() / compressionFactor;
         int numRowsKept = numRows * compressionFactor;
-        int numColsKept = numCols * compressionFactor;
         float[][] original = interMatrix.getMatrix();
 
-        float[][] result = new float[numRows][numCols];
+        float[][] result = new float[numRows][numRows];
         for (int i = 0; i < numRowsKept; i++) {
             final int i0 = allRowIndices.get(i);
-            for (int j = 0; j < numColsKept; j++) {
-                final int j0 = allColIndices.get(j);
+            for (int j = 0; j < numRowsKept; j++) {
+                final int j0 = allRowIndices.get(j);
                 result[i / compressionFactor][j / compressionFactor] += original[i0][j0];
             }
         }

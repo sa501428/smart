@@ -31,7 +31,10 @@ import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.shuffle.InterOnlyMatrix;
+import mixer.utils.shuffle.UMAPIntraMatrices;
 import mixer.utils.shuffle.UMAPMatrices;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.io.File;
 import java.util.List;
@@ -42,7 +45,7 @@ import java.util.Random;
  * <p>
  * Created by muhammadsaadshamim on 9/14/15.
  */
-public class UmapProjection extends MixerCLT {
+public class UmapHiC extends MixerCLT {
 
     private final Random generator = new Random(22871L);
     private Dataset ds;
@@ -50,11 +53,15 @@ public class UmapProjection extends MixerCLT {
     private int compressionFactor = 8;
     private File outputDirectory;
     private String[] referenceBedFiles;
+    private final boolean isIntra;
+    private InterOnlyMatrix.INTRA_TYPE intra_type;
+    private SimilarityMetric metric;
 
     // subcompartment lanscape identification via clustering enrichment
-    public UmapProjection() {
+    public UmapHiC(String name) {
         super("umap [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
                 "<file.hic> <subcompartment.bed> <outfolder>");
+        isIntra = name.contains("intra");
     }
 
     @Override
@@ -85,6 +92,9 @@ public class UmapProjection extends MixerCLT {
             }
         }
 
+        intra_type = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
+        metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
+
         int minSize = mixerParser.getAPAWindowSizeOption();
         if (minSize > 1) {
             compressionFactor = minSize;
@@ -98,8 +108,15 @@ public class UmapProjection extends MixerCLT {
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
         UNIXTools.makeDir(outputDirectory);
-        UMAPMatrices matrix = new UMAPMatrices(ds, norm, resolution, compressionFactor);
-        matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
-        System.out.println("UMAP complete; use python code to plot");
+        if (isIntra) {
+            UMAPIntraMatrices matrix = new UMAPIntraMatrices(ds, norm, resolution, compressionFactor,
+                    intra_type, metric);
+            matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
+            System.out.println("UMAP complete; use python code to plot");
+        } else {
+            UMAPMatrices matrix = new UMAPMatrices(ds, norm, resolution, compressionFactor, metric);
+            matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
+            System.out.println("UMAP complete; use python code to plot");
+        }
     }
 }

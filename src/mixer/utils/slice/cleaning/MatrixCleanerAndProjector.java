@@ -54,14 +54,14 @@ public class MatrixCleanerAndProjector {
         System.out.println("matrix size " + data.length + " x " + data[0].length);
     }
 
-    public static void simpleLogWithCleanup(float[][] matrix) {
+    public static void simpleLogWithCleanup(float[][] matrix, float badVal) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
                     val = (float) Math.log(val + 1);
                     if (Float.isInfinite(val)) {
-                        matrix[i][j] = Float.NaN;
+                        matrix[i][j] = badVal;
                     } else {
                         matrix[i][j] = val;
                     }
@@ -135,7 +135,7 @@ public class MatrixCleanerAndProjector {
 
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                 int[] weights) {
-        simpleLogWithCleanup(this.data);
+        simpleLogWithCleanup(this.data, Float.NaN);
         data = filterOutColumnsAndRows(data, rowIndexToIntervalMap);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("matrix size " + data.length + " x " + data[0].length);

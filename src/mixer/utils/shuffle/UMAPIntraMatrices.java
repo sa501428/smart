@@ -45,28 +45,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class UMAPMatrices {
+public class UMAPIntraMatrices {
 
     private final Random generator = new Random(0);
     private final Dataset ds;
     private final NormalizationType norm;
     private final int compressionFactor;
     private final int resolution;
+    private final InterOnlyMatrix.INTRA_TYPE intra_type;
     private final SimilarityMetric metric;
-    private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
-            InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
 
-    public UMAPMatrices(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
-                        SimilarityMetric metric) {
+    public UMAPIntraMatrices(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
+                             InterOnlyMatrix.INTRA_TYPE intra_type, SimilarityMetric metric) {
         this.resolution = resolution;
         this.compressionFactor = compressionFactor;
         this.ds = ds;
         this.norm = norm;
+        this.intra_type = intra_type;
         this.metric = metric;
     }
 
-    public void runAnalysis(String[] bedFiles, File outputDirectory, ChromosomeHandler chromosomeHandler) {
+    public void runAnalysis(String[] bedFiles, File outputDirectory,
+                            ChromosomeHandler chromosomeHandler) {
 
+        Chromosome[] chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         List<GenomeWideList<SubcompartmentInterval>> allSubcompartments = new ArrayList<>();
         for (int i = 0; i < bedFiles.length; i++) {
             GenomeWideList<SubcompartmentInterval> subcompartments =
@@ -84,38 +86,24 @@ public class UMAPMatrices {
         int numBedFiles = allSubcompartments.size();
         // todo, using only big size? todo sorting picture
 
-        for (int y = 0; y < mapTypes.length; y++) {
-
-            final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, mapTypes[y], metric);
+        for (int y = 0; y < chromosomes.length; y++) {
+            final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, chromosomes[y],
+                    intra_type, metric);
             interMatrix.applySimpleLog();
 
             float[][] matrix = interMatrix.getMatrix();
-            float[][] matrixT = FloatMatrixTools.transpose(matrix);
-
-
             IntraMatrixCleaner.rollingAverage(matrix, compressionFactor);
-            IntraMatrixCleaner.rollingAverage(matrixT, compressionFactor);
-
-            //FloatMatrixTools.saveMatrixToPNG(new File(outputDirectory, mapTypes[y].toString()+".png"),
-            //              matrix, false);
-            //FloatMatrixTools.saveMatrixToPNG(new File(outputDirectory, mapTypes[y].toString()+"_avg.png"),
-            //              matrix, false);
 
             int[][] rowIndicesToClusterIDs = new int[matrix.length][numBedFiles];
-            int[][] colIndicesToClusterIDs = new int[matrix[0].length][numBedFiles];
 
             for (int z = 0; z < numBedFiles; z++) {
                 populateIndexToClusterIDMap(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(),
                         allSubcompartments.get(z), rowIndicesToClusterIDs, z);
-                populateIndexToClusterIDMap(interMatrix.getColChromosomes(), interMatrix.getColOffsets(),
-                        allSubcompartments.get(z), colIndicesToClusterIDs, z);
             }
 
-            File outfolder = new File(outputDirectory, mapTypes[y].toString());
+            File outfolder = new File(outputDirectory, chromosomes[y].getName());
             UNIXTools.makeDir(outfolder);
-
             runUmapAndSaveMatrices(matrix, outfolder, "rows", rowIndicesToClusterIDs);
-            runUmapAndSaveMatrices(matrixT, outfolder, "cols", colIndicesToClusterIDs);
         }
     }
 

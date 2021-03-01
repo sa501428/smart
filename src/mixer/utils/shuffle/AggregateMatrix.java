@@ -24,6 +24,7 @@
 
 package mixer.utils.shuffle;
 
+import javastraw.tools.UNIXTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.InterMatrixBalancer;
 
@@ -74,14 +75,15 @@ public class AggregateMatrix {
         divideBy(aggregate, numRounds);
     }
 
-    public void saveToPNG(File outfolder, InterOnlyMatrix.InterMapType mapType) {
-        saveToPNG(aggregate, outfolder, mapType, "");
+    public void saveToPNG(File outfolder, String name) {
+        File outfolder2 = new File(outfolder, name);
+        UNIXTools.makeDir(outfolder2);
+        saveToPNG(aggregate, outfolder2, name, "");
     }
 
-    public void saveToPNG(float[][] matrix, File outfolder, InterOnlyMatrix.InterMapType mapType,
-                          String stem2) {
-        File mapFile = new File(outfolder, stem2 + mapType.toString() + "_" + stem + ".png");
-        File mapLogFile = new File(outfolder, stem2 + mapType.toString() + "_log_" + stem + ".png");
+    public void saveToPNG(float[][] matrix, File outfolder, String name, String stem2) {
+        File mapFile = new File(outfolder, stem2 + name + "_" + stem + ".png");
+        File mapLogFile = new File(outfolder, stem2 + name + "_log_" + stem + ".png");
         FloatMatrixTools.saveMatrixToPNG(mapFile, matrix, false);
         FloatMatrixTools.saveMatrixToPNG(mapLogFile, matrix, true);
     }
@@ -90,7 +92,7 @@ public class AggregateMatrix {
         InterMatrixBalancer balancer = new InterMatrixBalancer(aggregate, false);
         float[][] balanced = balancer.getNormalizedMatrix();
         if (balanced != null) {
-            saveToPNG(balanced, outfolder, mapType, "balanced_");
+            saveToPNG(balanced, outfolder, mapType.toString(), "balanced_");
         } else {
             System.err.println("unable to balance " + mapType);
         }

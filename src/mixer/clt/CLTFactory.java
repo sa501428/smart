@@ -53,12 +53,12 @@ public class CLTFactory {
             return new Slice(cmd);
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();
-        } else if (cmd.equals("shuffle")) {
-            return new Shuffle();
+        } else if (cmd.contains("shuffle")) {
+            return new Shuffle(cmd);
         } else if (cmd.equals("rename")) {
             return new Rename();
-        } else if (cmd.equals("umap")) {
-            return new UmapProjection();
+        } else if (cmd.contains("umap")) {
+            return new UmapHiC(cmd);
         }
 
         return null;

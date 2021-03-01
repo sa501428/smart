@@ -36,4 +36,23 @@ public abstract class SimilarityMetric {
     public boolean isSymmetric() {
         return this.mIsSymmmetric;
     }
+
+    public static SimilarityMetric getMetric(int val) {
+        if (val == 1) {
+            return RobustCosineSimilarity.SINGLETON;
+        }
+        if (val == 2) {
+            return RobustMedianAbsoluteError.SINGLETON;
+        }
+        if (val == 3) {
+            return RobustCorrelationSimilarity.SINGLETON;
+        }
+        if (val == 4) {
+            return RobustManhattanDistance.SINGLETON;
+        }
+        if (val == 5) {
+            return RobustEuclideanDistance.SINGLETON;
+        }
+        return null;
+    }
 }

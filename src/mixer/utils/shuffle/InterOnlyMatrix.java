@@ -24,17 +24,20 @@
 
 package mixer.utils.shuffle;
 
-import javastraw.reader.ChromosomeHandler;
-import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
+import javastraw.reader.*;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
+import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.matrices.Dimension;
 
 public class InterOnlyMatrix {
 
+    private final INTRA_TYPE intra_type;
+    private final boolean isIntra;
+    private final SimilarityMetric metric;
     private final NormalizationType norm;
     private final int resolution;
     private final float[][] interMatrix;
@@ -42,9 +45,13 @@ public class InterOnlyMatrix {
     private final Chromosome[] colsChromosomes;
     private Dimension rowsDimension, colsDimension;
 
-    public InterOnlyMatrix(Dataset ds, NormalizationType norm, int resolution, InterMapType mapType) {
+    public InterOnlyMatrix(Dataset ds, NormalizationType norm, int resolution, InterMapType mapType,
+                           SimilarityMetric metric) {
         this.norm = norm;
         this.resolution = resolution;
+        isIntra = false;
+        intra_type = INTRA_TYPE.DEFAULT; // unused
+        this.metric = metric;
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
 
         switch (mapType) {
@@ -66,24 +73,51 @@ public class InterOnlyMatrix {
         interMatrix = makeCleanScaledInterMatrix(ds);
     }
 
+    public InterOnlyMatrix(Dataset ds, NormalizationType norm, int resolution, Chromosome chromosome,
+                           INTRA_TYPE intra_type, SimilarityMetric metric) {
+        this.norm = norm;
+        this.resolution = resolution;
+        isIntra = true;
+        this.intra_type = intra_type;
+        this.metric = metric;
+
+        rowsChromosomes = new Chromosome[1];
+        colsChromosomes = new Chromosome[1];
+        rowsChromosomes[0] = chromosome;
+        colsChromosomes[0] = chromosome;
+
+        interMatrix = makeCleanScaledInterMatrix(ds);
+    }
+
+    public static INTRA_TYPE getIntraType(int mapTypeOption) {
+        switch (mapTypeOption) {
+            case 3:
+                return INTRA_TYPE.LOG_BASE_EXPECTED;
+            case 2:
+                return INTRA_TYPE.TRUE_OE;
+            case 1:
+                return INTRA_TYPE.JUST_LOG;
+            case 0:
+            default:
+                return INTRA_TYPE.DEFAULT;
+        }
+    }
+
     private float[][] makeCleanScaledInterMatrix(Dataset ds) {
         rowsDimension = new Dimension(rowsChromosomes, resolution);
         colsDimension = new Dimension(colsChromosomes, resolution);
-
         float[][] interMatrix = new float[rowsDimension.length][colsDimension.length];
 
         for (int i = 0; i < rowsChromosomes.length; i++) {
             Chromosome chr1 = rowsChromosomes[i];
             for (int j = 0; j < colsChromosomes.length; j++) {
                 Chromosome chr2 = colsChromosomes[j];
-
-                if (chr1.getIndex() == chr2.getIndex()) continue;
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
                 if (zd == null) continue;
 
                 // will need to flip across diagonal
                 boolean needToFlip = chr2.getIndex() < chr1.getIndex();
-                fillInInterChromosomeRegion(interMatrix, zd, chr1, rowsDimension.offset[i], chr2, colsDimension.offset[j], needToFlip);
+                fillInInterChromosomeRegion(ds, interMatrix, zd, chr1, rowsDimension.offset[i], chr2, colsDimension.offset[j], needToFlip);
             }
             System.out.print(".");
         }
@@ -93,7 +127,7 @@ public class InterOnlyMatrix {
         return FloatMatrixTools.cleanUpMatrix(interMatrix);
     }
 
-    private void fillInInterChromosomeRegion(float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
+    private void fillInInterChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
                                              Chromosome chr2, int offsetIndex2, boolean needToFlip) {
 
         int lengthChr1 = (int) Math.ceil((float) chr1.getLength() / resolution);
@@ -101,7 +135,32 @@ public class InterOnlyMatrix {
 
         float[][] allDataForRegion = null;
         try {
-            if (needToFlip) {
+            if (chr1.getIndex() == chr2.getIndex()) {
+                if (intra_type == INTRA_TYPE.DEFAULT) {
+                    allDataForRegion = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr1,
+                            0, lengthChr2, lengthChr1, lengthChr2, norm, true);
+                } else if (intra_type == INTRA_TYPE.LOG_BASE_EXPECTED) {
+                    allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
+                            norm, 10, ExtractingOEDataUtils.ThresholdType.LOG_BASE_EXP_OF_OBS,
+                            true, 1, 0);
+                } else if (intra_type == INTRA_TYPE.TRUE_OE) {
+                    allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
+                            norm, 10, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                            true, 1, 0);
+                } else if (intra_type == INTRA_TYPE.JUST_LOG) {
+                    allDataForRegion = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr1,
+                            0, lengthChr2, lengthChr1, lengthChr2, norm, true);
+                    MatrixCleanerAndProjector.simpleLogWithCleanup(allDataForRegion, 0);
+                } else {
+                    System.err.println("Invalid Matrix type " + intra_type);
+                    System.exit(9);
+                }
+                if (metric != null) {
+                    allDataForRegion = SimilarityMatrixTools.getNonNanSimilarityMatrix(allDataForRegion,
+                            metric, 1, 283746L);
+                }
+
+            } else if (needToFlip) {
                 float[][] allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr2,
                         0, lengthChr1, lengthChr2, lengthChr1, norm, false);
                 allDataForRegion = FloatMatrixTools.transpose(allDataForRegionMatrix);
@@ -119,6 +178,8 @@ public class InterOnlyMatrix {
                     matrix[offsetIndex1 + i], offsetIndex2, allDataForRegion[i].length);
         }
     }
+
+    public enum INTRA_TYPE {DEFAULT, JUST_LOG, TRUE_OE, LOG_BASE_EXPECTED}
 
     public Chromosome[] getRowChromosomes() {
         return rowsChromosomes;
