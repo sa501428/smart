@@ -27,14 +27,15 @@ package mixer.algos;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
+import javastraw.reader.basics.Chromosome;
 import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.shuffle.InterOnlyMatrix;
-import mixer.utils.shuffle.UMAPIntraMatrices;
-import mixer.utils.shuffle.UMAPMatrices;
 import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.umap.UMAPIntraMatrices;
+import mixer.utils.umap.UMAPMatrices;
 
 import java.io.File;
 import java.util.List;
@@ -104,19 +105,33 @@ public class UmapHiC extends MixerCLT {
     @Override
     public void run() {
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
-        if (givenChromosomes != null)
-            chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
         UNIXTools.makeDir(outputDirectory);
         if (isIntra) {
+
+            Chromosome[] chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
+            if (givenChromosomes != null) {
+                //chromosomeHandler = getStringToChromosomes(givenChromosomes, chromosomeHandler);
+                chromosomes = getStringToChromosomes(givenChromosomes, chromosomeHandler);
+            }
+
             UMAPIntraMatrices matrix = new UMAPIntraMatrices(ds, norm, resolution, compressionFactor,
                     intra_type, metric);
-            matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
+            matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler, chromosomes);
             System.out.println("UMAP complete; use python code to plot");
         } else {
             UMAPMatrices matrix = new UMAPMatrices(ds, norm, resolution, compressionFactor, metric);
             matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
             System.out.println("UMAP complete; use python code to plot");
         }
+    }
+
+    private Chromosome[] getStringToChromosomes(List<String> givenChromosomes, ChromosomeHandler chromosomeHandler) {
+        Chromosome[] result = new Chromosome[givenChromosomes.size()];
+        for (int i = 0; i < result.length; i++) {
+            String chrom = givenChromosomes.get(i);
+            result[i] = chromosomeHandler.getChromosomeFromName(chrom);
+        }
+        return result;
     }
 }

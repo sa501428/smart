@@ -27,47 +27,11 @@ package mixer.utils.slice.structures;
 import javastraw.featurelist.Feature;
 import javastraw.reader.basics.Chromosome;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SubcompartmentInterval extends SimpleInterval {
 
-    private static final Color[] colors = new Color[]{
-            new Color(0, 0, 0),
-
-            new Color(34, 139, 34),
-            new Color(152, 251, 152),
-            new Color(220, 20, 60),
-            new Color(255, 255, 0),
-            new Color(112, 128, 144),
-            new Color(75, 0, 130),
-
-            new Color(255, 255, 0),
-            new Color(255, 0, 0),
-            new Color(0, 234, 255),
-            new Color(170, 0, 255),
-            new Color(255, 127, 0),
-            new Color(191, 255, 0),
-            new Color(0, 149, 255),
-            new Color(255, 0, 170),
-            new Color(255, 212, 0),
-            new Color(106, 255, 0),
-            new Color(0, 64, 255),
-            new Color(237, 185, 185),
-            new Color(185, 215, 237),
-            new Color(231, 233, 185),
-            new Color(220, 185, 237),
-            new Color(185, 237, 224),
-            new Color(143, 35, 35),
-            new Color(35, 98, 143),
-            new Color(143, 106, 35),
-            new Color(107, 35, 143),
-            new Color(79, 143, 35),
-
-            new Color(115, 115, 115),
-            new Color(204, 204, 204)
-    };
     private Integer clusterID;
     private double differenceFromControl = 0;
 
@@ -106,10 +70,8 @@ public class SubcompartmentInterval extends SimpleInterval {
 
     @Override
     public String toString() {
-        Color color = colors[clusterID % colors.length];
-        String colorString = color.getRed() + "," + color.getGreen() + "," + color.getBlue();
         return "chr" + getChrName() + "\t" + getX1() + "\t" + getX2() + "\t" + clusterID + "\t" + clusterID
-                + "\t.\t" + getX1() + "\t" + getX2() + "\t" + colorString;
+                + "\t.\t" + getX1() + "\t" + getX2() + "\t" + SubcompartmentColors.getColorString(clusterID);
     }
 
     @Override

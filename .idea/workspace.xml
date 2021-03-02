@@ -30,24 +30,16 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code for balancing added">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/IntraShuffleMatrix.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPIntraMatrices.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="umap on intra, similarity metrics">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentColors.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPDataCleanear.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Shuffle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/UmapProjection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPMatrices.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPIntraMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPIntraMatrices.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPMatrices.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentInterval.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,9 +90,9 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice.matrices" />
-      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.shuffle.scoring" />
       <recent name="mixer.utils.slice.kmeansfloat" />
     </key>
@@ -124,13 +116,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -156,14 +150,8 @@
       <workItem from="1614210650505" duration="505000" />
       <workItem from="1614258766357" duration="3569000" />
       <workItem from="1614270580118" duration="30811000" />
-      <workItem from="1614395090260" duration="18837000" />
-    </task>
-    <task id="LOCAL-00038" summary="restructure scoring">
-      <created>1606330700940</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1606330700940</updated>
+      <workItem from="1614395090260" duration="22841000" />
+      <workItem from="1614660140996" duration="9803000" />
     </task>
     <task id="LOCAL-00039" summary="optimizations">
       <created>1606333756688</created>
@@ -501,7 +489,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614471232498</updated>
     </task>
-    <option name="localTasksCounter" value="87" />
+    <task id="LOCAL-00087" summary="umap on intra, similarity metrics">
+      <created>1614620827888</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1614620827888</updated>
+    </task>
+    <option name="localTasksCounter" value="88" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -526,7 +521,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="fixed bug in indexer, using weights based on column compression" />
     <MESSAGE value="try something else" />
     <MESSAGE value="bug fixes with centroids, filter out if too many zeros" />
     <MESSAGE value="intra matrix cleaning; bug fixes" />
@@ -551,7 +545,8 @@
     <MESSAGE value="fix ordering" />
     <MESSAGE value="error check for matrix size prior to output, code cleanup" />
     <MESSAGE value="restore 50 iterations" />
-    <option name="LAST_COMMIT_MESSAGE" value="restore 50 iterations" />
+    <MESSAGE value="umap on intra, similarity metrics" />
+    <option name="LAST_COMMIT_MESSAGE" value="umap on intra, similarity metrics" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

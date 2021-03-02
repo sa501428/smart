@@ -24,8 +24,8 @@
 
 package mixer.clt;
 
-import mixer.MixerTools;
 
+import mixer.MixerTools;
 
 /**
  * Created for testing multiple CLTs at once
@@ -49,16 +49,16 @@ public class AggregateProcessing {
         };
 
         String[] types = new String[]{
-                "SIMPLE", "LOG", "O_E", "LOG_E(O)"
+                "RAW", "LOG", "O_E", "LOG_E(O)"
         };
 
         String[] corrs = new String[]{
-                "", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN", "EUCLIDEAN"
+                "IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN", "EUCLIDEAN"
         };
 
         for (int q = 0; q < files.length; q++) {
             for (int x = 0; x < corrs.length; x++) {
-                for (int y = 0; y < types.length; y++) {
+                for (int y = 2; y < types.length; y++) {
                     String[] strings = new String[]{"intra-umap",
                             "-r", 50000 + "",
                             "-k", norms[q],
@@ -119,7 +119,6 @@ public class AggregateProcessing {
         MixerTools.main(strings);
         System.gc();
 
-        /*
 
         String[] strings;
         String changes = "3,A1,34,139,34;" +
@@ -127,6 +126,14 @@ public class AggregateProcessing {
                 "5,B1,220,20,60;" +
                 "4,B2,255,255,0;" +
                 "1,B3,112,128,144";
+
+                strings = new String[]{"rename",
+                changes,
+                "/Users/mshamim/Desktop/SLICE.Reboot/GMPrimary_Final_100000_v3.17.05/GMPrimary_Final_100000_v3.17.05_5_clusters_GM12878_primary14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed"
+        };
+        //MixerTools.main(strings);
+        System.gc();
 
         String outfolder = "/Users/mshamim/Desktop/SLICE.Reboot/deepcalls";
 
