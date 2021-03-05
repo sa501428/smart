@@ -30,16 +30,22 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="umap on intra, similarity metrics">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentColors.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPDataCleanear.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="built in plotting for umap">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPIntraMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPIntraMatrices.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/UMAPMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPMatrices.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentInterval.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/IntraShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/IntraShuffleMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/DerivativeScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/DerivativeScoring.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KernelScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KernelScoring.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPDataCleanear.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPDataCleanear.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPIntraMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPIntraMatrices.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPMatrices.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,19 +122,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -151,14 +144,10 @@
       <workItem from="1614258766357" duration="3569000" />
       <workItem from="1614270580118" duration="30811000" />
       <workItem from="1614395090260" duration="22841000" />
-      <workItem from="1614660140996" duration="9803000" />
-    </task>
-    <task id="LOCAL-00039" summary="optimizations">
-      <created>1606333756688</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1606333756688</updated>
+      <workItem from="1614660140996" duration="12460000" />
+      <workItem from="1614726910864" duration="10770000" />
+      <workItem from="1614872169014" duration="128000" />
+      <workItem from="1614893237645" duration="6196000" />
     </task>
     <task id="LOCAL-00040" summary="bug fix">
       <created>1606336196521</created>
@@ -496,7 +485,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614620827888</updated>
     </task>
-    <option name="localTasksCounter" value="88" />
+    <task id="LOCAL-00088" summary="built in plotting for umap">
+      <created>1614704107797</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1614704107797</updated>
+    </task>
+    <option name="localTasksCounter" value="89" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -521,7 +517,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="try something else" />
     <MESSAGE value="bug fixes with centroids, filter out if too many zeros" />
     <MESSAGE value="intra matrix cleaning; bug fixes" />
     <MESSAGE value="fix aggregate statistics" />
@@ -546,7 +541,8 @@
     <MESSAGE value="error check for matrix size prior to output, code cleanup" />
     <MESSAGE value="restore 50 iterations" />
     <MESSAGE value="umap on intra, similarity metrics" />
-    <option name="LAST_COMMIT_MESSAGE" value="umap on intra, similarity metrics" />
+    <MESSAGE value="built in plotting for umap" />
+    <option name="LAST_COMMIT_MESSAGE" value="built in plotting for umap" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

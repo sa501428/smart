@@ -29,7 +29,6 @@ import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.shuffle.scoring.*;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -151,9 +150,9 @@ public class IntraShuffleMatrix {
                     float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices);
 
                     aggregate.addBToA(matrix);
-                    updateMatrixScores(scoresForRound, k, matrix, allRowIndices.boundaries);
+                    ShuffleMatrix.updateMatrixScores(scoresForRound, k, matrix, allRowIndices.boundaries, allRowIndices.boundaries, false);
                     FloatMatrixTools.log(matrix, 1);
-                    updateMatrixScores(logScoresForRound, k, matrix, allRowIndices.boundaries);
+                    ShuffleMatrix.updateMatrixScores(logScoresForRound, k, matrix, allRowIndices.boundaries, allRowIndices.boundaries, false);
 
                     k = currRowIndex.getAndIncrement();
                 }
@@ -172,15 +171,6 @@ public class IntraShuffleMatrix {
         aggregate.scaleForNumberOfRounds(numRounds);
         aggregate.saveToPNG(outfolder, mapType.getName());
         //aggregate.balanceAndSave(outfolder, mapType);
-    }
-
-    private void updateMatrixScores(double[][] scores, int k, float[][] matrix, Integer[] rowBounds) {
-        scores[0][k] = (new DerivativeScoring(matrix, rowBounds, rowBounds)).score();
-        scores[1][k] = (new VarianceScoring(matrix, rowBounds, rowBounds)).score();
-        scores[2][k] = (new UniformKernelScoring(matrix, rowBounds, rowBounds)).score();
-        scores[3][k] = (new GaussianKernelScoring(matrix, rowBounds, rowBounds)).score();
-        scores[4][k] = (new KLDivergenceScoring(matrix, rowBounds, rowBounds, true)).score();
-        scores[5][k] = (new KLDivergenceScoring(matrix, rowBounds, rowBounds, false)).score();
     }
 
     private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean isBaseline) {

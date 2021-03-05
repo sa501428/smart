@@ -33,6 +33,7 @@ public class UMAPDataCleanear {
     final float[][] points;
     final int[][] ids;
     final int numPlots;
+    private final boolean useOnlyFullAgreement = false;
 
     public UMAPDataCleanear(float[][] initialPoints, int[][] initialIDs) {
         numPlots = initialIDs[0].length;
@@ -143,6 +144,18 @@ public class UMAPDataCleanear {
         for (int k = 0; k < statusVal.length; k++) {
             status[k] = statusVal[k] > 0;
         }
+
+        if (useOnlyFullAgreement) {
+            for (int k = 0; k < statusVal.length; k++) {
+                int baseline = ids[k][0];
+                boolean allIdentical = true;
+                for (int z = 1; z < numPlots; z++) {
+                    allIdentical &= baseline == ids[k][z];
+                }
+                status[k] &= allIdentical;
+            }
+        }
+
         return status;
     }
 }

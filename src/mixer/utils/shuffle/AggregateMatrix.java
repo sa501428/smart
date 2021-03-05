@@ -24,9 +24,10 @@
 
 package mixer.utils.shuffle;
 
+import javastraw.tools.MatrixTools;
 import javastraw.tools.UNIXTools;
+import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.InterMatrixBalancer;
 
 import java.io.File;
 
@@ -79,22 +80,21 @@ public class AggregateMatrix {
         File outfolder2 = new File(outfolder, name);
         UNIXTools.makeDir(outfolder2);
         saveToPNG(aggregate, outfolder2, name, "");
+
+        if (MixerGlobals.printVerboseComments) {
+            String npyPath = new File(outfolder2, name + "_" + stem + ".npy").getAbsolutePath();
+            MatrixTools.saveMatrixTextNumpy(npyPath, aggregate);
+        }
     }
 
-    public void saveToPNG(float[][] matrix, File outfolder, String name, String stem2) {
+    private void saveToPNG(float[][] matrix, File outfolder, String name, String stem2) {
         File mapFile = new File(outfolder, stem2 + name + "_" + stem + ".png");
         File mapLogFile = new File(outfolder, stem2 + name + "_log_" + stem + ".png");
         FloatMatrixTools.saveMatrixToPNG(mapFile, matrix, false);
         FloatMatrixTools.saveMatrixToPNG(mapLogFile, matrix, true);
     }
 
-    public void balanceAndSave(File outfolder, InterOnlyMatrix.InterMapType mapType) {
-        InterMatrixBalancer balancer = new InterMatrixBalancer(aggregate, false);
-        float[][] balanced = balancer.getNormalizedMatrix();
-        if (balanced != null) {
-            saveToPNG(balanced, outfolder, mapType.toString(), "balanced_");
-        } else {
-            System.err.println("unable to balance " + mapType);
-        }
+    public float[][] getMatrixCopy() {
+        return FloatMatrixTools.deepClone(aggregate);
     }
 }

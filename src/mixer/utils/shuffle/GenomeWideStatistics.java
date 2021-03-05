@@ -153,7 +153,7 @@ public class GenomeWideStatistics {
     public void saveInteractionMap(File outfolder) {
 
         boolean useLog = false;
-        for (boolean useBalancing : new boolean[]{false, true}) {
+        for (boolean useBalancing : new boolean[]{false}) { // . true
             for (boolean useSymm : new boolean[]{true, false}) {
                 double averageContact = totalContact / totalCounts;
                 if (useLog) {

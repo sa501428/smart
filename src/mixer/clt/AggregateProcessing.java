@@ -25,6 +25,7 @@
 package mixer.clt;
 
 
+import mixer.MixerGlobals;
 import mixer.MixerTools;
 
 /**
@@ -56,27 +57,93 @@ public class AggregateProcessing {
                 "IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN", "EUCLIDEAN"
         };
 
-        for (int q = 0; q < files.length; q++) {
+        for (int q = 0; q < files.length - 1; q++) {
             for (int x = 0; x < corrs.length; x++) {
-                for (int y = 2; y < types.length; y++) {
-                    String[] strings = new String[]{"intra-umap",
-                            "-r", 50000 + "",
+                for (int y = 0; y < types.length; y++) {
+                    String[] strings = new String[]{"intra-umap", //umap shuffle
+                            "-r", 100000 + "", // 50000
                             "-k", norms[q],
                             "-w", "" + 2,
                             "--type", "" + y,
                             "--corr", "" + x,
                             "-c", "1,14,19",
                             files[q],
-                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_50K.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
                                     "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
-                            "/Users/mshamim/Desktop/SLICE.Reboot/intra_umaps/" + filePrefixes[q] + "50K_" + types[y] + "_" + corrs[x]
+                            "/Users/mshamim/Desktop/SLICE.Reboot/intra_umaps/NEW_UMAP_PARAMS_" + filePrefixes[q] + "100K_" + types[y] + "_" + corrs[x]
+                            //"/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/REBOOT" + filePrefixes[q] + "50K_" + types[y] + "_" + corrs[x]
+                            //                             , "PRIMARY100,SLICE100,RH2014"
                     };
 
                     System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+                    //MixerTools.main(strings);
                     System.gc();
                 }
             }
+        }
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+
+        for (String norm : new String[]{"INTER_KR", "GW_KR", "KR"}) { //
+            String folder = "SHUFFLE_again4NewBaseline_W1_GM12878_" + norm + "_100K_v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"shuffle", //umap
+                    "-r", 100000 + "",
+                    "-k", norm, "-w", "" + 16,
+                    file14,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/INTER-KR_GM_res_100000v3.18.07/INTER-KR_GM_res_100000v3.18.07__5_clusters_gm12878_rh14_30.subcompartment.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/" +
+                            folder
+                    , "RH2014,SLICE100,PRIMARY100,INTER_SLICE,SNIPER,SCI"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
+
+        for (int res : new int[]{100000}) { //100000
+            String folder = "INTER-KR_GM_res_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "",
+                    "-k", "INTER_KR", //"--verbose",
+                    file14, "2,8,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+
+        /*
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/K562_2014_SCALE_30.hic";
+
+        for (int res : new int[]{50000}) { //100000
+            String folder = "K562_res_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "", "-k", "SCALE", //"--verbose",
+                    file14, "2,8,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+
+            strings = new String[]{"shuffle", "-r", res + "", "-k", "KR", "-w", "" + (16 * (100000 / res)), file14,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
+                            "/" + folder + "__5_clusters_K562_2014_SCALE_30.subcompartment.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerGlobals.versionNum,
+                    "SLICE3"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
         }
 
         /*

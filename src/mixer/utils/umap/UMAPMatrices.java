@@ -139,6 +139,10 @@ public class UMAPMatrices {
 
         temp = new File(outputDirectory, outstem + "genome_indices.npy");
         MatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indexToIDs);
+
+        ScatterPlot sc = new ScatterPlot(result, indexToIDs);
+        temp = new File(outputDirectory, outstem + "_plots");
+        sc.plot(temp.getAbsolutePath());
     }
 
     private void populateIndexToClusterIDMap(Chromosome[] chromosomes, int[] offsets,

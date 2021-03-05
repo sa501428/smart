@@ -207,6 +207,14 @@ public class FloatMatrixTools {
         return (float) maxVal;
     }
 
+    public static float[][] deepClone(float[][] data) {
+        float[][] copy = new float[data.length][data[0].length];
+        for (int i = 0; i < data.length; i++) {
+            System.arraycopy(data[i], 0, copy[i], 0, data[i].length);
+        }
+        return copy;
+    }
+
     private static float getMaxVal(float[][] matrix) {
         float maxVal = matrix[0][0];
         for (int i = 0; i < matrix.length; i++) {
