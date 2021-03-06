@@ -30,21 +30,27 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="built in plotting for umap">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="version number">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/matrix/HiCMatrix.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/matrix/InterOnlyMatrix.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/matrix/IntraOnlyMatrix.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/matrix/ScoreContainer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Shuffle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/ParallelizedMixerTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/ParallelizedMixerTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/IntraShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/IntraShuffleMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/DerivativeScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/DerivativeScoring.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KernelScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KernelScoring.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPDataCleanear.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPDataCleanear.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPIntraMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPIntraMatrices.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/matrix/AggregateMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/EntropyCalculations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/EntropyCalculations.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/GenomeWideStatistics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/InterOnlyMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/IntraShuffleMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffledIndices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/matrix/ShuffledIndices.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPScatterPlotter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPIntraMatrices.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPMatrices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPMatrices.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -122,6 +128,17 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -147,14 +164,9 @@
       <workItem from="1614660140996" duration="12460000" />
       <workItem from="1614726910864" duration="10770000" />
       <workItem from="1614872169014" duration="128000" />
-      <workItem from="1614893237645" duration="6196000" />
-    </task>
-    <task id="LOCAL-00040" summary="bug fix">
-      <created>1606336196521</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1606336196521</updated>
+      <workItem from="1614893237645" duration="6505000" />
+      <workItem from="1614962854226" duration="18000" />
+      <workItem from="1614966720570" duration="10077000" />
     </task>
     <task id="LOCAL-00041" summary="calculate on log matrix as well">
       <created>1606345516094</created>
@@ -492,7 +504,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614704107797</updated>
     </task>
-    <option name="localTasksCounter" value="89" />
+    <task id="LOCAL-00089" summary="shuffle bug fixes, defaults fixed, plotting for regular umap">
+      <created>1614962802378</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1614962802378</updated>
+    </task>
+    <option name="localTasksCounter" value="90" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -517,8 +536,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fixes with centroids, filter out if too many zeros" />
-    <MESSAGE value="intra matrix cleaning; bug fixes" />
     <MESSAGE value="fix aggregate statistics" />
     <MESSAGE value="no log, remove first zscore, change centroid/50 -&gt; centroid per 10; remove weighing columns, maxiters to 3" />
     <MESSAGE value="remove post processor; 1-shot centroids; regular zscore" />
@@ -542,7 +559,9 @@
     <MESSAGE value="restore 50 iterations" />
     <MESSAGE value="umap on intra, similarity metrics" />
     <MESSAGE value="built in plotting for umap" />
-    <option name="LAST_COMMIT_MESSAGE" value="built in plotting for umap" />
+    <MESSAGE value="shuffle bug fixes, defaults fixed, plotting for regular umap" />
+    <MESSAGE value="version number" />
+    <option name="LAST_COMMIT_MESSAGE" value="version number" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

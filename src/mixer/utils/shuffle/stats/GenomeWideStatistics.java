@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.shuffle.stats;
 
 import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.Dataset;

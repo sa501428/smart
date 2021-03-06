@@ -32,9 +32,8 @@ import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.shuffle.InterOnlyMatrix;
-import mixer.utils.shuffle.IntraShuffleMatrix;
-import mixer.utils.shuffle.ShuffleMatrix;
+import mixer.utils.matrix.InterOnlyMatrix;
+import mixer.utils.shuffle.ShuffleAction;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -58,7 +57,7 @@ public class Shuffle extends MixerCLT {
     private String[] prefix;
     private String[] referenceBedFiles;
     private final boolean useIntraMap;
-    private InterOnlyMatrix.INTRA_TYPE intra_type;
+    private InterOnlyMatrix.INTRA_TYPE intraType;
     private SimilarityMetric metric;
 
     // subcompartment lanscape identification via clustering enrichment
@@ -90,7 +89,7 @@ public class Shuffle extends MixerCLT {
             resolution = possibleResolutions.get(0);
         }
 
-        intra_type = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
+        intraType = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
         SimilarityMetric metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
 
         long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
@@ -119,16 +118,17 @@ public class Shuffle extends MixerCLT {
             System.out.println("Processing " + prefix[i]);
             File newFolder = new File(outputDirectory, prefix[i]);
             UNIXTools.makeDir(newFolder);
+
+            ShuffleAction matrix;
             if (useIntraMap) {
-                IntraShuffleMatrix matrix = new IntraShuffleMatrix(ds, norm, resolution, compressionFactor,
-                        intra_type, metric);
-                matrix.runAnalysis(subcompartments, newFolder);
-                matrix.savePlotsAndResults(newFolder, prefix[i]);
+                matrix = new ShuffleAction(ds, norm, resolution, compressionFactor,
+                        metric, intraType);
+                matrix.runIntraAnalysis(subcompartments, newFolder);
             } else {
-                ShuffleMatrix matrix = new ShuffleMatrix(ds, norm, resolution, compressionFactor, metric);
-                matrix.runAnalysis(subcompartments, newFolder);
-                matrix.savePlotsAndResults(newFolder, prefix[i]);
+                matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, metric);
+                matrix.runInterAnalysis(subcompartments, newFolder);
             }
+            matrix.savePlotsAndResults(newFolder, prefix[i]);
         }
         System.out.println("Shuffle complete");
     }

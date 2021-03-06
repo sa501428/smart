@@ -54,6 +54,16 @@ public class FloatMatrixTools {
         }
     }
 
+    private void inPlaceThreshold(float[][] matrix, float maxVal) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > maxVal) {
+                    matrix[i][j] = maxVal;
+                }
+            }
+        }
+    }
+
     public static float[] getColNonZeroStdDevNonNans(float[][] matrix, float[] means, int batchSize) {
 
         float[] stdDevs = new float[means.length];

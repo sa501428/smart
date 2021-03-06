@@ -32,10 +32,9 @@ import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.shuffle.InterOnlyMatrix;
+import mixer.utils.matrix.InterOnlyMatrix;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.umap.UMAPIntraMatrices;
-import mixer.utils.umap.UMAPMatrices;
+import mixer.utils.umap.UMAPAction;
 
 import java.io.File;
 import java.util.List;
@@ -55,7 +54,7 @@ public class UmapHiC extends MixerCLT {
     private File outputDirectory;
     private String[] referenceBedFiles;
     private final boolean isIntra;
-    private InterOnlyMatrix.INTRA_TYPE intra_type;
+    private InterOnlyMatrix.INTRA_TYPE intraType;
     private SimilarityMetric metric;
 
     // subcompartment lanscape identification via clustering enrichment
@@ -93,7 +92,7 @@ public class UmapHiC extends MixerCLT {
             }
         }
 
-        intra_type = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
+        intraType = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
         metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
 
         int minSize = mixerParser.getAPAWindowSizeOption();
@@ -107,23 +106,21 @@ public class UmapHiC extends MixerCLT {
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
 
         UNIXTools.makeDir(outputDirectory);
-        if (isIntra) {
 
-            Chromosome[] chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
-            if (givenChromosomes != null) {
-                //chromosomeHandler = getStringToChromosomes(givenChromosomes, chromosomeHandler);
-                chromosomes = getStringToChromosomes(givenChromosomes, chromosomeHandler);
-            }
-
-            UMAPIntraMatrices matrix = new UMAPIntraMatrices(ds, norm, resolution, compressionFactor,
-                    intra_type, metric);
-            matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler, chromosomes);
-            System.out.println("UMAP complete; use python code to plot");
-        } else {
-            UMAPMatrices matrix = new UMAPMatrices(ds, norm, resolution, compressionFactor, metric);
-            matrix.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
-            System.out.println("UMAP complete; use python code to plot");
+        /*
+        if (givenChromosomes != null) {
+            chromosomeHandler = getStringToChromosomes(givenChromosomes, chromosomeHandler);
         }
+        */
+
+        UMAPAction umap;
+        if (isIntra) {
+            umap = new UMAPAction(ds, norm, resolution, compressionFactor,
+                    metric, intraType);
+        } else {
+            umap = new UMAPAction(ds, norm, resolution, compressionFactor, metric);
+        }
+        umap.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
     }
 
     private Chromosome[] getStringToChromosomes(List<String> givenChromosomes, ChromosomeHandler chromosomeHandler) {

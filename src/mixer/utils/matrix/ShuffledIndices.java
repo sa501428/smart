@@ -22,35 +22,16 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.matrix;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
 
-@SuppressWarnings("unused")
-public class EntropyCalculations {
+public class ShuffledIndices {
+    public final List<Integer> allIndices;
+    public final Integer[] boundaries;
 
-    double entropyRatios;
-    double entropyLogRatios;
-    double entropyPerPixel;
-    double entropyLogPerPixel;
-
-    public EntropyCalculations(File shuffleFile, File baselineFile, File shuffleLogFile, File baselineLogFile,
-                               float[][] shuffleM) {
-
-        try {
-            entropyRatios = getFileSize(shuffleFile) / getFileSize(baselineFile);
-            entropyLogRatios = getFileSize(shuffleLogFile) / getFileSize(baselineLogFile);
-            entropyPerPixel = getFileSize(shuffleFile) / (shuffleM.length * shuffleM[0].length);
-            entropyLogPerPixel = getFileSize(shuffleLogFile) / (shuffleM.length * shuffleM[0].length);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private double getFileSize(File fileName) throws IOException {
-        return (double) Files.size(Paths.get(fileName.getAbsolutePath()));
+    public ShuffledIndices(List<Integer> allIndices, Integer[] boundaries) {
+        this.allIndices = allIndices;
+        this.boundaries = boundaries;
     }
 }

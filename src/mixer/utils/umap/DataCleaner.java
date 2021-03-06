@@ -26,7 +26,7 @@ package mixer.utils.umap;
 
 import java.util.Arrays;
 
-public class UMAPDataCleanear {
+public class DataCleaner {
 
     final int width = 2000;
     final int height;
@@ -35,7 +35,7 @@ public class UMAPDataCleanear {
     final int numPlots;
     private final boolean useOnlyFullAgreement = false;
 
-    public UMAPDataCleanear(float[][] initialPoints, int[][] initialIDs) {
+    public DataCleaner(float[][] initialPoints, int[][] initialIDs) {
         numPlots = initialIDs[0].length;
         boolean[] shouldUse = getUseStatus(initialIDs);
         int realLength = getRealLength(shouldUse);

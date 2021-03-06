@@ -34,10 +34,10 @@ import java.io.File;
 public class ScatterPlot {
     private final int circleOffset = 3;
     private final int circleWidth = circleOffset * 2;
-    private final UMAPDataCleanear data;
+    private final DataCleaner data;
 
     public ScatterPlot(float[][] points, int[][] ids) {
-        data = new UMAPDataCleanear(points, ids);
+        data = new DataCleaner(points, ids);
     }
 
     public void plot(String absPath) {

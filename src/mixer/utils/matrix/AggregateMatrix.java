@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.matrix;
 
 import javastraw.tools.MatrixTools;
 import javastraw.tools.UNIXTools;

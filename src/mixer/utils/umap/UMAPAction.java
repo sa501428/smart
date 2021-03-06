@@ -32,7 +32,9 @@ import javastraw.tools.MatrixTools;
 import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.shuffle.InterOnlyMatrix;
+import mixer.utils.matrix.HiCMatrix;
+import mixer.utils.matrix.InterOnlyMatrix;
+import mixer.utils.matrix.IntraOnlyMatrix;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.IntraMatrixCleaner;
 import mixer.utils.slice.structures.SliceUtils;
@@ -46,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class UMAPMatrices {
+public class UMAPAction {
 
     private final Random generator = new Random(0);
     private final Dataset ds;
@@ -56,17 +58,28 @@ public class UMAPMatrices {
     private final SimilarityMetric metric;
     private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
             InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
+    private HiCMatrix.INTRA_TYPE intraType = null;
+    private boolean isIntra = false;
 
-    public UMAPMatrices(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
-                        SimilarityMetric metric) {
+    public UMAPAction(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
+                      SimilarityMetric metric) {
         this.resolution = resolution;
         this.compressionFactor = compressionFactor;
         this.ds = ds;
         this.norm = norm;
         this.metric = metric;
+        this.intraType = intraType;
     }
 
-    public void runAnalysis(String[] bedFiles, File outputDirectory, ChromosomeHandler chromosomeHandler) {
+    public UMAPAction(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
+                      SimilarityMetric metric, HiCMatrix.INTRA_TYPE intraType) {
+        this(ds, norm, resolution, compressionFactor, metric);
+        this.intraType = intraType;
+        isIntra = true;
+    }
+
+    public void runAnalysis(String[] bedFiles, File outputDirectory,
+                            ChromosomeHandler chromosomeHandler) {
 
         List<GenomeWideList<SubcompartmentInterval>> allSubcompartments = new ArrayList<>();
         for (int i = 0; i < bedFiles.length; i++) {
@@ -85,39 +98,52 @@ public class UMAPMatrices {
         int numBedFiles = allSubcompartments.size();
         // todo, using only big size? todo sorting picture
 
-        for (int y = 0; y < mapTypes.length; y++) {
+        if (isIntra) {
+            Chromosome[] chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
+            for (int y = 0; y < chromosomes.length; y++) {
+                final IntraOnlyMatrix interMatrix = new IntraOnlyMatrix(ds, norm, resolution, chromosomes[y],
+                        intraType, metric);
 
-            final InterOnlyMatrix interMatrix = new InterOnlyMatrix(ds, norm, resolution, mapTypes[y], metric);
-            interMatrix.applySimpleLog();
+                float[][] matrix = interMatrix.getMatrix();
 
-            float[][] matrix = interMatrix.getMatrix();
-            float[][] matrixT = FloatMatrixTools.transpose(matrix);
-
-
-            IntraMatrixCleaner.rollingAverage(matrix, compressionFactor);
-            IntraMatrixCleaner.rollingAverage(matrixT, compressionFactor);
-
-            //FloatMatrixTools.saveMatrixToPNG(new File(outputDirectory, mapTypes[y].toString()+".png"),
-            //              matrix, false);
-            //FloatMatrixTools.saveMatrixToPNG(new File(outputDirectory, mapTypes[y].toString()+"_avg.png"),
-            //              matrix, false);
-
-            int[][] rowIndicesToClusterIDs = new int[matrix.length][numBedFiles];
-            int[][] colIndicesToClusterIDs = new int[matrix[0].length][numBedFiles];
-
-            for (int z = 0; z < numBedFiles; z++) {
-                populateIndexToClusterIDMap(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(),
-                        allSubcompartments.get(z), rowIndicesToClusterIDs, z);
-                populateIndexToClusterIDMap(interMatrix.getColChromosomes(), interMatrix.getColOffsets(),
-                        allSubcompartments.get(z), colIndicesToClusterIDs, z);
+                processMatrixForUMAP(matrix, numBedFiles,
+                        interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(),
+                        allSubcompartments, outputDirectory, chromosomes[y].getName(), "rows");
             }
+        } else {
+            for (int y = 0; y < mapTypes.length; y++) {
 
-            File outfolder = new File(outputDirectory, mapTypes[y].toString());
-            UNIXTools.makeDir(outfolder);
+                final HiCMatrix interMatrix = InterOnlyMatrix.getMatrix(ds, norm, resolution, mapTypes[y], metric);
+                interMatrix.applySimpleLog();
 
-            runUmapAndSaveMatrices(matrix, outfolder, "rows", rowIndicesToClusterIDs);
-            runUmapAndSaveMatrices(matrixT, outfolder, "cols", colIndicesToClusterIDs);
+                float[][] matrix = interMatrix.getMatrix();
+                float[][] matrixT = FloatMatrixTools.transpose(matrix);
+
+                processMatrixForUMAP(matrix, numBedFiles,
+                        interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(),
+                        allSubcompartments, outputDirectory, mapTypes[y].toString(), "rows");
+
+                processMatrixForUMAP(matrixT, numBedFiles,
+                        interMatrix.getColChromosomes(), interMatrix.getColOffsets(),
+                        allSubcompartments, outputDirectory, mapTypes[y].toString(), "cols");
+            }
         }
+    }
+
+    private void processMatrixForUMAP(float[][] matrix, int numBedFiles, Chromosome[] chromosomes, int[] offsets,
+                                      List<GenomeWideList<SubcompartmentInterval>> allSubcompartments,
+                                      File outputDirectory, String folderName, String filePrefix) {
+        IntraMatrixCleaner.rollingAverage(matrix, compressionFactor);
+
+        int[][] indicesToClusterIDs = new int[matrix.length][numBedFiles];
+
+        for (int z = 0; z < numBedFiles; z++) {
+            populateIndexToClusterIDMap(chromosomes, offsets, allSubcompartments.get(z), indicesToClusterIDs, z);
+        }
+
+        File outfolder = new File(outputDirectory, folderName);
+        UNIXTools.makeDir(outfolder);
+        runUmapAndSaveMatrices(matrix, outfolder, filePrefix, indicesToClusterIDs);
     }
 
     private void runUmapAndSaveMatrices(float[][] data, File outputDirectory, String outstem,
@@ -127,9 +153,9 @@ public class UMAPMatrices {
         System.out.println("Running UMAP with " + outstem);
         final Umap umap = new Umap();
         umap.setNumberComponents(2);
-        umap.setNumberNearestNeighbours(50); // 15 -> 50 for more global picture
+        umap.setNumberNearestNeighbours(100); // 50 // 15 -> 50 for more global picture
         umap.setThreads(numThreads);
-        umap.setMinDist(0.2f);  //0.1f -> 0.2f for more general features
+        umap.setMinDist(0.5f); // 0.2 ->0.8 -> 0.5  //0.1f -> 0.2f for more general features
         umap.setVerbose(false);
         umap.setSeed(generator.nextLong());
         final float[][] result = umap.fitTransform(data);
@@ -156,10 +182,8 @@ public class UMAPMatrices {
                 int xEnd = interval.getX2() / resolution;
                 int clusterID = interval.getClusterID();
 
-                List<Integer> tempList = new ArrayList<>();
                 for (int k = xStart; k < xEnd; k++) {
                     final int actualPosition = k + offsets[x];
-                    tempList.add(actualPosition);
                     indicesToClusterIDs[actualPosition][colIndex] = clusterID;
                 }
             }
