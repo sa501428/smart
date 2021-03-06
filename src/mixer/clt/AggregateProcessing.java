@@ -85,9 +85,9 @@ public class AggregateProcessing {
 
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
-        for (String norm : new String[]{"INTER_KR", "GW_KR", "KR"}) { //
-            String folder = "SHUFFLE_again4NewBaseline_W1_GM12878_" + norm + "_100K_v" + MixerGlobals.versionNum;
-            String[] strings = new String[]{"shuffle", //umap
+        for (String norm : new String[]{"INTER_KR", "KR"}) { //"GW_KR",
+            String folder = "SHUFFLE_again5NewBaseline_W16_GM12878_" + norm + "_100K_v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"shuffle-umap", //umap
                     "-r", 100000 + "",
                     "-k", norm, "-w", "" + 16,
                     file14,

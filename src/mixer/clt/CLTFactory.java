@@ -25,7 +25,10 @@
 package mixer.clt;
 
 import mixer.MixerGlobals;
-import mixer.algos.*;
+import mixer.algos.ChromosomeWalker;
+import mixer.algos.Rename;
+import mixer.algos.ShuffleAndUMAP;
+import mixer.algos.Slice;
 
 
 /**
@@ -53,12 +56,10 @@ public class CLTFactory {
             return new Slice(cmd);
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();
-        } else if (cmd.contains("shuffle")) {
-            return new Shuffle(cmd);
+        } else if (cmd.contains("shuffle") || cmd.contains("umap")) {
+            return new ShuffleAndUMAP(cmd);
         } else if (cmd.equals("rename")) {
             return new Rename();
-        } else if (cmd.contains("umap")) {
-            return new UmapHiC(cmd);
         }
 
         return null;

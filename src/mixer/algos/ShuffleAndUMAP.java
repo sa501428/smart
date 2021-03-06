@@ -28,6 +28,7 @@ import javastraw.featurelist.GenomeWideList;
 import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
 import javastraw.reader.HiCFileTools;
+import javastraw.reader.basics.Chromosome;
 import javastraw.tools.UNIXTools;
 import javastraw.type.NormalizationType;
 import mixer.clt.CommandLineParserForMixer;
@@ -37,6 +38,7 @@ import mixer.utils.shuffle.ShuffleAction;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.umap.UMAPAction;
 
 import java.io.File;
 import java.util.List;
@@ -47,7 +49,7 @@ import java.util.Random;
  * <p>
  * Created by muhammadsaadshamim on 9/14/15.
  */
-public class Shuffle extends MixerCLT {
+public class ShuffleAndUMAP extends MixerCLT {
 
     private final Random generator = new Random(22871L);
     private Dataset ds;
@@ -59,12 +61,15 @@ public class Shuffle extends MixerCLT {
     private final boolean useIntraMap;
     private InterOnlyMatrix.INTRA_TYPE intraType;
     private SimilarityMetric metric;
+    private final boolean doUMAP, doShuffle;
 
     // subcompartment lanscape identification via clustering enrichment
-    public Shuffle(String name) {
-        super("shuffle [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
+    public ShuffleAndUMAP(String name) {
+        super("[intra-]shuffle-umap [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
                 "<file.hic> <subcompartment.bed> <outfolder> <prefix>");
         useIntraMap = name.contains("intra");
+        doShuffle = name.contains("shuffle");
+        doUMAP = name.contains("umap");
     }
 
     @Override
@@ -90,7 +95,7 @@ public class Shuffle extends MixerCLT {
         }
 
         intraType = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
-        SimilarityMetric metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
+        metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
 
         long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
         if (possibleSeeds != null && possibleSeeds.length > 0) {
@@ -112,24 +117,49 @@ public class Shuffle extends MixerCLT {
         if (givenChromosomes != null)
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
-        for (int i = 0; i < referenceBedFiles.length; i++) {
-            GenomeWideList<SubcompartmentInterval> subcompartments =
-                    SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, referenceBedFiles[i]);
-            System.out.println("Processing " + prefix[i]);
-            File newFolder = new File(outputDirectory, prefix[i]);
-            UNIXTools.makeDir(newFolder);
+        UNIXTools.makeDir(outputDirectory);
 
-            ShuffleAction matrix;
-            if (useIntraMap) {
-                matrix = new ShuffleAction(ds, norm, resolution, compressionFactor,
-                        metric, intraType);
-                matrix.runIntraAnalysis(subcompartments, newFolder);
-            } else {
-                matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, metric);
-                matrix.runInterAnalysis(subcompartments, newFolder);
+        if (doShuffle) {
+            for (int i = 0; i < referenceBedFiles.length; i++) {
+                GenomeWideList<SubcompartmentInterval> subcompartments =
+                        SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, referenceBedFiles[i]);
+                System.out.println("Processing " + prefix[i]);
+                File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
+                UNIXTools.makeDir(newFolder);
+
+                ShuffleAction matrix;
+                if (useIntraMap) {
+                    matrix = new ShuffleAction(ds, norm, resolution, compressionFactor,
+                            metric, intraType);
+                    matrix.runIntraAnalysis(subcompartments, newFolder);
+                } else {
+                    matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, metric);
+                    matrix.runInterAnalysis(subcompartments, newFolder);
+                }
+                matrix.savePlotsAndResults(newFolder, prefix[i]);
             }
-            matrix.savePlotsAndResults(newFolder, prefix[i]);
+            System.out.println("Shuffle complete");
         }
-        System.out.println("Shuffle complete");
+
+        if (doUMAP) {
+            UMAPAction umap;
+            if (useIntraMap) {
+                umap = new UMAPAction(ds, norm, resolution, compressionFactor,
+                        metric, intraType);
+            } else {
+                umap = new UMAPAction(ds, norm, resolution, compressionFactor, metric);
+            }
+            umap.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
+        }
+    }
+
+
+    private Chromosome[] getStringToChromosomes(List<String> givenChromosomes, ChromosomeHandler chromosomeHandler) {
+        Chromosome[] result = new Chromosome[givenChromosomes.size()];
+        for (int i = 0; i < result.length; i++) {
+            String chrom = givenChromosomes.get(i);
+            result[i] = chromosomeHandler.getChromosomeFromName(chrom);
+        }
+        return result;
     }
 }
