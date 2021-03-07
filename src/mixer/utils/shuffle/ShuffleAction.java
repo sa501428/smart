@@ -79,12 +79,8 @@ public class ShuffleAction {
 
     public static void updateMatrixScores(double[][] scores, int k, float[][] matrix, Integer[] rowBounds, Integer[] colBounds,
                                           boolean isBaseline) {
-        //scores[0][k] = (new DerivativeScoring(matrix, rowBounds, colBounds)).score(isBaseline);
         scores[0][k] = (new VarianceScoring(matrix, rowBounds, colBounds)).score(isBaseline);
-        //scores[2][k] = (new UniformKernelScoring(matrix, rowBounds, colBounds)).score(isBaseline);
-        //scores[3][k] = (new GaussianKernelScoring(matrix, rowBounds, colBounds)).score(isBaseline);
         scores[1][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true)).score(isBaseline);
-        //scores[5][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, false)).score(isBaseline);
     }
 
     public void runGWStats(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {

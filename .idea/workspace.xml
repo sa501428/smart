@@ -32,11 +32,12 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/UmapHiC.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/DerivativeScoring.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/GaussianKernelScoring.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KernelScoring.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/UniformKernelScoring.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +60,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="changes_v5" />
+        <entry key="$PROJECT_DIR$" value="enhance" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -151,14 +152,7 @@
       <workItem from="1614872169014" duration="128000" />
       <workItem from="1614893237645" duration="6505000" />
       <workItem from="1614962854226" duration="18000" />
-      <workItem from="1614966720570" duration="11220000" />
-    </task>
-    <task id="LOCAL-00042" summary="code cleanup; KL reverse">
-      <created>1606378248942</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1606378248942</updated>
+      <workItem from="1614966720570" duration="12468000" />
     </task>
     <task id="LOCAL-00043" summary="shuffle, genomewide stats, bug fixes">
       <created>1607462380144</created>
@@ -496,7 +490,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615009227212</updated>
     </task>
-    <option name="localTasksCounter" value="91" />
+    <task id="LOCAL-00091" summary="bug fix">
+      <created>1615010230858</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1615010230858</updated>
+    </task>
+    <option name="localTasksCounter" value="92" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -521,7 +522,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="no log, remove first zscore, change centroid/50 -&gt; centroid per 10; remove weighing columns, maxiters to 3" />
     <MESSAGE value="remove post processor; 1-shot centroids; regular zscore" />
     <MESSAGE value="weigh by centroids cluster size" />
     <MESSAGE value="add TSMetric" />
@@ -546,7 +546,8 @@
     <MESSAGE value="shuffle bug fixes, defaults fixed, plotting for regular umap" />
     <MESSAGE value="version number" />
     <MESSAGE value="code cleanup; redesign for umap and shuffle" />
-    <option name="LAST_COMMIT_MESSAGE" value="code cleanup; redesign for umap and shuffle" />
+    <MESSAGE value="bug fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
