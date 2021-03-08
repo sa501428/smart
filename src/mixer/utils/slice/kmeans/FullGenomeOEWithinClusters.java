@@ -47,33 +47,31 @@ public class FullGenomeOEWithinClusters {
     public static int numAttemptsForKMeans = 3;
     protected final File outputDirectory;
     private final ChromosomeHandler chromosomeHandler;
-    private final int resolution;
-    private final NormalizationType[] norms;
     private final SliceMatrix sliceMatrix;
     private final int maxIters = 1000;
 
     private final Random generator = new Random(0);
 
-    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType[] norms,
+    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution,
+                                      NormalizationType[] intraNorms, NormalizationType[] interNorms,
                                       File outputDirectory, long seed, String[] referenceBedFiles,
                                       SimilarityMetric metric) {
         this.chromosomeHandler = chromosomeHandler;
-        this.resolution = resolution;
-        this.norms = norms;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
         GWBadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
-                resolution, norms);
+                resolution, interNorms);
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
         sliceMatrix = new SliceMatrix(
-                chromosomeHandler, datasets.get(0), norms[0], resolution, outputDirectory, generator.nextLong(), referenceBedFiles,
+                chromosomeHandler, datasets.get(0), intraNorms[0], interNorms[0], resolution, outputDirectory,
+                generator.nextLong(), referenceBedFiles,
                 badIndexFinder, metric);
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
-                    norms[dI], resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, metric);
+                    intraNorms[dI], interNorms[dI], resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, metric);
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 

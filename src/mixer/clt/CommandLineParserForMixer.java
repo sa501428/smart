@@ -66,7 +66,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
     }
 
-    public NormalizationType[] getNormalizationTypeOption(List<Dataset> dsList) {
+    public NormalizationType[][] getNormalizationTypeOption(List<Dataset> dsList) {
         return retrieveNormalizationArray(optionToString(normalizationTypeOption), dsList);
     }
 
@@ -197,15 +197,21 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return null;
     }
 
-    private NormalizationType[] retrieveNormalizationArray(String norm, List<Dataset> dsList) {
+    private NormalizationType[][] retrieveNormalizationArray(String norm, List<Dataset> dsList) {
         if (norm == null || norm.length() < 1)
             return null;
 
         try {
             String[] strArray = norm.split(",");
-            NormalizationType[] norms = new NormalizationType[strArray.length];
+            NormalizationType[][] norms = new NormalizationType[2][strArray.length];
             for (int i = 0; i < strArray.length; i++) {
-                norms[i] = dsList.get(i).getNormalizationHandler().getNormTypeFromString(strArray[i]);
+                String[] pair = strArray[i].split(":");
+                norms[0][i] = dsList.get(i).getNormalizationHandler().getNormTypeFromString(pair[0]);
+                if (pair.length == 2) {
+                    norms[1][i] = dsList.get(i).getNormalizationHandler().getNormTypeFromString(pair[1]);
+                } else {
+                    norms[1][i] = norms[i][0];
+                }
             }
             return norms;
         } catch (IllegalArgumentException error) {

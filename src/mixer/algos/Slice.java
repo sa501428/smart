@@ -56,7 +56,8 @@ public class Slice extends MixerCLT {
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    private NormalizationType[] normArray;
+    private NormalizationType[] intraNormArray;
+    private NormalizationType[] interNormArray;
     public static SimilarityMetric metric = RobustManhattanDistance.SINGLETON; //  RobustMedianAbsoluteError
     private String prefix = "";
     private String[] referenceBedFiles;
@@ -96,13 +97,17 @@ public class Slice extends MixerCLT {
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
 
-        normArray = new NormalizationType[datasetList.size()];
-        NormalizationType[] preferredNorm = mixerParser.getNormalizationTypeOption(datasetList);
-        if (preferredNorm != null && preferredNorm.length > 0) {
-            if (preferredNorm.length == normArray.length) {
-                normArray = preferredNorm;
+        intraNormArray = new NormalizationType[datasetList.size()];
+        interNormArray = new NormalizationType[datasetList.size()];
+
+        NormalizationType[][] preferredNorm = mixerParser.getNormalizationTypeOption(datasetList);
+        if (preferredNorm != null && preferredNorm.length > 0 && preferredNorm[0].length > 0) {
+            if (preferredNorm[0].length == intraNormArray.length) {
+                intraNormArray = preferredNorm[0];
+                interNormArray = preferredNorm[1];
             } else {
-                Arrays.fill(normArray, preferredNorm[0]);
+                Arrays.fill(intraNormArray, preferredNorm[0]);
+                Arrays.fill(interNormArray, preferredNorm[0]);
             }
         } else {
             System.err.println("Normalization must be specified");
@@ -160,7 +165,7 @@ public class Slice extends MixerCLT {
         if (datasetList.size() < 1) return;
 
         FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, normArray, outputDirectory, generator.nextLong(), referenceBedFiles, metric);
+                chromosomeHandler, resolution, intraNormArray, interNormArray, outputDirectory, generator.nextLong(), referenceBedFiles, metric);
         withinClusters.extractFinalGWSubcompartments(inputHicFilePaths, prefix, 0, compareMaps);
 
         System.out.println("\nClustering complete");

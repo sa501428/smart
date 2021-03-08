@@ -44,7 +44,7 @@ import java.io.File;
 import java.util.*;
 
 public abstract class CompositeGenomeWideMatrix {
-    protected final NormalizationType norm;
+    protected final NormalizationType intraNorm, interNorm;
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
@@ -56,10 +56,14 @@ public abstract class CompositeGenomeWideMatrix {
     protected final SimilarityMetric metric;
     protected int[] weights;
 
-    public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
+    public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
+                                     NormalizationType intraNorm, NormalizationType interNorm,
+                                     int resolution,
                                      File outputDirectory, long seed, String[] relativeTestFiles,
                                      GWBadIndexFinder badIndexLocations, SimilarityMetric metric) {
-        this.norm = norm;
+        this.intraNorm = intraNorm;
+        this.interNorm = interNorm;
+        System.out.println("Intra: " + intraNorm.getLabel() + " Inter: " + interNorm.getLabel());
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
         this.generator.setSeed(seed);

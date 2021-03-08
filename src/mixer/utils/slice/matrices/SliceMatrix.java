@@ -45,10 +45,10 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
 
     public static int numColumnsToPutTogether = 2;
 
-    public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType norm, int resolution,
-                       File outputDirectory, long seed, String[] referenceBedFiles, GWBadIndexFinder badIndexLocations,
+    public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType intraNorm, NormalizationType interNorm,
+                       int resolution, File outputDirectory, long seed, String[] referenceBedFiles, GWBadIndexFinder badIndexLocations,
                        SimilarityMetric metric) {
-        super(chromosomeHandler, ds, norm, resolution, outputDirectory, seed, referenceBedFiles,
+        super(chromosomeHandler, ds, intraNorm, interNorm, resolution, outputDirectory, seed, referenceBedFiles,
                 badIndexLocations, metric);
     }
 
@@ -58,7 +58,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         Map<Integer, Integer> indexToCompressedLength;
         IndexOrderer orderer = null;
         if (numColumnsToPutTogether > 1) {
-            orderer = new IndexOrderer(ds, chromosomes, resolution, norm, numColumnsToPutTogether,
+            orderer = new IndexOrderer(ds, chromosomes, resolution, intraNorm, numColumnsToPutTogether,
                     badIndexLocations, generator.nextLong());
             indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
             weights = orderer.getWeights();
@@ -141,7 +141,8 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         List<Block> blocks = null;
         try {
             if (!isIntra) {
-                blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2, norm, false);
+                blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
+                        interNorm, false);
                 if (blocks.size() < 1) {
                     System.err.println("Missing Interchromosomal Data " + zd.getKey());
                     System.exit(98);

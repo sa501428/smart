@@ -85,8 +85,8 @@ public class AggregateProcessing {
 
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
-        for (String norm : new String[]{"INTER_KR", "KR"}) { //"GW_KR",
-            String folder = "SHUFFLE_again5NewBaseline_W16_GM12878_" + norm + "_100K_v" + MixerGlobals.versionNum;
+        for (String norm : new String[]{"KR:INTER_KR"}) { //"GW_KR",
+            String folder = "SHUFFLE_again6_DualNorm_W16_GM12878_" + norm + "_100K_v" + MixerGlobals.versionNum;
             String[] strings = new String[]{"shuffle-umap", //umap
                     "-r", 100000 + "",
                     "-k", norm, "-w", "" + 16,
@@ -103,7 +103,7 @@ public class AggregateProcessing {
                     , "RH2014,SLICE100,PRIMARY100,INTER_SLICE,SNIPER,SCI"
             };
             System.out.println("-----------------------------------------------------");
-            MixerTools.main(strings);
+            //MixerTools.main(strings);
             System.gc();
         }
 
@@ -119,6 +119,29 @@ public class AggregateProcessing {
             System.gc();
         }
 
+        file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        for (int res : new int[]{100000, 50000}) { //100000
+            String folder = "GM12878_DualNorm_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "",
+                    "-k", "KR:INTER_KR", //"--verbose",
+                    file14, "2,8,12",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+
+            strings = new String[]{"shuffle", "-r", res + "", "-k", "KR", "-w", "" + (16 * (100000 / res)), file14,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
+                            "/" + folder + "__5_clusters_K562_2014_SCALE_30.subcompartment.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerGlobals.versionNum,
+                    "SLICE3"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
 
         /*
 
