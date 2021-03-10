@@ -25,10 +25,10 @@
 package mixer.utils.matrix;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.HiCFileTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.matrices.Dimension;

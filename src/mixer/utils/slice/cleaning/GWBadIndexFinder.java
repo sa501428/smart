@@ -25,11 +25,11 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
-import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.block.Block;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.HiCFileTools;
 
 import java.io.IOException;
 import java.util.*;

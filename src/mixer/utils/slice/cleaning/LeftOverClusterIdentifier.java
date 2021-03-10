@@ -24,10 +24,14 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.featurelist.GenomeWideList;
-import javastraw.reader.*;
+import javastraw.feature1D.GenomeWideList;
+import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.ExtractingOEDataUtils;
+import javastraw.tools.HiCFileTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;

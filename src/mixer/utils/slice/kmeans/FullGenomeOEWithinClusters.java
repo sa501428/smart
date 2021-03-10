@@ -24,11 +24,11 @@
 
 package mixer.utils.slice.kmeans;
 
-import javastraw.featurelist.GenomeWideList;
-import javastraw.reader.ChromosomeHandler;
+import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
-import javastraw.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
@@ -48,7 +48,7 @@ public class FullGenomeOEWithinClusters {
     protected final File outputDirectory;
     private final ChromosomeHandler chromosomeHandler;
     private final SliceMatrix sliceMatrix;
-    private final int maxIters = 1000;
+    private final int maxIters = 200;
 
     private final Random generator = new Random(0);
 
@@ -97,9 +97,9 @@ public class FullGenomeOEWithinClusters {
         Arrays.fill(iterToWcssAicBic[3], Double.MAX_VALUE);
 
         System.out.println("Genomewide clustering");
-        for (int numMaxIters : new int[]{50, 100}) {
+        for (int numMaxIters : new int[]{100}) {
             for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-                runRepeatedClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
+                runRepeatedClusteringLoop(1, kmeansRunner, iterToWcssAicBic, z,
                         numItersToResults, bestClustersMap, bestIDsMap, novelIDsForIndxMap, numMaxIters);
             }
         }

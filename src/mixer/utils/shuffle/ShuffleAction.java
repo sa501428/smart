@@ -24,10 +24,10 @@
 
 package mixer.utils.shuffle;
 
-import javastraw.featurelist.GenomeWideList;
+import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.type.NormalizationType;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.matrix.*;

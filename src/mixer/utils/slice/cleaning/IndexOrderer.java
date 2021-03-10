@@ -25,11 +25,11 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.ExtractingOEDataUtils;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.ExtractingOEDataUtils;
+import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;

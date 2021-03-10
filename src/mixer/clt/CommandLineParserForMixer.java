@@ -26,8 +26,8 @@ package mixer.clt;
 
 import jargs.gnu.CmdLineParser;
 import javastraw.reader.Dataset;
-import javastraw.type.NormalizationHandler;
-import javastraw.type.NormalizationType;
+import javastraw.reader.type.NormalizationHandler;
+import javastraw.reader.type.NormalizationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;

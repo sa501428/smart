@@ -24,8 +24,8 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.reader.basics.Block;
-import javastraw.reader.basics.ContactRecord;
+import javastraw.reader.block.Block;
+import javastraw.reader.block.ContactRecord;
 
 import java.util.List;
 

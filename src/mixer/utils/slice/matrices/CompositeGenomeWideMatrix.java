@@ -24,11 +24,11 @@
 
 package mixer.utils.slice.matrices;
 
-import javastraw.featurelist.GenomeWideList;
-import javastraw.reader.ChromosomeHandler;
+import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;

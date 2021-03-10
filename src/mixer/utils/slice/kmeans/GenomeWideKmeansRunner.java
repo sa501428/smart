@@ -25,8 +25,8 @@
 package mixer.utils.slice.kmeans;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import javastraw.featurelist.GenomeWideList;
-import javastraw.reader.ChromosomeHandler;
+import javastraw.feature1D.GenomeWideList;
+import javastraw.reader.basics.ChromosomeHandler;
 import mixer.MixerGlobals;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;

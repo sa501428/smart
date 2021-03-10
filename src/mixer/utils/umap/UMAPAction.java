@@ -24,13 +24,13 @@
 
 package mixer.utils.umap;
 
-import javastraw.featurelist.GenomeWideList;
-import javastraw.reader.ChromosomeHandler;
+import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
 import javastraw.tools.UNIXTools;
-import javastraw.type.NormalizationType;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.matrix.HiCMatrix;
 import mixer.utils.matrix.InterOnlyMatrix;

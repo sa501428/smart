@@ -24,10 +24,10 @@
 
 package mixer.algos;
 
-import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.type.NormalizationType;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;

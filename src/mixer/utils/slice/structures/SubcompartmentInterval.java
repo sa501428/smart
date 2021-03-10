@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.structures;
 
-import javastraw.featurelist.Feature;
+import javastraw.feature1D.Feature;
 import javastraw.reader.basics.Chromosome;
 
 import java.util.ArrayList;

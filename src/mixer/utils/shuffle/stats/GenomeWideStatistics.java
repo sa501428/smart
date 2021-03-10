@@ -24,12 +24,12 @@
 
 package mixer.utils.shuffle.stats;
 
-import javastraw.featurelist.GenomeWideList;
+import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.HiCFileTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.InterMatrixBalancer;
 import mixer.utils.slice.structures.SubcompartmentInterval;

@@ -24,14 +24,14 @@
 
 package mixer.utils.slice.matrices;
 
-import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
-import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ContactRecord;
-import javastraw.type.NormalizationType;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.block.Block;
+import javastraw.reader.block.ContactRecord;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
