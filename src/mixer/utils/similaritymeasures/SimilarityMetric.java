@@ -24,6 +24,8 @@
 
 package mixer.utils.similaritymeasures;
 
+import mixer.utils.matrix.HiCMatrix;
+
 public abstract class SimilarityMetric {
     private final boolean mIsSymmmetric;
 
@@ -31,13 +33,8 @@ public abstract class SimilarityMetric {
         mIsSymmmetric = isSymmmetric;
     }
 
-    abstract public float distance(final float[] x, final float[] y, int index, int skip);
-
-    public boolean isSymmetric() {
-        return this.mIsSymmmetric;
-    }
-
     public static SimilarityMetric getMetric(int val) {
+        HiCMatrix.USE_ZSCORE = false;
         if (val == 1) {
             return RobustCosineSimilarity.SINGLETON;
         }
@@ -53,6 +50,20 @@ public abstract class SimilarityMetric {
         if (val == 5) {
             return RobustEuclideanDistance.SINGLETON;
         }
+        if (val == 6) {
+            HiCMatrix.USE_ZSCORE = true;
+            return RobustCosineSimilarity.SINGLETON;
+        }
+        if (val == 7) {
+            HiCMatrix.USE_ZSCORE = true;
+            return RobustCorrelationSimilarity.SINGLETON;
+        }
         return null;
     }
+
+    public boolean isSymmetric() {
+        return this.mIsSymmmetric;
+    }
+
+    abstract public float distance(final float[] x, final float[] y);
 }

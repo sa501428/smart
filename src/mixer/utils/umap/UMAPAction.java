@@ -104,14 +104,13 @@ public class UMAPAction {
             final HiCMatrix interMatrix = GWInterOnlyMatrix.getMatrix(ds, norm, resolution, metric, chromosomeHandler, compressionFactor);
             float[][] matrix = interMatrix.getMatrix();
 
-            System.out.println("C[0,0]=" + matrix[0][0]);
             FloatMatrixTools.cleanUpMatrix(matrix, true);
-            System.out.println("D[0,0]=" + matrix[0][0]);
+            System.out.println("Saving files as png");
 
             File file = new File(outputDirectory, "matrix.png");
             FloatMatrixTools.saveMatrixToPNG(file, matrix, false);
-            file = new File(outputDirectory, "matrix_log.png");
-            FloatMatrixTools.saveMatrixToPNG(file, matrix, true);
+            //file = new File(outputDirectory, "matrix_log.png");
+            //FloatMatrixTools.saveMatrixToPNG(file, matrix, true);
 
             System.out.println("GW UMAP Run");
 

@@ -57,7 +57,7 @@ public class RobustJensenShannonDivergence extends SimilarityMetric {
     }
 
     @Override
-    public float distance(final float[] x, final float[] y, int index, int skip) {
+    public float distance(final float[] x, final float[] y) {
         return nonNanJSDistance(x, y);
     }
 }

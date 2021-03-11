@@ -30,12 +30,16 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.IntraMatrixCleaner;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.matrices.Dimension;
 
+import java.util.Arrays;
+
 abstract public class HiCMatrix {
+    public static boolean USE_ZSCORE = false;
     public static int NUM_CENTROIDS = 1;
     protected final NormalizationType norm;
     protected final int resolution;
@@ -102,6 +106,12 @@ abstract public class HiCMatrix {
         if (compressionFactor > 0) {
             interMatrix = IntraMatrixCleaner.compress(interMatrix, compressionFactor);
             FloatMatrixTools.log(interMatrix, 1);
+        }
+
+        if (USE_ZSCORE) {
+            int[] weights = new int[interMatrix[0].length];
+            Arrays.fill(weights, 1);
+            ZScoreTools.inPlaceZscoreDownCol(interMatrix, weights);
         }
 
         if (metric != null) {

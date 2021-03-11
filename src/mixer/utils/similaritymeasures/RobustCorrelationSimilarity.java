@@ -38,7 +38,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
     }
 
     @Override
-    public float distance(final float[] x, final float[] y, int index, int skip) {
+    public float distance(final float[] x, final float[] y) {
         int counter = 0;
         double sumX = 0;
         double sumY = 0;

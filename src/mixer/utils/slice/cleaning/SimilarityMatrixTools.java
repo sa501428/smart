@@ -25,7 +25,6 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
-import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.Arrays;
@@ -35,10 +34,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numCentroid,
+    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
                                                       long seed) {
-        if ((!metric.isSymmetric()) || numCentroid > 1) {
-            return getAsymmetricMatrix(matrix, metric, numCentroid, seed);
+        if ((!metric.isSymmetric()) || numPerCentroid > 1) {
+            return getAsymmetricMatrix(matrix, metric, numPerCentroid, seed);
         }
 
         return getSymmetricMatrix(matrix, metric);
@@ -49,17 +48,17 @@ public class SimilarityMatrixTools {
 
         final float[][] centroids;
         final float[] weights;
-        if (numInitialCentroids > 1) {
+        if (numPerCentroid <= 1) {
+            centroids = matrix;
+            weights = new float[centroids.length];
+            Arrays.fill(weights, 1);
+        } else {
             QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed, 100);
             centroids = centroidMaker.generateCentroids();
             weights = centroidMaker.getWeights();
             for (int i = 0; i < weights.length; i++) {
                 weights[i] = (float) Math.sqrt(weights[i]);
             }
-        } else {
-            centroids = matrix;
-            weights = new float[centroids.length];
-            Arrays.fill(weights, 1);
         }
 
         int numCentroids = centroids.length;
@@ -79,7 +78,7 @@ public class SimilarityMatrixTools {
                 int i = currRowIndex.getAndIncrement();
                 while (i < matrix.length) {
                     for (int j = 0; j < numCentroids; j++) {
-                        result[i][j] = metric.distance(centroids[j], matrix[i], 0, 3);
+                        result[i][j] = metric.distance(centroids[j], matrix[i]);
 
                         if (Float.isNaN(result[i][j])) {
                             numErrors++;
@@ -109,7 +108,8 @@ public class SimilarityMatrixTools {
         //ZScoreTools.inPlaceScaleCol(result, weights);
         //ZScoreTools.inPlaceScaleCol(result, weights);
 
-        return FloatMatrixTools.concatenate(matrix, result);
+        //return FloatMatrixTools.concatenate(matrix, result);
+        return result;
     }
 
     private static float[][] getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
@@ -124,7 +124,7 @@ public class SimilarityMatrixTools {
                 int i = currRowIndex.getAndIncrement();
                 while (i < matrix.length) {
                     for (int j = i; j < matrix.length; j++) {
-                        result[i][j] = metric.distance(matrix[i], matrix[j], 0, 1);
+                        result[i][j] = metric.distance(matrix[i], matrix[j]);
                         result[j][i] = result[i][j];
                     }
                     i = currRowIndex.getAndIncrement();

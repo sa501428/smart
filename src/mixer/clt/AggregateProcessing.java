@@ -25,6 +25,7 @@
 package mixer.clt;
 
 
+import mixer.MixerGlobals;
 import mixer.MixerTools;
 import mixer.utils.matrix.HiCMatrix;
 
@@ -44,13 +45,14 @@ public class AggregateProcessing {
         };
 
         String[] types = new String[]{"RAW", "LOG", "O_E", "LOG_E(O)"};
-        String[] corrs = new String[]{"IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN", "EUCLIDEAN"};
+        String[] corrs = new String[]{"IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN",
+                "EUCLIDEAN", "COSINE_ZSCORE", "PEARSON_ZSCORE"};
         String[] filePrefixes = new String[]{"GM_RH_14_", "GM_Intact_18B_", "GM_15B_"};
         String[] norms = new String[]{"INTER_KR", "SCALE", "KR"};
 
-        int[] metrics = new int[]{1, 3, 4, 5};//5
+        int[] metrics = new int[]{1, 6};//1, 3, 4, 5 , 7
 
-        HiCMatrix.NUM_CENTROIDS = 1;
+        HiCMatrix.NUM_CENTROIDS = 10;
 
         for (int q = 0; q < 1; q++) {
             for (int x : metrics) {
@@ -61,13 +63,13 @@ public class AggregateProcessing {
                             "-w", "" + 3,
                             "--type", "" + y,
                             "--corr", "" + x,
-                            //"-c", "1,2,10,14,17,18,19",
+                            "-c", "1,2,10,14,17,18,19",
                             files[q],
                             //"/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
                             "/Users/mshamim/Desktop/SLICE.Reboot/INTER-KR_GM_res_100000v3.18.07/INTER-KR_GM_res_100000v3.18.07__5_clusters_gm12878_rh14_30.subcompartment.bed," +
                                     "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
                                     "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
-                            "/Users/mshamim/Desktop/SLICE5/intra_umaps/NEW_GW_UMAP_" + filePrefixes[q] + "100K_" + types[y] + "_" + corrs[x]
+                            "/Users/mshamim/Desktop/SLICE5/intra_umaps/NEW_SUBSET_CENT10_REALCOS_UMAP_" + filePrefixes[q] + "100K_" + types[y] + "_" + corrs[x]
                             //"/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/REBOOT" + filePrefixes[q] + "50K_" + types[y] + "_" + corrs[x]
                             , "InterSlice100,SLICE100,RH2014"
                     };
@@ -77,6 +79,19 @@ public class AggregateProcessing {
                     System.gc();
                 }
             }
+        }
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        for (int res : new int[]{100000}) { //100000
+            String folder = "GM12878_DualNorm2_ZscoreNoWidth_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "",
+                    "-k", "KR:INTER_KR", //"--verbose",
+                    file14, "2,13,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
         }
 
         /*

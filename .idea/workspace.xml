@@ -30,25 +30,29 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/general/java-straw-1.4.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/GWInterOnlyMatrix.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/umap/ZeroRowRemover.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update java straw version, gw umap support, remove zeroed rows in umap,">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/common/RobustZscoreTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/general/java-straw-1.3.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/IntraOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/IntraOnlyMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/GenomeWideStatistics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCorrelationSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCorrelationSimilarity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustImprovedCosineSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustImprovedCosineSimilarity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustJensenShannonDivergence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustJensenShannonDivergence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustKullbackLeiblerDivergence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustKullbackLeiblerDivergence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustManhattanDistance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustManhattanDistance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/TheilSenMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/TheilSenMetric.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ClusterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ClusterTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/SmartInitialization.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/SmartInitialization.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/Worker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/Worker.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPAction.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -171,14 +175,7 @@
       <workItem from="1615359463444" duration="78000" />
       <workItem from="1615359592630" duration="199000" />
       <workItem from="1615359800535" duration="2947000" />
-      <workItem from="1615401045329" duration="14340000" />
-    </task>
-    <task id="LOCAL-00046" summary="extracting local subcompartment">
-      <created>1610142783430</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1610142783430</updated>
+      <workItem from="1615401045329" duration="21809000" />
     </task>
     <task id="LOCAL-00047" summary="code cleanup, use simpler data containers">
       <created>1613423901826</created>
@@ -516,7 +513,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615360302564</updated>
     </task>
-    <option name="localTasksCounter" value="95" />
+    <task id="LOCAL-00095" summary="update java straw version, gw umap support, remove zeroed rows in umap,">
+      <created>1615444944797</created>
+      <option name="number" value="00095" />
+      <option name="presentableId" value="LOCAL-00095" />
+      <option name="project" value="LOCAL" />
+      <updated>1615444944797</updated>
+    </task>
+    <option name="localTasksCounter" value="96" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -541,7 +545,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Functional version" />
     <MESSAGE value="add renaming method" />
     <MESSAGE value="multi-sampled centroid" />
     <MESSAGE value="split up centroid" />
@@ -566,7 +569,8 @@
     <MESSAGE value="bug fixes; code cleanup" />
     <MESSAGE value="dual norm combo" />
     <MESSAGE value="update java straw version" />
-    <option name="LAST_COMMIT_MESSAGE" value="update java straw version" />
+    <MESSAGE value="update java straw version, gw umap support, remove zeroed rows in umap," />
+    <option name="LAST_COMMIT_MESSAGE" value="update java straw version, gw umap support, remove zeroed rows in umap," />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

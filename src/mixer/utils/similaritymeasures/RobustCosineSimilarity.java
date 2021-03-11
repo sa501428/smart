@@ -43,7 +43,7 @@ public final class RobustCosineSimilarity extends SimilarityMetric {
   }
 
   @Override
-  public float distance(final float[] x, final float[] y, int index, int skip) {
+  public float distance(final float[] x, final float[] y) {
     double dotProduct = 0.0;
     double normX = 0.0;
     double normY = 0.0;
@@ -56,6 +56,7 @@ public final class RobustCosineSimilarity extends SimilarityMetric {
       }
     }
 
-    return arctanh(dotProduct / Math.sqrt(normX * normY));
+    return (float) (dotProduct / Math.sqrt(normX * normY));
+    //return arctanh(dotProduct / Math.sqrt(normX * normY));
   }
 }

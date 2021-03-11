@@ -137,7 +137,7 @@ public class Worker implements Runnable {
      */
     private float distanceL2Norm(float[] coord, float[] center) {
         if (ConcurrentKMeans.useNonNanVersion) {
-            return euclidean.distance(coord, center, 0, 0);
+            return euclidean.distance(coord, center);
         }
         double sumSquared = 0.0;
         for (int i = 0; i < coord.length; i++) {
