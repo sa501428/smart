@@ -37,13 +37,13 @@ import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 public class IntraOnlyMatrix extends HiCMatrix {
 
     public IntraOnlyMatrix(Dataset ds, NormalizationType norm, int resolution, Chromosome chromosome,
-                           INTRA_TYPE intra_type, SimilarityMetric metric) {
+                           INTRA_TYPE intra_type, SimilarityMetric metric, int compressionFactor) {
         super(ds, norm, resolution, new Chromosome[]{chromosome}, new Chromosome[]{chromosome},
-                metric, true, intra_type);
+                metric, true, intra_type, true, compressionFactor);
     }
 
-    protected void fillInInterChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
-                                               Chromosome chr2, int offsetIndex2, boolean needToFlip) {
+    protected void fillInChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
+                                          Chromosome chr2, int offsetIndex2, boolean needToFlip) {
 
         int lengthChr1 = (int) Math.ceil((float) chr1.getLength() / resolution);
         int lengthChr2 = (int) Math.ceil((float) chr2.getLength() / resolution);

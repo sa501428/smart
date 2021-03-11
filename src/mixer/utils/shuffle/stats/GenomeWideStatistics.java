@@ -79,7 +79,7 @@ public class GenomeWideStatistics {
                     float[][] data = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd,
                             0, lengthChr1, 0, lengthChr2,
                             lengthChr1, lengthChr2, norm, false);
-                    populateCounts(FloatMatrixTools.cleanUpMatrix(data), intervals1, intervals2);
+                    populateCounts(FloatMatrixTools.cleanUpMatrix(data, true), intervals1, intervals2);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

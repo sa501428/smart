@@ -390,10 +390,11 @@ public class SliceUtils {
 
                 Chromosome chr = handler.getChromosomeFromName(chr1Name);
                 if (chr == null) {
-                    if (errorCount < 10) {
+                    if (errorCount < 3) {
                         System.out.println("Skipping line: " + nextLine);
-                    } else if (errorCount == 10) {
+                    } else if (errorCount == 3) {
                         System.err.println("Maximum error count exceeded.  Further errors will not be logged");
+                        System.err.println("If chromosomes were intentionally filtered, ignore this error.");
                     }
 
                     errorCount++;

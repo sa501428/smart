@@ -25,8 +25,8 @@
 package mixer.clt;
 
 
-import mixer.MixerGlobals;
 import mixer.MixerTools;
+import mixer.utils.matrix.HiCMatrix;
 
 /**
  * Created for testing multiple CLTs at once
@@ -42,20 +42,49 @@ public class AggregateProcessing {
                 "/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic",
                 "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic"
         };
-        String[] filePrefixes = new String[]{
-                "GM_RH_14_", "GM_Intact_18B_", "GM_15B_"
-        };
-        String[] norms = new String[]{
-                "KR", "SCALE", "KR"
-        };
 
-        String[] types = new String[]{
-                "RAW", "LOG", "O_E", "LOG_E(O)"
-        };
+        String[] types = new String[]{"RAW", "LOG", "O_E", "LOG_E(O)"};
+        String[] corrs = new String[]{"IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN", "EUCLIDEAN"};
+        String[] filePrefixes = new String[]{"GM_RH_14_", "GM_Intact_18B_", "GM_15B_"};
+        String[] norms = new String[]{"INTER_KR", "SCALE", "KR"};
 
-        String[] corrs = new String[]{
-                "IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN", "EUCLIDEAN"
-        };
+        int[] metrics = new int[]{1, 3, 4, 5};//5
+
+        HiCMatrix.NUM_CENTROIDS = 1;
+
+        for (int q = 0; q < 1; q++) {
+            for (int x : metrics) {
+                for (int y = 2; y < 3; y++) {
+                    String[] strings = new String[]{"gw-umap", //umap shuffle
+                            "-r", 100000 + "", // 50000
+                            "-k", norms[q],
+                            "-w", "" + 3,
+                            "--type", "" + y,
+                            "--corr", "" + x,
+                            //"-c", "1,2,10,14,17,18,19",
+                            files[q],
+                            //"/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/INTER-KR_GM_res_100000v3.18.07/INTER-KR_GM_res_100000v3.18.07__5_clusters_gm12878_rh14_30.subcompartment.bed," +
+                                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
+                                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
+                            "/Users/mshamim/Desktop/SLICE5/intra_umaps/NEW_GW_UMAP_" + filePrefixes[q] + "100K_" + types[y] + "_" + corrs[x]
+                            //"/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/REBOOT" + filePrefixes[q] + "50K_" + types[y] + "_" + corrs[x]
+                            , "InterSlice100,SLICE100,RH2014"
+                    };
+
+                    System.out.println("-----------------------------------------------------");
+                    MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+        }
+
+        /*
+
+
+
+
+
 
         for (int q = 0; q < files.length - 1; q++) {
             for (int x = 0; x < corrs.length; x++) {
@@ -163,7 +192,7 @@ public class AggregateProcessing {
                         "/Users/mshamim/Desktop/SLICE.Reboot/DualNorm2/" + folder, folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
-                MixerTools.main(strings);
+                //MixerTools.main(strings);
                 System.gc();
             }
         }

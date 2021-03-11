@@ -32,6 +32,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class ScatterPlot {
+    private static final Color BACKGROUND_COLOR = Color.BLACK; //Color.WHITE;
     private final int circleOffset = 3;
     private final int circleWidth = circleOffset * 2;
     private final DataCleaner data;
@@ -50,7 +51,7 @@ public class ScatterPlot {
     private void plotOrderedMap(String absPath) {
         BufferedImage image = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D) image.getGraphics();
-        colorWhiteBackground(g);
+        colorBackground(g);
 
         double maxLength = data.points.length;
         for (int i = 0; i < data.points.length; i++) {
@@ -64,7 +65,7 @@ public class ScatterPlot {
     private void plotIndividualMap(String absPath, int mapIndex) {
         BufferedImage image = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D) image.getGraphics();
-        colorWhiteBackground(g);
+        colorBackground(g);
 
         for (int i = 0; i < data.points.length; i++) {
             drawCircle(g, data.points[i], data.ids[i][mapIndex]);
@@ -73,8 +74,8 @@ public class ScatterPlot {
         save(image, absPath);
     }
 
-    private void colorWhiteBackground(Graphics2D g) {
-        g.setColor(Color.WHITE);
+    private void colorBackground(Graphics2D g) {
+        g.setColor(BACKGROUND_COLOR);
         g.fillRect(0, 0, data.width, data.height);
     }
 

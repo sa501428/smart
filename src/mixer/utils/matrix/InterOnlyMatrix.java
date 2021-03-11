@@ -38,7 +38,8 @@ public class InterOnlyMatrix extends HiCMatrix {
     public InterOnlyMatrix(Dataset ds, NormalizationType norm, int resolution,
                            Chromosome[] rowsChromosomes, Chromosome[] colsChromosomes,
                            SimilarityMetric metric) {
-        super(ds, norm, resolution, rowsChromosomes, colsChromosomes, metric, false, INTRA_TYPE.DEFAULT);
+        super(ds, norm, resolution, rowsChromosomes, colsChromosomes, metric,
+                false, INTRA_TYPE.DEFAULT, true, 0);
     }
 
     public static InterOnlyMatrix getMatrix(Dataset ds, NormalizationType norm, int resolution, InterMapType mapType,
@@ -64,8 +65,8 @@ public class InterOnlyMatrix extends HiCMatrix {
         return new InterOnlyMatrix(ds, norm, resolution, rowsChromosomes, colsChromosomes, metric);
     }
 
-    protected void fillInInterChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
-                                               Chromosome chr2, int offsetIndex2, boolean needToFlip) {
+    protected void fillInChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
+                                          Chromosome chr2, int offsetIndex2, boolean needToFlip) {
 
         int lengthChr1 = (int) Math.ceil((float) chr1.getLength() / resolution);
         int lengthChr2 = (int) Math.ceil((float) chr2.getLength() / resolution);

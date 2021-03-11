@@ -31,9 +31,12 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.IntraMatrixCleaner;
+import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.matrices.Dimension;
 
 abstract public class HiCMatrix {
+    public static int NUM_CENTROIDS = 1;
     protected final NormalizationType norm;
     protected final int resolution;
     protected final float[][] interMatrix;
@@ -46,7 +49,8 @@ abstract public class HiCMatrix {
 
     public HiCMatrix(Dataset ds, NormalizationType norm, int resolution,
                      Chromosome[] rowsChromosomes, Chromosome[] colsChromosomes,
-                     SimilarityMetric metric, boolean isIntra, INTRA_TYPE intraType) {
+                     SimilarityMetric metric, boolean isIntra, INTRA_TYPE intraType,
+                     boolean shouldZeroOutNans, int compressionFactor) {
         this.norm = norm;
         this.resolution = resolution;
         this.metric = metric;
@@ -56,7 +60,7 @@ abstract public class HiCMatrix {
         this.intraType = intraType;
         rowsDimension = new Dimension(rowsChromosomes, resolution);
         colsDimension = new Dimension(colsChromosomes, resolution);
-        interMatrix = makeCleanScaledInterMatrix(ds);
+        interMatrix = makeCleanScaledInterMatrix(ds, shouldZeroOutNans, compressionFactor);
     }
 
     public static INTRA_TYPE getIntraType(int mapTypeOption) {
@@ -73,7 +77,8 @@ abstract public class HiCMatrix {
         }
     }
 
-    private float[][] makeCleanScaledInterMatrix(Dataset ds) {
+    private float[][] makeCleanScaledInterMatrix(Dataset ds, boolean shouldZeroOutNans,
+                                                 int compressionFactor) {
 
         float[][] interMatrix = new float[rowsDimension.length][colsDimension.length];
         for (int i = 0; i < rowsChromosomes.length; i++) {
@@ -85,20 +90,31 @@ abstract public class HiCMatrix {
 
                 // will need to flip across diagonal
                 boolean needToFlip = chr2.getIndex() < chr1.getIndex();
-                fillInInterChromosomeRegion(ds, interMatrix, zd, chr1, rowsDimension.offset[i],
+                fillInChromosomeRegion(ds, interMatrix, zd, chr1, rowsDimension.offset[i],
                         chr2, colsDimension.offset[j], needToFlip);
             }
             System.out.print(".");
         }
         System.out.println(".");
 
+        FloatMatrixTools.cleanUpMatrix(interMatrix, shouldZeroOutNans);
 
-        return FloatMatrixTools.cleanUpMatrix(interMatrix);
+        if (compressionFactor > 0) {
+            interMatrix = IntraMatrixCleaner.compress(interMatrix, compressionFactor);
+            FloatMatrixTools.log(interMatrix, 1);
+        }
+
+        if (metric != null) {
+            return SimilarityMatrixTools.getNonNanSimilarityMatrix(interMatrix,
+                    metric, NUM_CENTROIDS, 283746L);
+        }
+
+        return interMatrix;
     }
 
-    abstract protected void fillInInterChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd,
-                                                        Chromosome chr1, int offsetIndex1,
-                                                        Chromosome chr2, int offsetIndex2, boolean needToFlip);
+    abstract protected void fillInChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd,
+                                                   Chromosome chr1, int offsetIndex1,
+                                                   Chromosome chr2, int offsetIndex2, boolean needToFlip);
 
     public Chromosome[] getRowChromosomes() {
         return rowsChromosomes;

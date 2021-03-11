@@ -103,9 +103,9 @@ public class ShuffleAction {
 
     public void runIntraAnalysis(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
         for (int y = 0; y < chromosomes.length; y++) {
-            final HiCMatrix interMatrix = new IntraOnlyMatrix(ds, norm, resolution, chromosomes[y], intraType, metric);
-            Map<Integer, List<Integer>> clusterToRowIndices = populateCluster(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(), subcompartments);
-            shuffleMap(interMatrix, clusterToRowIndices, clusterToRowIndices, outfolder, chromosomes[y].getName(), y);
+            final HiCMatrix matrix = new IntraOnlyMatrix(ds, norm, resolution, chromosomes[y], intraType, metric, compressionFactor);
+            Map<Integer, List<Integer>> clusterToRowIndices = populateCluster(matrix.getRowChromosomes(), matrix.getRowOffsets(), subcompartments);
+            shuffleMap(matrix, clusterToRowIndices, clusterToRowIndices, outfolder, chromosomes[y].getName(), y);
         }
         scoreContainer.calculateRatios();
     }

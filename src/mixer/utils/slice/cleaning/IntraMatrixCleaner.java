@@ -74,4 +74,15 @@ public class IntraMatrixCleaner {
         }
         return matrix;
     }
+
+    public static float[][] compress(float[][] interMatrix, int compressionFactor) {
+        int width = interMatrix[0].length / compressionFactor + 1;
+        float[][] result = new float[interMatrix.length][width];
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                result[i][j / 3] += interMatrix[i][j];
+            }
+        }
+        return result;
+    }
 }

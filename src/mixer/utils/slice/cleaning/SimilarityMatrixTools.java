@@ -75,13 +75,17 @@ public class SimilarityMatrixTools {
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
             Runnable worker = () -> {
+                int numErrors = 0;
                 int i = currRowIndex.getAndIncrement();
                 while (i < matrix.length) {
                     for (int j = 0; j < numCentroids; j++) {
                         result[i][j] = metric.distance(centroids[j], matrix[i], 0, 3);
 
                         if (Float.isNaN(result[i][j])) {
-                            System.err.println("Error appearing in distance measure...");
+                            numErrors++;
+                            if (numErrors < 2) {
+                                System.err.println("Error appearing in distance measure...");
+                            }
                         }
                     }
                     i = currRowIndex.getAndIncrement();

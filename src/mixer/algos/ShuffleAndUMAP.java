@@ -58,15 +58,16 @@ public class ShuffleAndUMAP extends MixerCLT {
     private File outputDirectory;
     private String[] prefix;
     private String[] referenceBedFiles;
-    private final boolean useIntraMap;
+    private final boolean useIntraMap, useGWMap;
     private InterOnlyMatrix.INTRA_TYPE intraType;
-    private SimilarityMetric metric;
+    private SimilarityMetric metric = null;
     private final boolean doUMAP, doShuffle;
 
     // subcompartment lanscape identification via clustering enrichment
     public ShuffleAndUMAP(String name) {
         super("[intra-]shuffle-umap [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
                 "<file.hic> <subcompartment.bed> <outfolder> <prefix>");
+        useGWMap = name.contains("gw");
         useIntraMap = name.contains("intra");
         doShuffle = name.contains("shuffle");
         doUMAP = name.contains("umap");
@@ -144,10 +145,9 @@ public class ShuffleAndUMAP extends MixerCLT {
         if (doUMAP) {
             UMAPAction umap;
             if (useIntraMap) {
-                umap = new UMAPAction(ds, norm, resolution, compressionFactor,
-                        metric, intraType);
+                umap = new UMAPAction(ds, norm, resolution, compressionFactor, metric, intraType);
             } else {
-                umap = new UMAPAction(ds, norm, resolution, compressionFactor, metric);
+                umap = new UMAPAction(ds, norm, resolution, compressionFactor, metric, useGWMap);
             }
             umap.runAnalysis(referenceBedFiles, outputDirectory, chromosomeHandler);
         }

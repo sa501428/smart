@@ -32,6 +32,7 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
 import javastraw.tools.UNIXTools;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.matrix.GWInterOnlyMatrix;
 import mixer.utils.matrix.HiCMatrix;
 import mixer.utils.matrix.InterOnlyMatrix;
 import mixer.utils.matrix.IntraOnlyMatrix;
@@ -56,24 +57,25 @@ public class UMAPAction {
     private final int compressionFactor;
     private final int resolution;
     private final SimilarityMetric metric;
+    private final boolean useGWMap;
     private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
             InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
     private HiCMatrix.INTRA_TYPE intraType = null;
     private boolean isIntra = false;
 
     public UMAPAction(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
-                      SimilarityMetric metric) {
+                      SimilarityMetric metric, boolean useGWMap) {
         this.resolution = resolution;
         this.compressionFactor = compressionFactor;
         this.ds = ds;
         this.norm = norm;
         this.metric = metric;
-        this.intraType = intraType;
+        this.useGWMap = useGWMap;
     }
 
     public UMAPAction(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
                       SimilarityMetric metric, HiCMatrix.INTRA_TYPE intraType) {
-        this(ds, norm, resolution, compressionFactor, metric);
+        this(ds, norm, resolution, compressionFactor, metric, false);
         this.intraType = intraType;
         isIntra = true;
     }
@@ -98,11 +100,29 @@ public class UMAPAction {
         int numBedFiles = allSubcompartments.size();
         // todo, using only big size? todo sorting picture
 
-        if (isIntra) {
+        if (useGWMap) {
+            final HiCMatrix interMatrix = GWInterOnlyMatrix.getMatrix(ds, norm, resolution, metric, chromosomeHandler, compressionFactor);
+            float[][] matrix = interMatrix.getMatrix();
+
+            System.out.println("C[0,0]=" + matrix[0][0]);
+            FloatMatrixTools.cleanUpMatrix(matrix, true);
+            System.out.println("D[0,0]=" + matrix[0][0]);
+
+            File file = new File(outputDirectory, "matrix.png");
+            FloatMatrixTools.saveMatrixToPNG(file, matrix, false);
+            file = new File(outputDirectory, "matrix_log.png");
+            FloatMatrixTools.saveMatrixToPNG(file, matrix, true);
+
+            System.out.println("GW UMAP Run");
+
+            processMatrixForUMAP(matrix, numBedFiles,
+                    interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(),
+                    allSubcompartments, outputDirectory, "genomewide", "rows");
+        } else if (isIntra) {
             Chromosome[] chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
             for (int y = 0; y < chromosomes.length; y++) {
-                final IntraOnlyMatrix interMatrix = new IntraOnlyMatrix(ds, norm, resolution, chromosomes[y],
-                        intraType, metric);
+                final HiCMatrix interMatrix = new IntraOnlyMatrix(ds, norm, resolution, chromosomes[y],
+                        intraType, metric, compressionFactor);
 
                 float[][] matrix = interMatrix.getMatrix();
 
@@ -119,6 +139,9 @@ public class UMAPAction {
                 float[][] matrix = interMatrix.getMatrix();
                 float[][] matrixT = FloatMatrixTools.transpose(matrix);
 
+                IntraMatrixCleaner.rollingAverage(matrix, compressionFactor);
+                IntraMatrixCleaner.rollingAverage(matrixT, compressionFactor);
+
                 processMatrixForUMAP(matrix, numBedFiles,
                         interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(),
                         allSubcompartments, outputDirectory, mapTypes[y].toString(), "rows");
@@ -133,7 +156,7 @@ public class UMAPAction {
     private void processMatrixForUMAP(float[][] matrix, int numBedFiles, Chromosome[] chromosomes, int[] offsets,
                                       List<GenomeWideList<SubcompartmentInterval>> allSubcompartments,
                                       File outputDirectory, String folderName, String filePrefix) {
-        IntraMatrixCleaner.rollingAverage(matrix, compressionFactor);
+
 
         int[][] indicesToClusterIDs = new int[matrix.length][numBedFiles];
 
@@ -146,8 +169,10 @@ public class UMAPAction {
         runUmapAndSaveMatrices(matrix, outfolder, filePrefix, indicesToClusterIDs);
     }
 
-    private void runUmapAndSaveMatrices(float[][] data, File outputDirectory, String outstem,
-                                        int[][] indexToIDs) {
+    private void runUmapAndSaveMatrices(float[][] initialData, File outputDirectory, String outstem,
+                                        int[][] initialIndexToIDs) {
+
+        ZeroRowRemover rowRemover = new ZeroRowRemover(initialData, initialIndexToIDs);
 
         int numThreads = Math.max(1, Runtime.getRuntime().availableProcessors());
         System.out.println("Running UMAP with " + outstem);
@@ -158,15 +183,16 @@ public class UMAPAction {
         umap.setMinDist(0.5f); // 0.2 ->0.8 -> 0.5  //0.1f -> 0.2f for more general features
         umap.setVerbose(false);
         umap.setSeed(generator.nextLong());
-        final float[][] result = umap.fitTransform(data);
+        final float[][] result = umap.fitTransform(rowRemover.getCleanData());
+
         File temp = new File(outputDirectory, "umap_" + outstem + "_embedding.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
         System.gc();
 
         temp = new File(outputDirectory, outstem + "genome_indices.npy");
-        MatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indexToIDs);
+        MatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), rowRemover.getCleanIndices());
 
-        ScatterPlot sc = new ScatterPlot(result, indexToIDs);
+        ScatterPlot sc = new ScatterPlot(result, rowRemover.getCleanIndices());
         temp = new File(outputDirectory, outstem + "_plots");
         sc.plot(temp.getAbsolutePath());
     }

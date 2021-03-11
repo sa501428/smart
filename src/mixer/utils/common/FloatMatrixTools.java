@@ -54,6 +54,19 @@ public class FloatMatrixTools {
         }
     }
 
+    public static int[] getNumZerosInRow(float[][] data) {
+        int[] numZeros = new int[data.length];
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (data[i][j] < 1e-10) {
+                    numZeros[i]++;
+                }
+            }
+        }
+        return numZeros;
+    }
+
+
     private void inPlaceThreshold(float[][] matrix, float maxVal) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -144,10 +157,14 @@ public class FloatMatrixTools {
         return result;
     }
 
-    public static float[][] cleanUpMatrix(float[][] matrix) {
+    public static float[][] cleanUpMatrix(float[][] matrix, boolean shouldZeroNans) {
         for (int r = 0; r < matrix.length; r++) {
             for (int c = 0; c < matrix[r].length; c++) {
-                if (Float.isNaN(matrix[r][c]) || Float.isInfinite(matrix[r][c]) || Math.abs(matrix[r][c]) < 1E-10) {
+                float val = matrix[r][c];
+                if (Float.isInfinite(val) || Math.abs(val) < 1E-10) {
+                    matrix[r][c] = 0;
+                }
+                if (shouldZeroNans && Float.isNaN(val)) {
                     matrix[r][c] = 0;
                 }
             }
