@@ -32,6 +32,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
      * Correlation distance.
      */
     public static final RobustCorrelationSimilarity SINGLETON = new RobustCorrelationSimilarity();
+    public static boolean USE_ARC = false;
 
     private RobustCorrelationSimilarity() {
         super(true);
@@ -68,6 +69,10 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
             }
         }
 
-        return (float) (dotProduct / Math.sqrt(normX * normY));
+        double answer = dotProduct / Math.sqrt(normX * normY);
+        if (USE_ARC) {
+            return arctanh(answer);
+        }
+        return (float) answer;
     }
 }

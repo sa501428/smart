@@ -30,29 +30,18 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update java straw version, gw umap support, remove zeroed rows in umap,">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/common/RobustZscoreTools.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCorrelationSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCorrelationSimilarity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustImprovedCosineSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustImprovedCosineSimilarity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustJensenShannonDivergence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustJensenShannonDivergence.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustKullbackLeiblerDivergence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustKullbackLeiblerDivergence.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustManhattanDistance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustManhattanDistance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/TheilSenMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/TheilSenMetric.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/LeftOverClusterIdentifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixCleanerAndProjector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ClusterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/ClusterTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/SmartInitialization.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/SmartInitialization.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/Worker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/kmeansfloat/Worker.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPAction.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -104,11 +93,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.gmm" />
       <recent name="mixer.utils.umap" />
       <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice.matrices" />
-      <recent name="mixer.utils.shuffle.scoring" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/lib/general" />
@@ -121,11 +110,18 @@
       <recent name="mixer.utils.custom" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.GMM">
     <configuration name="Aggregate" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.clt.AggregateProcessing" />
       <module name="Mixer" />
       <option name="VM_PARAMETERS" value="-Xmx30G" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GMM" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="mixer.utils.slice.gmm.Test" />
+      <module name="Mixer" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -143,6 +139,10 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.Aggregate" />
+      <item itemvalue="Application.GMM" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -175,14 +175,7 @@
       <workItem from="1615359463444" duration="78000" />
       <workItem from="1615359592630" duration="199000" />
       <workItem from="1615359800535" duration="2947000" />
-      <workItem from="1615401045329" duration="21809000" />
-    </task>
-    <task id="LOCAL-00047" summary="code cleanup, use simpler data containers">
-      <created>1613423901826</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1613423901826</updated>
+      <workItem from="1615401045329" duration="45901000" />
     </task>
     <task id="LOCAL-00048" summary="switch to robust zscore and median absolute error">
       <created>1613428597386</created>
@@ -520,7 +513,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615444944797</updated>
     </task>
-    <option name="localTasksCounter" value="96" />
+    <task id="LOCAL-00096" summary="code cleanup, bug fixes">
+      <created>1615488025848</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1615488025848</updated>
+    </task>
+    <option name="localTasksCounter" value="97" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -545,7 +545,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="add renaming method" />
     <MESSAGE value="multi-sampled centroid" />
     <MESSAGE value="split up centroid" />
     <MESSAGE value="allow emergency filtering if outliers made into cluster; simple log with zscore approach" />
@@ -570,7 +569,8 @@
     <MESSAGE value="dual norm combo" />
     <MESSAGE value="update java straw version" />
     <MESSAGE value="update java straw version, gw umap support, remove zeroed rows in umap," />
-    <option name="LAST_COMMIT_MESSAGE" value="update java straw version, gw umap support, remove zeroed rows in umap," />
+    <MESSAGE value="code cleanup, bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="code cleanup, bug fixes" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

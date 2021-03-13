@@ -35,6 +35,8 @@ public abstract class SimilarityMetric {
 
     public static SimilarityMetric getMetric(int val) {
         HiCMatrix.USE_ZSCORE = false;
+        RobustCorrelationSimilarity.USE_ARC = false;
+        RobustCosineSimilarity.USE_ARC = false;
         if (val == 1) {
             return RobustCosineSimilarity.SINGLETON;
         }
@@ -58,6 +60,15 @@ public abstract class SimilarityMetric {
             HiCMatrix.USE_ZSCORE = true;
             return RobustCorrelationSimilarity.SINGLETON;
         }
+        if (val == 8) {
+            RobustCosineSimilarity.USE_ARC = true;
+            return RobustCosineSimilarity.SINGLETON;
+        }
+        if (val == 9) {
+            RobustCorrelationSimilarity.USE_ARC = true;
+            return RobustCorrelationSimilarity.SINGLETON;
+        }
+
         return null;
     }
 
@@ -66,4 +77,14 @@ public abstract class SimilarityMetric {
     }
 
     abstract public float distance(final float[] x, final float[] y);
+
+    protected static float arctanh(double x) {
+        float val = (float) Math.max(x, -.99f);
+        val = Math.min(val, .99f);
+        val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2f;
+        if (Float.isInfinite(val)) {
+            val = Float.NaN;
+        }
+        return val;
+    }
 }

@@ -180,13 +180,13 @@ public class FloatMatrixTools {
             range = Math.log(1 + range) - minVal;
         }
 
-        BufferedImage image = new BufferedImage(matrix.length, matrix[0].length, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(matrix[0].length, matrix.length, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 if (useLog) {
-                    image.setRGB(i, j, mixColors((Math.log(1 + matrix[i][j]) - minVal) / range));
+                    image.setRGB(j, i, mixColors((Math.log(1 + matrix[i][j]) - minVal) / range));
                 } else {
-                    image.setRGB(i, j, mixColors(matrix[i][j] / range));
+                    image.setRGB(j, i, mixColors(matrix[i][j] / range));
                 }
             }
         }

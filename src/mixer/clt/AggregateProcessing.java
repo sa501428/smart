@@ -46,11 +46,11 @@ public class AggregateProcessing {
 
         String[] types = new String[]{"RAW", "LOG", "O_E", "LOG_E(O)"};
         String[] corrs = new String[]{"IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN",
-                "EUCLIDEAN", "COSINE_ZSCORE", "PEARSON_ZSCORE"};
+                "EUCLIDEAN", "COSINE_ZSCORE", "PEARSON_ZSCORE", "COSINE_ARC", "PEARSON_ARC"};
         String[] filePrefixes = new String[]{"GM_RH_14_", "GM_Intact_18B_", "GM_15B_"};
         String[] norms = new String[]{"INTER_KR", "SCALE", "KR"};
 
-        int[] metrics = new int[]{1, 6};//1, 3, 4, 5 , 7
+        int[] metrics = new int[]{1, 3, 6, 7, 8, 9};//1, 3, 4, 5 , 7
 
         HiCMatrix.NUM_CENTROIDS = 10;
 
@@ -63,7 +63,7 @@ public class AggregateProcessing {
                             "-w", "" + 3,
                             "--type", "" + y,
                             "--corr", "" + x,
-                            "-c", "1,2,10,14,17,18,19",
+                            //"-c", "1,2,10,14,17,18,19",
                             files[q],
                             //"/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
                             "/Users/mshamim/Desktop/SLICE.Reboot/INTER-KR_GM_res_100000v3.18.07/INTER-KR_GM_res_100000v3.18.07__5_clusters_gm12878_rh14_30.subcompartment.bed," +

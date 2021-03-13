@@ -105,8 +105,7 @@ public class UMAPAction {
             float[][] matrix = interMatrix.getMatrix();
 
             FloatMatrixTools.cleanUpMatrix(matrix, true);
-            System.out.println("Saving files as png");
-
+            System.out.println("Saving files as png; dimensions " + matrix.length + " " + matrix[0].length);
             File file = new File(outputDirectory, "matrix.png");
             FloatMatrixTools.saveMatrixToPNG(file, matrix, false);
             //file = new File(outputDirectory, "matrix_log.png");

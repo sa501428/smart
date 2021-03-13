@@ -27,19 +27,10 @@ package mixer.utils.similaritymeasures;
 public final class RobustCosineSimilarity extends SimilarityMetric {
 
   public static final RobustCosineSimilarity SINGLETON = new RobustCosineSimilarity();
+  public static boolean USE_ARC = false;
 
   private RobustCosineSimilarity() {
     super(true);
-  }
-
-  private static float arctanh(double x) {
-    float val = (float) Math.max(x, -.99f);
-    val = Math.min(val, .99f);
-    val = (float) (Math.log(1 + val) - Math.log(1 - val)) / 2f;
-    if (Float.isInfinite(val)) {
-      val = Float.NaN;
-    }
-    return val;
   }
 
   @Override
@@ -56,7 +47,10 @@ public final class RobustCosineSimilarity extends SimilarityMetric {
       }
     }
 
-    return (float) (dotProduct / Math.sqrt(normX * normY));
-    //return arctanh(dotProduct / Math.sqrt(normX * normY));
+    double answer = dotProduct / Math.sqrt(normX * normY);
+    if (USE_ARC) {
+      return arctanh(answer);
+    }
+    return (float) answer;
   }
 }
