@@ -24,6 +24,8 @@
 
 package mixer.utils.slice.gmm;
 
+import javastraw.tools.MatrixTools;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -43,8 +45,8 @@ public class Test {
 
         for (int k = 0; k < data.length; k++) {
             if (p50()) {
-                data[k][0] = (float) (generator.nextGaussian() * 15 + 1);
-                data[k][1] = (float) (generator.nextGaussian() * 15 - 2);
+                data[k][0] = (float) (generator.nextGaussian() * 3 + 1); // 15
+                data[k][1] = (float) (generator.nextGaussian() * 3 - 2); // 15
                 id[k] = 0;
                 updateGuesses(startingIndices, 0, 1, 2, k);
             } else if (p50()) {
@@ -60,6 +62,16 @@ public class Test {
             }
         }
 
+        MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_data.npy", data);
+        MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_ids.npy", id);
+        for (int i = 0; i < startingIndices.size(); i++) {
+            int m = startingIndices.get(i).size();
+            int[] sIDs = new int[m];
+            for (int k = 0; k < m; k++) {
+                sIDs[k] = startingIndices.get(i).get(k);
+            }
+            MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/init_ids_" + i + ".npy", sIDs);
+        }
         SimpleScatterPlot plotter = new SimpleScatterPlot(data, id);
         plotter.plot("/Users/mshamim/Desktop/testgmm/actual");
 
@@ -67,7 +79,7 @@ public class Test {
         plotter.plot("/Users/mshamim/Desktop/testgmm/initial");
 
 
-        GaussianMixtureModels gmm = new GaussianMixtureModels(data, 3, 1, startingIndices);
+        GaussianMixtureModels gmm = new GaussianMixtureModels(data, 3, 20, startingIndices);
         gmm.fit();
         int[] result = gmm.predict();
 

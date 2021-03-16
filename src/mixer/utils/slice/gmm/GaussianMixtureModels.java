@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.gmm;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class GaussianMixtureModels {
@@ -45,8 +46,11 @@ public class GaussianMixtureModels {
 
         datasetFractionForCluster = new float[numClusters];
         for (int k = 0; k < numClusters; k++) {
-            datasetFractionForCluster[k] = startingIndices.get(k).size() / data.length;
+            float num = startingIndices.get(k).size();
+            float denom = data.length;
+            datasetFractionForCluster[k] = num / denom;
         }
+        System.out.println("Priors: " + Arrays.toString(datasetFractionForCluster));
     }
 
 
@@ -69,7 +73,7 @@ public class GaussianMixtureModels {
                     totalSumForCluster);
 
             for (int k = 0; k < numClusters; k++) {
-                datasetFractionForCluster[k] = totalSumForCluster[k] / data.length;
+                datasetFractionForCluster[k] = totalSumForCluster[k] / (float) (data.length);
             }
         }
     }
