@@ -45,8 +45,8 @@ public class Test {
 
         for (int k = 0; k < data.length; k++) {
             if (p50()) {
-                data[k][0] = (float) (generator.nextGaussian() * 3 + 1); // 15
-                data[k][1] = (float) (generator.nextGaussian() * 3 - 2); // 15
+                data[k][0] = (float) (generator.nextGaussian() * 15 + 1); // 15 3
+                data[k][1] = (float) (generator.nextGaussian() * 15 - 2); // 15 3
                 id[k] = 0;
                 updateGuesses(startingIndices, 0, 1, 2, k);
             } else if (p50()) {

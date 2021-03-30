@@ -24,7 +24,8 @@
 
 package mixer.utils.slice.gmm;
 
-import java.util.Arrays;
+import mixer.MixerGlobals;
+
 import java.util.List;
 
 public class GaussianMixtureModels {
@@ -50,27 +51,30 @@ public class GaussianMixtureModels {
             float denom = data.length;
             datasetFractionForCluster[k] = num / denom;
         }
-        System.out.println("Priors: " + Arrays.toString(datasetFractionForCluster));
     }
 
 
     public void fit() {
-
         if (startingFromScratch && startingIndices != null && startingIndices.size() == numClusters) {
             meanVectors = GMMTools.getInitialMeans(startingIndices, numClusters, data); // add the rows and divide by num
-            covMatrices = GMMCovTools.getFeatureCovMatrices(startingIndices, numClusters, data);
+            covMatrices = GMMCovTools.getInitialFeatureCovMatrices(startingIndices, numClusters, data, meanVectors);
             startingIndices.clear();
             startingFromScratch = false;
-            System.out.println("Initial setting done");
+            if (MixerGlobals.printVerboseComments) {
+                System.out.println("GMM initialization done");
+            }
         }
 
         for (int iter = 0; iter < maxIters; iter++) {
+            if (MixerGlobals.printVerboseComments) {
+                System.out.println("GMM Iteration " + iter);
+            }
             float[][] probClusterForRow = GMMTools.getProbabilityOfClusterForRow(numClusters, data, datasetFractionForCluster, meanVectors, covMatrices);
             float[] totalSumForCluster = GMMTools.addUpAllRows(probClusterForRow);
 
             meanVectors = GMMTools.getNewWeightedAverage(numClusters, data, probClusterForRow);
             covMatrices = GMMCovTools.getNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow,
-                    totalSumForCluster);
+                    meanVectors);
 
             for (int k = 0; k < numClusters; k++) {
                 datasetFractionForCluster[k] = totalSumForCluster[k] / (float) (data.length);

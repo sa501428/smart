@@ -24,115 +24,127 @@
 
 package mixer.utils.slice.gmm;
 
+import mixer.clt.ParallelizedMixerTools;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMCovTools {
 
     public static float[][][] getNewWeightedFeatureCovarianceMatrix(int numClusters, float[][] data,
-                                                                    float[][] probClusterForRow, float[] totalSumForCluster) {
+                                                                    float[][] probClusterForRow,
+                                                                    float[][] meanVectors) {
         float[][][] covMatrices = new float[numClusters][data[0].length][data[0].length];
         for (int k = 0; k < numClusters; k++) {
-            covMatrices[k] = getWeightedColumnCovarianceMatrix(data, probClusterForRow, k);
+            covMatrices[k] = getWeightedColumnCovarianceMatrix(data, probClusterForRow, k, meanVectors[k]);
+        }
 
-            // todo????
-            for (int i = 0; i < covMatrices[k].length; i++) {
-                for (int j = 0; j < covMatrices[k][i].length; j++) {
-                    covMatrices[k][i][j] /= totalSumForCluster[k];
-                }
+        // ensure positive nonzero diagonal
+        for (int i = 0; i < numClusters; i++) {
+            for (int j = 0; j < covMatrices[i].length; j++) {
+                covMatrices[i][j][j] += 1e-6;
             }
         }
 
         return covMatrices;
     }
 
-    public static float[][] getWeightedColumnCovarianceMatrix(float[][] matrix, float[][] probClusterForRow, int cID) {
-        float[][] cov = new float[matrix[0].length][matrix[0].length];
-        for (int i = 0; i < matrix[0].length; i++) {
-            for (int j = i; j < matrix[0].length; j++) {
-                float val = getWeightedColVectorCov(matrix, i, j, probClusterForRow, cID);
-                cov[i][j] = val;
-                cov[j][i] = val;
+    public static float[][] getWeightedColumnCovarianceMatrix(float[][] data, float[][] probClusterForRow,
+                                                              int clusterID, float[] meanVector) {
+
+        int numDataPoints = data.length;
+        int dimension = data[0].length;
+
+        float[][] diff = new float[numDataPoints][dimension];
+        for (int i = 0; i < numDataPoints; i++) {
+            for (int j = 0; j < dimension; j++) {
+                diff[i][j] = data[i][j] - meanVector[j];
             }
         }
+
+        float[][] cov = new float[dimension][dimension];
+
+        AtomicInteger currRowIndex = new AtomicInteger(0);
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int i = currRowIndex.getAndIncrement();
+            while (i < dimension) {
+                for (int j = i; j < dimension; j++) {
+                    //System.out.println(i+" "+j+" "+clusterID);
+                    float weight = 0;
+                    float accum = 0;
+                    for (int k = 0; k < numDataPoints; k++) {
+                        float val = diff[k][i] * diff[k][j];
+                        if (!Float.isNaN(val)) {
+                            accum += probClusterForRow[k][clusterID] * val;
+                            weight += probClusterForRow[k][clusterID];
+                        }
+                    }
+                    cov[i][j] = accum / weight;
+                    cov[j][i] = cov[i][j]; // symmetric
+                }
+                i = currRowIndex.getAndIncrement();
+            }
+        });
+
         return cov;
     }
 
-    public static float getWeightedColVectorCov(float[][] matrix, int j0, int j1,
-                                                float[][] probClusterForRow, int cID) {
-        float sumAW = 0;
-        float sumBW = 0;
-        float sumW = 0;
-        int numValid = 0;
-        for (int i = 0; i < matrix.length; i++) {
-            if (!Float.isNaN(matrix[i][j0] - matrix[i][j1])) {
-                numValid++;
-                sumAW += matrix[i][j0] * probClusterForRow[i][cID];
-                sumBW += matrix[i][j1] * probClusterForRow[i][cID];
-                sumW += probClusterForRow[i][cID];
-            }
-        }
-        if (numValid < 1) return 0;
-        float muA = sumAW / sumW;
-        float muB = sumBW / sumW;
-        float cov = 0;
-        for (int i = 0; i < matrix.length; i++) {
-            if (!Float.isNaN(matrix[i][j0] - matrix[i][j1])) {
-                cov += probClusterForRow[i][cID] * (matrix[i][j0] - muA) * (matrix[i][j1] - muB);
-            }
-        }
-
-        return cov / sumW;
-    }
-
-    public static float[][][] getFeatureCovMatrices(List<List<Integer>> indices, int numClusters, float[][] data) {
+    public static float[][][] getInitialFeatureCovMatrices(List<List<Integer>> indices,
+                                                           int numClusters, float[][] data,
+                                                           float[][] meanVectors) {
         float[][][] covMatrices = new float[numClusters][data[0].length][data[0].length];
         for (int k = 0; k < numClusters; k++) {
-            covMatrices[k] = getColumnCovarianceMatrix(indices.get(k), data);
-            printMatrix(covMatrices, k);
+            covMatrices[k] = getInitialColumnCovarianceMatrix(indices.get(k), data, meanVectors[k]);
         }
         return covMatrices;
     }
 
-    private static void printMatrix(float[][][] covMatrices, int k) {
-        System.out.println("Printing matrix " + k);
+    public static float[][] getInitialColumnCovarianceMatrix(List<Integer> indices, float[][] data,
+                                                             float[] meanVector) {
+
+        int numDataPoints = indices.size();
+        int dimension = data[0].length;
+
+        float[][] diff = new float[numDataPoints][dimension];
+        int counter = 0;
+        for (int i : indices) {
+            for (int j = 0; j < dimension; j++) {
+                diff[counter][j] = data[i][j] - meanVector[j];
+            }
+            counter++;
+        }
+
+        float[][] cov = new float[dimension][dimension];
+
+        AtomicInteger currRowIndex = new AtomicInteger(0);
+
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int i = currRowIndex.getAndIncrement();
+            while (i < dimension) {
+                for (int j = i; j < dimension; j++) {
+                    //System.out.println(i+" "+j+" "+clusterID);
+                    float accum = 0;
+                    for (int k = 0; k < numDataPoints; k++) {
+                        float val = diff[k][i] * diff[k][j];
+                        if (!Float.isNaN(val)) {
+                            accum += val;
+                        }
+                    }
+                    cov[i][j] = accum / numDataPoints;
+                    cov[j][i] = cov[i][j]; // symmetric
+                }
+                i = currRowIndex.getAndIncrement();
+            }
+        });
+
+        return cov;
+    }
+
+    private static void printMatrix(float[][][] covMatrices, int k, String type) {
+        System.out.println("Printing " + type + " matrix " + k);
         for (float[] c : covMatrices[k]) {
             System.out.println(Arrays.toString(c));
         }
-    }
-
-    public static float[][] getColumnCovarianceMatrix(List<Integer> rowIndices, float[][] matrix) {
-        float[][] cov = new float[matrix[0].length][matrix[0].length];
-        for (int i = 0; i < matrix[0].length; i++) {
-            for (int j = i; j < matrix[0].length; j++) {
-                float val = getColVectorCov(matrix, i, j, rowIndices);
-                cov[i][j] = val;
-                cov[j][i] = val;
-            }
-        }
-        return cov;
-    }
-
-    public static float getColVectorCov(float[][] matrix, int j0, int j1, List<Integer> rowIndices) {
-        float sumA = 0, sumB = 0;
-        int numValid = 0;
-        for (int i : rowIndices) {
-            if (!Float.isNaN(matrix[i][j0] - matrix[i][j1])) {
-                numValid++;
-                sumA += matrix[i][j0];
-                sumB += matrix[i][j1];
-            }
-        }
-        if (numValid < 1) return 0;
-        float muA = sumA / numValid;
-        float muB = sumB / numValid;
-        float cov = 0;
-        for (int i : rowIndices) {
-            if (!Float.isNaN(matrix[i][j0] - matrix[i][j1])) {
-                cov += (matrix[i][j0] - muA) * (matrix[i][j1] - muB);
-            }
-        }
-
-        return cov / (numValid - 1);
     }
 }

@@ -56,7 +56,6 @@ public class GMMTools {
                 }
                 meanVectors[k][j] /= Math.max(counts[k][j], 1);
             }
-            System.out.println("mu at " + k + " is " + Arrays.toString(meanVectors[k]));
         }
 
         return meanVectors;
@@ -85,10 +84,7 @@ public class GMMTools {
                 }
                 meanVectors[k][j] /= counts[k][j];
             }
-            System.out.println("mu2 at " + k + " is " + Arrays.toString(meanVectors[k]));
-            System.out.println("counts2 at " + k + " is " + Arrays.toString(counts[k]));
         }
-        System.out.println("---");
 
         return meanVectors;
     }
@@ -97,48 +93,16 @@ public class GMMTools {
         int[] status = new int[x.length];
         Arrays.fill(status, -1);
         int n = getStatus(x, meanVector, status);
-        if (n == 0) {
-            System.err.println("x is " + Arrays.toString(x));
-            System.err.println("mu is " + Arrays.toString(meanVector));
-            System.err.println("cov is " + Arrays.toString(covarianceMatrix));
-        }
         RealMatrix cov = getSubsetCovMatrix(covarianceMatrix, status, n);
         LUDecomposition lu = new LUDecomposition(cov);
         RealMatrix diff = validSubtract(x, meanVector, status, n);
-
-        double dval = multivariateNormalCalc(n, lu, diff);
-        float val = (float) dval;
-        if (Float.isInfinite(val) || Float.isNaN(val)) {
-            System.out.println("mnc " + dval + " - " + val);
-        }
-        return (float) dval;
+        return multivariateNormalCalc(n, lu, diff);
     }
 
-    public static double multivariateNormalCalc2(int n, LUDecomposition lu, RealMatrix diff) {
-        return Math.pow(2 * Math.PI, -n / 2.0) *
-                Math.pow(determinant(lu), -0.5) *
-                Math.exp(chainMultiply(diff, inverse(lu)) / 2.0);
-    }
-
-    public static double multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff) {
-
+    public static float multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff) {
         double denom = Math.sqrt(Math.pow(2 * Math.PI, n) * determinant(lu));
-        if (!Double.isFinite(denom) || denom < 1e-3) {
-            System.out.println("denom " + denom);
-
-        }
-        double num = Math.exp(chainMultiply(diff, inverse(lu)) / 2.0);
-        if (!Double.isFinite(num)) {
-            System.out.println("num " + num);
-
-        }
-        double result = num / denom;
-
-        if (Double.isNaN(result) || Double.isInfinite(result)) {
-            System.out.println("result is " + result);
-        }
-
-        return result;
+        double num = Math.exp(-chainMultiply(diff, inverse(lu)) / 2.0);
+        return (float) (num / denom);
     }
 
     public static double chainMultiply(RealMatrix diff, RealMatrix inverseCov) {
@@ -180,6 +144,11 @@ public class GMMTools {
                 }
             }
         }
+        for (int i = 0; i < subset.length; i++) {
+            for (int j = i + 1; j < subset.length; j++) {
+                subset[j][i] = subset[i][j];
+            }
+        }
         return new Array2DRowRealMatrix(subset);
     }
 
@@ -192,7 +161,8 @@ public class GMMTools {
             }
         }
         if (counter == 0) {
-            System.err.println("something is wrong; counter 0");
+            System.err.println("something went wrong; counter 0");
+            System.exit(6);
         }
         return counter;
     }
@@ -213,30 +183,21 @@ public class GMMTools {
             float localSum = 0;
             for (int k = 0; k < numClusters; k++) {
                 r[n][k] = pi[k] * multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
-
                 localSum += r[n][k];
 
-                if (Double.isNaN(r[n][k]) || Double.isInfinite(r[n][k])) {
-                    printMatrix(covMatrices[k], k);
-                    System.err.println("mu is " + Arrays.toString(meanVectors[k]));
-                    System.err.println("Pi is " + pi[k]);
-                    System.err.println("R is " + r[n][k] + " Local sum " + localSum);
+                if (Float.isNaN(r[n][k]) || Float.isInfinite(r[n][k])) {
+                    System.err.println("ERROR: R is " + r[n][k] + " Local sum " + localSum);
                     System.exit(8);
                 }
             }
             for (int k = 0; k < numClusters; k++) {
                 r[n][k] /= localSum;
-                if (Double.isNaN(r[n][k])) {
-                    System.err.println("Local sum " + localSum);
-                    System.exit(9);
-                }
             }
         }
         return r;
     }
 
-    public static void printMatrix(float[][] matrix, int k) {
-        System.out.println("Printing matrix " + k);
+    public static void printMatrix(float[][] matrix) {
         for (float[] c : matrix) {
             System.out.println(Arrays.toString(c));
         }
