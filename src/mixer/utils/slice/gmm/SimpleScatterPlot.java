@@ -121,7 +121,7 @@ public class SimpleScatterPlot {
     }
 
     private void drawCircle(Graphics g, float[] point, int id) {
-        Color color = SubcompartmentColors.getColorWithAlpha(2 * (id + 1), 128);
+        Color color = SubcompartmentColors.getColorWithAlpha(id + 1, 128);
         g.setColor(color);
         int newX = (int) ((point[0] - circleOffset - minX) * width / widthX);
         int newY = (int) ((point[1] - circleOffset - minY) * height / heightY);

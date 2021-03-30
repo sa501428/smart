@@ -33,7 +33,7 @@ import java.util.Random;
 public class Test {
 
     private static float[][] data;
-    private static final int[] id = new int[1000];
+    private static int[] id;
     private static final Random generator = new Random(5);
     private static int NUM_CLUSTERS = 3;
 
@@ -61,7 +61,7 @@ public class Test {
         plotter.plot(result, "/Users/mshamim/Desktop/testgmm/gmm_result");
     }
 
-    private static List<List<Integer>> generateData() {
+    private static List<List<Integer>> generateData0() {
         List<List<Integer>> startingIndices = new ArrayList<>();
         startingIndices.add(new ArrayList<>());
         startingIndices.add(new ArrayList<>());
@@ -87,6 +87,66 @@ public class Test {
             }
         }
         return startingIndices;
+    }
+
+    private static List<List<Integer>> generateData() {
+
+        NUM_CLUSTERS = 6;
+        int columnNums = 20; // 2000
+        int numPoints = 10000; //50k
+
+        data = new float[numPoints][columnNums];
+        id = new int[numPoints];
+        float[][] weights = generateRandomMatrix(NUM_CLUSTERS, columnNums);
+        float[][] offsets = generateRandomMatrix(NUM_CLUSTERS, columnNums);
+        List<List<Integer>> startingIndices = new ArrayList<>();
+        for (int s = 0; s < NUM_CLUSTERS; s++) {
+            startingIndices.add(new ArrayList<>());
+        }
+
+        for (int k = 0; k < data.length; k++) {
+            if (k % 10 == 0) {
+                id[k] = 0;
+            } else if (k % 4 == 0) {
+                id[k] = 1;
+            } else if (k % 5 == 0) {
+                id[k] = 2;
+            } else if (k % 3 == 0) {
+                id[k] = 3;
+            } else if (k % 2 == 0) {
+                id[k] = 4;
+            } else {
+                id[k] = 5;
+            }
+            fillInRow(data, weights[id[k]], offsets[id[k]], startingIndices, k);
+        }
+        return startingIndices;
+    }
+
+    private static float[][] generateRandomMatrix(int numRows, int numCols) {
+        float[][] result = new float[numRows][numCols];
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (p50()) {
+                    result[i][j] = 100 * (generator.nextFloat() - .5f);
+                } else {
+                    result[i][j] = (float) (100 * generator.nextGaussian());
+                }
+            }
+        }
+        return result;
+    }
+
+    private static void fillInRow(float[][] data, float[] weight, float[] offset, List<List<Integer>> startingIndices, int k) {
+        for (int z = 0; z < weight.length; z++) {
+            data[k][z] = (float) (generator.nextGaussian() * weight[z] + offset[z]); // 15 3
+        }
+
+        if (p75() || p75()) {
+            startingIndices.get(id[k]).add(k);
+        } else {
+            startingIndices.get(generator.nextInt(NUM_CLUSTERS)).add(k);
+        }
     }
 
     private static void updateGuesses(List<List<Integer>> startingIndices, int good, int bad1, int bad2, int index) {
