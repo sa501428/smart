@@ -32,17 +32,42 @@ import java.util.Random;
 
 public class Test {
 
-    private static final float[][] data = new float[1000][2];
+    private static float[][] data;
     private static final int[] id = new int[1000];
     private static final Random generator = new Random(5);
+    private static int NUM_CLUSTERS = 3;
 
     public static void main(String[] args) {
 
+        List<List<Integer>> startingIndices = generateData();
+
+        MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_data.npy", data);
+        MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_ids.npy", id);
+        for (int i = 0; i < startingIndices.size(); i++) {
+            int m = startingIndices.get(i).size();
+            int[] sIDs = new int[m];
+            for (int k = 0; k < m; k++) {
+                sIDs[k] = startingIndices.get(i).get(k);
+            }
+            MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/init_ids_" + i + ".npy", sIDs);
+        }
+        SimpleScatterPlot plotter = new SimpleScatterPlot(data);
+        plotter.plot(id, "/Users/mshamim/Desktop/testgmm/actual");
+        plotter.plot(startingIndices, "/Users/mshamim/Desktop/testgmm/initial");
+
+        GaussianMixtureModels gmm = new GaussianMixtureModels(data, NUM_CLUSTERS, 20, startingIndices);
+        gmm.fit();
+        int[] result = gmm.predict();
+        plotter.plot(result, "/Users/mshamim/Desktop/testgmm/gmm_result");
+    }
+
+    private static List<List<Integer>> generateData() {
         List<List<Integer>> startingIndices = new ArrayList<>();
         startingIndices.add(new ArrayList<>());
         startingIndices.add(new ArrayList<>());
         startingIndices.add(new ArrayList<>());
-
+        NUM_CLUSTERS = 3;
+        data = new float[1000][2];
         for (int k = 0; k < data.length; k++) {
             if (p50()) {
                 data[k][0] = (float) (generator.nextGaussian() * 15 + 1); // 15 3
@@ -61,31 +86,7 @@ public class Test {
                 updateGuesses(startingIndices, 2, 1, 0, k);
             }
         }
-
-        MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_data.npy", data);
-        MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_ids.npy", id);
-        for (int i = 0; i < startingIndices.size(); i++) {
-            int m = startingIndices.get(i).size();
-            int[] sIDs = new int[m];
-            for (int k = 0; k < m; k++) {
-                sIDs[k] = startingIndices.get(i).get(k);
-            }
-            MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/init_ids_" + i + ".npy", sIDs);
-        }
-        SimpleScatterPlot plotter = new SimpleScatterPlot(data, id);
-        plotter.plot("/Users/mshamim/Desktop/testgmm/actual");
-
-        plotter = new SimpleScatterPlot(data, startingIndices);
-        plotter.plot("/Users/mshamim/Desktop/testgmm/initial");
-
-
-        GaussianMixtureModels gmm = new GaussianMixtureModels(data, 3, 20, startingIndices);
-        gmm.fit();
-        int[] result = gmm.predict();
-
-        plotter = new SimpleScatterPlot(data, result);
-        plotter.plot("/Users/mshamim/Desktop/testgmm/gmm_result");
-
+        return startingIndices;
     }
 
     private static void updateGuesses(List<List<Integer>> startingIndices, int good, int bad1, int bad2, int index) {

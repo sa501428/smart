@@ -31,11 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/MatrixMult.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -176,14 +173,7 @@
       <workItem from="1615913659708" duration="756000" />
       <workItem from="1615915363951" duration="562000" />
       <workItem from="1616621691234" duration="12227000" />
-      <workItem from="1617120983768" duration="3946000" />
-    </task>
-    <task id="LOCAL-00052" summary="use genomewide coverage removal">
-      <created>1613508084331</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1613508084331</updated>
+      <workItem from="1617120983768" duration="6886000" />
     </task>
     <task id="LOCAL-00053" summary="bug fix">
       <created>1613508357068</created>
@@ -521,7 +511,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617121089933</updated>
     </task>
-    <option name="localTasksCounter" value="101" />
+    <task id="LOCAL-00101" summary="GMM bug fixes">
+      <created>1617131980379</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1617131980379</updated>
+    </task>
+    <option name="localTasksCounter" value="102" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -546,7 +543,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="options for direct column scaling, segmenting centroid" />
     <MESSAGE value="restore to a working version" />
     <MESSAGE value="go in reverse order for clustering" />
     <MESSAGE value="add back left over clustering" />
@@ -571,7 +567,8 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="debugging messages" />
     <MESSAGE value="network analysis and loop fine-tuning" />
-    <option name="LAST_COMMIT_MESSAGE" value="network analysis and loop fine-tuning" />
+    <MESSAGE value="GMM bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="GMM bug fixes" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

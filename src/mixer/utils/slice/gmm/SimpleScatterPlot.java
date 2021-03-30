@@ -25,6 +25,7 @@
 package mixer.utils.slice.gmm;
 
 import mixer.utils.slice.structures.SubcompartmentColors;
+import tagbio.umap.Umap;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -37,29 +38,31 @@ public class SimpleScatterPlot {
     private final int circleOffset = 3;
     private final int circleWidth = circleOffset * 2;
     private final float[][] points;
-    private final int[] ids;
     private final int width = 1000;
     private final int height = 1000;
     private float minX = 0, maxX = 0;
     private float minY = 0, maxY = 0;
     private int widthX, heightY;
+    private String stem = "";
 
-    public SimpleScatterPlot(float[][] points, int[] ids) {
-        this.points = points;
-        this.ids = ids;
+    public SimpleScatterPlot(float[][] points) {
+        this.points = setPoints(points);
         updateBounds();
     }
 
-    public SimpleScatterPlot(float[][] points, List<List<Integer>> idList) {
-        this.points = points;
-        this.ids = new int[points.length];
-        for (int i = 0; i < idList.size(); i++) {
-            for (int k : idList.get(i)) {
-                ids[k] = i;
-            }
+    private float[][] setPoints(float[][] points) {
+        if (points[0].length > 2) {
+            final Umap umap = new Umap();
+            umap.setNumberComponents(2);
+            umap.setNumberNearestNeighbours(50); // 50 // 15 -> 50 for more global picture
+            umap.setThreads(10);
+            umap.setMinDist(0.5f); // 0.2 ->0.8 -> 0.5  //0.1f -> 0.2f for more general features
+            umap.setVerbose(false);
+            umap.setSeed(0L);
+            stem = "_umap";
+            return umap.fitTransform(points);
         }
-
-        updateBounds();
+        return points;
     }
 
     private void updateBounds() {
@@ -77,11 +80,21 @@ public class SimpleScatterPlot {
         heightY = (int) Math.ceil(maxY - minY);
     }
 
-    public void plot(String absPath) {
-        plotIndividualMap(absPath + ".png");
+    public void plot(List<List<Integer>> idList, String absPath) {
+        int[] ids = new int[points.length];
+        for (int i = 0; i < idList.size(); i++) {
+            for (int k : idList.get(i)) {
+                ids[k] = i;
+            }
+        }
+        plot(ids, absPath);
     }
 
-    private void plotIndividualMap(String absPath) {
+    public void plot(int[] ids, String absPath) {
+        plotIndividualMap(ids, absPath + stem + ".png");
+    }
+
+    private void plotIndividualMap(int[] ids, String absPath) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D) image.getGraphics();
         colorBackground(g);
