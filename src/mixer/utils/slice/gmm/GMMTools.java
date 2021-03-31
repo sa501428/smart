@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.gmm;
 
+import mixer.MixerGlobals;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -89,20 +90,30 @@ public class GMMTools {
         return meanVectors;
     }
 
-    public static float multivariateNormal(float[] x, float[] meanVector, float[][] covarianceMatrix) {
+    public static double multivariateNormal(float[] x, float[] meanVector, float[][] covarianceMatrix, boolean print) {
         int[] status = new int[x.length];
         Arrays.fill(status, -1);
         int n = getStatus(x, meanVector, status);
+        if (MixerGlobals.printVerboseComments && print) {
+            System.out.println("status n " + n);
+        }
         RealMatrix cov = getSubsetCovMatrix(covarianceMatrix, status, n);
+        if (MixerGlobals.printVerboseComments && print) {
+            System.out.println("cov " + cov.toString());
+        }
+
         LUDecomposition lu = new LUDecomposition(cov);
         RealMatrix diff = validSubtract(x, meanVector, status, n);
-        return multivariateNormalCalc(n, lu, diff);
+        return multivariateNormalCalc(n, lu, diff, print);
     }
 
-    public static float multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff) {
+    public static double multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff, boolean print) {
         double denom = Math.sqrt(Math.pow(2 * Math.PI, n) * determinant(lu));
         double num = Math.exp(-chainMultiply(diff, inverse(lu)) / 2.0);
-        return (float) (num / denom);
+        if (MixerGlobals.printVerboseComments && print) {
+            System.out.println("denom " + denom + " numer " + num);
+        }
+        return (num / denom);
     }
 
     public static double chainMultiply(RealMatrix diff, RealMatrix inverseCov) {
@@ -161,8 +172,9 @@ public class GMMTools {
             }
         }
         if (counter == 0) {
-            System.err.println("something went wrong; counter 0");
-            System.exit(6);
+            System.err.println("mu " + Arrays.toString(meanVector));
+            System.err.println("x " + Arrays.toString(x));
+            throw new RuntimeException("something went wrong; counter 0");
         }
         return counter;
     }
@@ -180,18 +192,27 @@ public class GMMTools {
     public static float[][] getProbabilityOfClusterForRow(int numClusters, float[][] data, float[] pi, float[][] meanVectors, float[][][] covMatrices) {
         float[][] r = new float[data.length][numClusters];
         for (int n = 0; n < data.length; n++) {
-            float localSum = 0;
+            double localSum = 0;
+            double[] tempArray = new double[numClusters];
             for (int k = 0; k < numClusters; k++) {
-                r[n][k] = pi[k] * multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
-                localSum += r[n][k];
-
-                if (Float.isNaN(r[n][k]) || Float.isInfinite(r[n][k])) {
-                    System.err.println("ERROR: R is " + r[n][k] + " Local sum " + localSum);
-                    System.exit(8);
+                double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k], n < 10);
+                tempArray[k] = pi[k] * mvn;
+                localSum += tempArray[k];
+                if (MixerGlobals.printVerboseComments && n < 10) {
+                    System.out.println("row[" + n + "]  pi[" + k + "] =" + pi[k] + " mvn " + mvn + " R is " + tempArray[k] + " Local sum " + localSum);
+                }
+                if (Double.isNaN(r[n][k]) || Double.isInfinite(r[n][k])) {
+                    System.err.println("ERROR: R is " + tempArray[k] + " Local sum " + localSum);
+                    throw new RuntimeException("Invalid value for R");
                 }
             }
             for (int k = 0; k < numClusters; k++) {
-                r[n][k] /= localSum;
+                r[n][k] = (float) (tempArray[k] / localSum);
+
+                if (Float.isNaN(r[n][k]) || Float.isInfinite(r[n][k])) {
+                    System.err.println("ERROR: R is " + r[n][k] + " Local sum " + localSum);
+                    throw new RuntimeException("Invalid value for R");
+                }
             }
         }
         return r;

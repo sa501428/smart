@@ -142,7 +142,7 @@ public class Test {
             data[k][z] = (float) (generator.nextGaussian() * weight[z] + offset[z]); // 15 3
         }
 
-        if (p75() || p75()) {
+        if (p75()) {
             startingIndices.get(id[k]).add(k);
         } else {
             startingIndices.get(generator.nextInt(NUM_CLUSTERS)).add(k);

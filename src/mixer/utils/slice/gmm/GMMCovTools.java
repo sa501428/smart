@@ -41,13 +41,17 @@ public class GMMCovTools {
         }
 
         // ensure positive nonzero diagonal
-        for (int i = 0; i < numClusters; i++) {
+        addEpsilonToDiagonal(covMatrices);
+
+        return covMatrices;
+    }
+
+    public static void addEpsilonToDiagonal(float[][][] covMatrices) {
+        for (int i = 0; i < covMatrices.length; i++) {
             for (int j = 0; j < covMatrices[i].length; j++) {
                 covMatrices[i][j][j] += 1e-6;
             }
         }
-
-        return covMatrices;
     }
 
     public static float[][] getWeightedColumnCovarianceMatrix(float[][] data, float[][] probClusterForRow,
