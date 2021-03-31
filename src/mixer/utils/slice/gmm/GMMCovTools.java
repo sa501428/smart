@@ -26,18 +26,16 @@ package mixer.utils.slice.gmm;
 
 import mixer.clt.ParallelizedMixerTools;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMCovTools {
 
-    public static float[][][] getNewWeightedFeatureCovarianceMatrix(int numClusters, float[][] data,
-                                                                    float[][] probClusterForRow,
-                                                                    float[][] meanVectors) {
+    public static float[][][] parGetNewWeightedFeatureCovarianceMatrix(int numClusters, float[][] data,
+                                                                       float[][] probClusterForRow,
+                                                                       float[][] meanVectors) {
         float[][][] covMatrices = new float[numClusters][data[0].length][data[0].length];
         for (int k = 0; k < numClusters; k++) {
-            covMatrices[k] = getWeightedColumnCovarianceMatrix(data, probClusterForRow, k, meanVectors[k]);
+            covMatrices[k] = parGetWeightedColumnCovarianceMatrix(data, probClusterForRow, k, meanVectors[k]);
         }
 
         // ensure positive nonzero diagonal
@@ -54,18 +52,12 @@ public class GMMCovTools {
         }
     }
 
-    public static float[][] getWeightedColumnCovarianceMatrix(float[][] data, float[][] probClusterForRow,
-                                                              int clusterID, float[] meanVector) {
+    public static float[][] parGetWeightedColumnCovarianceMatrix(float[][] data, float[][] probClusterForRow,
+                                                                 int clusterID, float[] meanVector) {
 
+        float[][] diff = parGetDiffMatrix(data, meanVector);
         int numDataPoints = data.length;
         int dimension = data[0].length;
-
-        float[][] diff = new float[numDataPoints][dimension];
-        for (int i = 0; i < numDataPoints; i++) {
-            for (int j = 0; j < dimension; j++) {
-                diff[i][j] = data[i][j] - meanVector[j];
-            }
-        }
 
         float[][] cov = new float[dimension][dimension];
 
@@ -74,7 +66,6 @@ public class GMMCovTools {
             int i = currRowIndex.getAndIncrement();
             while (i < dimension) {
                 for (int j = i; j < dimension; j++) {
-                    //System.out.println(i+" "+j+" "+clusterID);
                     float weight = 0;
                     float accum = 0;
                     for (int k = 0; k < numDataPoints; k++) {
@@ -94,61 +85,21 @@ public class GMMCovTools {
         return cov;
     }
 
-    public static float[][][] getInitialFeatureCovMatrices(List<List<Integer>> indices,
-                                                           int numClusters, float[][] data,
-                                                           float[][] meanVectors) {
-        float[][][] covMatrices = new float[numClusters][data[0].length][data[0].length];
-        for (int k = 0; k < numClusters; k++) {
-            covMatrices[k] = getInitialColumnCovarianceMatrix(indices.get(k), data, meanVectors[k]);
-        }
-        return covMatrices;
-    }
-
-    public static float[][] getInitialColumnCovarianceMatrix(List<Integer> indices, float[][] data,
-                                                             float[] meanVector) {
-
-        int numDataPoints = indices.size();
+    private static float[][] parGetDiffMatrix(float[][] data, float[] meanVector) {
+        int numDataPoints = data.length;
         int dimension = data[0].length;
 
         float[][] diff = new float[numDataPoints][dimension];
-        int counter = 0;
-        for (int i : indices) {
-            for (int j = 0; j < dimension; j++) {
-                diff[counter][j] = data[i][j] - meanVector[j];
-            }
-            counter++;
-        }
-
-        float[][] cov = new float[dimension][dimension];
-
-        AtomicInteger currRowIndex = new AtomicInteger(0);
-
+        AtomicInteger currDataIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
-            int i = currRowIndex.getAndIncrement();
-            while (i < dimension) {
-                for (int j = i; j < dimension; j++) {
-                    //System.out.println(i+" "+j+" "+clusterID);
-                    float accum = 0;
-                    for (int k = 0; k < numDataPoints; k++) {
-                        float val = diff[k][i] * diff[k][j];
-                        if (!Float.isNaN(val)) {
-                            accum += val;
-                        }
-                    }
-                    cov[i][j] = accum / numDataPoints;
-                    cov[j][i] = cov[i][j]; // symmetric
+            int i = currDataIndex.getAndIncrement();
+            while (i < numDataPoints) {
+                for (int j = 0; j < dimension; j++) {
+                    diff[i][j] = data[i][j] - meanVector[j];
                 }
-                i = currRowIndex.getAndIncrement();
+                i = currDataIndex.getAndIncrement();
             }
         });
-
-        return cov;
-    }
-
-    private static void printMatrix(float[][][] covMatrices, int k, String type) {
-        System.out.println("Printing " + type + " matrix " + k);
-        for (float[] c : covMatrices[k]) {
-            System.out.println(Arrays.toString(c));
-        }
+        return diff;
     }
 }

@@ -25,67 +25,41 @@
 package mixer.utils.slice.gmm;
 
 import mixer.MixerGlobals;
+import mixer.clt.ParallelizedMixerTools;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMTools {
 
-    public static float[][] getInitialMeans(List<List<Integer>> groupsOfIndices, int numClusters, float[][] data) {
-        float[][] meanVectors = new float[numClusters][data[0].length];
-        int[][] counts = new int[numClusters][data[0].length];
-
-        for (int k = 0; k < numClusters; k++) {
-            for (int i : groupsOfIndices.get(k)) {
-                for (int j = 0; j < data[i].length; j++) {
-                    if (!Float.isNaN(data[i][j])) {
-                        meanVectors[k][j] += data[i][j];
-                        counts[k][j]++;
-                    }
-                }
-            }
-        }
-
-        // todo is this a problem???
-        for (int k = 0; k < numClusters; k++) {
-            for (int j = 0; j < data[0].length; j++) {
-                if (counts[k][j] < 1e-10) {
-                    System.err.println("Something is going wrong in these calcs");
-                }
-                meanVectors[k][j] /= Math.max(counts[k][j], 1);
-            }
-        }
-
-        return meanVectors;
-    }
-
-    public static float[][] getNewWeightedAverage(int numClusters, float[][] data, float[][] r) {
+    public static float[][] parGetWeightedMean(int numClusters, float[][] data, float[][] r) {
         float[][] meanVectors = new float[numClusters][data[0].length];
         float[][] counts = new float[numClusters][data[0].length];
         //float[] n = GMMTools.addUpAllRows(r);
 
-        for (int k = 0; k < numClusters; k++) {
-            for (int i = 0; i < data.length; i++) {
-                for (int j = 0; j < data[i].length; j++) {
-                    if (!Float.isNaN(data[i][j])) {
-                        meanVectors[k][j] += r[i][k] * data[i][j];
-                        counts[k][j] += r[i][k];
+        AtomicInteger currIndex = new AtomicInteger(0);
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int k = currIndex.getAndIncrement();
+            while (k < numClusters) {
+                for (int i = 0; i < data.length; i++) {
+                    for (int j = 0; j < data[i].length; j++) {
+                        if (!Float.isNaN(data[i][j])) {
+                            meanVectors[k][j] += r[i][k] * data[i][j];
+                            counts[k][j] += r[i][k];
+                        }
                     }
                 }
-            }
-        }
-        // todo is this a problem?
-        for (int k = 0; k < numClusters; k++) {
-            for (int j = 0; j < data[0].length; j++) {
-                if (counts[k][j] < 1e-10) {
-                    System.err.println("Something is going wrong in these calcs");
+
+                for (int j = 0; j < data[0].length; j++) {
+                    meanVectors[k][j] /= counts[k][j];
                 }
-                meanVectors[k][j] /= counts[k][j];
+
+                k = currIndex.getAndIncrement();
             }
-        }
+        });
 
         return meanVectors;
     }
@@ -189,32 +163,45 @@ public class GMMTools {
         return result;
     }
 
-    public static float[][] getProbabilityOfClusterForRow(int numClusters, float[][] data, float[] pi, float[][] meanVectors, float[][][] covMatrices) {
+    public static float[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, float[] pi, float[][] meanVectors, float[][][] covMatrices) {
         float[][] r = new float[data.length][numClusters];
-        for (int n = 0; n < data.length; n++) {
-            double localSum = 0;
-            double[] tempArray = new double[numClusters];
-            for (int k = 0; k < numClusters; k++) {
-                double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k], n < 10);
-                tempArray[k] = pi[k] * mvn;
-                localSum += tempArray[k];
-                if (MixerGlobals.printVerboseComments && n < 10) {
-                    System.out.println("row[" + n + "]  pi[" + k + "] =" + pi[k] + " mvn " + mvn + " R is " + tempArray[k] + " Local sum " + localSum);
-                }
-                if (Double.isNaN(r[n][k]) || Double.isInfinite(r[n][k])) {
-                    System.err.println("ERROR: R is " + tempArray[k] + " Local sum " + localSum);
-                    throw new RuntimeException("Invalid value for R");
-                }
-            }
-            for (int k = 0; k < numClusters; k++) {
-                r[n][k] = (float) (tempArray[k] / localSum);
 
-                if (Float.isNaN(r[n][k]) || Float.isInfinite(r[n][k])) {
-                    System.err.println("ERROR: R is " + r[n][k] + " Local sum " + localSum);
-                    throw new RuntimeException("Invalid value for R");
+        AtomicInteger currIndex = new AtomicInteger(0);
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int n = currIndex.getAndIncrement();
+            while (n < data.length) {
+
+                double localSum = 0;
+                double[] tempArray = new double[numClusters];
+                for (int k = 0; k < numClusters; k++) {
+                    double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k], n < 10);
+                    tempArray[k] = pi[k] * mvn;
+                    localSum += tempArray[k];
+                    if (MixerGlobals.printVerboseComments && n < 10) {
+                        System.out.println("row[" + n + "]  pi[" + k + "] =" + pi[k] + " mvn " + mvn + " R is " + tempArray[k] + " Local sum " + localSum);
+                    }
+                    if (Double.isNaN(r[n][k]) || Double.isInfinite(r[n][k])) {
+                        System.err.println("ERROR: R is " + tempArray[k] + " Local sum " + localSum);
+                        throw new RuntimeException("Invalid value for R");
+                    }
                 }
+                if (localSum == 0.0) {
+                    System.err.println("ERROR: local sum " + localSum);
+                    throw new RuntimeException("Local sum is 0");
+                }
+                for (int k = 0; k < numClusters; k++) {
+                    r[n][k] = (float) (tempArray[k] / localSum);
+
+                    if (Float.isNaN(r[n][k]) || Float.isInfinite(r[n][k])) {
+                        System.err.println("ERROR: R is " + r[n][k] + " Local sum " + localSum);
+                        throw new RuntimeException("Invalid value for R");
+                    }
+                }
+
+                n = currIndex.getAndIncrement();
             }
-        }
+        });
+
         return r;
     }
 

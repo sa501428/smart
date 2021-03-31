@@ -25,9 +25,11 @@
 package mixer.utils.slice.gmm;
 
 import mixer.MixerGlobals;
+import mixer.clt.ParallelizedMixerTools;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GaussianMixtureModels {
     private final float[][] data;
@@ -57,8 +59,8 @@ public class GaussianMixtureModels {
 
     public void fit() {
         if (startingFromScratch && startingIndices != null && startingIndices.size() == numClusters) {
-            meanVectors = GMMTools.getInitialMeans(startingIndices, numClusters, data); // add the rows and divide by num
-            covMatrices = GMMCovTools.getInitialFeatureCovMatrices(startingIndices, numClusters, data, meanVectors);
+            meanVectors = InitTools.parGetInitialMeans(startingIndices, numClusters, data); // add the rows and divide by num
+            covMatrices = InitTools.parGetInitialFeatureCovMatrices(startingIndices, numClusters, data, meanVectors);
             GMMCovTools.addEpsilonToDiagonal(covMatrices);
             startingIndices.clear();
             startingFromScratch = false;
@@ -68,13 +70,13 @@ public class GaussianMixtureModels {
         }
 
         for (int iter = 0; iter < maxIters; iter++) {
+            System.out.println("GMM Iteration " + iter);
             if (MixerGlobals.printVerboseComments) {
-                System.out.println("GMM Iteration " + iter);
                 for (int k = 0; k < meanVectors.length; k++) {
                     System.err.println("mu[" + k + "] " + Arrays.toString(meanVectors[k]));
                 }
             }
-            float[][] probClusterForRow = GMMTools.getProbabilityOfClusterForRow(numClusters, data, datasetFractionForCluster, meanVectors, covMatrices);
+            float[][] probClusterForRow = GMMTools.parGetProbabilityOfClusterForRow(numClusters, data, datasetFractionForCluster, meanVectors, covMatrices);
 
             if (MixerGlobals.printVerboseComments) {
                 System.out.println();
@@ -90,8 +92,8 @@ public class GaussianMixtureModels {
                 System.err.println("N = " + Arrays.toString(totalSumForCluster));
             }
 
-            meanVectors = GMMTools.getNewWeightedAverage(numClusters, data, probClusterForRow);
-            covMatrices = GMMCovTools.getNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow,
+            meanVectors = GMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
+            covMatrices = GMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow,
                     meanVectors);
 
             for (int k = 0; k < numClusters; k++) {
@@ -103,49 +105,41 @@ public class GaussianMixtureModels {
     public int[] predict() {
         probabilities = new float[data.length][numClusters];
 
-        for (int i = 0; i < data.length; i++) {
-            double[] tempArray = new double[numClusters];
-            double accum = 0;
-            for (int k = 0; k < numClusters; k++) {
-                tempArray[k] = GMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k], false);
-                accum += tempArray[k];
+        AtomicInteger currentIndex = new AtomicInteger(0);
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int i = currentIndex.getAndIncrement();
+            while (i < data.length) {
+                double[] tempArray = new double[numClusters];
+                double accum = 0;
+                for (int k = 0; k < numClusters; k++) {
+                    tempArray[k] = GMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k], false);
+                    accum += tempArray[k];
+                }
+                for (int k = 0; k < numClusters; k++) {
+                    probabilities[i][k] = (float) (tempArray[k] / accum);
+                }
+                i = currentIndex.getAndIncrement();
             }
-            for (int k = 0; k < numClusters; k++) {
-                probabilities[i][k] = (float) (tempArray[k] / accum);
-            }
-        }
+        });
 
         int[] assignments = new int[data.length];
-        for (int i = 0; i < data.length; i++) {
-            float prob = probabilities[i][0];
-            int index = 0;
-            for (int k = 1; k < numClusters; k++) {
-                if (probabilities[i][k] > prob) {
-                    prob = probabilities[i][k];
-                    index = k;
+        AtomicInteger currentIndex2 = new AtomicInteger(0);
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int i = currentIndex2.getAndIncrement();
+            while (i < data.length) {
+                float prob = probabilities[i][0];
+                int index = 0;
+                for (int k = 1; k < numClusters; k++) {
+                    if (probabilities[i][k] > prob) {
+                        prob = probabilities[i][k];
+                        index = k;
+                    }
                 }
+                assignments[i] = index;
+                i = currentIndex2.getAndIncrement();
             }
-            assignments[i] = index;
-        }
+        });
+
         return assignments;
     }
-
-    /*
-
-    def predict(self, X):
-            '''
-    The predicting function
-                :param X: 2-d array numpy array
-    The data on which we must predict the clusters
-        '''
-    probas = []
-            for n in range(len(X)):
-            probas.append([self.multivariate_normal(X[n], self.mean_vector[k], self.covariance_matrixes[k])
-            for k in range(self.n_componets)])
-    cluster = []
-            for proba in probas:
-            cluster.append(self.comp_names[proba.index(max(proba))])
-            return cluster
-
-     */
 }
