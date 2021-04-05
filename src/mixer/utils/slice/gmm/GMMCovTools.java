@@ -24,7 +24,11 @@
 
 package mixer.utils.slice.gmm;
 
+import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,32 +36,28 @@ public class GMMCovTools {
 
     public static float[][][] parGetNewWeightedFeatureCovarianceMatrix(int numClusters, float[][] data,
                                                                        float[][] probClusterForRow,
-                                                                       float[][] meanVectors) {
+                                                                       float[][] meanVectors) throws GMMException {
         float[][][] covMatrices = new float[numClusters][data[0].length][data[0].length];
         for (int k = 0; k < numClusters; k++) {
             covMatrices[k] = parGetWeightedColumnCovarianceMatrix(data, probClusterForRow, k, meanVectors[k]);
         }
 
-        // ensure positive nonzero diagonal
-        addEpsilonToDiagonal(covMatrices);
+        ensureValidCovMatrix(covMatrices);
 
         return covMatrices;
     }
 
-    public static void addEpsilonToDiagonal(float[][][] covMatrices) {
-        for (int i = 0; i < covMatrices.length; i++) {
-            for (int j = 0; j < covMatrices[i].length; j++) {
-                covMatrices[i][j][j] += 1e-6;
-            }
-        }
-    }
-
     public static float[][] parGetWeightedColumnCovarianceMatrix(float[][] data, float[][] probClusterForRow,
-                                                                 int clusterID, float[] meanVector) {
+                                                                 int clusterID, float[] meanVector) throws GMMException {
+
+        double[] min = new double[1];
+        min[0] = data.length;
 
         float[][] diff = parGetDiffMatrix(data, meanVector);
         int numDataPoints = data.length;
         int dimension = data[0].length;
+        boolean[] isFailure = new boolean[1];
+        isFailure[0] = false;
 
         float[][] cov = new float[dimension][dimension];
 
@@ -66,21 +66,36 @@ public class GMMCovTools {
             int i = currRowIndex.getAndIncrement();
             while (i < dimension) {
                 for (int j = i; j < dimension; j++) {
-                    float weight = 0;
-                    float accum = 0;
+                    double weight = 0;
+                    double accum = 0;
                     for (int k = 0; k < numDataPoints; k++) {
-                        float val = diff[k][i] * diff[k][j];
-                        if (!Float.isNaN(val)) {
+                        double val = diff[k][i] * diff[k][j];
+                        if (!Double.isNaN(val)) {
                             accum += probClusterForRow[k][clusterID] * val;
                             weight += probClusterForRow[k][clusterID];
                         }
                     }
-                    cov[i][j] = accum / weight;
-                    cov[j][i] = cov[i][j]; // symmetric
+                    if (weight > 0 && Double.isFinite(weight)) {
+                        if (weight < min[0]) {
+                            min[0] = weight;
+                        }
+                        cov[i][j] = (float) (accum / weight);
+                        cov[j][i] = cov[i][j]; // symmetric
+                    } else {
+                        System.err.println("Covariance cannot be calculated " + accum + " " + weight);
+                        synchronized (isFailure) {
+                            isFailure[0] = true;
+                        }
+                    }
                 }
                 i = currRowIndex.getAndIncrement();
             }
         });
+
+        if (isFailure[0]) {
+            System.err.println("min num entries " + min[0]);
+            throw new GMMException("Cov cannot be calculated");
+        }
 
         return cov;
     }
@@ -101,5 +116,59 @@ public class GMMCovTools {
             }
         });
         return diff;
+    }
+
+    public static void ensureValidCovMatrix(float[][][] covMatrices) throws GMMException {
+        for (int i = 0; i < covMatrices.length; i++) {
+            int counter = 0;
+            regularize(covMatrices[i], 1e-6f);
+            float delta = 1e-5f;
+            double determinant = getDeterminant(covMatrices[i]);
+            while (determinant < 0 && counter < 6) {
+                regularize(covMatrices[i], delta);
+                counter++;
+                delta *= 10;
+                determinant = getDeterminant(covMatrices[i]);
+            }
+
+            if (determinant < 0) {
+                throw new GMMException("Determinant still zero; could not regularize");
+            }
+
+            if (MixerGlobals.printVerboseComments) {
+                System.out.println("Regularized cov matrix[" + i + "] " + counter + " times");
+            }
+        }
+    }
+
+    private static double getDeterminant(float[][] covMatrix) {
+        RealMatrix realMatrix = new Array2DRowRealMatrix(tempDoubleMatrix(covMatrix));
+        return new LUDecomposition(realMatrix).getDeterminant();
+    }
+
+    private static double[][] tempDoubleMatrix(float[][] a) {
+        double[][] matrix = new double[a.length][a[0].length];
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[i].length; j++) {
+                matrix[i][j] = a[i][j];
+            }
+        }
+        return matrix;
+    }
+
+    private static double determinant(LUDecomposition lu) {
+        return lu.getDeterminant();
+    }
+
+    private static void regularize(float[][] covMatrix, float delta) {
+        for (int i = 0; i < covMatrix.length; i++) {
+            covMatrix[i][i] += delta;
+        }
+
+        for (int i = 0; i < covMatrix.length; i++) {
+            for (int j = 0; j < covMatrix[i].length; j++) {
+                covMatrix[i][j] /= 1 + delta;
+            }
+        }
     }
 }

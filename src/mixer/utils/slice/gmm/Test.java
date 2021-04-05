@@ -26,9 +26,8 @@ package mixer.utils.slice.gmm;
 
 import javastraw.tools.MatrixTools;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.io.File;
+import java.util.*;
 
 public class Test {
 
@@ -55,26 +54,58 @@ public class Test {
         plotter.plot(id, "/Users/mshamim/Desktop/testgmm/actual");
         plotter.plot(startingIndices, "/Users/mshamim/Desktop/testgmm/initial");
 
+        putInNans(data, .1); // .2 .1
+
+        //approximateCorrection(data);
+
         System.out.println("Starting GMM");
         long start = System.nanoTime();
-        GaussianMixtureModels gmm = new GaussianMixtureModels(data, NUM_CLUSTERS, 20, startingIndices);
-        gmm.fit();
-        int[] result = gmm.predict();
-        long end = System.nanoTime();
-        System.out.println("Elapsed time: " + (end - start) * 1e-9);
-        plotter.plot(result, "/Users/mshamim/Desktop/testgmm/gmm_result");
+        GaussianMixtureModels gmm = new GaussianMixtureModels(data, NUM_CLUSTERS, 20, startingIndices,
+                new File("/Users/mshamim/Desktop/testgmm"));
+        try {
+            gmm.fit();
+            int[] result = gmm.predict();
+            long end = System.nanoTime();
+            System.out.println("Elapsed time: " + (end - start) * 1e-9);
+            plotter.plot(result, "/Users/mshamim/Desktop/testgmm/gmm_nan_result");
+        } catch (GMMException g) {
+            System.err.println("Unable to run GMM on data; matrices are likely singular or some other issue encountered");
+        }
+    }
+
+    private static void putInNans(float[][] data, double percent) {
+        int numCols = data[0].length;
+        int numToNanifyInRow = (int) (percent * numCols);
+        System.out.println("Num nans per row " + numToNanifyInRow);
+        for (int i = 0; i < data.length; i++) {
+            Set<Integer> indices = getRandomSetIndices(numToNanifyInRow, numCols);
+            for (int j : indices) {
+                data[i][j] = Float.NaN;
+            }
+            if (i < 10) {
+                System.out.println(Arrays.toString(data[i]));
+            }
+        }
+    }
+
+    private static Set<Integer> getRandomSetIndices(int size, int maxVal) {
+        Set<Integer> vals = new HashSet<>();
+        while (vals.size() < size) {
+            vals.add(generator.nextInt(maxVal));
+        }
+        return vals;
     }
 
     private static List<List<Integer>> generateData() {
 
         NUM_CLUSTERS = 6;
-        int columnNums = 100; // 2000
-        int numPoints = 50000; //50k
+        int columnNums = 40;//100; // 2000
+        int numPoints = 10000; //50k
 
         data = new float[numPoints][columnNums];
         id = new int[numPoints];
-        float[][] weights = generateRandomMatrix(NUM_CLUSTERS, 6);
-        float[][] offsets = generateRandomMatrix(NUM_CLUSTERS, 6);
+        float[][] weights = generateRandomMatrix(NUM_CLUSTERS, 16); //6
+        float[][] offsets = generateRandomMatrix(NUM_CLUSTERS, 16);
         List<List<Integer>> startingIndices = new ArrayList<>();
         for (int s = 0; s < NUM_CLUSTERS; s++) {
             startingIndices.add(new ArrayList<>());
@@ -104,9 +135,9 @@ public class Test {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 if (p50()) {
-                    result[i][j] = 50 * (generator.nextFloat() - .5f);
+                    result[i][j] = 10 * (generator.nextFloat() - .5f);
                 } else {
-                    result[i][j] = (float) (40 * generator.nextGaussian());
+                    result[i][j] = (float) (6 * generator.nextGaussian());
                 }
             }
         }

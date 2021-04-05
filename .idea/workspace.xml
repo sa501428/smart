@@ -30,12 +30,14 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/InitTools.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="error handling of GMM">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/InitTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/InitTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -176,14 +178,7 @@
       <workItem from="1615913659708" duration="756000" />
       <workItem from="1615915363951" duration="562000" />
       <workItem from="1616621691234" duration="12227000" />
-      <workItem from="1617120983768" duration="20877000" />
-    </task>
-    <task id="LOCAL-00056" summary="try cosine, positive zscore">
-      <created>1613545719827</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1613545719827</updated>
+      <workItem from="1617120983768" duration="40596000" />
     </task>
     <task id="LOCAL-00057" summary="remove second zscore">
       <created>1613547319399</created>
@@ -521,7 +516,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617162795972</updated>
     </task>
-    <option name="localTasksCounter" value="105" />
+    <task id="LOCAL-00105" summary="further parallelization, updated tests">
+      <created>1617204588021</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1617204588021</updated>
+    </task>
+    <option name="localTasksCounter" value="106" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -546,7 +548,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fix, roll back leftover clusterer" />
     <MESSAGE value="umap tools" />
     <MESSAGE value="processing" />
     <MESSAGE value="code for balancing added" />
@@ -571,7 +572,8 @@
     <MESSAGE value="auto umap for scatterplot when needed; update version" />
     <MESSAGE value="new tests" />
     <MESSAGE value="more debugging, print statements added" />
-    <option name="LAST_COMMIT_MESSAGE" value="more debugging, print statements added" />
+    <MESSAGE value="further parallelization, updated tests" />
+    <option name="LAST_COMMIT_MESSAGE" value="further parallelization, updated tests" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

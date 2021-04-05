@@ -60,30 +60,22 @@ public class InitTools {
 
     public static float[][][] parGetInitialFeatureCovMatrices(List<List<Integer>> indices,
                                                               int numClusters, float[][] data,
-                                                              float[][] meanVectors) {
+                                                              float[][] meanVectors) throws GMMException {
         float[][][] covMatrices = new float[numClusters][data[0].length][data[0].length];
         for (int k = 0; k < numClusters; k++) {
             covMatrices[k] = parGetInitialColumnCovarianceMatrix(indices.get(k), data, meanVectors[k]);
         }
+        GMMCovTools.ensureValidCovMatrix(covMatrices);
         return covMatrices;
     }
 
     public static float[][] parGetInitialColumnCovarianceMatrix(List<Integer> indices, float[][] data,
                                                                 float[] meanVector) {
-
-        int numDataPoints = indices.size();
+        float[][] diff = calculateDiffWithIndices(indices, data, meanVector);
+        int numDataPoints = diff.length;
         int dimension = data[0].length;
-
-        float[][] diff = new float[numDataPoints][dimension];
-        int counter = 0;
-        for (int i : indices) {
-            for (int j = 0; j < dimension; j++) {
-                diff[counter][j] = data[i][j] - meanVector[j];
-            }
-            counter++;
-        }
-
         float[][] cov = new float[dimension][dimension];
+        int[] min = new int[]{numDataPoints};
 
         AtomicInteger currRowIndex = new AtomicInteger(0);
 
@@ -92,22 +84,42 @@ public class InitTools {
             while (i < dimension) {
                 for (int j = i; j < dimension; j++) {
                     //System.out.println(i+" "+j+" "+clusterID);
-                    float accum = 0;
+                    double accum = 0;
                     int numGoodPoints = 0;
                     for (int k = 0; k < numDataPoints; k++) {
-                        float val = diff[k][i] * diff[k][j];
-                        if (!Float.isNaN(val)) {
+                        double val = diff[k][i] * diff[k][j];
+                        if (!Double.isNaN(val)) {
                             accum += val;
                             numGoodPoints++;
                         }
                     }
-                    cov[i][j] = accum / numGoodPoints;
-                    cov[j][i] = cov[i][j]; // symmetric
+                    if (numGoodPoints > 0) {
+                        if (numGoodPoints < min[0]) {
+                            min[0] = numGoodPoints;
+                        }
+                        cov[i][j] = (float) (accum / numGoodPoints);
+                        cov[j][i] = cov[i][j]; // symmetric
+                    }
                 }
                 i = currRowIndex.getAndIncrement();
             }
         });
 
+        System.out.println("min num entries " + min[0]);
         return cov;
+    }
+
+    private static float[][] calculateDiffWithIndices(List<Integer> indices, float[][] data, float[] meanVector) {
+        int numDataPoints = indices.size();
+        int dimension = data[0].length;
+        float[][] diff = new float[numDataPoints][dimension];
+        int counter = 0;
+        for (int i : indices) {
+            for (int j = 0; j < dimension; j++) {
+                diff[counter][j] = data[i][j] - meanVector[j];
+            }
+            counter++;
+        }
+        return diff;
     }
 }

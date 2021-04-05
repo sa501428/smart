@@ -22,14 +22,10 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.gmm;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.20.13";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class GMMException extends Exception {
+    public GMMException(String str) {
+        super(str);
+    }
 }

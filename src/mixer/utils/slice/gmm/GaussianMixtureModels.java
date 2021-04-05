@@ -27,6 +27,7 @@ package mixer.utils.slice.gmm;
 import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,12 +42,15 @@ public class GaussianMixtureModels {
     float[][] probabilities;
     private int maxIters = 10;
     private boolean startingFromScratch = true;
+    private final File outfolder;
 
-    public GaussianMixtureModels(float[][] data, int numClusters, int maxIters, List<List<Integer>> startingIndices) {
+    public GaussianMixtureModels(float[][] data, int numClusters, int maxIters, List<List<Integer>> startingIndices,
+                                 File outfolder) {
         this.data = data;
         this.numClusters = numClusters;
         this.maxIters = maxIters;
         this.startingIndices = startingIndices;
+        this.outfolder = outfolder;
 
         datasetFractionForCluster = new float[numClusters];
         for (int k = 0; k < numClusters; k++) {
@@ -57,11 +61,11 @@ public class GaussianMixtureModels {
     }
 
 
-    public void fit() {
+    public void fit() throws GMMException {
         if (startingFromScratch && startingIndices != null && startingIndices.size() == numClusters) {
             meanVectors = InitTools.parGetInitialMeans(startingIndices, numClusters, data); // add the rows and divide by num
             covMatrices = InitTools.parGetInitialFeatureCovMatrices(startingIndices, numClusters, data, meanVectors);
-            GMMCovTools.addEpsilonToDiagonal(covMatrices);
+
             startingIndices.clear();
             startingFromScratch = false;
             if (MixerGlobals.printVerboseComments) {
@@ -76,7 +80,8 @@ public class GaussianMixtureModels {
                     System.err.println("mu[" + k + "] " + Arrays.toString(meanVectors[k]));
                 }
             }
-            float[][] probClusterForRow = GMMTools.parGetProbabilityOfClusterForRow(numClusters, data, datasetFractionForCluster, meanVectors, covMatrices);
+            float[][] probClusterForRow = GMMTools.parGetProbabilityOfClusterForRow(numClusters, data, datasetFractionForCluster,
+                    meanVectors, covMatrices, outfolder);
 
             if (MixerGlobals.printVerboseComments) {
                 System.out.println();
@@ -112,7 +117,7 @@ public class GaussianMixtureModels {
                 double[] tempArray = new double[numClusters];
                 double accum = 0;
                 for (int k = 0; k < numClusters; k++) {
-                    tempArray[k] = GMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k], false);
+                    tempArray[k] = GMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k], outfolder);
                     accum += tempArray[k];
                 }
                 for (int k = 0; k < numClusters; k++) {
