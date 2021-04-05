@@ -54,7 +54,7 @@ public class Test {
         plotter.plot(id, "/Users/mshamim/Desktop/testgmm/actual");
         plotter.plot(startingIndices, "/Users/mshamim/Desktop/testgmm/initial");
 
-        putInNans(data, .1); // .2 .1
+        putInNans(data, .2); // .2 .1
 
         //approximateCorrection(data);
 
@@ -100,12 +100,12 @@ public class Test {
 
         NUM_CLUSTERS = 6;
         int columnNums = 40;//100; // 2000
-        int numPoints = 10000; //50k
+        int numPoints = 300000; //50k
 
         data = new float[numPoints][columnNums];
         id = new int[numPoints];
-        float[][] weights = generateRandomMatrix(NUM_CLUSTERS, 16); //6
-        float[][] offsets = generateRandomMatrix(NUM_CLUSTERS, 16);
+        float[][] weights = generateRandomMatrix(NUM_CLUSTERS, 6); //6
+        float[][] offsets = generateRandomMatrix(NUM_CLUSTERS, 6);
         List<List<Integer>> startingIndices = new ArrayList<>();
         for (int s = 0; s < NUM_CLUSTERS; s++) {
             startingIndices.add(new ArrayList<>());
