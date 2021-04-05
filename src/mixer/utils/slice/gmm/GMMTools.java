@@ -82,7 +82,7 @@ public class GMMTools {
         Arrays.fill(status, -1);
         int n = getStatus(x, meanVector, status);
         if (n < 2) {
-            System.err.println("Invalid match");
+            System.err.println("Invalid match " + n);
             return Double.NaN;
         }
 
@@ -161,11 +161,12 @@ public class GMMTools {
                 counter++;
             }
         }
-        if (counter == 0) {
+        if (counter <= 0) {
             System.err.println("mu " + Arrays.toString(meanVector));
             System.err.println("x " + Arrays.toString(x));
+            return -1;
         }
-        return -1;
+        return counter;
     }
 
     public static float[] addUpAllRows(float[][] matrix) {
