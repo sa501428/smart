@@ -35,7 +35,6 @@ import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
-import mixer.utils.slice.kmeans.KmeansResult;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -51,7 +50,6 @@ public abstract class CompositeGenomeWideMatrix {
     protected final Random generator = new Random(0);
     protected final File outputDirectory;
     private float[][] gwCleanMatrix;
-    private final List<Map<Integer, Map<Integer, Integer>>> chrIndxTorowIndexToGoldIDMapList = new ArrayList<>();
     protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
     protected int[] weights;
@@ -59,7 +57,7 @@ public abstract class CompositeGenomeWideMatrix {
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
                                      NormalizationType intraNorm, NormalizationType interNorm,
                                      int resolution,
-                                     File outputDirectory, long seed, String[] relativeTestFiles,
+                                     File outputDirectory, long seed,
                                      GWBadIndexFinder badIndexLocations, SimilarityMetric metric) {
         this.intraNorm = intraNorm;
         this.interNorm = interNorm;
@@ -69,12 +67,6 @@ public abstract class CompositeGenomeWideMatrix {
         this.generator.setSeed(seed);
         this.badIndexLocations = badIndexLocations;
         this.metric = metric;
-
-        if (relativeTestFiles != null) {
-            for (String filename : relativeTestFiles) {
-                chrIndxTorowIndexToGoldIDMapList.add(SliceUtils.createGoldStandardLookup(filename, resolution, chromosomeHandler));
-            }
-        }
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
@@ -94,7 +86,7 @@ public abstract class CompositeGenomeWideMatrix {
         gwCleanMatrix = matrixCleanupReduction.justRemoveBadRows(badIndices, rowIndexToIntervalMap, weights);
     }
 
-    public synchronized KmeansResult processGWKmeansResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
+    public synchronized double processKMeansClusteringResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
@@ -105,18 +97,11 @@ public abstract class CompositeGenomeWideMatrix {
         int numGoodClusters = 0;
         int genomewideCompartmentID = 0;
 
-        int[][] ids = new int[1][clusters.length];
-        int[][] idsForIndex = new int[chrIndxTorowIndexToGoldIDMapList.size() + 1][gwCleanMatrix.length];
-        for (int[] forIndex : idsForIndex) {
-            Arrays.fill(forIndex, -1);
-        }
-
         Set<Integer> badIndices = new HashSet<>();
 
         for (int z = 0; z < clusters.length; z++) {
             Cluster cluster = clusters[z];
             int currentClusterID = ++genomewideCompartmentID;
-            ids[0][z] = currentClusterID;
 
             if (MixerGlobals.printVerboseComments) {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
@@ -135,40 +120,11 @@ public abstract class CompositeGenomeWideMatrix {
                 withinClusterSumOfSquares +=
                         RobustEuclideanDistance.getNonNanMeanSquaredError(cluster.getCenter(), gwCleanMatrix[i]);
 
-                try {
-                    SubcompartmentInterval interv;
-
-                    if (rowIndexToIntervalMap.containsKey(i)) {
-                        interv = rowIndexToIntervalMap.get(i);
-                        if (interv == null) continue; // probably a zero row
-
-                        int chrIndex = interv.getChrIndex();
-                        String chrName = interv.getChrName();
-                        int x1 = interv.getX1();
-                        int x2 = interv.getX2();
-
-                        subcompartmentIntervals.add(
-                                new SubcompartmentInterval(chrIndex, chrName, x1, x2, currentClusterID));
-
-                        int numReferences = chrIndxTorowIndexToGoldIDMapList.size();
-                        idsForIndex[numReferences][i] = currentClusterID;
-
-                        for (int q = 0; q < numReferences; q++) {
-                            Map<Integer, Map<Integer, Integer>> map = chrIndxTorowIndexToGoldIDMapList.get(q);
-                            if (map.containsKey(chrIndex)) {
-                                if (map.get(chrIndex).containsKey(x1)) {
-                                    idsForIndex[q][i] = map.get(chrIndex).get(x1);
-                                }
-                            }
-                        }
-
-                    } else {
-                        System.err.println("********* is weird error?");
+                if (rowIndexToIntervalMap.containsKey(i)) {
+                    SubcompartmentInterval interv = rowIndexToIntervalMap.get(i);
+                    if (interv != null) {
+                        subcompartmentIntervals.add(generateNewSubcompartment(interv, currentClusterID));
                     }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(87);
                 }
             }
         }
@@ -188,30 +144,56 @@ public abstract class CompositeGenomeWideMatrix {
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
 
-        return new KmeansResult(withinClusterSumOfSquares, ids, idsForIndex);
+        return withinClusterSumOfSquares;
+    }
+
+    public synchronized void processGMMClusteringResult(int[] clusterID,
+                                                        GenomeWideList<SubcompartmentInterval> subcompartments) {
+
+        Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
+
+        for (int i = 0; i < getNumRows(); i++) {
+            if (rowIndexToIntervalMap.containsKey(i)) {
+                SubcompartmentInterval interv = rowIndexToIntervalMap.get(i);
+                if (interv != null) {
+                    subcompartmentIntervals.add(generateNewSubcompartment(interv, clusterID[i]));
+                }
+            }
+        }
+
+        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
+        SliceUtils.reSort(subcompartments);
+    }
+
+    protected SubcompartmentInterval generateNewSubcompartment(SubcompartmentInterval interv, int currentClusterID) {
+        int chrIndex = interv.getChrIndex();
+        String chrName = interv.getChrName();
+        int x1 = interv.getX1();
+        int x2 = interv.getX2();
+        return new SubcompartmentInterval(chrIndex, chrName, x1, x2, currentClusterID);
     }
 
     public float[][] getCleanedData() {
         return gwCleanMatrix;
     }
 
-    public int getLength() {
+    public int getNumRows() {
         return gwCleanMatrix.length;
     }
 
-    public int getWidth() {
+    public int getNumColumns() {
         return gwCleanMatrix[0].length;
     }
 
     public void exportData() {
-        System.out.println(getLength() + " -v- " + getWidth());
+        System.out.println(getNumRows() + " -v- " + getNumColumns());
         FloatMatrixTools.saveMatrixTextNumpy(new File(outputDirectory, "data_matrix.npy").getAbsolutePath(), getCleanedData());
     }
 
     public void appendDataAlongExistingRows(CompositeGenomeWideMatrix additionalData) {
         if (gwCleanMatrix.length != additionalData.gwCleanMatrix.length) {
             System.err.println("***************************************\n" +
-                    "Dimension mismatch: " + getLength() + " != " + additionalData.getLength());
+                    "Dimension mismatch: " + getNumRows() + " != " + additionalData.getNumRows());
         } else {
             gwCleanMatrix = FloatMatrixTools.concatenate(gwCleanMatrix, additionalData.gwCleanMatrix);
         }
@@ -219,5 +201,9 @@ public abstract class CompositeGenomeWideMatrix {
 
     public GWBadIndexFinder getBadIndices() {
         return badIndexLocations;
+    }
+
+    public void normalizePerDataset() {
+        // todo maybe divide by sum?
     }
 }

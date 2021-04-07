@@ -66,7 +66,7 @@ public class ShuffleAndUMAP extends MixerCLT {
     // subcompartment lanscape identification via clustering enrichment
     public ShuffleAndUMAP(String name) {
         super("[intra-]shuffle-umap [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
-                "<file.hic> <subcompartment.bed> <outfolder> <prefix>");
+                "<file.hic> <subcompartment.bed(s)> <outfolder> <prefix>");
         useGWMap = name.contains("gw");
         useIntraMap = name.contains("intra");
         doShuffle = name.contains("shuffle");

@@ -60,7 +60,6 @@ public class Slice extends MixerCLT {
     private NormalizationType[] interNormArray;
     public static SimilarityMetric metric = RobustManhattanDistance.SINGLETON; //  RobustMedianAbsoluteError
     private String prefix = "";
-    private String[] referenceBedFiles;
     private final boolean compareMaps;
 
     // subcompartment lanscape identification via clustering enrichment
@@ -148,11 +147,6 @@ public class Slice extends MixerCLT {
         if (subsampling > 0) {
             MatrixCleanerAndProjector.NUM_PER_CENTROID = subsampling;
         }
-
-        String bedFiles = mixerParser.getCompareReferenceOption();
-        if (bedFiles != null && bedFiles.length() > 1) {
-            referenceBedFiles = bedFiles.split(",");
-        }
     }
 
     @Override
@@ -165,8 +159,8 @@ public class Slice extends MixerCLT {
         if (datasetList.size() < 1) return;
 
         FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, intraNormArray, interNormArray, outputDirectory, generator.nextLong(), referenceBedFiles, metric);
-        withinClusters.extractFinalGWSubcompartments(inputHicFilePaths, prefix, 0, compareMaps);
+                chromosomeHandler, resolution, intraNormArray, interNormArray, outputDirectory, generator.nextLong(), metric);
+        withinClusters.extractFinalGWSubcompartments(prefix);
 
         System.out.println("\nClustering complete");
     }

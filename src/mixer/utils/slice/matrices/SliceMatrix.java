@@ -46,9 +46,9 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
     public static int numColumnsToPutTogether = 2;
 
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType intraNorm, NormalizationType interNorm,
-                       int resolution, File outputDirectory, long seed, String[] referenceBedFiles, GWBadIndexFinder badIndexLocations,
+                       int resolution, File outputDirectory, long seed, GWBadIndexFinder badIndexLocations,
                        SimilarityMetric metric) {
-        super(chromosomeHandler, ds, intraNorm, interNorm, resolution, outputDirectory, seed, referenceBedFiles,
+        super(chromosomeHandler, ds, intraNorm, interNorm, resolution, outputDirectory, seed,
                 badIndexLocations, metric);
     }
 

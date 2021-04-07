@@ -30,7 +30,6 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -77,7 +76,7 @@ public class GMMTools {
         return meanVectors;
     }
 
-    public static double multivariateNormal(float[] x, float[] meanVector, float[][] covarianceMatrix, File outfolder) {
+    public static double multivariateNormal(float[] x, float[] meanVector, float[][] covarianceMatrix) {
         int[] status = new int[x.length];
         Arrays.fill(status, -1);
         int n = getStatus(x, meanVector, status);
@@ -90,11 +89,10 @@ public class GMMTools {
 
         LUDecomposition lu = new LUDecomposition(cov);
         RealMatrix diff = validSubtract(x, meanVector, status, n);
-        return multivariateNormalCalc(n, lu, diff, cov.getData(), covarianceMatrix, outfolder);
+        return multivariateNormalCalc(n, lu, diff);
     }
 
-    public static double multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff,
-                                                double[][] cov, float[][] covOrig, File outfolder) {
+    public static double multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff) {
         double denom = Math.sqrt(Math.pow(2 * Math.PI, n) * determinant(lu));
         double num = Math.exp(-chainMultiply(diff, inverse(lu)) / 2.0);
         double result = (num / denom);
@@ -180,8 +178,7 @@ public class GMMTools {
     }
 
     public static float[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, float[] pi,
-                                                             float[][] meanVectors, float[][][] covMatrices,
-                                                             File outfolder) throws GMMException {
+                                                             float[][] meanVectors, float[][][] covMatrices) throws GMMException {
         float[][] r = new float[data.length][numClusters];
         boolean[] isFailure = new boolean[1];
         isFailure[0] = false;
@@ -194,7 +191,7 @@ public class GMMTools {
                 double localSum = 0;
                 double[] tempArray = new double[numClusters];
                 for (int k = 0; k < numClusters; k++) {
-                    double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k], outfolder);
+                    double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
                     if (Double.isNaN(mvn)) {
                         synchronized (isFailure) {
                             isFailure[0] = true;
