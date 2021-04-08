@@ -22,14 +22,32 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.cleaning.archive;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.21.04";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+import javastraw.reader.block.Block;
+import javastraw.reader.block.ContactRecord;
+import mixer.utils.slice.cleaning.CRecordUtils;
+
+import java.util.List;
+
+class RegionStatistics {
+    final float[] rowSums;
+    final float[] colSums;
+    final float[] rowNonZeros;
+    final float[] colNonZeros;
+
+    RegionStatistics(int numRows, int numCols, List<Block> blocks) {
+        rowSums = new float[numRows];
+        colSums = new float[numCols];
+        rowNonZeros = new float[numRows];
+        colNonZeros = new float[numCols];
+
+        for (Block b : blocks) {
+            if (b != null) {
+                for (ContactRecord cr : b.getContactRecords()) {
+                    CRecordUtils.add(cr, rowSums, colSums, rowNonZeros, colNonZeros);
+                }
+            }
+        }
+    }
 }

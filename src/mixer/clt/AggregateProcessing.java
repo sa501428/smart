@@ -27,7 +27,6 @@ package mixer.clt;
 
 import mixer.MixerGlobals;
 import mixer.MixerTools;
-import mixer.utils.matrix.HiCMatrix;
 
 /**
  * Created for testing multiple CLTs at once
@@ -39,10 +38,28 @@ public class AggregateProcessing {
     public static void main(String[] argv) throws Exception {
 
         String[] files = new String[]{
-                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic",
-                "/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic"
+                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic" //,
+                //"/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic",
+                //"/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic"
         };
+
+        for (String file : files) {
+            for (int res : new int[]{100000, 50000}) { //100000
+                String folder = "SLICE_v" + MixerGlobals.versionNum;
+                String[] strings = new String[]{"slice", "-r", res + "",
+                        "-k", "KR:INTER_KR", //"--verbose",
+                        "-w", "20",
+                        file, "2,13,4",
+                        "/Users/mshamim/Desktop/reSLICE/w20_" + folder, folder + "_"
+                };
+                System.out.println("-----------------------------------------------------");
+                MixerTools.main(strings);
+                System.gc();
+            }
+        }
+
+
+        /*
 
         String[] types = new String[]{"RAW", "LOG", "O_E", "LOG_E(O)"};
         String[] corrs = new String[]{"IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN",

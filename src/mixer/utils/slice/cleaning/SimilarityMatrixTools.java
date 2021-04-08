@@ -54,7 +54,7 @@ public class SimilarityMatrixTools {
             Arrays.fill(weights, 1);
         } else {
             QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed, 100);
-            centroids = centroidMaker.generateCentroids();
+            centroids = centroidMaker.generateCentroids(5);
             weights = centroidMaker.getWeights();
             for (int i = 0; i < weights.length; i++) {
                 weights[i] = (float) Math.sqrt(weights[i]);

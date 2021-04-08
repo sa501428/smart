@@ -34,7 +34,7 @@ import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
-import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
+import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -75,16 +75,18 @@ public abstract class CompositeGenomeWideMatrix {
     abstract float[][] makeCleanScaledInterMatrix(Dataset ds);
 
     public void cleanUpMatricesBySparsity() {
-        MatrixCleanerAndProjector matrixCleanupReduction = new MatrixCleanerAndProjector(gwCleanMatrix,
+        SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
         gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap, weights);
     }
 
+    /*
     public void emergencyCleanUpSpecificBadRows(Set<Integer> badIndices) {
         MatrixCleanerAndProjector matrixCleanupReduction = new MatrixCleanerAndProjector(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
         gwCleanMatrix = matrixCleanupReduction.justRemoveBadRows(badIndices, rowIndexToIntervalMap, weights);
     }
+    */
 
     public synchronized double processKMeansClusteringResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
 
@@ -134,12 +136,14 @@ public abstract class CompositeGenomeWideMatrix {
             System.out.println("Final WCSS " + withinClusterSumOfSquares);
         }
 
+        /*
         if (badIndices.size() > 0) {
             emergencyCleanUpSpecificBadRows(badIndices);
             if (MixerGlobals.printVerboseComments) {
                 System.out.println("bad matrices removed; newer matrix size " + gwCleanMatrix.length + " x " + gwCleanMatrix[0].length);
             }
         }
+        */
 
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);

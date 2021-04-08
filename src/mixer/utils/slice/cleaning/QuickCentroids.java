@@ -62,7 +62,7 @@ public class QuickCentroids {
         this.maxIters = numIters;
     }
 
-    public float[][] generateCentroids() {
+    public float[][] generateCentroids(int minSizeNeeded) {
         ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
@@ -75,7 +75,7 @@ public class QuickCentroids {
 
             @Override
             public void kmeansComplete(Cluster[] clusters, long l) {
-                convertClustersToFloatMatrix(clusters);
+                convertClustersToFloatMatrix(clusters, minSizeNeeded);
                 System.out.print(".");
             }
 
@@ -104,10 +104,10 @@ public class QuickCentroids {
         }
     }
 
-    private void convertClustersToFloatMatrix(Cluster[] initialClusters) {
+    private void convertClustersToFloatMatrix(Cluster[] initialClusters, int minSizeNeeded) {
         List<Cluster> actualClusters = new ArrayList<>();
         for (Cluster c : initialClusters) {
-            if (c.getMemberIndexes().length > 2) {
+            if (c.getMemberIndexes().length > minSizeNeeded) {
                 actualClusters.add(c);
             }
         }

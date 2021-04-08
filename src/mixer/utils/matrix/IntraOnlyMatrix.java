@@ -30,8 +30,8 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.ExtractingOEDataUtils;
 import javastraw.tools.HiCFileTools;
+import mixer.utils.common.LogTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 
 public class IntraOnlyMatrix extends HiCMatrix {
@@ -64,7 +64,7 @@ public class IntraOnlyMatrix extends HiCMatrix {
             } else if (intraType == INTRA_TYPE.JUST_LOG) {
                 allDataForRegion = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr1,
                         0, lengthChr2, lengthChr1, lengthChr2, norm, true);
-                MatrixCleanerAndProjector.simpleLogWithCleanup(allDataForRegion, 0);
+                LogTools.simpleLogWithCleanup(allDataForRegion, 0);
             } else {
                 System.err.println("Invalid Matrix type " + intraType);
                 System.exit(9);

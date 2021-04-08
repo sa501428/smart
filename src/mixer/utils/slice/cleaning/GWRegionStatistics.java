@@ -54,7 +54,7 @@ public class GWRegionStatistics {
         for (Block b : blocks) {
             if (b != null) {
                 for (ContactRecord cr : b.getContactRecords()) {
-                    RegionStatistics.add(cr, rowSums, colSums, rowNonZeros, colNonZeros);
+                    CRecordUtils.add(cr, rowSums, colSums, rowNonZeros, colNonZeros);
                 }
             }
         }

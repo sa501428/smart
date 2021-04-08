@@ -32,7 +32,7 @@ import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.MatrixCleanerAndProjector;
+import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.HiCInterTools;
@@ -145,7 +145,7 @@ public class Slice extends MixerCLT {
 
         int subsampling = mixerParser.getSubsamplingOption();
         if (subsampling > 0) {
-            MatrixCleanerAndProjector.NUM_PER_CENTROID = subsampling;
+            SliceMatrixCleaner.NUM_PER_CENTROID = subsampling;
         }
     }
 

@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.cleaning;
+package mixer.utils.slice.cleaning.archive;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;

@@ -24,32 +24,9 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.reader.block.Block;
 import javastraw.reader.block.ContactRecord;
 
-import java.util.List;
-
-class RegionStatistics {
-    final float[] rowSums;
-    final float[] colSums;
-    final float[] rowNonZeros;
-    final float[] colNonZeros;
-
-    RegionStatistics(int numRows, int numCols, List<Block> blocks) {
-        rowSums = new float[numRows];
-        colSums = new float[numCols];
-        rowNonZeros = new float[numRows];
-        colNonZeros = new float[numCols];
-
-        for (Block b : blocks) {
-            if (b != null) {
-                for (ContactRecord cr : b.getContactRecords()) {
-                    add(cr, rowSums, colSums, rowNonZeros, colNonZeros);
-                }
-            }
-        }
-    }
-
+public class CRecordUtils {
     public static void add(ContactRecord cr, float[] rowSums, float[] colSums, float[] rowNonZeros, float[] colNonZeros) {
         float val = (float) Math.log(cr.getCounts() + 1);
         if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {

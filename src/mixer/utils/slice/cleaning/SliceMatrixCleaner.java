@@ -24,120 +24,43 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.utils.ColumnCleaner;
+import mixer.utils.slice.cleaning.utils.RowCleaner;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import tagbio.umap.Umap;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Random;
 
-public class MatrixCleanerAndProjector {
-    private final static float PERCENT_NAN_ALLOWED = .5f;
-    public static int NUM_PER_CENTROID = 100, NUM_CENTROIDS = 1000;
+public class SliceMatrixCleaner {
+
+    public static int NUM_PER_CENTROID = 100;
     protected final File outputDirectory;
     protected float[][] data;
     protected final Random generator = new Random(0);
-    private final SimilarityMetric metric;
-    private static final float ZERO = 1e-10f;
 
-    public MatrixCleanerAndProjector(float[][] data, long seed, File outputDirectory, SimilarityMetric metric) {
-        this.metric = metric;
+    public SliceMatrixCleaner(float[][] data, long seed, File outputDirectory, SimilarityMetric metric) {
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
         // after this, there should be no infinities, no negative numbers
         // just real numbers >= 0 or NaNs
         this.data = data;
-        System.out.println("matrix size " + data.length + " x " + data[0].length);
-    }
-
-    public static void simpleLogWithCleanup(float[][] matrix, float badVal) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
-                    val = (float) Math.log(val + 1);
-                    if (Float.isInfinite(val)) {
-                        matrix[i][j] = badVal;
-                    } else {
-                        matrix[i][j] = val;
-                    }
-                }
-            }
-        }
-    }
-
-    public static Set<Integer> getBadIndices(float[][] matrix) {
-        Set<Integer> badIndices = new HashSet<>();
-        int[] numNans = getNumberOfNansOrZerosInRow(matrix);
-        int maxBadEntriesAllowed = (int) Math.ceil(PERCENT_NAN_ALLOWED * matrix[0].length);
-        for (int i = 0; i < numNans.length; i++) {
-            if (numNans[i] > maxBadEntriesAllowed) {
-                badIndices.add(i);
-            }
-        }
-
-        return badIndices;
-    }
-
-    public static float[][] filterOutColumnsAndRows(float[][] interMatrix,
-                                                    Map<Integer, SubcompartmentInterval> original) {
-        Set<Integer> badIndices = getBadIndices(interMatrix);
-        if (badIndices.size() == 0) {
-            return interMatrix;
-        }
-
-        return filterOutColumnsAndRowsGivenBadIndices(badIndices, interMatrix, original);
-    }
-
-    private static float[][] filterOutColumnsAndRowsGivenBadIndices(Set<Integer> badIndices, float[][] interMatrix, Map<Integer, SubcompartmentInterval> original) {
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("interMatrix.length " + interMatrix.length + " badIndices.size() " + badIndices.size());
-        }
-
-        int counter = 0;
-        int[] newIndexToOrigIndex = new int[interMatrix.length - badIndices.size()];
-        for (int i = 0; i < interMatrix.length; i++) {
-            if (!badIndices.contains(i)) {
-                newIndexToOrigIndex[counter++] = i;
-            }
-        }
-
-        float[][] newMatrix = new float[newIndexToOrigIndex.length][interMatrix[0].length];
-        Map<Integer, SubcompartmentInterval> newRowIndexToIntervalMap = new HashMap<>();
-        for (int i = 0; i < newMatrix.length; i++) {
-            int tempI = newIndexToOrigIndex[i];
-            System.arraycopy(interMatrix[tempI], 0, newMatrix[i], 0, newMatrix[0].length);
-            newRowIndexToIntervalMap.put(i, (SubcompartmentInterval) original.get(newIndexToOrigIndex[i]).deepClone());
-        }
-
-        original.clear();
-        original.putAll(newRowIndexToIntervalMap);
-
-        return newMatrix;
-    }
-
-    private static int[] getNumberOfNansOrZerosInRow(float[][] matrix) {
-        int[] numInvalids = new int[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (Float.isNaN(val) || val < ZERO) {
-                    numInvalids[i]++;
-                }
-            }
-        }
-        return numInvalids;
+        System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
     }
 
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                 int[] weights) {
-        simpleLogWithCleanup(this.data, Float.NaN);
-        data = filterOutColumnsAndRows(data, rowIndexToIntervalMap);
+        LogTools.simpleLogWithCleanup(this.data, Float.NaN);
+        data = (new ColumnCleaner(data)).getCleanedData();
+        data = (new RowCleaner(data, rowIndexToIntervalMap)).getCleanedData();
+
         if (MixerGlobals.printVerboseComments) {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
         }
@@ -156,13 +79,16 @@ public class MatrixCleanerAndProjector {
         File temp = new File(outputDirectory, "data_new.npy");
         FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
 
+        /*
         System.out.println("Running UMAP");
-        //runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
+        runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
         System.out.println("Done running UMAP");
+        */
 
         return data;
     }
 
+    /*
     private void runUmapAndSaveMatrices(float[][] data, File outputDirectory,
                                         Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
         int numThreads = Math.max(1, Runtime.getRuntime().availableProcessors());
@@ -194,4 +120,5 @@ public class MatrixCleanerAndProjector {
     public float[][] justRemoveBadRows(Set<Integer> badIndices, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[] weights) {
         return filterOutColumnsAndRowsGivenBadIndices(badIndices, data, rowIndexToIntervalMap);
     }
+    */
 }

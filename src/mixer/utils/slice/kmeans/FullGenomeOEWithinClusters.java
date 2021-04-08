@@ -100,8 +100,7 @@ public class FullGenomeOEWithinClusters {
         System.out.println("Genomewide clustering");
         for (int numMaxIters : new int[]{100}) {
             for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-                int numClusters = z + startingClusterSizeK;
-                runRepeatedKMeansClusteringLoop(1, kmeansRunner, iterToWcssAicBic, numClusters,
+                runRepeatedKMeansClusteringLoop(1, kmeansRunner, iterToWcssAicBic, z,
                         numMaxIters, kmeansClustersToResults, kmeansIndicesMap);
             }
         }
@@ -133,10 +132,12 @@ public class FullGenomeOEWithinClusters {
     private void exportGMMClusteringResults(int z, Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
                                             String prefix) {
         int k = z + startingClusterSizeK;
-        GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
-        SliceUtils.collapseGWList(gwList);
-        File outBedFile = new File(outputDirectory, prefix + "_" + k + "_gmm_clusters.bed");
-        gwList.simpleExport(outBedFile);
+        if (numClustersToResults.containsKey(k)) {
+            GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
+            SliceUtils.collapseGWList(gwList);
+            File outBedFile = new File(outputDirectory, prefix + "_" + k + "_gmm_clusters.bed");
+            gwList.simpleExport(outBedFile);
+        }
     }
 
 
@@ -152,7 +153,6 @@ public class FullGenomeOEWithinClusters {
             int numActualClustersThisAttempt = kmeansRunner.getNumActualClusters();
             if (numActualClustersThisAttempt == numClusters) {
                 double wcss = kmeansRunner.getWithinClusterSumOfSquares();
-
                 if (wcss < iterToWcssAicBic[1][z]) {
                     setMseAicBicValues(z, iterToWcssAicBic, numClusters, wcss);
                     indicesMap.put(z, kmeansRunner.getIndicesMapCopy());

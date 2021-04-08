@@ -30,6 +30,7 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.IntraMatrixCleaner;
@@ -147,21 +148,7 @@ abstract public class HiCMatrix {
     }
 
     public void applySimpleLog() {
-        for (int i = 0; i < interMatrix.length; i++) {
-            for (int j = 0; j < interMatrix[i].length; j++) {
-                float val = interMatrix[i][j];
-                if (Float.isNaN(val)) {
-                    interMatrix[i][j] = 0;
-                } else {
-                    val = (float) Math.log(val + 1);
-                    if (Float.isInfinite(val)) {
-                        interMatrix[i][j] = 0;
-                    } else {
-                        interMatrix[i][j] = val;
-                    }
-                }
-            }
-        }
+        LogTools.applySimpleLog(interMatrix);
     }
 
     public enum INTRA_TYPE {DEFAULT, JUST_LOG, TRUE_OE, LOG_BASE_EXPECTED}

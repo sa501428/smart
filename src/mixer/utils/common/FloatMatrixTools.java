@@ -199,7 +199,7 @@ public class FloatMatrixTools {
     }
 
     public static void saveOEMatrixToPNG(File file, float[][] matrix) {
-        double max = getMaxAbsLogVal(matrix);
+        double max = LogTools.getMaxAbsLogVal(matrix);
         int zoom = 50;
 
         BufferedImage image = new BufferedImage(zoom * matrix.length, zoom * matrix[0].length, BufferedImage.TYPE_INT_RGB);
@@ -219,19 +219,6 @@ public class FloatMatrixTools {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static float getMaxAbsLogVal(float[][] matrix) {
-        double maxVal = Math.abs(Math.log(matrix[0][0]));
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                double temp = Math.abs(Math.log(matrix[i][j]));
-                if (temp > maxVal) {
-                    maxVal = temp;
-                }
-            }
-        }
-        return (float) maxVal;
     }
 
     public static float[][] deepClone(float[][] data) {

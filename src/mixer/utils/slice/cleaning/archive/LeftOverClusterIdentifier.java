@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.cleaning;
+package mixer.utils.slice.cleaning.archive;
 
 import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
@@ -34,6 +34,8 @@ import javastraw.tools.ExtractingOEDataUtils;
 import javastraw.tools.HiCFileTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.NearDiagonalTrim;
 import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 

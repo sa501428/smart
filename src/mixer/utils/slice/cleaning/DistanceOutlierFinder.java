@@ -22,14 +22,17 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.cleaning;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.21.04";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+import java.util.HashSet;
+import java.util.Set;
+
+public class DistanceOutlierFinder {
+    public static Set<Integer> getOutliers(float[][] matrix, Set<Integer> badIndices) {
+        Set<Integer> outliers = new HashSet<>();
+        QuickCentroids centroidMaker = new QuickCentroids(matrix, 200, 0L, 100);
+        float[][] centroids = centroidMaker.generateCentroids(5);
+
+        return outliers;
+    }
 }
