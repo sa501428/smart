@@ -22,14 +22,35 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.cleaning.utils;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.21.07";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class VectorGroup {
+    private final Set<Integer> indices = new HashSet<>();
+    private final float[] initVector;
+
+    public VectorGroup(int index, float[] vector) {
+        this.initVector = vector;
+        append(index);
+    }
+
+    public void append(int index) {
+        indices.add(index);
+    }
+
+    public float corr(float[] vector) {
+        return RobustCorrelationSimilarity.SINGLETON.distance(initVector, vector);
+    }
+
+    public int size() {
+        return indices.size();
+    }
+
+    public Set<Integer> getMembers() {
+        return indices;
+    }
 }

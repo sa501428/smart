@@ -32,7 +32,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
      * Correlation distance.
      */
     public static final RobustCorrelationSimilarity SINGLETON = new RobustCorrelationSimilarity();
-    public static boolean USE_ARC = false;
+    public final static boolean USE_ARC = false;
 
     private RobustCorrelationSimilarity() {
         super(true);

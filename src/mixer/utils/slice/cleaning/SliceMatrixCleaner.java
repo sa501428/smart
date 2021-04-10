@@ -25,16 +25,13 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
-import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.LogTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.utils.ColumnCleaner;
 import mixer.utils.slice.cleaning.utils.RowCleaner;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
@@ -58,8 +55,11 @@ public class SliceMatrixCleaner {
     public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                 int[] weights) {
         LogTools.simpleLogWithCleanup(this.data, Float.NaN);
+        System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
         data = (new ColumnCleaner(data)).getCleanedData();
+        System.out.println("Matrix size after column cleanup " + data.length + " x " + data[0].length);
         data = (new RowCleaner(data, rowIndexToIntervalMap)).getCleanedData();
+        System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("matrix size " + data.length + " x " + data[0].length);
@@ -68,6 +68,7 @@ public class SliceMatrixCleaner {
         //System.out.println("Generating similarity matrix");
         //data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
 
+        /*
         int[] newWeights = new int[data[0].length];
         Arrays.fill(newWeights, 1);
         ZScoreTools.inPlaceZscoreDownCol(data, newWeights);

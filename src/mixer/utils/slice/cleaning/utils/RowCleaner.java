@@ -86,4 +86,14 @@ public class RowCleaner extends DimensionCleaner {
     protected int getLimit() {
         return (int) Math.ceil(PERCENT_NAN_ALLOWED * data[0].length);
     }
+
+    @Override
+    protected boolean useOnlyCorr() {
+        return false;
+    }
+
+    @Override
+    protected float[][] getAppropriatelyFlippedMatrix() {
+        return data;
+    }
 }

@@ -42,12 +42,19 @@ public abstract class DimensionCleaner {
 
     private float[][] filterOutDimension(float[][] matrix) {
         Set<Integer> badIndices = getSparseIndices(matrix);
+        Set<Integer> outlierIndices = (new OutlierCleaner(getAppropriatelyFlippedMatrix(), useOnlyCorr())).getConsistentOutliers();
+        badIndices.addAll(outlierIndices);
+
         if (badIndices.size() == 0) {
             return matrix;
         }
 
         return filterOutBadIndices(badIndices, matrix);
     }
+
+    protected abstract boolean useOnlyCorr();
+
+    protected abstract float[][] getAppropriatelyFlippedMatrix();
 
     protected Set<Integer> getSparseIndices(float[][] matrix) {
         // sparse rows

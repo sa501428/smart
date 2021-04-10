@@ -48,9 +48,9 @@ public class AggregateProcessing {
                 String folder = "SLICE_v" + MixerGlobals.versionNum;
                 String[] strings = new String[]{"slice", "-r", res + "",
                         "-k", "KR:INTER_KR", //"--verbose",
-                        "-w", "20",
+                        //"-w", "20",
                         file, "2,13,4",
-                        "/Users/mshamim/Desktop/reSLICE/w20_" + folder, folder + "_"
+                        "/Users/mshamim/Desktop/reSLICE/wA_v5_" + folder, folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
                 MixerTools.main(strings);

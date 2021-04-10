@@ -40,7 +40,7 @@ public class HiCInterTools {
 
     private static int getIdealCompression(double genomelength, double resolution, double counts) {
         double x = genomelength / resolution;
-        return (int) Math.ceil(1.5 * x * x / counts);
+        return (int) Math.ceil(20 * x * x / counts);
     }
 
     public static int calculateIdealWidth(Dataset ds, int resolution) {

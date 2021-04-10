@@ -61,7 +61,6 @@ public class GMMTools {
                         synchronized (isFailure) {
                             isFailure[0] = true;
                         }
-                        System.err.println("Invalid count is " + counts[k][j]);
                     }
                 }
 

@@ -140,8 +140,8 @@ public class Slice extends MixerCLT {
                 }
             }
             SliceMatrix.numColumnsToPutTogether = numColumns;
-            System.out.println("Using compression width: " + numColumns);
         }
+        System.out.println("Using compression width: " + SliceMatrix.numColumnsToPutTogether);
 
         int subsampling = mixerParser.getSubsamplingOption();
         if (subsampling > 0) {

@@ -35,7 +35,7 @@ public abstract class SimilarityMetric {
 
     public static SimilarityMetric getMetric(int val) {
         HiCMatrix.USE_ZSCORE = false;
-        RobustCorrelationSimilarity.USE_ARC = false;
+        //RobustCorrelationSimilarity.USE_ARC = false;
         RobustCosineSimilarity.USE_ARC = false;
         if (val == 1) {
             return RobustCosineSimilarity.SINGLETON;
@@ -65,7 +65,7 @@ public abstract class SimilarityMetric {
             return RobustCosineSimilarity.SINGLETON;
         }
         if (val == 9) {
-            RobustCorrelationSimilarity.USE_ARC = true;
+            //RobustCorrelationSimilarity.USE_ARC = true;
             return RobustCorrelationSimilarity.SINGLETON;
         }
 

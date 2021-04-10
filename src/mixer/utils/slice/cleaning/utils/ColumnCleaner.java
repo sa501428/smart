@@ -25,6 +25,7 @@
 package mixer.utils.slice.cleaning.utils;
 
 import mixer.MixerGlobals;
+import mixer.utils.common.FloatMatrixTools;
 
 import java.util.Set;
 
@@ -75,5 +76,15 @@ public class ColumnCleaner extends DimensionCleaner {
     @Override
     protected int getLimit() {
         return (int) Math.ceil(PERCENT_NAN_ALLOWED * data.length);
+    }
+
+    @Override
+    protected boolean useOnlyCorr() {
+        return true;
+    }
+
+    @Override
+    protected float[][] getAppropriatelyFlippedMatrix() {
+        return FloatMatrixTools.transpose(data);
     }
 }
