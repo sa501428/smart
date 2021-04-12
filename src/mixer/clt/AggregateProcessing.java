@@ -44,13 +44,13 @@ public class AggregateProcessing {
         };
 
         for (String file : files) {
-            for (int res : new int[]{100000, 50000}) { //100000
+            for (int res : new int[]{50000}) { //100000 100000
                 String folder = "SLICE_v" + MixerGlobals.versionNum;
                 String[] strings = new String[]{"slice", "-r", res + "",
                         "-k", "KR:INTER_KR", //"--verbose",
                         //"-w", "20",
                         file, "2,13,4",
-                        "/Users/mshamim/Desktop/reSLICE/wA_v5_" + folder, folder + "_"
+                        "/Users/mshamim/Desktop/reSLICE/wA_v5_" + res + "_" + folder, folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
                 MixerTools.main(strings);

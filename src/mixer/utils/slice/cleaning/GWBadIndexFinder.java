@@ -53,8 +53,8 @@ public class GWBadIndexFinder {
         }
     }
 
-    protected void determineBadIndicesForRegion(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
-                                                int dIndex) throws IOException {
+    protected void updateCoverageStats(Chromosome chr1, Chromosome chr2, MatrixZoomData zd,
+                                       int dIndex) throws IOException {
         int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
 
@@ -71,17 +71,17 @@ public class GWBadIndexFinder {
                     Chromosome chr2 = chromosomes[j];
                     final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(datasets.get(z), chr1, chr2, resolution);
                     try {
-                        determineBadIndicesForRegion(chr1, chr2, zd, z);
+                        updateCoverageStats(chr1, chr2, zd, z);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }
-        postprocess(chromosomes);
+        determineBadIndicesFromGenomewideStats(chromosomes);
     }
 
-    protected void postprocess(Chromosome[] chromosomes) {
+    protected void determineBadIndicesFromGenomewideStats(Chromosome[] chromosomes) {
         gwStats.postprocess();
 
         for (Chromosome chromosome : chromosomes) {

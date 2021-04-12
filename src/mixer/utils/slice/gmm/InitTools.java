@@ -105,7 +105,7 @@ public class InitTools {
             }
         });
 
-        System.out.println("min num entries " + min[0]);
+        //System.out.println("min num entries " + min[0]);
         return cov;
     }
 
