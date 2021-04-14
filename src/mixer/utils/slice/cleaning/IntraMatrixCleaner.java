@@ -45,15 +45,16 @@ public class IntraMatrixCleaner {
         }
     }
 
-    public static float[][] clean(Chromosome chrom, float[][] matrix, int resolution, int numColsToJoin, Set<Integer> badIndices) {
+    public static float[][] clean(Chromosome chrom, float[][] matrix, int resolution,
+                                  int smoothingInterval, Set<Integer> badIndices) {
         NearDiagonalTrim.trim(chrom, matrix, resolution);
         eraseTheRowsColumnsWeDontWant(badIndices, matrix);
-        return rollingAverage(matrix, numColsToJoin);
+        return rollingAverage(matrix, smoothingInterval);
 
     }
 
-    public static float[][] rollingAverage(float[][] matrix, int numColsToJoin) {
-        int bufferWidth = numColsToJoin / 2;
+    public static float[][] rollingAverage(float[][] matrix, int smoothingInterval) {
+        int bufferWidth = smoothingInterval / 2;
         for (int i = 0; i < matrix.length; i++) {
             float[] tempRow = new float[matrix[i].length];
             System.arraycopy(matrix[i], 0, tempRow, 0, tempRow.length);

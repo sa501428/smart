@@ -52,7 +52,7 @@ public abstract class CompositeGenomeWideMatrix {
     private float[][] gwCleanMatrix;
     protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
-    protected int[] weights;
+    //protected int[] weights;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
                                      NormalizationType intraNorm, NormalizationType interNorm,
@@ -77,7 +77,7 @@ public abstract class CompositeGenomeWideMatrix {
     public void cleanUpMatricesBySparsity() {
         SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
-        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap, weights);
+        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
     }
 
     /*

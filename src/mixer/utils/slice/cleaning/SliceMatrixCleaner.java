@@ -52,8 +52,7 @@ public class SliceMatrixCleaner {
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
     }
 
-    public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
-                                                int[] weights) {
+    public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
         LogTools.simpleLogWithCleanup(this.data, Float.NaN);
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
         data = (new ColumnCleaner(data)).getCleanedData();
