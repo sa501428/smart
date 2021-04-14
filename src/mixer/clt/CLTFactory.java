@@ -59,6 +59,8 @@ public class CLTFactory {
             return new Rename();
         } else if (cmd.equals("network")) {
             return new Network();
+        } else if (cmd.equals("aba")) {
+            return new ABA();
         } else if (cmd.equals("finetune")) {
             return new FineTune();
         }

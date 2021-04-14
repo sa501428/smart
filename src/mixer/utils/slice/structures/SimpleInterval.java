@@ -34,7 +34,7 @@ public class SimpleInterval extends Feature implements Comparable<SimpleInterval
     private final Integer chrIndex;
 
 
-    SimpleInterval(int chrIndex, String chrName, int x1, int x2) {
+    public SimpleInterval(int chrIndex, String chrName, int x1, int x2) {
         this.chrIndex = chrIndex;
         this.chrName = chrName;
         this.x1 = x1;
