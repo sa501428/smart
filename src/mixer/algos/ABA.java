@@ -57,7 +57,7 @@ public class ABA extends MixerCLT {
 
 
     /**
-     * Usage for APA
+     * Usage for ABA
      */
     public ABA() {
         super("aba [-w window] [-r resolution(s)] [-c chromosomes]" +
@@ -85,7 +85,7 @@ public class ABA extends MixerCLT {
         if (preferredNorm != null)
             norm = preferredNorm;
 
-        int potentialWindow = parser.getAPAWindowSizeOption();
+        int potentialWindow = parser.getWindowSizeOption();
         if (potentialWindow > 0)
             window = potentialWindow;
 
@@ -105,7 +105,7 @@ public class ABA extends MixerCLT {
 
             AtomicInteger numOfRegions = new AtomicInteger(0);
 
-            System.out.println("Processing APA for resolution " + resolution);
+            System.out.println("Processing for resolution " + resolution);
             HiCZoom zoom = new HiCZoom(HiCZoom.HiCUnit.BP, resolution);
 
             ChromosomeHandler handler = ds.getChromosomeHandler();
@@ -157,6 +157,6 @@ public class ABA extends MixerCLT {
             ABADataStack.exportGenomeWideData(numOfRegions.get(), saveAllData);
             ABADataStack.clearAllData();
         }
-        System.out.println("APA complete");
+        System.out.println("ABA complete");
     }
 }

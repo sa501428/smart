@@ -99,7 +99,7 @@ public class ChromosomeWalker extends MixerCLT {
             resolution = potentialResolution.get(0);
         }
 
-        int specifiedCliqueSize = mixerParser.getAPAWindowSizeOption();
+        int specifiedCliqueSize = mixerParser.getWindowSizeOption();
         if (specifiedCliqueSize > 1) {
             expectedMinSize = specifiedCliqueSize;
         }

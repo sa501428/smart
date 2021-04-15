@@ -25,7 +25,6 @@
 package mixer.clt;
 
 
-import mixer.MixerGlobals;
 import mixer.MixerTools;
 
 /**
@@ -36,6 +35,58 @@ import mixer.MixerTools;
 public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
+
+        String[] bedfiles = new String[]{
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/narrow_strong_h3k27ac_no_ctcf_loops.bed",
+                //"/Users/mshamim/Desktop/ABA/h3k27ac_beds/ctcf_loop_anchors.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/narrow_ctcf_loops_and_h3k27ac.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/narrow_medium_h3k27ac_no_ctcf_loops.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/narrow_weak_h3k27ac_no_ctcf_loops.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/only_ctcf_loops_no_h3k27ac.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/random_0.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/random_1.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/random_2.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/random_3.bed",
+                "/Users/mshamim/Desktop/ABA/h3k27ac_beds/random_4.bed"
+        };
+
+
+        String[] outs = new String[]{
+                "result_strong_h3k27ac_no_ctcf",
+                //"result_ctcf",
+                "result_ctcf_loops_and_h3k27ac",
+                "result_medium_h3k27ac_no_ctcf",
+                "result_weak_h3k27ac_no_ctcf",
+                "result_ctcf_loops_no_h3k27ac",
+                "result_random_0",
+                "result_random_1",
+                "result_random_2",
+                "result_random_3",
+                "result_random_4"
+        };
+
+        String intact18 = "/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic";
+        String outfolder = "/Users/mshamim/Desktop/ABA/results/";
+        for (int k = 2; k < outs.length; k++) {
+            String[] strings = new String[]{"aba", "-r", "50",
+                    "-k", "SCALE", //"--verbose",
+                    "-w", "100",
+                    "--threads", "30",
+                    intact18,
+                    bedfiles[k],
+                    outfolder + outs[k]
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
+
+
+
+
+
+
+        /*
 
         String[] files = new String[]{
                 "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic" //,

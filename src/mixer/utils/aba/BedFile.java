@@ -89,7 +89,7 @@ public class BedFile {
                 continue;
             }
 
-            if (tokens[0].startsWith("chr") && tokens.length > 2) {
+            if (tokens.length > 2) {
                 // valid line
                 String chr1Name = tokens[0];
                 int start1 = Integer.parseInt(tokens[1]);
@@ -120,7 +120,7 @@ public class BedFile {
     public void doABAOnChrom(Chromosome chrom, MatrixZoomData zd, File outputDirectory, int resolution,
                              AtomicInteger numOfRegions, int overallWidth, int window, BedFile bedFile,
                              NormalizationType norm) {
-        ABADataStack apaDataStack = new ABADataStack(overallWidth, outputDirectory, "" + resolution);
+        ABADataStack dataStack = new ABADataStack(overallWidth, outputDirectory, "" + resolution);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("CHR " + chrom.getName() + " " + chrom.getIndex());
         }
@@ -138,16 +138,16 @@ public class BedFile {
         for (SimpleInterval region : regions) {
             try {
                 RealMatrix newData = extractLocalizedData(zd, region, overallWidth, resolution, window, norm);
-                apaDataStack.addData(newData);
-                //apaDataStack.addData(APAUtils.extractLocalizedData(zd, loop, L, resolution, window, norm));
+                dataStack.addData(newData);
+                //dataStack.addData(APAUtils.extractLocalizedData(zd, loop, L, resolution, window, norm));
             } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.err.println("Unable to find data for loop: " + region);
             }
         }
 
-        apaDataStack.updateGenomeWideData();
-        //apaDataStack.exportDataSet(chrom.getName() + 'v' + chr2.getName(), peakNumbers);
+        dataStack.updateGenomeWideData();
+        //dataStack.exportDataSet(chrom.getName() + 'v' + chr2.getName(), peakNumbers);
 
     }
 

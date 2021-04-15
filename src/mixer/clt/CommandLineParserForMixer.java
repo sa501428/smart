@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Command Line Parser for Mixer commands (hiccups, arrowhead, apa)
+ * Command Line Parser for Mixer commands
  *
  * @author Muhammad Shamim
  */
@@ -77,7 +77,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     /**
      * int flags
      */
-    public int getAPAWindowSizeOption() {
+    public int getWindowSizeOption() {
         return optionToInt(sliceWindowOption);
     }
 

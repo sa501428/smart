@@ -38,28 +38,28 @@ public class ABADataStack {
     private static final Object key = new Object();
     // genome wide variables
     private static boolean genomeWideVariablesNotSet = true;
-    private static RealMatrix gwAPAMatrix;
-    private static RealMatrix gwMeanNormedAPAMatrix;
-    private static RealMatrix gwMedianNormedAPAMatrix;
+    private static RealMatrix gwAggregateMatrix;
+    private static RealMatrix gwAggSupDiagNormedMatrix;
+    private static RealMatrix gwAggDiagNormedMatrix;
     // saving data variables
     private static File dataDirectory;
 
     // chr variables
-    private RealMatrix APAMatrix;
-    private RealMatrix meanNormedAPAMatrix;
-    private RealMatrix medianNormedAPAMatrix;
+    private RealMatrix aggregateMatrix;
+    private RealMatrix aggSupDiagNormedMatrix;
+    private RealMatrix aggDiagNormedMatrix;
 
     /**
-     * class for saving data from chromosme wide run of APA, keeps static class to store genomide data
+     * class for saving data from chromosme wide run of ABA, keeps static class to store genome wide data
      *
      * @param n            width of matrix
      * @param outputFolder location for saving data
      * @param customPrefix optional file/folder prefix
      */
     public ABADataStack(int n, File outputFolder, String customPrefix) {
-        APAMatrix = MatrixTools.cleanArray2DMatrix(n, n);
-        meanNormedAPAMatrix = MatrixTools.cleanArray2DMatrix(n, n);
-        medianNormedAPAMatrix = MatrixTools.cleanArray2DMatrix(n, n);
+        aggregateMatrix = MatrixTools.cleanArray2DMatrix(n, n);
+        aggSupDiagNormedMatrix = MatrixTools.cleanArray2DMatrix(n, n);
+        aggDiagNormedMatrix = MatrixTools.cleanArray2DMatrix(n, n);
 
         initializeGenomeWideVariables(n);
         initializeDataSaveFolder(outputFolder, customPrefix);
@@ -83,83 +83,93 @@ public class ABADataStack {
 
     private static void initializeGenomeWideVariables(int n) {
         if (genomeWideVariablesNotSet) {
-            gwAPAMatrix = MatrixTools.cleanArray2DMatrix(n, n);
-            gwMeanNormedAPAMatrix = MatrixTools.cleanArray2DMatrix(n, n);
-            gwMedianNormedAPAMatrix = MatrixTools.cleanArray2DMatrix(n, n);
+            gwAggregateMatrix = MatrixTools.cleanArray2DMatrix(n, n);
+            gwAggSupDiagNormedMatrix = MatrixTools.cleanArray2DMatrix(n, n);
+            gwAggDiagNormedMatrix = MatrixTools.cleanArray2DMatrix(n, n);
             genomeWideVariablesNotSet = false;
         }
     }
 
     public static void exportGenomeWideData(Integer numRegions, boolean saveAllData) {
         double gwNPeaksUsedInv = 1. / numRegions;
-        gwMeanNormedAPAMatrix = gwMeanNormedAPAMatrix.scalarMultiply(gwNPeaksUsedInv);
-        gwMedianNormedAPAMatrix = gwMedianNormedAPAMatrix.scalarMultiply(gwNPeaksUsedInv);
+        gwAggSupDiagNormedMatrix = gwAggSupDiagNormedMatrix.scalarMultiply(gwNPeaksUsedInv);
+        gwAggDiagNormedMatrix = gwAggDiagNormedMatrix.scalarMultiply(gwNPeaksUsedInv);
 
-        RealMatrix[] matrices = {gwAPAMatrix, gwMeanNormedAPAMatrix, gwMedianNormedAPAMatrix};
-        String[] titles = {"APA", "normedAPA", "centerNormedAPA"};
+        RealMatrix[] matrices = {gwAggregateMatrix, gwAggSupDiagNormedMatrix, gwAggDiagNormedMatrix};
+        String[] titles = {"ABA", "supDiagNormedABA", "diagNormedABA"};
 
         saveDataSet("gw", matrices, titles);
     }
 
     private static void saveDataSet(String prefix,
-                                    RealMatrix[] apaMatrices,
-                                    String[] apaDataTitles) {
+                                    RealMatrix[] matrices,
+                                    String[] titles) {
 
         File subFolder = HiCFileTools.createValidDirectory(new File(dataDirectory, prefix).getAbsolutePath());
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Saving chr " + prefix + " data to " + subFolder);
         }
 
-        for (int i = 0; i < apaMatrices.length; i++) {
+        for (int i = 0; i < matrices.length; i++) {
             MatrixTools.saveMatrixTextNumpy(
-                    (new File(subFolder, apaDataTitles[i] + ".npy")).getAbsolutePath(),
-                    apaMatrices[i].getData());
+                    (new File(subFolder, titles[i] + ".npy")).getAbsolutePath(),
+                    matrices[i].getData());
         }
     }
 
     public static void clearAllData() {
         dataDirectory = null;
         genomeWideVariablesNotSet = true;
-        gwAPAMatrix = null;
-        gwMeanNormedAPAMatrix = null;
-        gwMedianNormedAPAMatrix = null;
+        gwAggregateMatrix = null;
+        gwAggSupDiagNormedMatrix = null;
+        gwAggDiagNormedMatrix = null;
     }
 
     public void addData(RealMatrix newData) {
         MatrixTools.cleanUpNaNs(newData);
-        APAMatrix = APAMatrix.add(newData);
-        meanNormedAPAMatrix = meanNormedAPAMatrix.add(standardNormalization(newData));
-        medianNormedAPAMatrix = medianNormedAPAMatrix.add(centerNormalization(newData));
-    }
-
-    private RealMatrix centerNormalization(RealMatrix newData) {
-        return newData;
-    }
-
-    private RealMatrix standardNormalization(RealMatrix newData) {
-        return newData;
+        aggregateMatrix = aggregateMatrix.add(newData);
+        aggSupDiagNormedMatrix = aggSupDiagNormedMatrix.add(supDiagNormalization(newData));
+        aggDiagNormedMatrix = aggDiagNormedMatrix.add(diagNormalization(newData));
     }
 
     public synchronized void updateGenomeWideData() {
         synchronized (key) {
-            gwAPAMatrix = gwAPAMatrix.add(APAMatrix);
-            gwMeanNormedAPAMatrix = gwMeanNormedAPAMatrix.add(meanNormedAPAMatrix);
-            gwMedianNormedAPAMatrix = gwMedianNormedAPAMatrix.add(medianNormedAPAMatrix);
+            gwAggregateMatrix = gwAggregateMatrix.add(aggregateMatrix);
+            gwAggSupDiagNormedMatrix = gwAggSupDiagNormedMatrix.add(aggSupDiagNormedMatrix);
+            gwAggDiagNormedMatrix = gwAggDiagNormedMatrix.add(aggDiagNormedMatrix);
         }
     }
 
-    public void exportDataSet(String subFolderName, Integer[] peakNumbers) {
-        double nPeaksUsedInv = 1. / peakNumbers[0];
-        meanNormedAPAMatrix = meanNormedAPAMatrix.scalarMultiply(nPeaksUsedInv);
-        medianNormedAPAMatrix = medianNormedAPAMatrix.scalarMultiply(nPeaksUsedInv);
-
-        RealMatrix[] matrices = {APAMatrix, meanNormedAPAMatrix, medianNormedAPAMatrix};
-        String[] titles = {"APA", "meanNormedAPA", "medianNormedAPA"};
-
-        saveDataSet(subFolderName, matrices, titles);
+    private RealMatrix diagNormalization(RealMatrix matrix) {
+        return matrix.copy().scalarMultiply(1. / Math.max(1., diagonalMean(matrix.getData())));
     }
 
-    public void thresholdPlots(int val) {
-        MatrixTools.thresholdValues(APAMatrix, val);
+    private RealMatrix supDiagNormalization(RealMatrix matrix) {
+        return matrix.copy().scalarMultiply(1. / Math.max(1., supDiagonalMean(matrix.getData())));
+    }
+
+    private double supDiagonalMean(double[][] data) {
+        int counter = 0;
+        double accum = 0;
+        for (int i = 0; i < data.length - 1; i++) {
+            int j = i + 1;
+            if (data[i][j] > 0) {
+                accum += data[i][j];
+                counter++;
+            }
+        }
+        return accum / Math.max(counter, 1);
+    }
+
+    private double diagonalMean(double[][] data) {
+        int counter = 0;
+        double accum = 0;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i][i] > 0) {
+                accum += data[i][i];
+                counter++;
+            }
+        }
+        return accum / Math.max(counter, 1);
     }
 }

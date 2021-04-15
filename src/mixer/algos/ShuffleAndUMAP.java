@@ -105,7 +105,7 @@ public class ShuffleAndUMAP extends MixerCLT {
             }
         }
 
-        int minSize = mixerParser.getAPAWindowSizeOption();
+        int minSize = mixerParser.getWindowSizeOption();
         if (minSize > 1) {
             compressionFactor = minSize;
         }
