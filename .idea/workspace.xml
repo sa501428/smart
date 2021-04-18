@@ -30,15 +30,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="Basic ABA code added">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ABA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ABA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ChromosomeWalker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ChromosomeWalker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/aba/ABADataStack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/aba/ABADataStack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/aba/BedFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/aba/BedFile.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +105,7 @@
     <configuration name="Aggregate" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.clt.AggregateProcessing" />
       <module name="Mixer" />
-      <option name="VM_PARAMETERS" value="-Xmx30G" />
+      <option name="VM_PARAMETERS" value="-Xmx20G" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -123,13 +117,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -183,14 +179,9 @@
       <workItem from="1617928834939" duration="3559000" />
       <workItem from="1617999113836" duration="15787000" />
       <workItem from="1618256698052" duration="3460000" />
-      <workItem from="1618370908637" duration="19326000" />
-    </task>
-    <task id="LOCAL-00067" summary="remove post processor; 1-shot centroids; regular zscore">
-      <created>1613896903872</created>
-      <option name="number" value="00067" />
-      <option name="presentableId" value="LOCAL-00067" />
-      <option name="project" value="LOCAL" />
-      <updated>1613896903873</updated>
+      <workItem from="1618370908637" duration="24706000" />
+      <workItem from="1618508129744" duration="3103000" />
+      <workItem from="1618556139559" duration="676000" />
     </task>
     <task id="LOCAL-00068" summary="weigh by centroids cluster size">
       <created>1613949034302</created>
@@ -528,7 +519,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618429970470</updated>
     </task>
-    <option name="localTasksCounter" value="116" />
+    <task id="LOCAL-00116" summary="bug fixes, code cleanup">
+      <created>1618445860201</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1618445860201</updated>
+    </task>
+    <option name="localTasksCounter" value="117" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -553,7 +551,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="shuffle bug fixes, defaults fixed, plotting for regular umap" />
     <MESSAGE value="code cleanup; redesign for umap and shuffle" />
     <MESSAGE value="bug fixes; code cleanup" />
     <MESSAGE value="dual norm combo" />
@@ -578,7 +575,8 @@
     <MESSAGE value="code cleanup" />
     <MESSAGE value="excising a lot of code" />
     <MESSAGE value="Basic ABA code added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Basic ABA code added" />
+    <MESSAGE value="bug fixes, code cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes, code cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
