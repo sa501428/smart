@@ -22,14 +22,14 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.matrices;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.23.01";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+public class MatrixAndWeight {
+    float[][] matrix;
+    int[] weights;
+
+    public MatrixAndWeight(float[][] interMatrix, int[] weights) {
+        this.matrix = interMatrix;
+        this.weights = weights;
+    }
 }

@@ -49,8 +49,19 @@ public class IntraMatrixCleaner {
                                   int smoothingInterval, Set<Integer> badIndices) {
         NearDiagonalTrim.trim(chrom, matrix, resolution);
         eraseTheRowsColumnsWeDontWant(badIndices, matrix);
-        return rollingAverage(matrix, smoothingInterval);
+        removeEmptyEntries(matrix);
+        // return rollingAverage(matrix, smoothingInterval);
+        return matrix;
+    }
 
+    private static void removeEmptyEntries(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] < 1e-10) {
+                    matrix[i][j] = Float.NaN;
+                }
+            }
+        }
     }
 
     public static float[][] rollingAverage(float[][] matrix, int smoothingInterval) {

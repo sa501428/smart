@@ -48,7 +48,7 @@ public class ZScoreTools {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];
                 if (!Float.isNaN(val)) {
-                    matrix[i][j] = weights[j] * (val - colMeans[j]) / colStdDevs[j];
+                    matrix[i][j] = (float) (Math.sqrt(weights[j]) * ((val - colMeans[j]) / colStdDevs[j]));
                 }
             }
         }

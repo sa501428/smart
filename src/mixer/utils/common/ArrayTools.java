@@ -88,4 +88,14 @@ public class ArrayTools {
         }
         return (float) Math.sqrt(total / count);
     }
+
+    public static float percentNaN(float[] array) {
+        float counter = 0;
+        for (float val : array) {
+            if (Float.isNaN(val)) {
+                counter++;
+            }
+        }
+        return counter / array.length;
+    }
 }

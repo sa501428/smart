@@ -76,6 +76,7 @@ public class FullGenomeOEWithinClusters {
                     generator.nextLong(), badIndexFinder, metric);
             additionalData.normalizePerDataset();
             sliceMatrix.appendDataAlongExistingRows(additionalData);
+            // todo append weights
         }
 
         sliceMatrix.cleanUpMatricesBySparsity();

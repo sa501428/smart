@@ -50,6 +50,7 @@ public abstract class CompositeGenomeWideMatrix {
     protected final Random generator = new Random(0);
     protected final File outputDirectory;
     private float[][] gwCleanMatrix;
+    private final int[] weights;
     protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
     //protected int[] weights;
@@ -69,15 +70,17 @@ public abstract class CompositeGenomeWideMatrix {
         this.metric = metric;
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
-        gwCleanMatrix = makeCleanScaledInterMatrix(ds);
+        MatrixAndWeight mw = makeCleanScaledInterMatrix(ds);
+        gwCleanMatrix = mw.matrix;
+        this.weights = mw.weights;
     }
 
-    abstract float[][] makeCleanScaledInterMatrix(Dataset ds);
+    abstract MatrixAndWeight makeCleanScaledInterMatrix(Dataset ds);
 
     public void cleanUpMatricesBySparsity() {
         SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
-        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap);
+        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap, weights);
     }
 
     /*
