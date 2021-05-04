@@ -86,7 +86,8 @@ public class SliceMatrixCleaner {
 
         //int[] newWeights = new int[data[0].length];
         //Arrays.fill(newWeights, 1);
-        ZScoreTools.inPlaceZscoreDownCol(data, weights);
+        ZScoreTools.inPlaceZscoreDownCol(data);
+        ZScoreTools.inPlaceScaleSqrtWeightCol(data, weights);
         //whitener
         //        zscore, scale
 

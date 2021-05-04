@@ -48,8 +48,8 @@ public class AggregateProcessing {
                 String[] strings = new String[]{"slice", "-r", res + "",
                         "-k", "KR:INTER_KR", //"--verbose", // INTER_KR
                         //"-w", "20",
-                        file, "2,13,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_log_zscore_sqrt_weights_" + res + "_" + folder, folder + "_"
+                        file, "2,8,4",
+                        "/Users/mshamim/Desktop/reSLICE/phnx_log_zscore_k_weights_" + res + "_" + folder, folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
                 MixerTools.main(strings);

@@ -37,8 +37,6 @@ import mixer.utils.slice.cleaning.IntraMatrixCleaner;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.matrices.Dimension;
 
-import java.util.Arrays;
-
 abstract public class HiCMatrix {
     public static boolean USE_ZSCORE = false;
     public static int NUM_CENTROIDS = 1;
@@ -110,9 +108,7 @@ abstract public class HiCMatrix {
         }
 
         if (USE_ZSCORE) {
-            int[] weights = new int[interMatrix[0].length];
-            Arrays.fill(weights, 1);
-            ZScoreTools.inPlaceZscoreDownCol(interMatrix, weights);
+            ZScoreTools.inPlaceZscoreDownCol(interMatrix);
         }
 
         if (metric != null) {
