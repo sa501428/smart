@@ -24,6 +24,8 @@
 
 package mixer.utils.slice.cleaning.utils;
 
+import mixer.utils.slice.matrices.MatrixAndWeight;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,25 +33,27 @@ public abstract class DimensionCleaner {
     protected final static float PERCENT_NAN_ALLOWED = .5f;
     protected static final float ZERO = 1e-10f;
     protected final float[][] data;
+    protected final int[] weights;
 
-    public DimensionCleaner(float[][] data) {
+    public DimensionCleaner(float[][] data, int[] weights) {
         this.data = data;
+        this.weights = weights;
     }
 
-    public float[][] getCleanedData() {
+    public MatrixAndWeight getCleanedData() {
         return filterOutDimension(data);
     }
 
-    private float[][] filterOutDimension(float[][] matrix) {
+    private MatrixAndWeight filterOutDimension(float[][] matrix) {
         Set<Integer> badIndices = getSparseIndices(matrix);
         Set<Integer> outlierIndices = (new OutlierCleaner(getAppropriatelyFlippedMatrix(), useOnlyCorr())).getConsistentOutliers();
         badIndices.addAll(outlierIndices);
 
         if (badIndices.size() == 0) {
-            return matrix;
+            return new MatrixAndWeight(matrix, weights);
         }
 
-        return filterOutBadIndices(badIndices, matrix);
+        return filterOutBadIndices(badIndices, matrix, weights);
     }
 
     protected abstract boolean useOnlyCorr();
@@ -73,6 +77,6 @@ public abstract class DimensionCleaner {
 
     protected abstract int[] getNumberOfNansInDimension(float[][] matrix);
 
-    protected abstract float[][] filterOutBadIndices(Set<Integer> badIndices, float[][] matrix);
+    protected abstract MatrixAndWeight filterOutBadIndices(Set<Integer> badIndices, float[][] matrix, int[] weights);
 
 }

@@ -25,6 +25,7 @@
 package mixer.utils.slice.cleaning.utils;
 
 import mixer.MixerGlobals;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.HashMap;
@@ -34,13 +35,13 @@ import java.util.Set;
 public class RowCleaner extends DimensionCleaner {
     private final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap;
 
-    public RowCleaner(float[][] data, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        super(data);
+    public RowCleaner(float[][] data, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[] weights) {
+        super(data, weights);
         this.rowIndexToIntervalMap = rowIndexToIntervalMap;
     }
 
     @Override
-    protected float[][] filterOutBadIndices(Set<Integer> badIndices, float[][] matrix) {
+    protected MatrixAndWeight filterOutBadIndices(Set<Integer> badIndices, float[][] matrix, int[] weights) {
         Map<Integer, SubcompartmentInterval> original = rowIndexToIntervalMap;
         if (MixerGlobals.printVerboseComments) {
             System.out.println("interMatrix.length " + matrix.length + " badIndices.size() " + badIndices.size());
@@ -65,7 +66,7 @@ public class RowCleaner extends DimensionCleaner {
         original.clear();
         original.putAll(newRowIndexToIntervalMap);
 
-        return newMatrix;
+        return new MatrixAndWeight(newMatrix, weights);
     }
 
     @Override

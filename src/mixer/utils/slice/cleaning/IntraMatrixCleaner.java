@@ -45,11 +45,13 @@ public class IntraMatrixCleaner {
         }
     }
 
-    public static float[][] clean(Chromosome chrom, float[][] matrix, int resolution,
-                                  int smoothingInterval, Set<Integer> badIndices) {
+    public static float[][] cleanAndCompress(Chromosome chrom, float[][] matrix, int resolution,
+                                             int smoothingInterval, Set<Integer> badIndices) {
         NearDiagonalTrim.trim(chrom, matrix, resolution);
         eraseTheRowsColumnsWeDontWant(badIndices, matrix);
+        // float[][] compressedMatrix = compress(matrix, smoothingInterval);
         removeEmptyEntries(matrix);
+        // ZScoreTools.inPlaceZscoreDownCol(matrix);
         // return rollingAverage(matrix, smoothingInterval);
         return matrix;
     }
@@ -88,11 +90,11 @@ public class IntraMatrixCleaner {
     }
 
     public static float[][] compress(float[][] interMatrix, int compressionFactor) {
-        int width = interMatrix[0].length / compressionFactor + 1;
+        int width = (int) Math.ceil(interMatrix[0].length / ((float) compressionFactor));
         float[][] result = new float[interMatrix.length][width];
         for (int i = 0; i < interMatrix.length; i++) {
             for (int j = 0; j < interMatrix[i].length; j++) {
-                result[i][j / 3] += interMatrix[i][j];
+                result[i][j / compressionFactor] += interMatrix[i][j];
             }
         }
         return result;

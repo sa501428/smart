@@ -30,6 +30,11 @@ public class ZScoreTools {
     private static final float ZERO = 1e-10f;
 
     public static void inPlaceScaleSqrtWeightCol(float[][] matrix, int[] weights) {
+        if (weights.length != matrix[0].length) {
+            System.err.println("Weights mismatch error " + weights.length + " vs " + matrix[0].length);
+            System.exit(54);
+        }
+
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 float val = matrix[i][j];

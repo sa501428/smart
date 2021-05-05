@@ -25,8 +25,8 @@
 package mixer.utils.slice.matrices;
 
 public class MatrixAndWeight {
-    float[][] matrix;
-    int[] weights;
+    public float[][] matrix;
+    public int[] weights;
 
     public MatrixAndWeight(float[][] interMatrix, int[] weights) {
         this.matrix = interMatrix;

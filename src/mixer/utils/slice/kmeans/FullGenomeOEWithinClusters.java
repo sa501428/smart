@@ -62,9 +62,10 @@ public class FullGenomeOEWithinClusters {
                 resolution, interNorms);
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
+        int absMaxClusters = numClusterSizeKValsUsed + startingClusterSizeK;
         sliceMatrix = new SliceMatrix(
                 chromosomeHandler, datasets.get(0), intraNorms[0], interNorms[0], resolution, outputDirectory,
-                generator.nextLong(), badIndexFinder, metric);
+                generator.nextLong(), badIndexFinder, metric, absMaxClusters);
 
         if (datasets.size() > 1) {
             sliceMatrix.normalizePerDataset();
@@ -73,7 +74,7 @@ public class FullGenomeOEWithinClusters {
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
                     intraNorms[dI], interNorms[dI], resolution, outputDirectory,
-                    generator.nextLong(), badIndexFinder, metric);
+                    generator.nextLong(), badIndexFinder, metric, absMaxClusters);
             additionalData.normalizePerDataset();
             sliceMatrix.appendDataAlongExistingRows(additionalData);
             // todo append weights
@@ -112,8 +113,10 @@ public class FullGenomeOEWithinClusters {
 
             exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix);
 
+            /*
             runGMMClusteringLoop(z, 20, kmeansIndicesMap.get(z), gmmClustersToResults);
             exportGMMClusteringResults(z, gmmClustersToResults, prefix);
+            */
         }
         System.out.println(".");
     }

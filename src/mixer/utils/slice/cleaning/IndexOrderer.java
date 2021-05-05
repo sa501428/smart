@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IndexOrderer {
 
     private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
-    private final int DISTANCE = 5000000, ONE_MB = 1000000;
+    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000, TEN_MB = 10000000;
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
     private final int CHECK_VAL = -2;
@@ -57,13 +57,14 @@ public class IndexOrderer {
     private final int resolution;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
-                        GWBadIndexFinder badIndexLocations, long seed, File outputDirectory) {
+                        GWBadIndexFinder badIndexLocations, long seed, File outputDirectory,
+                        int maxClusterSizeExpected) {
         this.resolution = resolution;
         problemFile = new File(outputDirectory, "problems.bed");
         initFile = new File(outputDirectory, "initial_split.bed");
 
         generator.setSeed(seed);
-        int smoothingInterval = ONE_MB / resolution;
+        int smoothingInterval = ONE_HUNDRED_KB / resolution;
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
             try {
@@ -72,7 +73,7 @@ public class IndexOrderer {
                         true, 1, 0);
                 Set<Integer> badIndices = badIndexLocations.getBadIndices(chrom);
 
-                matrix = IntraMatrixCleaner.clean(chrom, matrix, resolution, smoothingInterval, badIndices);
+                matrix = IntraMatrixCleaner.cleanAndCompress(chrom, matrix, resolution, smoothingInterval, badIndices);
                 int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices);
                 chromToReorderedIndices.put(chrom, newOrderIndexes);
             } catch (Exception e) {
@@ -94,7 +95,11 @@ public class IndexOrderer {
 
     private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] matrix, Set<Integer> badIndices) {
         int[] newIndexOrderAssignments = generateNewAssignments(matrix.length, badIndices);
-        int gCounter = doAssignmentsByCorrWithCentroids(matrix, newIndexOrderAssignments, chromosome.getName());
+        int numPotentialClusters = (int) (chromosome.getLength() / TEN_MB);
+        //numPotentialClusters = Math.max(numPotentialClusters, maxClusterSizeExpected);
+
+        int gCounter = doAssignmentsByCorrWithCentroids(matrix, newIndexOrderAssignments, chromosome.getName(),
+                numPotentialClusters);
         indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
         return newIndexOrderAssignments;
     }
@@ -108,15 +113,17 @@ public class IndexOrderer {
         return newIndexOrderAssignments;
     }
 
-    private int doAssignmentsByCorrWithCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName) {
+    private int doAssignmentsByCorrWithCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName,
+                                                 int numInitialClusters) {
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
-                20, generator.nextLong(), 50).generateCentroids(5);
+                numInitialClusters, generator.nextLong(), 100).generateCentroids(5);
 
         if (true || MixerGlobals.printVerboseComments) {
-            System.out.println("IndexOrderer: num centroids (init 20) for " + chromName + ": " + centroids.length);
+            System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
         }
 
-        AtomicInteger problems = new AtomicInteger(0);
+        List<Integer> problemIndices = Collections.synchronizedList(new ArrayList<>());
+
         AtomicInteger currDataIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
@@ -134,7 +141,9 @@ public class IndexOrderer {
                         }
                     }
                     if (bestIndex < 0) {
-                        problems.addAndGet(1);
+                        synchronized (problemIndices) {
+                            problemIndices.add(bestIndex);
+                        }
                     }
                     newIndexOrderAssignments[i] = bestIndex;
                 }
@@ -142,7 +151,12 @@ public class IndexOrderer {
             }
         });
 
-        System.out.println("IndexOrderer problems: " + problems.get());
+
+        synchronized (problemIndices) {
+            double percentProblem = 100 * (problemIndices.size() + 0.0) / (matrix.length + 0.0);
+            System.out.println("IndexOrderer problems: " + problemIndices.size() + " (" + percentProblem + " %)");
+        }
+
 
         return centroids.length;
     }

@@ -53,13 +53,16 @@ public abstract class CompositeGenomeWideMatrix {
     private final int[] weights;
     protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
+    protected final int maxClusterSizeExpected;
     //protected int[] weights;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
                                      NormalizationType intraNorm, NormalizationType interNorm,
                                      int resolution,
                                      File outputDirectory, long seed,
-                                     GWBadIndexFinder badIndexLocations, SimilarityMetric metric) {
+                                     GWBadIndexFinder badIndexLocations, SimilarityMetric metric,
+                                     int maxClusterSizeExpected) {
+        this.maxClusterSizeExpected = maxClusterSizeExpected;
         this.intraNorm = intraNorm;
         this.interNorm = interNorm;
         System.out.println("Intra: " + intraNorm.getLabel() + " Inter: " + interNorm.getLabel());

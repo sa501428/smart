@@ -42,14 +42,14 @@ public class AggregateProcessing {
                 //"/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic"
         };
 
-        for (String file : files) {
-            for (int res : new int[]{100000}) { //100000 100000 50000
+        for (String file : files) {//100000,50000,
+            for (int res : new int[]{100000}) { // 50000,25000,10000 100000 100000 50000
                 String folder = "SLICE_v" + MixerGlobals.versionNum;
                 String[] strings = new String[]{"slice", "-r", res + "",
                         "-k", "KR:INTER_KR", //"--verbose", // INTER_KR
                         //"-w", "20",
                         file, "2,8,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_log_zscore_k_weights_" + res + "_" + folder, folder + "_"
+                        "/Users/mshamim/Desktop/reSLICE/phnx7_log_zscore_sqrt_weights_" + res + "_" + folder, folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
                 MixerTools.main(strings);

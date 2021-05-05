@@ -30,6 +30,7 @@ import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.utils.ColumnCleaner;
 import mixer.utils.slice.cleaning.utils.RowCleaner;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -57,9 +58,12 @@ public class SliceMatrixCleaner {
                                                 int[] weights) {
         LogTools.simpleLogWithCleanup(this.data, Float.NaN);
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
-        data = (new ColumnCleaner(data)).getCleanedData();
+        MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
+        data = mw.matrix;
+        weights = mw.weights;
         System.out.println("Matrix size after column cleanup " + data.length + " x " + data[0].length);
-        data = (new RowCleaner(data, rowIndexToIntervalMap)).getCleanedData();
+
+        data = (new RowCleaner(data, rowIndexToIntervalMap, weights)).getCleanedData().matrix;
         System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
 
         if (MixerGlobals.printVerboseComments) {

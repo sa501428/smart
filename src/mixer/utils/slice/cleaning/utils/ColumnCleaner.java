@@ -26,16 +26,17 @@ package mixer.utils.slice.cleaning.utils;
 
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 
 import java.util.Set;
 
 public class ColumnCleaner extends DimensionCleaner {
-    public ColumnCleaner(float[][] data) {
-        super(data);
+    public ColumnCleaner(float[][] data, int[] weights) {
+        super(data, weights);
     }
 
     @Override
-    protected float[][] filterOutBadIndices(Set<Integer> badIndices, float[][] matrix) {
+    protected MatrixAndWeight filterOutBadIndices(Set<Integer> badIndices, float[][] matrix, int[] weights) {
         if (MixerGlobals.printVerboseComments) {
             System.out.println("interMatrix.length " + matrix.length + " badIndices.size() " + badIndices.size());
         }
@@ -56,7 +57,13 @@ public class ColumnCleaner extends DimensionCleaner {
             }
         }
 
-        return newMatrix;
+        int[] newWeights = new int[newIndexToOrigIndex.length];
+        for (int j = 0; j < newIndexToOrigIndex.length; j++) {
+            int origJ = newIndexToOrigIndex[j];
+            newWeights[j] = weights[origJ];
+        }
+
+        return new MatrixAndWeight(newMatrix, newWeights);
     }
 
     @Override

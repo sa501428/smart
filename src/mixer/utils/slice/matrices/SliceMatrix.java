@@ -45,16 +45,16 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
 
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType intraNorm, NormalizationType interNorm,
                        int resolution, File outputDirectory, long seed, GWBadIndexFinder badIndexLocations,
-                       SimilarityMetric metric) {
+                       SimilarityMetric metric, int maxClusterSizeExpected) {
         super(chromosomeHandler, ds, intraNorm, interNorm, resolution, outputDirectory, seed,
-                badIndexLocations, metric);
+                badIndexLocations, metric, maxClusterSizeExpected);
     }
 
     MatrixAndWeight makeCleanScaledInterMatrix(Dataset ds) {
         // height/width chromosomes
         Map<Integer, Integer> indexToLength = calculateActualLengthForChromosomes(chromosomes);
         IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, intraNorm, badIndexLocations,
-                generator.nextLong(), outputDirectory);
+                generator.nextLong(), outputDirectory, maxClusterSizeExpected);
         Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
 
 
