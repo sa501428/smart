@@ -51,9 +51,20 @@ public class IntraMatrixCleaner {
         eraseTheRowsColumnsWeDontWant(badIndices, matrix);
         // float[][] compressedMatrix = compress(matrix, smoothingInterval);
         removeEmptyEntries(matrix);
+        subtractOEBy1(matrix);
         // ZScoreTools.inPlaceZscoreDownCol(matrix);
         // return rollingAverage(matrix, smoothingInterval);
         return matrix;
+    }
+
+    private static void subtractOEBy1(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (!Float.isNaN(matrix[i][j])) {
+                    matrix[i][j] -= 1; // because 1 means O = E -> 0 for corr calcs
+                }
+            }
+        }
     }
 
     private static void removeEmptyEntries(float[][] matrix) {
