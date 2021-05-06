@@ -44,7 +44,7 @@ public class GenomeWideGMMRunner {
     public void launch(int numClusters, long seed, Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
                        List<List<Integer>> startingIndices) {
         if (matrix.getNumRows() > 0 && matrix.getNumColumns() > 0) {
-            GaussianMixtureModels gmm = new GaussianMixtureModels(matrix.getCleanedData(),
+            GaussianMixtureModels gmm = new GaussianMixtureModels(matrix.getImputedData(),
                     numClusters, 20, startingIndices);
             try {
                 gmm.fit();

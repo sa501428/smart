@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class RowCleaner extends DimensionCleaner {
+    protected final static float PERCENT_NAN_ALLOWED = .5f;
     private final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap;
 
     public RowCleaner(float[][] data, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[] weights) {

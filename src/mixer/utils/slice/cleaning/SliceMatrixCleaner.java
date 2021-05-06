@@ -24,7 +24,6 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.MixerGlobals;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
@@ -54,48 +53,23 @@ public class SliceMatrixCleaner {
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
     }
 
-    public float[][] getCleanedSimilarityMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
-                                                int[] weights) {
+    public MatrixAndWeight getCleanFilteredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
+                                                  int[] weights) {
         LogTools.simpleLogWithCleanup(this.data, Float.NaN);
+        ZScoreTools.inPlaceZscoreDownCol(data);
+
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
         MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
         data = mw.matrix;
-        weights = mw.weights;
+        int[] weights2 = mw.weights;
         System.out.println("Matrix size after column cleanup " + data.length + " x " + data[0].length);
 
         data = (new RowCleaner(data, rowIndexToIntervalMap, weights)).getCleanedData().matrix;
         System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
 
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("matrix size " + data.length + " x " + data[0].length);
-        }
+        System.out.println("Final matrix size " + data.length + " x " + data[0].length);
 
-        //System.out.println("Generating similarity matrix");
-        //data = SimilarityMatrixTools.getZscoredNonNanSimilarityMatrix(data, metric, NUM_PER_CENTROID, generator.nextLong());
-        /*
-
-
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("similarity matrix size " + data.length + " x " + data[0].length);
-        }
-
-        File temp = new File(outputDirectory, "data_new.npy");
-        FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), data);
-
-        /*
-        System.out.println("Running UMAP");
-        runUmapAndSaveMatrices(data, outputDirectory, rowIndexToIntervalMap);
-        System.out.println("Done running UMAP");
-        */
-
-        //int[] newWeights = new int[data[0].length];
-        //Arrays.fill(newWeights, 1);
-        ZScoreTools.inPlaceZscoreDownCol(data);
-        ZScoreTools.inPlaceScaleSqrtWeightCol(data, weights);
-        //whitener
-        //        zscore, scale
-
-        return data;
+        return new MatrixAndWeight(data, weights2);
     }
 
     /*

@@ -30,6 +30,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 
+import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMCovTools {
@@ -56,8 +57,7 @@ public class GMMCovTools {
         float[][] diff = parGetDiffMatrix(data, meanVector);
         int numDataPoints = data.length;
         int dimension = data[0].length;
-        boolean[] isFailure = new boolean[1];
-        isFailure[0] = false;
+        BitSet isFailure = new BitSet(1);
 
         float[][] cov = new float[dimension][dimension];
 
@@ -84,7 +84,7 @@ public class GMMCovTools {
                     } else {
                         System.err.println("Covariance cannot be calculated " + accum + " " + weight);
                         synchronized (isFailure) {
-                            isFailure[0] = true;
+                            isFailure.set(0);
                         }
                     }
                 }
@@ -92,7 +92,7 @@ public class GMMCovTools {
             }
         });
 
-        if (isFailure[0]) {
+        if (isFailure.get(0)) {
             System.err.println("min num entries " + min[0]);
             throw new GMMException("Cov cannot be calculated");
         }

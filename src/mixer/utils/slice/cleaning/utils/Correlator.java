@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Correlator {
-    private final float threshold = 0.5f;
     private final int cutoff;
     private final float[][] matrix;
     private final List<VectorGroup> groups = new ArrayList<>();
@@ -40,7 +39,7 @@ public class Correlator {
         if (onlyUseCorr) {
             cutoff = 2;
         } else {
-            cutoff = 20;
+            cutoff = 10;
         }
     }
 
@@ -48,8 +47,8 @@ public class Correlator {
         for (int k = 0; k < matrix.length; k++) {
             boolean unassigned = true;
             for (VectorGroup group : groups) {
-                if (group.corr(matrix[k]) > threshold) {
-                    group.append(k);
+                if (group.shouldInclude(matrix[k])) {
+                    group.append(k, matrix[k]);
                     unassigned = false;
                     break;
                 }

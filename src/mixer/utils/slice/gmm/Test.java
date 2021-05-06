@@ -25,6 +25,7 @@
 package mixer.utils.slice.gmm;
 
 import javastraw.tools.MatrixTools;
+import mixer.utils.slice.cleaning.MatrixImputer;
 
 import java.util.*;
 
@@ -56,6 +57,7 @@ public class Test {
         putInNans(data, .2); // .2 .1
 
         //approximateCorrection(data);
+        data = MatrixImputer.imputeUntilNoNans(data);
 
         System.out.println("Starting GMM");
         long start = System.nanoTime();
@@ -97,8 +99,8 @@ public class Test {
     private static List<List<Integer>> generateData() {
 
         NUM_CLUSTERS = 6;
-        int columnNums = 40;//100; // 2000
-        int numPoints = 300000; //50k
+        int columnNums = 20;//100; // 2000
+        int numPoints = 10000; //50k
 
         data = new float[numPoints][columnNums];
         id = new int[numPoints];

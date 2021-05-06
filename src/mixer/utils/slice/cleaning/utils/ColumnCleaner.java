@@ -31,6 +31,8 @@ import mixer.utils.slice.matrices.MatrixAndWeight;
 import java.util.Set;
 
 public class ColumnCleaner extends DimensionCleaner {
+    protected final static float PERCENT_NAN_ALLOWED = .25f;
+
     public ColumnCleaner(float[][] data, int[] weights) {
         super(data, weights);
     }

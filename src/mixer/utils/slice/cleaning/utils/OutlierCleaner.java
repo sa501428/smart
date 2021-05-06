@@ -45,11 +45,6 @@ public class OutlierCleaner {
     public OutlierCleaner(float[][] matrix, boolean useOnlyCorr) {
         this.matrix = matrix;
         this.useOnlyCorr = useOnlyCorr;
-
-        if (matrix.length < 200) {
-
-        }
-
     }
 
     public Set<Integer> getConsistentOutliers() {

@@ -31,6 +31,7 @@ import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMTools {
@@ -38,8 +39,7 @@ public class GMMTools {
     public static float[][] parGetWeightedMean(int numClusters, float[][] data, float[][] r) throws GMMException {
         float[][] meanVectors = new float[numClusters][data[0].length];
         float[][] counts = new float[numClusters][data[0].length];
-        boolean[] isFailure = new boolean[1];
-        isFailure[0] = false;
+        BitSet isFailure = new BitSet(1);
 
         AtomicInteger currIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
@@ -59,7 +59,7 @@ public class GMMTools {
                         meanVectors[k][j] /= counts[k][j];
                     } else {
                         synchronized (isFailure) {
-                            isFailure[0] = true;
+                            isFailure.set(0);
                         }
                     }
                 }
@@ -68,7 +68,7 @@ public class GMMTools {
             }
         });
 
-        if (isFailure[0]) {
+        if (isFailure.get(0)) {
             throw new GMMException("Invalid count encountered");
         }
 
@@ -179,8 +179,7 @@ public class GMMTools {
     public static float[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, float[] pi,
                                                              float[][] meanVectors, float[][][] covMatrices) throws GMMException {
         float[][] r = new float[data.length][numClusters];
-        boolean[] isFailure = new boolean[1];
-        isFailure[0] = false;
+        BitSet isFailure = new BitSet(1);
 
         AtomicInteger currIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
@@ -193,7 +192,7 @@ public class GMMTools {
                     double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
                     if (Double.isNaN(mvn)) {
                         synchronized (isFailure) {
-                            isFailure[0] = true;
+                            isFailure.set(0);
                         }
                         return;
                     }
@@ -205,7 +204,7 @@ public class GMMTools {
                     if (Double.isNaN(r[n][k]) || Double.isInfinite(r[n][k])) {
                         System.err.println("ERROR: R is " + tempArray[k] + " Local sum " + localSum);
                         synchronized (isFailure) {
-                            isFailure[0] = true;
+                            isFailure.set(0);
                         }
                         return;
                     }
@@ -213,7 +212,7 @@ public class GMMTools {
                 if (localSum == 0.0) {
                     System.err.println("ERROR: local sum " + localSum);
                     synchronized (isFailure) {
-                        isFailure[0] = true;
+                        isFailure.set(0);
                     }
                     return;
                 }
@@ -223,7 +222,7 @@ public class GMMTools {
                     if (Float.isNaN(r[n][k]) || Float.isInfinite(r[n][k])) {
                         System.err.println("ERROR: R is " + r[n][k] + " Local sum " + localSum);
                         synchronized (isFailure) {
-                            isFailure[0] = true;
+                            isFailure.set(0);
                         }
                         return;
                     }

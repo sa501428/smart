@@ -113,10 +113,8 @@ public class FullGenomeOEWithinClusters {
 
             exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix);
 
-            /*
             runGMMClusteringLoop(z, 20, kmeansIndicesMap.get(z), gmmClustersToResults);
             exportGMMClusteringResults(z, gmmClustersToResults, prefix);
-            */
         }
         System.out.println(".");
     }

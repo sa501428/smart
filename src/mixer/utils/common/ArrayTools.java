@@ -98,4 +98,20 @@ public class ArrayTools {
         }
         return counter / array.length;
     }
+
+    public static int max(int[] array) {
+        int maxVal = array[0];
+        for (int val : array) {
+            maxVal = Math.max(maxVal, val);
+        }
+        return maxVal;
+    }
+
+    public static int mean(int[] array) {
+        int sum = 0;
+        for (int val : array) {
+            sum += val;
+        }
+        return sum / array.length;
+    }
 }

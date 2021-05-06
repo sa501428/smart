@@ -26,24 +26,34 @@ package mixer.utils.slice.cleaning.utils;
 
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class VectorGroup {
+    private final float threshold = 0.7f;
     private final Set<Integer> indices = new HashSet<>();
-    private final float[] initVector;
+    private final List<float[]> vectors = new ArrayList<>();
 
     public VectorGroup(int index, float[] vector) {
-        this.initVector = vector;
-        append(index);
+        append(index, vector);
     }
 
-    public void append(int index) {
+    public void append(int index, float[] vector) {
         indices.add(index);
+        vectors.add(vector);
     }
 
-    public float corr(float[] vector) {
-        return RobustCorrelationSimilarity.SINGLETON.distance(initVector, vector);
+    public boolean shouldInclude(float[] vector) {
+        for (float[] vec : vectors) {
+            float corr = RobustCorrelationSimilarity.SINGLETON.distance(vec, vector);
+            if (Math.abs(corr) > threshold) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public int size() {

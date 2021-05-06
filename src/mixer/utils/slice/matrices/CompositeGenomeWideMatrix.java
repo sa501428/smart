@@ -31,9 +31,11 @@ import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.MatrixImputer;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
@@ -49,7 +51,7 @@ public abstract class CompositeGenomeWideMatrix {
     protected final Chromosome[] chromosomes;
     protected final Random generator = new Random(0);
     protected final File outputDirectory;
-    private float[][] gwCleanMatrix;
+    private float[][] gwCleanMatrix, imputedData;
     private final int[] weights;
     protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
@@ -83,7 +85,13 @@ public abstract class CompositeGenomeWideMatrix {
     public void cleanUpMatricesBySparsity() {
         SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
-        gwCleanMatrix = matrixCleanupReduction.getCleanedSimilarityMatrix(rowIndexToIntervalMap, weights);
+        MatrixAndWeight mw = matrixCleanupReduction.getCleanFilteredMatrix(rowIndexToIntervalMap, weights);
+
+        gwCleanMatrix = mw.matrix;
+        ZScoreTools.inPlaceScaleSqrtWeightCol(gwCleanMatrix, mw.weights);
+
+        imputedData = MatrixImputer.imputeUntilNoNans(gwCleanMatrix);
+        ZScoreTools.inPlaceScaleSqrtWeightCol(imputedData, mw.weights);
     }
 
     /*
@@ -215,5 +223,9 @@ public abstract class CompositeGenomeWideMatrix {
 
     public void normalizePerDataset() {
         // todo maybe divide by sum?
+    }
+
+    public float[][] getImputedData() {
+        return imputedData;
     }
 }

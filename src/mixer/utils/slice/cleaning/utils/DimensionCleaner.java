@@ -30,7 +30,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class DimensionCleaner {
-    protected final static float PERCENT_NAN_ALLOWED = .5f;
+
     protected static final float ZERO = 1e-10f;
     protected final float[][] data;
     protected final int[] weights;

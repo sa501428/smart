@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IndexOrderer {
 
     private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
-    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000, TEN_MB = 10000000;
+    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000, TWENTY_MB = 20000000;
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
     private final int CHECK_VAL = -2;
@@ -95,8 +95,8 @@ public class IndexOrderer {
 
     private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] matrix, Set<Integer> badIndices) {
         int[] newIndexOrderAssignments = generateNewAssignments(matrix.length, badIndices);
-        int numPotentialClusters = (int) (chromosome.getLength() / TEN_MB);
-        //numPotentialClusters = Math.max(numPotentialClusters, maxClusterSizeExpected);
+        int numPotentialClusters = (int) (chromosome.getLength() / TWENTY_MB) + 5;
+        numPotentialClusters = Math.max(numPotentialClusters, 6);
 
         int gCounter = doAssignmentsByCorrWithCentroids(matrix, newIndexOrderAssignments, chromosome.getName(),
                 numPotentialClusters);

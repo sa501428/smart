@@ -23,6 +23,8 @@
  */
 package mixer.utils.similaritymeasures;
 
+import java.util.BitSet;
+
 /**
  * Correlation distance.
  */
@@ -40,17 +42,18 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
 
     @Override
     public float distance(final float[] x, final float[] y) {
-        int counter = 0;
         double sumX = 0;
         double sumY = 0;
+        BitSet useIndex = new BitSet(x.length);
         for (int i = 0; i < x.length; i++) {
-            boolean entryIsBad = Float.isNaN(x[i] + y[i]);
-            if (!entryIsBad) {
+            if (!Float.isNaN(x[i] + y[i])) {
                 sumX += x[i];
                 sumY += y[i];
-                counter++;
+                useIndex.set(i);
             }
         }
+
+        int counter = useIndex.cardinality();
         double muX = sumX / counter;
         double muY = sumY / counter;
 
@@ -58,8 +61,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
         double normX = 0.0;
         double normY = 0.0;
         for (int i = 0; i < x.length; i++) {
-            boolean entryIsBad = Float.isNaN(x[i] + y[i]);
-            if (!entryIsBad) {
+            if (useIndex.get(i)) {
                 double nX = x[i] - muX;
                 double nY = y[i] - muY;
 
