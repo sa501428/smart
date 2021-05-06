@@ -50,7 +50,7 @@ public class GenomeWideGMMRunner {
                 gmm.fit();
                 int[] result = gmm.predict();
                 populateMap(result, results, numClusters);
-            } catch (GMMException g) {
+            } catch (Exception g) {
                 System.err.println("Unable to run GMM with " + numClusters + " clusters on data.\n" +
                         "Matrix may be singular or some other issue encountered");
             }

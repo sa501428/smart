@@ -70,7 +70,7 @@ public class GenomeWideKmeansRunner {
                 System.out.println("Using seed " + seed);
             }
 
-            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix.getCleanedData(),
+            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix.getImputedData(),
                     numClusters, maxIters, seed);
 
             KMeansListener kMeansListener = new KMeansListener() {

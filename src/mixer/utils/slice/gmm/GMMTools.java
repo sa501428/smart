@@ -24,22 +24,19 @@
 
 package mixer.utils.slice.gmm;
 
-import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMTools {
 
-    public static float[][] parGetWeightedMean(int numClusters, float[][] data, float[][] r) throws GMMException {
+    public static float[][] parGetWeightedMean(int numClusters, float[][] data, double[][] r) {
         float[][] meanVectors = new float[numClusters][data[0].length];
         float[][] counts = new float[numClusters][data[0].length];
-        BitSet isFailure = new BitSet(1);
 
         AtomicInteger currIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
@@ -47,60 +44,40 @@ public class GMMTools {
             while (k < numClusters) {
                 for (int i = 0; i < data.length; i++) {
                     for (int j = 0; j < data[i].length; j++) {
-                        if (!Float.isNaN(data[i][j])) {
-                            meanVectors[k][j] += r[i][k] * data[i][j];
-                            counts[k][j] += r[i][k];
-                        }
+                        meanVectors[k][j] += r[i][k] * data[i][j];
+                        counts[k][j] += r[i][k];
                     }
                 }
 
                 for (int j = 0; j < data[0].length; j++) {
-                    if (counts[k][j] > 0 && Float.isFinite(counts[k][j])) {
-                        meanVectors[k][j] /= counts[k][j];
-                    } else {
-                        synchronized (isFailure) {
-                            isFailure.set(0);
-                        }
-                    }
+                    meanVectors[k][j] /= counts[k][j];
                 }
 
                 k = currIndex.getAndIncrement();
             }
         });
 
-        if (isFailure.get(0)) {
-            throw new GMMException("Invalid count encountered");
-        }
-
         return meanVectors;
     }
 
-    public static double multivariateNormal(float[] x, float[] meanVector, float[][] covarianceMatrix) {
-        int[] status = new int[x.length];
-        Arrays.fill(status, -1);
-        int n = getStatus(x, meanVector, status);
-        if (n < 2) {
-            System.err.println("Invalid match " + n);
-            return Double.NaN;
-        }
-
-        RealMatrix cov = getSubsetCovMatrix(covarianceMatrix, status, n);
-
+    public static double multivariateNormal(float[] x, float[] meanVector, double[][] covarianceMatrix) {
+        RealMatrix cov = new Array2DRowRealMatrix(covarianceMatrix);
         LUDecomposition lu = new LUDecomposition(cov);
-        RealMatrix diff = validSubtract(x, meanVector, status, n);
-        return multivariateNormalCalc(n, lu, diff);
+        RealMatrix diff = validSubtract(x, meanVector);
+        return multivariateNormalCalc(x.length, lu, diff);
     }
 
     public static double multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff) {
         double denom = Math.sqrt(Math.pow(2 * Math.PI, n) * determinant(lu));
         double num = Math.exp(-chainMultiply(diff, inverse(lu)) / 2.0);
-        double result = (num / denom);
+        return (num / denom);
+        /*
         if (!Double.isNaN(result) && Double.isFinite(result)) {
             return result;
         } else {
             System.err.println("denom " + denom + " numer " + num + " n " + n + " det " + determinant(lu));
             return Double.NaN;
-        }
+        } */
     }
 
     public static double chainMultiply(RealMatrix diff, RealMatrix inverseCov) {
@@ -121,52 +98,15 @@ public class GMMTools {
         return lu.getDeterminant();
     }
 
-    public static RealMatrix validSubtract(float[] x, float[] mu, int[] status, int n) {
-        double[][] result = new double[n][1];
-        for (int k = 0; k < status.length; k++) {
-            if (status[k] > -1) {
-                result[status[k]][0] = x[k] - mu[k];
-            }
+    public static RealMatrix validSubtract(float[] x, float[] mu) {
+        double[][] result = new double[x.length][1];
+        for (int k = 0; k < x.length; k++) {
+            result[k][0] = x[k] - mu[k];
         }
         return new Array2DRowRealMatrix(result);
     }
 
-    public static RealMatrix getSubsetCovMatrix(float[][] covMatrix, int[] status, int n) {
-        double[][] subset = new double[n][n];
-        for (int i = 0; i < covMatrix.length; i++) {
-            if (status[i] > -1) {
-                for (int j = i; j < covMatrix.length; j++) {
-                    if (status[j] > -1) {
-                        subset[status[i]][status[j]] = covMatrix[i][j];
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < subset.length; i++) {
-            for (int j = i + 1; j < subset.length; j++) {
-                subset[j][i] = subset[i][j];
-            }
-        }
-        return new Array2DRowRealMatrix(subset);
-    }
-
-    public static int getStatus(float[] x, float[] meanVector, int[] status) {
-        int counter = 0;
-        for (int i = 0; i < x.length; i++) {
-            if (!Float.isNaN(x[i] - meanVector[i])) {
-                status[i] = counter;
-                counter++;
-            }
-        }
-        if (counter <= 0) {
-            System.err.println("mu " + Arrays.toString(meanVector));
-            System.err.println("x " + Arrays.toString(x));
-            return -1;
-        }
-        return counter;
-    }
-
-    public static float[] addUpAllRows(float[][] matrix) {
+    public static float[] addUpAllRows(double[][] matrix) {
         float[] result = new float[matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -176,10 +116,9 @@ public class GMMTools {
         return result;
     }
 
-    public static float[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, float[] pi,
-                                                             float[][] meanVectors, float[][][] covMatrices) throws GMMException {
-        float[][] r = new float[data.length][numClusters];
-        BitSet isFailure = new BitSet(1);
+    public static double[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, double[] pi,
+                                                              float[][] meanVectors, double[][][] covMatrices) {
+        double[][] r = new double[data.length][numClusters];
 
         AtomicInteger currIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
@@ -190,42 +129,20 @@ public class GMMTools {
                 double[] tempArray = new double[numClusters];
                 for (int k = 0; k < numClusters; k++) {
                     double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
-                    if (Double.isNaN(mvn)) {
-                        synchronized (isFailure) {
-                            isFailure.set(0);
-                        }
-                        return;
-                    }
+
                     tempArray[k] = pi[k] * mvn;
                     localSum += tempArray[k];
-                    if (MixerGlobals.printVerboseComments && n < 10) {
-                        System.out.println("row[" + n + "]  pi[" + k + "] =" + pi[k] + " mvn " + mvn + " R is " + tempArray[k] + " Local sum " + localSum);
-                    }
                     if (Double.isNaN(r[n][k]) || Double.isInfinite(r[n][k])) {
                         System.err.println("ERROR: R is " + tempArray[k] + " Local sum " + localSum);
-                        synchronized (isFailure) {
-                            isFailure.set(0);
-                        }
                         return;
                     }
                 }
                 if (localSum == 0.0) {
                     System.err.println("ERROR: local sum " + localSum);
-                    synchronized (isFailure) {
-                        isFailure.set(0);
-                    }
                     return;
                 }
                 for (int k = 0; k < numClusters; k++) {
                     r[n][k] = (float) (tempArray[k] / localSum);
-
-                    if (Float.isNaN(r[n][k]) || Float.isInfinite(r[n][k])) {
-                        System.err.println("ERROR: R is " + r[n][k] + " Local sum " + localSum);
-                        synchronized (isFailure) {
-                            isFailure.set(0);
-                        }
-                        return;
-                    }
                 }
 
                 n = currIndex.getAndIncrement();

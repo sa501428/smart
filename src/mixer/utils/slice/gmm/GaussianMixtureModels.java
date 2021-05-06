@@ -34,11 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GaussianMixtureModels {
     private final float[][] data;
     private final int numClusters;
-    private final float[] datasetFractionForCluster;
+    private final double[] datasetFractionForCluster;
     private final List<List<Integer>> startingIndices;
     float[][] meanVectors; // add the rows and divide by num
-    float[][][] covMatrices;
-    float[][] probabilities;
+    double[][][] covMatrices;
+    double[][] probabilities;
     private int maxIters = 10;
     private boolean startingFromScratch = true;
 
@@ -48,7 +48,7 @@ public class GaussianMixtureModels {
         this.maxIters = maxIters;
         this.startingIndices = startingIndices;
 
-        datasetFractionForCluster = new float[numClusters];
+        datasetFractionForCluster = new double[numClusters];
         for (int k = 0; k < numClusters; k++) {
             float num = startingIndices.get(k).size();
             float denom = data.length;
@@ -57,7 +57,7 @@ public class GaussianMixtureModels {
     }
 
 
-    public void fit() throws GMMException {
+    public void fit() {
         if (startingFromScratch && startingIndices != null && startingIndices.size() == numClusters) {
             meanVectors = InitTools.parGetInitialMeans(startingIndices, numClusters, data); // add the rows and divide by num
             covMatrices = InitTools.parGetInitialFeatureCovMatrices(startingIndices, numClusters, data, meanVectors);
@@ -76,7 +76,7 @@ public class GaussianMixtureModels {
                     System.err.println("mu[" + k + "] " + Arrays.toString(meanVectors[k]));
                 }
             }
-            float[][] probClusterForRow = GMMTools.parGetProbabilityOfClusterForRow(numClusters, data, datasetFractionForCluster,
+            double[][] probClusterForRow = GMMTools.parGetProbabilityOfClusterForRow(numClusters, data, datasetFractionForCluster,
                     meanVectors, covMatrices);
 
             if (MixerGlobals.printVerboseComments) {
@@ -104,7 +104,7 @@ public class GaussianMixtureModels {
     }
 
     public int[] predict() {
-        probabilities = new float[data.length][numClusters];
+        probabilities = new double[data.length][numClusters];
 
         AtomicInteger currentIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
@@ -128,7 +128,7 @@ public class GaussianMixtureModels {
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = currentIndex2.getAndIncrement();
             while (i < data.length) {
-                float prob = probabilities[i][0];
+                double prob = probabilities[i][0];
                 int index = 0;
                 for (int k = 1; k < numClusters; k++) {
                     if (probabilities[i][k] > prob) {

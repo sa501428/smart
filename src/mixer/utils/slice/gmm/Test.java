@@ -68,7 +68,7 @@ public class Test {
             long end = System.nanoTime();
             System.out.println("Elapsed time: " + (end - start) * 1e-9);
             plotter.plot(result, "/Users/mshamim/Desktop/testgmm/gmm_nan_result");
-        } catch (GMMException g) {
+        } catch (Exception g) {
             System.err.println("Unable to run GMM on data; matrices are likely singular or some other issue encountered");
         }
     }

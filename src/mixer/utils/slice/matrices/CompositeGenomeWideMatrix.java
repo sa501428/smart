@@ -29,6 +29,7 @@ import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
+import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
@@ -56,7 +57,6 @@ public abstract class CompositeGenomeWideMatrix {
     protected final GWBadIndexFinder badIndexLocations;
     protected final SimilarityMetric metric;
     protected final int maxClusterSizeExpected;
-    //protected int[] weights;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
                                      NormalizationType intraNorm, NormalizationType interNorm,
@@ -88,10 +88,17 @@ public abstract class CompositeGenomeWideMatrix {
         MatrixAndWeight mw = matrixCleanupReduction.getCleanFilteredMatrix(rowIndexToIntervalMap, weights);
 
         gwCleanMatrix = mw.matrix;
-        ZScoreTools.inPlaceScaleSqrtWeightCol(gwCleanMatrix, mw.weights);
-
+        ZScoreTools.inPlaceZscoreDownCol(gwCleanMatrix);
         imputedData = MatrixImputer.imputeUntilNoNans(gwCleanMatrix);
+
+        ZScoreTools.inPlaceScaleSqrtWeightCol(gwCleanMatrix, mw.weights);
         ZScoreTools.inPlaceScaleSqrtWeightCol(imputedData, mw.weights);
+
+        File file1 = new File(outputDirectory, "raw_matrix.npy");
+        MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix);
+
+        File file2 = new File(outputDirectory, "imputed_matrix.npy");
+        MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), imputedData);
     }
 
     /*

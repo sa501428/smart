@@ -58,10 +58,10 @@ public class InitTools {
         return meanVectors;
     }
 
-    public static float[][][] parGetInitialFeatureCovMatrices(List<List<Integer>> indices,
-                                                              int numClusters, float[][] data,
-                                                              float[][] meanVectors) throws GMMException {
-        float[][][] covMatrices = new float[numClusters][data[0].length][data[0].length];
+    public static double[][][] parGetInitialFeatureCovMatrices(List<List<Integer>> indices,
+                                                               int numClusters, float[][] data,
+                                                               float[][] meanVectors) {
+        double[][][] covMatrices = new double[numClusters][data[0].length][data[0].length];
         for (int k = 0; k < numClusters; k++) {
             covMatrices[k] = parGetInitialColumnCovarianceMatrix(indices.get(k), data, meanVectors[k]);
         }
@@ -69,12 +69,12 @@ public class InitTools {
         return covMatrices;
     }
 
-    public static float[][] parGetInitialColumnCovarianceMatrix(List<Integer> indices, float[][] data,
-                                                                float[] meanVector) {
+    public static double[][] parGetInitialColumnCovarianceMatrix(List<Integer> indices, float[][] data,
+                                                                 float[] meanVector) {
         float[][] diff = calculateDiffWithIndices(indices, data, meanVector);
         int numDataPoints = diff.length;
         int dimension = data[0].length;
-        float[][] cov = new float[dimension][dimension];
+        double[][] cov = new double[dimension][dimension];
         int[] min = new int[]{numDataPoints};
 
         AtomicInteger currRowIndex = new AtomicInteger(0);

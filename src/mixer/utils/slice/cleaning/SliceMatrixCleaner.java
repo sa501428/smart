@@ -25,7 +25,6 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.utils.common.LogTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.utils.ColumnCleaner;
 import mixer.utils.slice.cleaning.utils.RowCleaner;
@@ -56,20 +55,16 @@ public class SliceMatrixCleaner {
     public MatrixAndWeight getCleanFilteredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                   int[] weights) {
         LogTools.simpleLogWithCleanup(this.data, Float.NaN);
-        ZScoreTools.inPlaceZscoreDownCol(data);
 
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
         MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
-        data = mw.matrix;
-        int[] weights2 = mw.weights;
-        System.out.println("Matrix size after column cleanup " + data.length + " x " + data[0].length);
+        System.out.println("Matrix size after column cleanup " + mw.matrix.length + " x " + mw.matrix[0].length);
 
-        data = (new RowCleaner(data, rowIndexToIntervalMap, weights)).getCleanedData().matrix;
+        data = (new RowCleaner(mw.matrix, rowIndexToIntervalMap, weights)).getCleanedData().matrix;
         System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
 
         System.out.println("Final matrix size " + data.length + " x " + data[0].length);
-
-        return new MatrixAndWeight(data, weights2);
+        return new MatrixAndWeight(data, mw.weights);
     }
 
     /*
