@@ -107,6 +107,14 @@ public class ArrayTools {
         return maxVal;
     }
 
+    public static double max(double[] array) {
+        double maxVal = array[0];
+        for (double val : array) {
+            maxVal = Math.max(maxVal, val);
+        }
+        return maxVal;
+    }
+
     public static int mean(int[] array) {
         int sum = 0;
         for (int val : array) {

@@ -25,8 +25,9 @@
 package mixer.utils.slice.gmm;
 
 import mixer.clt.ParallelizedMixerTools;
+import mixer.utils.common.ArrayTools;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.CholeskyDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
@@ -36,21 +37,23 @@ public class GMMTools {
 
     public static float[][] parGetWeightedMean(int numClusters, float[][] data, double[][] r) {
         float[][] meanVectors = new float[numClusters][data[0].length];
-        float[][] counts = new float[numClusters][data[0].length];
 
         AtomicInteger currIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             int k = currIndex.getAndIncrement();
             while (k < numClusters) {
+                float sumProbabilities = 0;
                 for (int i = 0; i < data.length; i++) {
-                    for (int j = 0; j < data[i].length; j++) {
-                        meanVectors[k][j] += r[i][k] * data[i][j];
-                        counts[k][j] += r[i][k];
+                    if (r[i][k] > 0) {
+                        for (int j = 0; j < data[i].length; j++) {
+                            meanVectors[k][j] += r[i][k] * data[i][j];
+                        }
+                        sumProbabilities += r[i][k];
                     }
                 }
 
                 for (int j = 0; j < data[0].length; j++) {
-                    meanVectors[k][j] /= counts[k][j];
+                    meanVectors[k][j] /= sumProbabilities;
                 }
 
                 k = currIndex.getAndIncrement();
@@ -62,22 +65,14 @@ public class GMMTools {
 
     public static double multivariateNormal(float[] x, float[] meanVector, double[][] covarianceMatrix) {
         RealMatrix cov = new Array2DRowRealMatrix(covarianceMatrix);
-        LUDecomposition lu = new LUDecomposition(cov);
+        CholeskyDecomposition lu = new CholeskyDecomposition(cov);
         RealMatrix diff = validSubtract(x, meanVector);
-        return multivariateNormalCalc(x.length, lu, diff);
+        return multivariateNormalCalcExponent(x.length, lu, diff);
     }
 
-    public static double multivariateNormalCalc(int n, LUDecomposition lu, RealMatrix diff) {
-        double denom = Math.sqrt(Math.pow(2 * Math.PI, n) * determinant(lu));
-        double num = Math.exp(-chainMultiply(diff, inverse(lu)) / 2.0);
-        return (num / denom);
-        /*
-        if (!Double.isNaN(result) && Double.isFinite(result)) {
-            return result;
-        } else {
-            System.err.println("denom " + denom + " numer " + num + " n " + n + " det " + determinant(lu));
-            return Double.NaN;
-        } */
+
+    public static double multivariateNormalCalcExponent(int n, CholeskyDecomposition lu, RealMatrix diff) {
+        return -0.5 * (n * Math.log(2 * Math.PI) + Math.log(determinant(lu)) + chainMultiply(diff, inverse(lu)));
     }
 
     public static double chainMultiply(RealMatrix diff, RealMatrix inverseCov) {
@@ -90,11 +85,11 @@ public class GMMTools {
         return matrix.getEntry(0, 0);
     }
 
-    public static RealMatrix inverse(LUDecomposition lu) {
+    public static RealMatrix inverse(CholeskyDecomposition lu) {
         return lu.getSolver().getInverse();
     }
 
-    public static double determinant(LUDecomposition lu) {
+    public static double determinant(CholeskyDecomposition lu) {
         return lu.getDeterminant();
     }
 
@@ -119,37 +114,52 @@ public class GMMTools {
     public static double[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, double[] pi,
                                                               float[][] meanVectors, double[][][] covMatrices) {
         double[][] r = new double[data.length][numClusters];
+        double[] logpi = logPriors100(pi);
 
         AtomicInteger currIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             int n = currIndex.getAndIncrement();
             while (n < data.length) {
-
-                double localSum = 0;
-                double[] tempArray = new double[numClusters];
+                double[] logLikelihood = new double[numClusters];
                 for (int k = 0; k < numClusters; k++) {
-                    double mvn = multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
-
-                    tempArray[k] = pi[k] * mvn;
-                    localSum += tempArray[k];
-                    if (Double.isNaN(r[n][k]) || Double.isInfinite(r[n][k])) {
-                        System.err.println("ERROR: R is " + tempArray[k] + " Local sum " + localSum);
-                        return;
-                    }
+                    logLikelihood[k] = logpi[k] + multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
                 }
-                if (localSum == 0.0) {
-                    System.err.println("ERROR: local sum " + localSum);
-                    return;
-                }
-                for (int k = 0; k < numClusters; k++) {
-                    r[n][k] = (float) (tempArray[k] / localSum);
-                }
-
+                r[n] = convertLogLikelihoodToProb(logLikelihood);
                 n = currIndex.getAndIncrement();
             }
         });
 
         return r;
+    }
+
+    private static double[] logPriors100(double[] pi) {
+        double[] logPriors = new double[pi.length];
+        for (int i = 0; i < logPriors.length; i++) {
+            logPriors[i] = Math.log(100 * pi[i]);
+        }
+        return logPriors;
+    }
+
+    public static double[] convertLogLikelihoodToProb(double[] logLikelihood) {
+        double maxVal = ArrayTools.max(logLikelihood);
+        double[] probability = new double[logLikelihood.length];
+        for (int i = 0; i < probability.length; i++) {
+            probability[i] = logLikelihood[i] - maxVal;
+        }
+
+        double total = 0;
+        for (int i = 0; i < probability.length; i++) {
+            probability[i] = Math.exp(probability[i]);
+            if (Double.isNaN(probability[i]) || Double.isInfinite(probability[i])) {
+                probability[i] = 0;
+            }
+            total += probability[i];
+        }
+
+        for (int i = 0; i < probability.length; i++) {
+            probability[i] /= total;
+        }
+        return probability;
     }
 
     public static void printMatrix(float[][] matrix) {

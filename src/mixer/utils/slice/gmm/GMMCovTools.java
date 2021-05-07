@@ -105,11 +105,5 @@ public class GMMCovTools {
         for (int i = 0; i < covMatrix.length; i++) {
             covMatrix[i][i] += delta;
         }
-
-        for (int i = 0; i < covMatrix.length; i++) {
-            for (int j = 0; j < covMatrix[i].length; j++) {
-                covMatrix[i][j] /= 1 + delta;
-            }
-        }
     }
 }

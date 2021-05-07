@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GaussianMixtureModels {
+    private static final float startingProbability = 0.85f;
     private final float[][] data;
     private final int numClusters;
     private final double[] datasetFractionForCluster;
@@ -47,6 +48,9 @@ public class GaussianMixtureModels {
         this.numClusters = numClusters;
         this.maxIters = maxIters;
         this.startingIndices = startingIndices;
+        if (startingIndices.size() != numClusters) {
+            System.err.println("GMM Error: something weird about cluster sizes " + numClusters + " : " + startingIndices.size());
+        }
 
         datasetFractionForCluster = new double[numClusters];
         for (int k = 0; k < numClusters; k++) {
@@ -58,9 +62,11 @@ public class GaussianMixtureModels {
 
 
     public void fit() {
-        if (startingFromScratch && startingIndices != null && startingIndices.size() == numClusters) {
-            meanVectors = InitTools.parGetInitialMeans(startingIndices, numClusters, data); // add the rows and divide by num
-            covMatrices = InitTools.parGetInitialFeatureCovMatrices(startingIndices, numClusters, data, meanVectors);
+        if (startingFromScratch && startingIndices != null) {
+            double[][] probClusterForRow = determineInitialProbabilities();
+            meanVectors = GMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
+            covMatrices = GMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow,
+                    meanVectors);
 
             startingIndices.clear();
             startingFromScratch = false;
@@ -110,15 +116,12 @@ public class GaussianMixtureModels {
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = currentIndex.getAndIncrement();
             while (i < data.length) {
-                double[] tempArray = new double[numClusters];
-                double accum = 0;
+                double[] logLikelihood = new double[numClusters];
                 for (int k = 0; k < numClusters; k++) {
-                    tempArray[k] = GMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k]);
-                    accum += tempArray[k];
+                    logLikelihood[k] = GMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k]);
                 }
-                for (int k = 0; k < numClusters; k++) {
-                    probabilities[i][k] = (float) (tempArray[k] / accum);
-                }
+                probabilities[i] = GMMTools.convertLogLikelihoodToProb(logLikelihood);
+
                 i = currentIndex.getAndIncrement();
             }
         });
@@ -142,5 +145,19 @@ public class GaussianMixtureModels {
         });
 
         return assignments;
+    }
+
+    private double[][] determineInitialProbabilities() {
+        double[][] r = new double[data.length][numClusters];
+        double baseline = (1 - startingProbability) / (numClusters - 1);
+        for (int i = 0; i < r.length; i++) {
+            Arrays.fill(r[i], baseline);
+        }
+        for (int k = 0; k < startingIndices.size(); k++) {
+            for (int i : startingIndices.get(k)) {
+                r[i][k] = startingProbability;
+            }
+        }
+        return r;
     }
 }
