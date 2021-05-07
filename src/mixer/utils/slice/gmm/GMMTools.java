@@ -27,10 +27,8 @@ package mixer.utils.slice.gmm;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.ArrayTools;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.CholeskyDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMTools {
@@ -63,16 +61,16 @@ public class GMMTools {
         return meanVectors;
     }
 
-    public static double multivariateNormal(float[] x, float[] meanVector, double[][] covarianceMatrix) {
-        RealMatrix cov = new Array2DRowRealMatrix(covarianceMatrix);
-        CholeskyDecomposition lu = new CholeskyDecomposition(cov);
+    public static double multivariateNormal(float[] x, float[] meanVector,
+                                            CovarianceMatrixInverseAndDeterminant cov) {
         RealMatrix diff = validSubtract(x, meanVector);
-        return multivariateNormalCalcExponent(x.length, lu, diff);
+        return multivariateNormalCalcExponent(x.length, diff, cov);
     }
 
 
-    public static double multivariateNormalCalcExponent(int n, CholeskyDecomposition lu, RealMatrix diff) {
-        return -0.5 * (n * Math.log(2 * Math.PI) + Math.log(determinant(lu)) + chainMultiply(diff, inverse(lu)));
+    public static double multivariateNormalCalcExponent(int n, RealMatrix diff,
+                                                        CovarianceMatrixInverseAndDeterminant cov) {
+        return -0.5 * (n * Math.log(2 * Math.PI) + Math.log(cov.determinant) + chainMultiply(diff, cov.inverse));
     }
 
     public static double chainMultiply(RealMatrix diff, RealMatrix inverseCov) {
@@ -83,14 +81,6 @@ public class GMMTools {
                     " should be 1x1");
         }
         return matrix.getEntry(0, 0);
-    }
-
-    public static RealMatrix inverse(CholeskyDecomposition lu) {
-        return lu.getSolver().getInverse();
-    }
-
-    public static double determinant(CholeskyDecomposition lu) {
-        return lu.getDeterminant();
     }
 
     public static RealMatrix validSubtract(float[] x, float[] mu) {
@@ -112,7 +102,8 @@ public class GMMTools {
     }
 
     public static double[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, double[] pi,
-                                                              float[][] meanVectors, double[][][] covMatrices) {
+                                                              float[][] meanVectors,
+                                                              CovarianceMatrixInverseAndDeterminant[] covs) {
         double[][] r = new double[data.length][numClusters];
         double[] logpi = logPriors100(pi);
 
@@ -122,7 +113,7 @@ public class GMMTools {
             while (n < data.length) {
                 double[] logLikelihood = new double[numClusters];
                 for (int k = 0; k < numClusters; k++) {
-                    logLikelihood[k] = logpi[k] + multivariateNormal(data[n], meanVectors[k], covMatrices[k]);
+                    logLikelihood[k] = logpi[k] + multivariateNormal(data[n], meanVectors[k], covs[k]);
                 }
                 r[n] = convertLogLikelihoodToProb(logLikelihood);
                 n = currIndex.getAndIncrement();
@@ -162,9 +153,12 @@ public class GMMTools {
         return probability;
     }
 
-    public static void printMatrix(float[][] matrix) {
-        for (float[] c : matrix) {
-            System.out.println(Arrays.toString(c));
+    public static double[] updateDatasetFraction(double[][] probClusterForRow, int length) {
+        float[] sumForCluster = GMMTools.addUpAllRows(probClusterForRow);
+        double[] fraction = new double[sumForCluster.length];
+        for (int k = 0; k < sumForCluster.length; k++) {
+            fraction[k] = sumForCluster[k] / (float) (length);
         }
+        return fraction;
     }
 }

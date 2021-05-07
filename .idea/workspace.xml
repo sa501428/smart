@@ -30,14 +30,14 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="non robust gmm, change cleanup process, use doubles in gmm, backup gmm code">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup, optimize runtime; reduce matrix calculations">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/CovarianceMatrixInverseAndDeterminant.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/InitTools.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,11 +88,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.gmm" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice.matrices" />
       <recent name="mixer.utils" />
       <recent name="mixer.utils.slice.cleaning.utils" />
-      <recent name="mixer.utils.slice.gmm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -190,14 +190,7 @@
       <workItem from="1619564540024" duration="11529000" />
       <workItem from="1619757944287" duration="27000" />
       <workItem from="1619760500554" duration="47000" />
-      <workItem from="1619854002161" duration="61791000" />
-    </task>
-    <task id="LOCAL-00075" summary="allow emergency filtering if outliers made into cluster; simple log with zscore approach">
-      <created>1614063627489</created>
-      <option name="number" value="00075" />
-      <option name="presentableId" value="LOCAL-00075" />
-      <option name="project" value="LOCAL" />
-      <updated>1614063627489</updated>
+      <workItem from="1619854002161" duration="67139000" />
     </task>
     <task id="LOCAL-00076" summary="options for direct column scaling, segmenting centroid">
       <created>1614098132779</created>
@@ -535,7 +528,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620338018569</updated>
     </task>
-    <option name="localTasksCounter" value="124" />
+    <task id="LOCAL-00124" summary="use log likelihoods, fix gmm issues">
+      <created>1620416808442</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1620416808442</updated>
+    </task>
+    <option name="localTasksCounter" value="125" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -560,7 +560,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="initial commit" />
     <MESSAGE value="debugging messages" />
     <MESSAGE value="network analysis and loop fine-tuning" />
     <MESSAGE value="GMM bug fixes" />
@@ -585,7 +584,8 @@
     <MESSAGE value="subtract O/E by 1" />
     <MESSAGE value="imputation, change cleaning, use bitset, gmm updates" />
     <MESSAGE value="non robust gmm, change cleanup process, use doubles in gmm, backup gmm code" />
-    <option name="LAST_COMMIT_MESSAGE" value="non robust gmm, change cleanup process, use doubles in gmm, backup gmm code" />
+    <MESSAGE value="use log likelihoods, fix gmm issues" />
+    <option name="LAST_COMMIT_MESSAGE" value="use log likelihoods, fix gmm issues" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -22,14 +22,26 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice.gmm;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "3.24.03";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+import org.apache.commons.math3.linear.CholeskyDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+
+public class CovarianceMatrixInverseAndDeterminant {
+    public double determinant;
+    public RealMatrix inverse;
+
+    private CovarianceMatrixInverseAndDeterminant(RealMatrix covMatrix) {
+        CholeskyDecomposition chol = new CholeskyDecomposition(covMatrix);
+        determinant = chol.getDeterminant();
+        inverse = chol.getSolver().getInverse();
+    }
+
+    public static CovarianceMatrixInverseAndDeterminant[] convertToArray(RealMatrix[] covMatrices) {
+        CovarianceMatrixInverseAndDeterminant[] covs = new CovarianceMatrixInverseAndDeterminant[covMatrices.length];
+        for (int k = 0; k < covs.length; k++) {
+            covs[k] = new CovarianceMatrixInverseAndDeterminant(covMatrices[k]);
+        }
+        return covs;
+    }
 }

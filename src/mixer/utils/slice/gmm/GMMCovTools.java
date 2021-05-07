@@ -25,25 +25,25 @@
 package mixer.utils.slice.gmm;
 
 import mixer.clt.ParallelizedMixerTools;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GMMCovTools {
 
-    public static double[][][] parGetNewWeightedFeatureCovarianceMatrix(int numClusters, float[][] data,
-                                                                        double[][] probClusterForRow,
-                                                                        float[][] meanVectors) {
-        double[][][] covMatrices = new double[numClusters][data[0].length][data[0].length];
+    public static CovarianceMatrixInverseAndDeterminant[] parGetNewWeightedFeatureCovarianceMatrix(int numClusters, float[][] data,
+                                                                                                   double[][] probClusterForRow,
+                                                                                                   float[][] meanVectors) {
+        RealMatrix[] covMatrices = new RealMatrix[numClusters];
         for (int k = 0; k < numClusters; k++) {
             covMatrices[k] = parGetWeightedColumnCovarianceMatrix(data, probClusterForRow, k, meanVectors[k]);
         }
-
         ensureValidCovMatrix(covMatrices);
-
-        return covMatrices;
+        return CovarianceMatrixInverseAndDeterminant.convertToArray(covMatrices);
     }
 
-    public static double[][] parGetWeightedColumnCovarianceMatrix(float[][] data, double[][] probClusterForRow,
+    public static RealMatrix parGetWeightedColumnCovarianceMatrix(float[][] data, double[][] probClusterForRow,
                                                                   int clusterID, float[] meanVector) {
 
         double[] min = new double[1];
@@ -74,7 +74,7 @@ public class GMMCovTools {
             }
         });
 
-        return cov;
+        return new Array2DRowRealMatrix(cov);
     }
 
     private static float[][] parGetDiffMatrix(float[][] data, float[] meanVector) {
@@ -95,15 +95,15 @@ public class GMMCovTools {
         return diff;
     }
 
-    public static void ensureValidCovMatrix(double[][][] covMatrices) {
+    public static void ensureValidCovMatrix(RealMatrix[] covMatrices) {
         for (int i = 0; i < covMatrices.length; i++) {
             regularize(covMatrices[i], 1e-5f);
         }
     }
 
-    private static void regularize(double[][] covMatrix, float delta) {
-        for (int i = 0; i < covMatrix.length; i++) {
-            covMatrix[i][i] += delta;
+    private static void regularize(RealMatrix covMatrix, float delta) {
+        for (int i = 0; i < covMatrix.getRowDimension(); i++) {
+            covMatrix.addToEntry(i, i, delta);
         }
     }
 }
