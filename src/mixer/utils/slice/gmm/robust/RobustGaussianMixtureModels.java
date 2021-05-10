@@ -26,6 +26,7 @@ package mixer.utils.slice.gmm.robust;
 
 import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
+import mixer.utils.slice.gmm.simple.SimpleGMMTools;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
@@ -75,7 +76,7 @@ public class RobustGaussianMixtureModels {
     private void updateMeanCovsPriors(double[][] probClusterForRow) {
         meanVectors = RobustGMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
         covMatrices = RobustGMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow, meanVectors);
-        datasetFractionForCluster = RobustGMMTools.updateDatasetFraction(probClusterForRow, data.length);
+        datasetFractionForCluster = SimpleGMMTools.updateDatasetFraction(probClusterForRow, data.length);
     }
 
     public int[] predict() {
@@ -90,7 +91,7 @@ public class RobustGaussianMixtureModels {
                 for (int k = 0; k < numClusters; k++) {
                     logLikelihood[k] = RobustGMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k]);
                 }
-                probabilities[i] = RobustGMMTools.convertLogLikelihoodToProb(logLikelihood);
+                probabilities[i] = SimpleGMMTools.convertLogLikelihoodToProb(logLikelihood);
 
                 i = currentIndex.getAndIncrement();
             }

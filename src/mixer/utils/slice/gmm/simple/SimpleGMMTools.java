@@ -27,6 +27,7 @@ package mixer.utils.slice.gmm.simple;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.slice.gmm.CovarianceMatrixInverseAndDeterminant;
+import mixer.utils.slice.gmm.robust.RobustGMMTools;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
@@ -92,16 +93,6 @@ public class SimpleGMMTools {
         return new Array2DRowRealMatrix(result);
     }
 
-    public static float[] addUpAllRows(double[][] matrix) {
-        float[] result = new float[matrix[0].length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                result[j] += matrix[i][j];
-            }
-        }
-        return result;
-    }
-
     public static double[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, double[] pi,
                                                               float[][] meanVectors,
                                                               CovarianceMatrixInverseAndDeterminant[] covs) {
@@ -124,7 +115,7 @@ public class SimpleGMMTools {
         return r;
     }
 
-    private static double[] logPriors100(double[] pi) {
+    public static double[] logPriors100(double[] pi) {
         double[] logPriors = new double[pi.length];
         for (int i = 0; i < logPriors.length; i++) {
             logPriors[i] = Math.log(100 * pi[i]);
@@ -155,10 +146,10 @@ public class SimpleGMMTools {
     }
 
     public static double[] updateDatasetFraction(double[][] probClusterForRow, int length) {
-        float[] sumForCluster = SimpleGMMTools.addUpAllRows(probClusterForRow);
+        double[] sumForCluster = RobustGMMTools.addUpAllRows(probClusterForRow);
         double[] fraction = new double[sumForCluster.length];
         for (int k = 0; k < sumForCluster.length; k++) {
-            fraction[k] = sumForCluster[k] / (float) (length);
+            fraction[k] = sumForCluster[k] / (length);
         }
         return fraction;
     }

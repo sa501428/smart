@@ -25,8 +25,8 @@
 package mixer.utils.slice.gmm.robust;
 
 import mixer.clt.ParallelizedMixerTools;
-import mixer.utils.common.ArrayTools;
 import mixer.utils.slice.gmm.CovarianceMatrixInverseAndDeterminant;
+import mixer.utils.slice.gmm.simple.SimpleGMMTools;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
@@ -80,22 +80,7 @@ public class RobustGMMTools {
         RealMatrix cov = getSubsetCovMatrix(covarianceMatrix, status, n);
         CovarianceMatrixInverseAndDeterminant covInvDet = new CovarianceMatrixInverseAndDeterminant(cov);
         RealMatrix diff = validSubtract(x, meanVector, status, n);
-        return multivariateNormalCalcExponent(n, diff, covInvDet);
-    }
-
-    public static double multivariateNormalCalcExponent(int n, RealMatrix diff,
-                                                        CovarianceMatrixInverseAndDeterminant cov) {
-        return -0.5 * (n * Math.log(2 * Math.PI) + Math.log(cov.determinant) + chainMultiply(diff, cov.inverse));
-    }
-
-    public static double chainMultiply(RealMatrix diff, RealMatrix inverseCov) {
-        RealMatrix matrix = diff.transpose().multiply(inverseCov).multiply(diff);
-        if (matrix.getRowDimension() != 1 || matrix.getColumnDimension() != 1) {
-            System.err.println("Matrix has wrong dimensions; is " +
-                    matrix.getRowDimension() + "x" + matrix.getColumnDimension() +
-                    " should be 1x1");
-        }
-        return matrix.getEntry(0, 0);
+        return SimpleGMMTools.multivariateNormalCalcExponent(n, diff, covInvDet);
     }
 
     public static RealMatrix validSubtract(float[] x, float[] mu, int[] status, int n) {
@@ -156,7 +141,7 @@ public class RobustGMMTools {
     public static double[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, double[] pi,
                                                               float[][] meanVectors, RealMatrix[] covs) {
         double[][] r = new double[data.length][numClusters];
-        double[] logpi = logPriors100(pi);
+        double[] logpi = SimpleGMMTools.logPriors100(pi);
 
         AtomicInteger currIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
@@ -166,50 +151,11 @@ public class RobustGMMTools {
                 for (int k = 0; k < numClusters; k++) {
                     logLikelihood[k] = logpi[k] + multivariateNormal(data[n], meanVectors[k], covs[k]);
                 }
-                r[n] = convertLogLikelihoodToProb(logLikelihood);
+                r[n] = SimpleGMMTools.convertLogLikelihoodToProb(logLikelihood);
                 n = currIndex.getAndIncrement();
             }
         });
 
         return r;
-    }
-
-    private static double[] logPriors100(double[] pi) {
-        double[] logPriors = new double[pi.length];
-        for (int i = 0; i < logPriors.length; i++) {
-            logPriors[i] = Math.log(100 * pi[i]);
-        }
-        return logPriors;
-    }
-
-    public static double[] convertLogLikelihoodToProb(double[] logLikelihood) {
-        double maxVal = ArrayTools.max(logLikelihood);
-        double[] probability = new double[logLikelihood.length];
-        for (int i = 0; i < probability.length; i++) {
-            probability[i] = logLikelihood[i] - maxVal;
-        }
-
-        double total = 0;
-        for (int i = 0; i < probability.length; i++) {
-            probability[i] = Math.exp(probability[i]);
-            if (Double.isNaN(probability[i]) || Double.isInfinite(probability[i])) {
-                probability[i] = 0;
-            }
-            total += probability[i];
-        }
-
-        for (int i = 0; i < probability.length; i++) {
-            probability[i] /= total;
-        }
-        return probability;
-    }
-
-    public static double[] updateDatasetFraction(double[][] probClusterForRow, int length) {
-        double[] sumForCluster = RobustGMMTools.addUpAllRows(probClusterForRow);
-        double[] fraction = new double[sumForCluster.length];
-        for (int k = 0; k < sumForCluster.length; k++) {
-            fraction[k] = sumForCluster[k] / (length);
-        }
-        return fraction;
     }
 }

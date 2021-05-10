@@ -30,21 +30,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup, optimize runtime; reduce matrix calculations">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/backupV2_streamlined.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/CovarianceMatrixInverseAndDeterminant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/CovarianceMatrixInverseAndDeterminant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMCovTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/GMMCovTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/GMMException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/GMMTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/GaussianMixtureModels.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GenomeWideGMMRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/GenomeWideGMMRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/MatrixMult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/MatrixMult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/SimpleScatterPlot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/Test.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGMMTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGMMTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -197,14 +185,7 @@
       <workItem from="1619564540024" duration="11529000" />
       <workItem from="1619757944287" duration="27000" />
       <workItem from="1619760500554" duration="47000" />
-      <workItem from="1619854002161" duration="72694000" />
-    </task>
-    <task id="LOCAL-00077" summary="restore to a working version">
-      <created>1614109112305</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
-      <option name="project" value="LOCAL" />
-      <updated>1614109112305</updated>
+      <workItem from="1619854002161" duration="73240000" />
     </task>
     <task id="LOCAL-00078" summary="go in reverse order for clustering">
       <created>1614116362194</created>
@@ -542,7 +523,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620423738332</updated>
     </task>
-    <option name="localTasksCounter" value="126" />
+    <task id="LOCAL-00126" summary="support for simple and robust GMM">
+      <created>1620629471974</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1620629471974</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -567,7 +555,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="network analysis and loop fine-tuning" />
     <MESSAGE value="GMM bug fixes" />
     <MESSAGE value="auto umap for scatterplot when needed; update version" />
     <MESSAGE value="new tests" />
@@ -592,7 +579,8 @@
     <MESSAGE value="non robust gmm, change cleanup process, use doubles in gmm, backup gmm code" />
     <MESSAGE value="use log likelihoods, fix gmm issues" />
     <MESSAGE value="code cleanup, optimize runtime; reduce matrix calculations" />
-    <option name="LAST_COMMIT_MESSAGE" value="code cleanup, optimize runtime; reduce matrix calculations" />
+    <MESSAGE value="support for simple and robust GMM" />
+    <option name="LAST_COMMIT_MESSAGE" value="support for simple and robust GMM" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
