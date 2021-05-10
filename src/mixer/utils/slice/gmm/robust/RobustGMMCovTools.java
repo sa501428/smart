@@ -25,6 +25,7 @@
 package mixer.utils.slice.gmm.robust;
 
 import mixer.clt.ParallelizedMixerTools;
+import mixer.utils.slice.gmm.simple.SimpleGMMCovTools;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
@@ -39,14 +40,14 @@ public class RobustGMMCovTools {
         for (int k = 0; k < numClusters; k++) {
             covMatrices[k] = parGetWeightedColumnCovarianceMatrix(data, probClusterForRow, k, meanVectors[k]);
         }
-        ensureValidCovMatrix(covMatrices);
+        SimpleGMMCovTools.ensureValidCovMatrix(covMatrices);
         return covMatrices;
     }
 
     public static RealMatrix parGetWeightedColumnCovarianceMatrix(float[][] data, double[][] probClusterForRow,
                                                                   int clusterID, float[] meanVector) {
 
-        float[][] diff = parGetDiffMatrix(data, meanVector);
+        float[][] diff = SimpleGMMCovTools.parGetDiffMatrix(data, meanVector);
         int numDataPoints = data.length;
         int dimension = data[0].length;
 
@@ -76,35 +77,5 @@ public class RobustGMMCovTools {
         });
 
         return new Array2DRowRealMatrix(cov);
-    }
-
-    private static float[][] parGetDiffMatrix(float[][] data, float[] meanVector) {
-        int numDataPoints = data.length;
-        int dimension = data[0].length;
-
-        float[][] diff = new float[numDataPoints][dimension];
-        AtomicInteger currDataIndex = new AtomicInteger(0);
-        ParallelizedMixerTools.launchParallelizedCode(() -> {
-            int i = currDataIndex.getAndIncrement();
-            while (i < numDataPoints) {
-                for (int j = 0; j < dimension; j++) {
-                    diff[i][j] = data[i][j] - meanVector[j];
-                }
-                i = currDataIndex.getAndIncrement();
-            }
-        });
-        return diff;
-    }
-
-    public static void ensureValidCovMatrix(RealMatrix[] covMatrices) {
-        for (int i = 0; i < covMatrices.length; i++) {
-            regularize(covMatrices[i], 1e-5f);
-        }
-    }
-
-    private static void regularize(RealMatrix covMatrix, float delta) {
-        for (int i = 0; i < covMatrix.getRowDimension(); i++) {
-            covMatrix.addToEntry(i, i, delta);
-        }
     }
 }

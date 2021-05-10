@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.gmm.simple;
+package mixer.utils.slice.gmm;
 
 import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -32,20 +32,20 @@ import mixer.utils.slice.structures.SubcompartmentInterval;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleGenomeWideGMMRunner {
+public class GenomeWideGMMRunner {
     private final CompositeGenomeWideMatrix matrix;
     private final ChromosomeHandler chromosomeHandler;
 
-    public SimpleGenomeWideGMMRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideMatrix interMatrix) {
+    public GenomeWideGMMRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideMatrix interMatrix) {
         matrix = interMatrix;
         this.chromosomeHandler = chromosomeHandler;
     }
 
     public void launch(int numClusters, long seed, Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
-                       List<List<Integer>> startingIndices) {
+                       List<List<Integer>> startingIndices, boolean useRobustGMM) {
         if (matrix.getNumRows() > 0 && matrix.getNumColumns() > 0) {
-            SimpleGaussianMixtureModels gmm = new SimpleGaussianMixtureModels(matrix.getImputedData(),
-                    numClusters, 20, startingIndices);
+            GaussianMixtureModels gmm = new GaussianMixtureModels(matrix.getImputedData(),
+                    numClusters, 20, startingIndices, useRobustGMM);
             try {
                 gmm.fit();
                 int[] result = gmm.predict();

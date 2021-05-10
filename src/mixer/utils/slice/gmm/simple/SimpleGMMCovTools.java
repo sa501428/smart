@@ -78,7 +78,7 @@ public class SimpleGMMCovTools {
         return new Array2DRowRealMatrix(cov);
     }
 
-    private static float[][] parGetDiffMatrix(float[][] data, float[] meanVector) {
+    public static float[][] parGetDiffMatrix(float[][] data, float[] meanVector) {
         int numDataPoints = data.length;
         int dimension = data[0].length;
 

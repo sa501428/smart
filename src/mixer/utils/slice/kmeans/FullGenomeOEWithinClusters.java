@@ -32,7 +32,7 @@ import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
-import mixer.utils.slice.gmm.robust.RobustGenomeWideGMMRunner;
+import mixer.utils.slice.gmm.GenomeWideGMMRunner;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -168,8 +168,8 @@ public class FullGenomeOEWithinClusters {
     private void runGMMClusteringLoop(int z, int maxIters, List<List<Integer>> startingIndices,
                                       Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults) {
         int numClusters = z + startingClusterSizeK;
-        RobustGenomeWideGMMRunner gmmRunner = new RobustGenomeWideGMMRunner(chromosomeHandler, sliceMatrix);
-        gmmRunner.launch(numClusters, maxIters, numClustersToResults, startingIndices);
+        GenomeWideGMMRunner gmmRunner = new GenomeWideGMMRunner(chromosomeHandler, sliceMatrix);
+        gmmRunner.launch(numClusters, maxIters, numClustersToResults, startingIndices, false);
         System.out.print("*");
     }
 

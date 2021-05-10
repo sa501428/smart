@@ -26,7 +26,6 @@ package mixer.utils.slice.gmm;
 
 import javastraw.tools.MatrixTools;
 import mixer.utils.slice.cleaning.MatrixImputer;
-import mixer.utils.slice.gmm.simple.SimpleGaussianMixtureModels;
 
 import java.util.*;
 
@@ -62,7 +61,8 @@ public class Test {
 
         System.out.println("Starting GMM");
         long start = System.nanoTime();
-        SimpleGaussianMixtureModels gmm = new SimpleGaussianMixtureModels(data, NUM_CLUSTERS, 20, startingIndices);
+        GaussianMixtureModels gmm = new GaussianMixtureModels(data, NUM_CLUSTERS, 20, startingIndices,
+                false);
         try {
             gmm.fit();
             int[] result = gmm.predict();

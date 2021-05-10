@@ -22,17 +22,21 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.gmm.simple;
+package mixer.utils.slice.gmm;
 
 import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
-import mixer.utils.slice.gmm.CovarianceMatrixInverseAndDeterminant;
+import mixer.utils.slice.gmm.robust.RobustGMMCovTools;
+import mixer.utils.slice.gmm.robust.RobustGMMTools;
+import mixer.utils.slice.gmm.simple.SimpleGMMCovTools;
+import mixer.utils.slice.gmm.simple.SimpleGMMTools;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SimpleGaussianMixtureModels {
+public class GaussianMixtureModels {
     private static final float startingProbability = 0.85f;
     private final float[][] data;
     private final int numClusters;
@@ -40,15 +44,19 @@ public class SimpleGaussianMixtureModels {
     private final List<List<Integer>> startingIndices;
     private float[][] meanVectors; // add the rows and divide by num
     private CovarianceMatrixInverseAndDeterminant[] covs;
+    private final boolean useRobustGMM;
     private double[] datasetFractionForCluster;
     private boolean startingFromScratch = true;
     private double[][] probabilities;
+    private RealMatrix[] covMatrices;
 
-    public SimpleGaussianMixtureModels(float[][] data, int numClusters, int maxIters, List<List<Integer>> startingIndices) {
+    public GaussianMixtureModels(float[][] data, int numClusters, int maxIters,
+                                 List<List<Integer>> startingIndices, boolean useRobustGMM) {
         this.data = data;
         this.numClusters = numClusters;
         this.maxIters = maxIters;
         this.startingIndices = startingIndices;
+        this.useRobustGMM = useRobustGMM;
         if (startingIndices.size() != numClusters) {
             System.err.println("GMM Error: something weird about cluster sizes " + numClusters + " : " + startingIndices.size());
         }
@@ -66,15 +74,26 @@ public class SimpleGaussianMixtureModels {
 
         for (int iter = 0; iter < maxIters; iter++) {
             System.out.println("GMM Iteration " + iter);
-            double[][] probClusterForRow = SimpleGMMTools.parGetProbabilityOfClusterForRow(numClusters, data,
-                    datasetFractionForCluster, meanVectors, covs);
+            double[][] probClusterForRow;
+            if (useRobustGMM) {
+                probClusterForRow = RobustGMMTools.parGetProbabilityOfClusterForRow(numClusters, data,
+                        datasetFractionForCluster, meanVectors, covMatrices);
+            } else {
+                probClusterForRow = SimpleGMMTools.parGetProbabilityOfClusterForRow(numClusters, data,
+                        datasetFractionForCluster, meanVectors, covs);
+            }
             updateMeanCovsPriors(probClusterForRow);
         }
     }
 
     private void updateMeanCovsPriors(double[][] probClusterForRow) {
-        meanVectors = SimpleGMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
-        covs = SimpleGMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow, meanVectors);
+        if (useRobustGMM) {
+            meanVectors = RobustGMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
+            covMatrices = RobustGMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow, meanVectors);
+        } else {
+            meanVectors = SimpleGMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
+            covs = SimpleGMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow, meanVectors);
+        }
         datasetFractionForCluster = SimpleGMMTools.updateDatasetFraction(probClusterForRow, data.length);
     }
 
@@ -88,7 +107,11 @@ public class SimpleGaussianMixtureModels {
             while (i < data.length) {
                 double[] logLikelihood = new double[numClusters];
                 for (int k = 0; k < numClusters; k++) {
-                    logLikelihood[k] = SimpleGMMTools.multivariateNormal(data[i], meanVectors[k], covs[k]);
+                    if (useRobustGMM) {
+                        logLikelihood[k] = RobustGMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k]);
+                    } else {
+                        logLikelihood[k] = SimpleGMMTools.multivariateNormal(data[i], meanVectors[k], covs[k]);
+                    }
                 }
                 probabilities[i] = SimpleGMMTools.convertLogLikelihoodToProb(logLikelihood);
 
