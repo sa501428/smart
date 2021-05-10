@@ -31,7 +31,7 @@ public class CovarianceMatrixInverseAndDeterminant {
     public double determinant;
     public RealMatrix inverse;
 
-    private CovarianceMatrixInverseAndDeterminant(RealMatrix covMatrix) {
+    public CovarianceMatrixInverseAndDeterminant(RealMatrix covMatrix) {
         CholeskyDecomposition chol = new CholeskyDecomposition(covMatrix);
         determinant = chol.getDeterminant();
         inverse = chol.getSolver().getInverse();

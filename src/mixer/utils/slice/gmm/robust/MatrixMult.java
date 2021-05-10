@@ -22,10 +22,31 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.gmm;
+package mixer.utils.slice.gmm.robust;
 
-public class GMMException extends Exception {
-    public GMMException(String str) {
-        super(str);
+import mixer.clt.ParallelizedMixerTools;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class MatrixMult {
+
+    public static float[][] multiply(float[][] a, float[][] b) {
+        int numARows = a.length;
+        int numACols = a[0].length;
+        int numBCols = b[0].length;
+
+        float[][] result = new float[numARows][numBCols];
+        AtomicInteger currRowIndex = new AtomicInteger(0);
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int i = currRowIndex.getAndIncrement();
+            while (i < numARows) {
+                for (int j = 0; j < numBCols; j++) {
+                    for (int k = 0; k < numACols; k++) {
+                        result[i][j] += a[i][k] * b[k][j];
+                    }
+                }
+            }
+        });
+        return result;
     }
 }

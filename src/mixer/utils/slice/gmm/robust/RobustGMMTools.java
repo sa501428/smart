@@ -22,16 +22,18 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.gmm;
+package mixer.utils.slice.gmm.robust;
 
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.ArrayTools;
+import mixer.utils.slice.gmm.CovarianceMatrixInverseAndDeterminant;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GMMTools {
+public class RobustGMMTools {
 
     public static float[][] parGetWeightedMean(int numClusters, float[][] data, double[][] r) {
         float[][] meanVectors = new float[numClusters][data[0].length];
@@ -40,18 +42,23 @@ public class GMMTools {
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             int k = currIndex.getAndIncrement();
             while (k < numClusters) {
-                float sumProbabilities = 0;
+                float[] counts = new float[data[0].length];
+
                 for (int i = 0; i < data.length; i++) {
                     if (r[i][k] > 0) {
                         for (int j = 0; j < data[i].length; j++) {
-                            meanVectors[k][j] += r[i][k] * data[i][j];
+                            if (!Float.isNaN(data[i][j])) {
+                                meanVectors[k][j] += r[i][k] * data[i][j];
+                                counts[j] += r[i][k];
+                            }
                         }
-                        sumProbabilities += r[i][k];
                     }
                 }
 
                 for (int j = 0; j < data[0].length; j++) {
-                    meanVectors[k][j] /= sumProbabilities;
+                    if (counts[j] > 0) {
+                        meanVectors[k][j] /= counts[j];
+                    }
                 }
 
                 k = currIndex.getAndIncrement();
@@ -61,12 +68,20 @@ public class GMMTools {
         return meanVectors;
     }
 
-    public static double multivariateNormal(float[] x, float[] meanVector,
-                                            CovarianceMatrixInverseAndDeterminant cov) {
-        RealMatrix diff = validSubtract(x, meanVector);
-        return multivariateNormalCalcExponent(x.length, diff, cov);
-    }
+    public static double multivariateNormal(float[] x, float[] meanVector, RealMatrix covarianceMatrix) {
+        int[] status = new int[x.length];
+        Arrays.fill(status, -1);
+        int n = getStatus(x, meanVector, status);
+        if (n < 2) {
+            System.err.println("Invalid match " + n);
+            return Double.NaN;
+        }
 
+        RealMatrix cov = getSubsetCovMatrix(covarianceMatrix, status, n);
+        CovarianceMatrixInverseAndDeterminant covInvDet = new CovarianceMatrixInverseAndDeterminant(cov);
+        RealMatrix diff = validSubtract(x, meanVector, status, n);
+        return multivariateNormalCalcExponent(n, diff, covInvDet);
+    }
 
     public static double multivariateNormalCalcExponent(int n, RealMatrix diff,
                                                         CovarianceMatrixInverseAndDeterminant cov) {
@@ -83,16 +98,53 @@ public class GMMTools {
         return matrix.getEntry(0, 0);
     }
 
-    public static RealMatrix validSubtract(float[] x, float[] mu) {
-        double[][] result = new double[x.length][1];
-        for (int k = 0; k < x.length; k++) {
-            result[k][0] = x[k] - mu[k];
+    public static RealMatrix validSubtract(float[] x, float[] mu, int[] status, int n) {
+        double[][] result = new double[n][1];
+        for (int k = 0; k < status.length; k++) {
+            if (status[k] > -1) {
+                result[status[k]][0] = x[k] - mu[k];
+            }
         }
         return new Array2DRowRealMatrix(result);
     }
 
-    public static float[] addUpAllRows(double[][] matrix) {
-        float[] result = new float[matrix[0].length];
+    public static RealMatrix getSubsetCovMatrix(RealMatrix cov, int[] status, int n) {
+        double[][] covMatrix = cov.getData();
+        double[][] subset = new double[n][n];
+        for (int i = 0; i < covMatrix.length; i++) {
+            if (status[i] > -1) {
+                for (int j = i; j < covMatrix.length; j++) {
+                    if (status[j] > -1) {
+                        subset[status[i]][status[j]] = covMatrix[i][j];
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < subset.length; i++) {
+            for (int j = i + 1; j < subset.length; j++) {
+                subset[j][i] = subset[i][j];
+            }
+        }
+        return new Array2DRowRealMatrix(subset);
+    }
+
+    public static int getStatus(float[] x, float[] meanVector, int[] status) {
+        int counter = 0;
+        for (int i = 0; i < x.length; i++) {
+            if (!Float.isNaN(x[i] - meanVector[i])) {
+                status[i] = counter++;
+            }
+        }
+        if (counter <= 0) {
+            System.err.println("mu " + Arrays.toString(meanVector));
+            System.err.println("x " + Arrays.toString(x));
+            return -1;
+        }
+        return counter;
+    }
+
+    public static double[] addUpAllRows(double[][] matrix) {
+        double[] result = new double[matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 result[j] += matrix[i][j];
@@ -102,8 +154,7 @@ public class GMMTools {
     }
 
     public static double[][] parGetProbabilityOfClusterForRow(int numClusters, float[][] data, double[] pi,
-                                                              float[][] meanVectors,
-                                                              CovarianceMatrixInverseAndDeterminant[] covs) {
+                                                              float[][] meanVectors, RealMatrix[] covs) {
         double[][] r = new double[data.length][numClusters];
         double[] logpi = logPriors100(pi);
 
@@ -154,10 +205,10 @@ public class GMMTools {
     }
 
     public static double[] updateDatasetFraction(double[][] probClusterForRow, int length) {
-        float[] sumForCluster = GMMTools.addUpAllRows(probClusterForRow);
+        double[] sumForCluster = RobustGMMTools.addUpAllRows(probClusterForRow);
         double[] fraction = new double[sumForCluster.length];
         for (int k = 0; k < sumForCluster.length; k++) {
-            fraction[k] = sumForCluster[k] / (float) (length);
+            fraction[k] = sumForCluster[k] / (length);
         }
         return fraction;
     }

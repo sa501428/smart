@@ -22,28 +22,29 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.gmm;
+package mixer.utils.slice.gmm.robust;
 
 import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GaussianMixtureModels {
+public class RobustGaussianMixtureModels {
     private static final float startingProbability = 0.85f;
     private final float[][] data;
     private final int numClusters;
     private final int maxIters;
     private final List<List<Integer>> startingIndices;
     private float[][] meanVectors; // add the rows and divide by num
-    private CovarianceMatrixInverseAndDeterminant[] covs;
+    private RealMatrix[] covMatrices;
     private double[] datasetFractionForCluster;
     private boolean startingFromScratch = true;
     private double[][] probabilities;
 
-    public GaussianMixtureModels(float[][] data, int numClusters, int maxIters, List<List<Integer>> startingIndices) {
+    public RobustGaussianMixtureModels(float[][] data, int numClusters, int maxIters, List<List<Integer>> startingIndices) {
         this.data = data;
         this.numClusters = numClusters;
         this.maxIters = maxIters;
@@ -65,16 +66,16 @@ public class GaussianMixtureModels {
 
         for (int iter = 0; iter < maxIters; iter++) {
             System.out.println("GMM Iteration " + iter);
-            double[][] probClusterForRow = GMMTools.parGetProbabilityOfClusterForRow(numClusters, data,
-                    datasetFractionForCluster, meanVectors, covs);
+            double[][] probClusterForRow = RobustGMMTools.parGetProbabilityOfClusterForRow(numClusters, data,
+                    datasetFractionForCluster, meanVectors, covMatrices);
             updateMeanCovsPriors(probClusterForRow);
         }
     }
 
     private void updateMeanCovsPriors(double[][] probClusterForRow) {
-        meanVectors = GMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
-        covs = GMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow, meanVectors);
-        datasetFractionForCluster = GMMTools.updateDatasetFraction(probClusterForRow, data.length);
+        meanVectors = RobustGMMTools.parGetWeightedMean(numClusters, data, probClusterForRow);
+        covMatrices = RobustGMMCovTools.parGetNewWeightedFeatureCovarianceMatrix(numClusters, data, probClusterForRow, meanVectors);
+        datasetFractionForCluster = RobustGMMTools.updateDatasetFraction(probClusterForRow, data.length);
     }
 
     public int[] predict() {
@@ -87,9 +88,9 @@ public class GaussianMixtureModels {
             while (i < data.length) {
                 double[] logLikelihood = new double[numClusters];
                 for (int k = 0; k < numClusters; k++) {
-                    logLikelihood[k] = GMMTools.multivariateNormal(data[i], meanVectors[k], covs[k]);
+                    logLikelihood[k] = RobustGMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k]);
                 }
-                probabilities[i] = GMMTools.convertLogLikelihoodToProb(logLikelihood);
+                probabilities[i] = RobustGMMTools.convertLogLikelihoodToProb(logLikelihood);
 
                 i = currentIndex.getAndIncrement();
             }

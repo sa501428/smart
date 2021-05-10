@@ -22,15 +22,16 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.gmm;
+package mixer.utils.slice.gmm.simple;
 
 import mixer.clt.ParallelizedMixerTools;
+import mixer.utils.slice.gmm.CovarianceMatrixInverseAndDeterminant;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GMMCovTools {
+public class SimpleGMMCovTools {
 
     public static CovarianceMatrixInverseAndDeterminant[] parGetNewWeightedFeatureCovarianceMatrix(int numClusters, float[][] data,
                                                                                                    double[][] probClusterForRow,

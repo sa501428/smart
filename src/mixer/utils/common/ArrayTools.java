@@ -108,9 +108,11 @@ public class ArrayTools {
     }
 
     public static double max(double[] array) {
-        double maxVal = array[0];
+        double maxVal = -Double.MAX_VALUE;
         for (double val : array) {
-            maxVal = Math.max(maxVal, val);
+            if (!Double.isNaN(val)) {
+                maxVal = Math.max(maxVal, val);
+            }
         }
         return maxVal;
     }
