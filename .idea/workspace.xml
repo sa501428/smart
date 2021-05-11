@@ -30,16 +30,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup for robust gmm">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMCovTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMCovTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGaussianMixtureModels.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGenomeWideGMMRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GenomeWideGMMRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGMMCovTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGMMCovTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGaussianMixtureModels.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGenomeWideGMMRunner.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,13 +118,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -192,14 +188,8 @@
       <workItem from="1619564540024" duration="11529000" />
       <workItem from="1619757944287" duration="27000" />
       <workItem from="1619760500554" duration="47000" />
-      <workItem from="1619854002161" duration="78594000" />
-    </task>
-    <task id="LOCAL-00079" summary="add back left over clustering">
-      <created>1614171629901</created>
-      <option name="number" value="00079" />
-      <option name="presentableId" value="LOCAL-00079" />
-      <option name="project" value="LOCAL" />
-      <updated>1614171629901</updated>
+      <workItem from="1619854002161" duration="79503000" />
+      <workItem from="1620688393019" duration="7357000" />
     </task>
     <task id="LOCAL-00080" summary="bug fix, roll back leftover clusterer">
       <created>1614178242716</created>
@@ -537,7 +527,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620629794373</updated>
     </task>
-    <option name="localTasksCounter" value="128" />
+    <task id="LOCAL-00128" summary="code cleanup, remove duplicate code">
+      <created>1620687592814</created>
+      <option name="number" value="00128" />
+      <option name="presentableId" value="LOCAL-00128" />
+      <option name="project" value="LOCAL" />
+      <updated>1620687592814</updated>
+    </task>
+    <option name="localTasksCounter" value="129" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -562,7 +559,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="auto umap for scatterplot when needed; update version" />
     <MESSAGE value="new tests" />
     <MESSAGE value="more debugging, print statements added" />
     <MESSAGE value="further parallelization, updated tests" />
@@ -587,7 +583,8 @@
     <MESSAGE value="code cleanup, optimize runtime; reduce matrix calculations" />
     <MESSAGE value="support for simple and robust GMM" />
     <MESSAGE value="code cleanup, remove duplicate code" />
-    <option name="LAST_COMMIT_MESSAGE" value="code cleanup, remove duplicate code" />
+    <MESSAGE value="code cleanup for robust gmm" />
+    <option name="LAST_COMMIT_MESSAGE" value="code cleanup for robust gmm" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

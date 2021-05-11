@@ -58,19 +58,22 @@ public class RobustGMMCovTools {
             int i = currRowIndex.getAndIncrement();
             while (i < dimension) {
                 for (int j = i; j < dimension; j++) {
-                    double weight = 0;
+                    // todo mss revert?
+                    double sumWeight = 0;
+                    double sumWeightSquared = 0;
                     double accum = 0;
                     for (int k = 0; k < numDataPoints; k++) {
                         double val = diff[k][i] * diff[k][j];
                         if (!Double.isNaN(val)) {
-                            accum += probClusterForRow[k][clusterID] * val;
-                            weight += probClusterForRow[k][clusterID];
+                            double w = probClusterForRow[k][clusterID];
+                            accum += w * val;
+                            sumWeight += w;
+                            sumWeightSquared += w * w;
                         }
                     }
-                    if (weight > 0) {
-                        cov[i][j] = accum / weight;
-                        cov[j][i] = cov[i][j]; // symmetric
-                    }
+                    //System.out.println(sumWeight);
+                    cov[i][j] = sumWeight * accum / ((sumWeight * sumWeight) - sumWeightSquared);
+                    cov[j][i] = cov[i][j]; // symmetric
                 }
                 i = currRowIndex.getAndIncrement();
             }

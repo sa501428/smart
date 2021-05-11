@@ -25,7 +25,6 @@
 package mixer.utils.slice.gmm;
 
 import javastraw.tools.MatrixTools;
-import mixer.utils.slice.cleaning.MatrixImputer;
 
 import java.util.*;
 
@@ -54,15 +53,15 @@ public class Test {
         plotter.plot(id, "/Users/mshamim/Desktop/testgmm/actual");
         plotter.plot(startingIndices, "/Users/mshamim/Desktop/testgmm/initial");
 
-        putInNans(data, .2); // .2 .1
+        putInNans(data, .06); // .2 .1
 
         //approximateCorrection(data);
-        data = MatrixImputer.imputeUntilNoNans(data);
+        //data = MatrixImputer.imputeUntilNoNans(data);
 
         System.out.println("Starting GMM");
         long start = System.nanoTime();
         GaussianMixtureModels gmm = new GaussianMixtureModels(data, NUM_CLUSTERS, 20, startingIndices,
-                false);
+                true);
         try {
             gmm.fit();
             int[] result = gmm.predict();
