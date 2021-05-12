@@ -32,8 +32,12 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup for robust gmm">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMCovTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMCovTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,9 +88,9 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.matrices" />
       <recent name="mixer.utils.slice.gmm" />
       <recent name="mixer.utils.slice.cleaning" />
-      <recent name="mixer.utils.slice.matrices" />
       <recent name="mixer.utils" />
       <recent name="mixer.utils.slice.cleaning.utils" />
     </key>
@@ -118,15 +122,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -189,14 +191,9 @@
       <workItem from="1619757944287" duration="27000" />
       <workItem from="1619760500554" duration="47000" />
       <workItem from="1619854002161" duration="79503000" />
-      <workItem from="1620688393019" duration="7357000" />
-    </task>
-    <task id="LOCAL-00080" summary="bug fix, roll back leftover clusterer">
-      <created>1614178242716</created>
-      <option name="number" value="00080" />
-      <option name="presentableId" value="LOCAL-00080" />
-      <option name="project" value="LOCAL" />
-      <updated>1614178242716</updated>
+      <workItem from="1620688393019" duration="7960000" />
+      <workItem from="1620715911644" duration="1214000" />
+      <workItem from="1620771976367" duration="4560000" />
     </task>
     <task id="LOCAL-00081" summary="umap tools">
       <created>1614190402318</created>
@@ -534,7 +531,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620687592814</updated>
     </task>
-    <option name="localTasksCounter" value="129" />
+    <task id="LOCAL-00129" summary="code cleanup for robust gmm">
+      <created>1620711899219</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
+      <option name="project" value="LOCAL" />
+      <updated>1620711899219</updated>
+    </task>
+    <option name="localTasksCounter" value="130" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

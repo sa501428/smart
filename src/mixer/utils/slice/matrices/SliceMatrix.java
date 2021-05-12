@@ -185,9 +185,10 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                         int binX = cr.getBinX();
                         int binY = cr.getBinY();
 
-                        if (rowPosChrom1.containsKey(binX) && rowPosChrom2.containsKey(binY)
-                                && colPosChrom2.containsKey(binY) && colPosChrom1.containsKey(binX)) {
+                        if (rowPosChrom1.containsKey(binX) && colPosChrom2.containsKey(binY)) {
                             matrix[rowPosChrom1.get(binX)][colPosChrom2.get(binY)] += val;
+                        }
+                        if (rowPosChrom2.containsKey(binY) && colPosChrom1.containsKey(binX)) {
                             matrix[rowPosChrom2.get(binY)][colPosChrom1.get(binX)] += val;
                         }
                     }

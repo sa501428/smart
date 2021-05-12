@@ -25,9 +25,10 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
+import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
+import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,36 +38,36 @@ public class SimilarityMatrixTools {
     public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
                                                       long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
-            return getAsymmetricMatrix(matrix, metric, numPerCentroid, seed);
+            return getAsymmetricMatrix(matrix, new SimilarityMetric[]{metric}, matrix.length / numPerCentroid, seed);
         }
 
         return getSymmetricMatrix(matrix, metric);
     }
 
-    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid, long seed) {
-        final int numInitialCentroids = matrix.length / numPerCentroid;
+    public static float[][] getCosinePearsonCorrMatrix(float[][] matrix, int numCentroids, long seed) {
+        SimilarityMetric[] metrics = new SimilarityMetric[]{
+                RobustCosineSimilarity.SINGLETON,
+                RobustCorrelationSimilarity.SINGLETON
+        };
 
+        return getAsymmetricMatrix(matrix, metrics, numCentroids, seed);
+    }
+
+    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics, int numInitCentroids, long seed) {
         final float[][] centroids;
-        final float[] weights;
-        if (numPerCentroid <= 1) {
-            centroids = matrix;
-            weights = new float[centroids.length];
-            Arrays.fill(weights, 1);
-        } else {
-            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitialCentroids, seed, 100);
+        if (numInitCentroids != matrix.length) {
+            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 100);
             centroids = centroidMaker.generateCentroids(5);
-            weights = centroidMaker.getWeights();
-            for (int i = 0; i < weights.length; i++) {
-                weights[i] = (float) Math.sqrt(weights[i]);
-            }
+        } else {
+            centroids = matrix;
         }
 
         int numCentroids = centroids.length;
-        if (MixerGlobals.printVerboseComments || centroids.length != numInitialCentroids) {
-            System.out.println("AsymMatrix: Was initially " + numInitialCentroids + " centroids, but using " + numCentroids);
+        if (MixerGlobals.printVerboseComments || centroids.length != numInitCentroids) {
+            System.out.println("AsymMatrix: Was initially " + numInitCentroids + " centroids, but using " + numCentroids);
         }
 
-        float[][] result = new float[matrix.length][numCentroids];
+        float[][] result = new float[matrix.length][numCentroids * metrics.length];
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
 
         System.out.println("... generating sym matrix");
@@ -74,17 +75,12 @@ public class SimilarityMatrixTools {
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
             Runnable worker = () -> {
-                int numErrors = 0;
                 int i = currRowIndex.getAndIncrement();
                 while (i < matrix.length) {
                     for (int j = 0; j < numCentroids; j++) {
-                        result[i][j] = metric.distance(centroids[j], matrix[i]);
-
-                        if (Float.isNaN(result[i][j])) {
-                            numErrors++;
-                            if (numErrors < 2) {
-                                System.err.println("Error appearing in distance measure...");
-                            }
+                        for (int z = 0; z < metrics.length; z++) {
+                            int offset = z * numCentroids;
+                            result[i][j + offset] = metrics[z].distance(centroids[j], matrix[i]);
                         }
                     }
                     i = currRowIndex.getAndIncrement();
@@ -98,17 +94,6 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
-        /*
-        int[] weights3 = new int[weights.length * 3];
-        System.arraycopy(weights, 0, weights3, 0, weights.length);
-        System.arraycopy(weights, 0, weights3, offset1, weights.length);
-        System.arraycopy(weights, 0, weights3, offset2, weights.length);
-         */
-
-        //ZScoreTools.inPlaceScaleCol(result, weights);
-        //ZScoreTools.inPlaceScaleCol(result, weights);
-
-        //return FloatMatrixTools.concatenate(matrix, result);
         return result;
     }
 
