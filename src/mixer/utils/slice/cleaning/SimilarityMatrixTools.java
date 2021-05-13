@@ -45,12 +45,22 @@ public class SimilarityMatrixTools {
     }
 
     public static float[][] getCosinePearsonCorrMatrix(float[][] matrix, int numCentroids, long seed) {
+        RobustCosineSimilarity.USE_ARC = true;
+        RobustCorrelationSimilarity.USE_ARC = true;
+
         SimilarityMetric[] metrics = new SimilarityMetric[]{
-                RobustCosineSimilarity.SINGLETON,
+                //RobustCosineSimilarity.SINGLETON,
                 RobustCorrelationSimilarity.SINGLETON
+                //RobustEuclideanDistance.SINGLETON,
+                //RobustManhattanDistance.SINGLETON
         };
 
-        return getAsymmetricMatrix(matrix, metrics, numCentroids, seed);
+        float[][] answer = getAsymmetricMatrix(matrix, metrics, numCentroids, seed);
+
+        RobustCosineSimilarity.USE_ARC = false;
+        RobustCorrelationSimilarity.USE_ARC = false;
+
+        return answer;
     }
 
     private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics, int numInitCentroids, long seed) {

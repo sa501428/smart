@@ -85,7 +85,7 @@ public abstract class CompositeGenomeWideMatrix {
         SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
         gwCleanMatrix = matrixCleanupReduction.getCleanFilteredZscoredMatrix(rowIndexToIntervalMap, weights);
-        corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 100, generator.nextLong());
+        corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
 
         File file1 = new File(outputDirectory, "zscore_matrix.npy");
         MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix);
@@ -94,7 +94,9 @@ public abstract class CompositeGenomeWideMatrix {
         MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), corrData);
     }
 
-    public synchronized double processKMeansClusteringResult(Cluster[] clusters, GenomeWideList<SubcompartmentInterval> subcompartments) {
+    public synchronized double processKMeansClusteringResult(Cluster[] clusters,
+                                                             GenomeWideList<SubcompartmentInterval> subcompartments,
+                                                             boolean useCorr) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
@@ -125,8 +127,13 @@ public abstract class CompositeGenomeWideMatrix {
             }
 
             for (int i : cluster.getMemberIndexes()) {
-                withinClusterSumOfSquares +=
-                        RobustEuclideanDistance.getNonNanMeanSquaredError(cluster.getCenter(), gwCleanMatrix[i]);
+                if (useCorr) {
+                    withinClusterSumOfSquares +=
+                            RobustEuclideanDistance.getNonNanMeanSquaredError(cluster.getCenter(), corrData[i]);
+                } else {
+                    withinClusterSumOfSquares +=
+                            RobustEuclideanDistance.getNonNanMeanSquaredError(cluster.getCenter(), gwCleanMatrix[i]);
+                }
 
                 if (rowIndexToIntervalMap.containsKey(i)) {
                     SubcompartmentInterval interv = rowIndexToIntervalMap.get(i);
@@ -153,7 +160,7 @@ public abstract class CompositeGenomeWideMatrix {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
 
-        for (int i = 0; i < gwCleanMatrix.length; i++) {
+        for (int i = 0; i < corrData.length; i++) {
             if (rowIndexToIntervalMap.containsKey(i)) {
                 SubcompartmentInterval interv = rowIndexToIntervalMap.get(i);
                 if (interv != null) {

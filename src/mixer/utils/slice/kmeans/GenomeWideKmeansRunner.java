@@ -50,10 +50,12 @@ public class GenomeWideKmeansRunner {
     private GenomeWideList<SubcompartmentInterval> finalCompartments;
     private int numClusters = 0;
     private final List<List<Integer>> indicesMap = new ArrayList<>();
+    private final boolean useCorrMatrix;
 
     public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler,
                                   CompositeGenomeWideMatrix interMatrix,
                                   boolean useCorrMatrix) {
+        this.useCorrMatrix = useCorrMatrix;
         this.interMatrix = interMatrix;
         matrix = interMatrix.getData(useCorrMatrix);
         this.chromosomeHandler = chromosomeHandler;
@@ -90,7 +92,8 @@ public class GenomeWideKmeansRunner {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
                     populateIndicesMap(clusters);
                     System.out.print(".");
-                    double wcss = interMatrix.processKMeansClusteringResult(clusters, finalCompartments);
+                    double wcss = interMatrix.processKMeansClusteringResult(clusters, finalCompartments,
+                            useCorrMatrix);
                     numActualClusters.set(clusters.length);
                     withinClusterSumOfSquaresForRun.set(wcss);
                 }
