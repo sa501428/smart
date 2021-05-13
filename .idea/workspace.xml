@@ -30,13 +30,12 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="bug fix, updated distances">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixImputerOriginal.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCorrelationSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCorrelationSimilarity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixImputer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixImputer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,11 +98,11 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.algos" />
       <recent name="mixer.utils.matrix" />
       <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.similaritymeasures" />
-      <recent name="mixer.utils.custom" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Aggregate">
@@ -193,14 +192,7 @@
       <workItem from="1619854002161" duration="79503000" />
       <workItem from="1620688393019" duration="7960000" />
       <workItem from="1620715911644" duration="1214000" />
-      <workItem from="1620771976367" duration="9041000" />
-    </task>
-    <task id="LOCAL-00082" summary="processing">
-      <created>1614210678353</created>
-      <option name="number" value="00082" />
-      <option name="presentableId" value="LOCAL-00082" />
-      <option name="project" value="LOCAL" />
-      <updated>1614210678353</updated>
+      <workItem from="1620771976367" duration="14301000" />
     </task>
     <task id="LOCAL-00083" summary="code for balancing added">
       <created>1614287697112</created>
@@ -538,7 +530,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620863059044</updated>
     </task>
-    <option name="localTasksCounter" value="131" />
+    <task id="LOCAL-00131" summary="bug fix, updated distances">
+      <created>1620889786237</created>
+      <option name="number" value="00131" />
+      <option name="presentableId" value="LOCAL-00131" />
+      <option name="project" value="LOCAL" />
+      <updated>1620889786237</updated>
+    </task>
+    <option name="localTasksCounter" value="132" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -563,7 +562,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="more debugging, print statements added" />
     <MESSAGE value="further parallelization, updated tests" />
     <MESSAGE value="error handling of GMM" />
     <MESSAGE value="bug fix" />
@@ -588,7 +586,8 @@
     <MESSAGE value="code cleanup, remove duplicate code" />
     <MESSAGE value="code cleanup for robust gmm" />
     <MESSAGE value="fix up gmm and kmeans runs; redo corr matrix" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix up gmm and kmeans runs; redo corr matrix" />
+    <MESSAGE value="bug fix, updated distances" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix, updated distances" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -28,21 +28,32 @@ import javastraw.tools.MatrixTools;
 import javastraw.tools.ParallelizedJuicerTools;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
-import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MatrixImputer {
-    public static float[][] getImputedMatrix(float[][] initialData) {
+public class MatrixImputerOriginal {
+    private static float R2_CUTOFF = 0.5f;
+    private static boolean DO_TRANSPOSE = false;
+
+    public static float[][] getImputedMatrix(float[][] data, boolean doTranspose) {
+        DO_TRANSPOSE = doTranspose;
+        float[][] initialData = data;
+        if (doTranspose) {
+            initialData = MatrixTools.transpose(data);
+        }
         float[][] imputed = MatrixTools.deepClone(initialData);
         fillInImputedMatrix(imputed, initialData);
+        if (doTranspose) {
+            return MatrixTools.transpose(imputed);
+        }
         return imputed;
     }
 
     private static void fillInImputedMatrix(float[][] imputed, float[][] initialData) {
+        float[][] r2Matrix = getR2Matrix(initialData);
         System.out.println("Imputing...");
 
         AtomicInteger index = new AtomicInteger(0);
@@ -51,8 +62,11 @@ public class MatrixImputer {
             while (i < imputed.length) {
                 BitSet yIsNan = getIsNan(imputed[i]);
                 if (yIsNan.cardinality() > 0) {
-                    int[] rowsToUse = getTwoNearestRows(yIsNan, imputed[i], initialData);
-                    updateImputedMatrixEntries(yIsNan, imputed[i], initialData, rowsToUse);
+                    List<Integer> colsToUse = getColumnsWithStrongCorr(r2Matrix[i]);
+                    if (colsToUse.size() > 0) {
+                        updateImputedMatrixEntries(yIsNan, imputed[i], initialData, colsToUse);
+                        //System.out.print(".");
+                    }
                 }
                 i = index.getAndIncrement();
             }
@@ -61,24 +75,33 @@ public class MatrixImputer {
         System.out.println("Done imputing; Nans: " + numNans(initialData) + " -> " + numNans(imputed));
     }
 
-    private static void updateImputedMatrixEntries(BitSet yIsNan, float[] imputed, float[][] data, int[] rowsToUse) {
+    private static void updateImputedMatrixEntries(BitSet yIsNan, float[] imputed, float[][] data, List<Integer> colsToUse) {
+        Map<Integer, SimpleRegression> regressions = generateAllRegressions(imputed, data, yIsNan, colsToUse);
+
         for (int j = 0; j < imputed.length; j++) {
             if (yIsNan.get(j)) {
-                imputed[j] = getPredictedValue(rowsToUse, j, data);
+                imputed[j] = getPredictedValue(regressions, j, data);
             }
         }
     }
 
-    private static float getPredictedValue(int[] rowIndices, int col, float[][] data) {
-        float val = 0;
-        int count = 0;
-        for (int row : rowIndices) {
+    private static float getPredictedValue(Map<Integer, SimpleRegression> regressions, int col, float[][] data) {
+        double accum = 0;
+        double totalWeights = 0;
+        for (Integer row : regressions.keySet()) {
             if (!Float.isNaN(data[row][col])) {
-                val += data[row][col];
-                count++;
+                SimpleRegression regression = regressions.get(row);
+                double newY = regression.predict(data[row][col]);
+                double weight = regression.getRSquare();
+                accum += (newY * weight);
+                totalWeights += weight;
             }
         }
-        return val / count;
+
+        if (totalWeights > .1) {
+            return (float) (accum / totalWeights);
+        }
+        return Float.NaN;
     }
 
     private static Map<Integer, SimpleRegression> generateAllRegressions(float[] imputed, float[][] data,
@@ -110,44 +133,14 @@ public class MatrixImputer {
         return indexIsNan;
     }
 
-    private static int[] getTwoNearestRows(BitSet yIsNan, float[] vector, float[][] initialData) {
-
-        List<Integer> potentialIndicesToCheck = new ArrayList<>();
-        int colToCheck = yIsNan.nextSetBit(0);
-        if (colToCheck > -1) {
-            for (int i = 0; i < initialData.length; i++) {
-                if (Float.isNaN(initialData[i][colToCheck])) {
-                    continue;
-                }
-                potentialIndicesToCheck.add(i);
+    private static List<Integer> getColumnsWithStrongCorr(float[] r2Vals) {
+        List<Integer> strongCorrs = new ArrayList<>();
+        for (int i = 0; i < r2Vals.length; i++) {
+            if (r2Vals[i] >= R2_CUTOFF) {
+                strongCorrs.add(i);
             }
         }
-
-        return getTwoNearestRowsFromList(potentialIndicesToCheck, vector, initialData);
-    }
-
-    private static int[] getTwoNearestRowsFromList(List<Integer> potentialIndicesToCheck, float[] vector, float[][] initialData) {
-        int[] closestIndices = new int[2];
-        float[] closestVals = new float[2];
-        Arrays.fill(closestIndices, -1);
-        Arrays.fill(closestVals, Float.MAX_VALUE);
-
-        for (int i : potentialIndicesToCheck) {
-            float dist = RobustEuclideanDistance.SINGLETON.distance(vector, initialData[i]);
-            if (dist < closestVals[1]) {
-                if (dist < closestVals[0]) {
-                    closestVals[1] = closestVals[0];
-                    closestIndices[1] = closestIndices[0];
-                    closestVals[0] = dist;
-                    closestIndices[0] = i;
-                } else {
-                    closestVals[1] = dist;
-                    closestIndices[1] = i;
-                }
-            }
-        }
-
-        return closestIndices;
+        return strongCorrs;
     }
 
     private static float[][] getR2Matrix(float[][] initialData) {
@@ -189,6 +182,9 @@ public class MatrixImputer {
         int avgNanInRows = ArrayTools.mean(numNanRows);
         int avgNanInCols = ArrayTools.mean(numNanCols);
 
+        if (DO_TRANSPOSE) {
+            return "" + counter + "/(" + maxNanInCols + " : " + avgNanInCols + ")/(" + maxNanInRows + " : " + avgNanInRows + ")";
+        }
         return "" + counter + "/(" + maxNanInRows + " : " + avgNanInRows + ")/(" + maxNanInCols + " : " + avgNanInCols + ")";
     }
 
@@ -207,10 +203,39 @@ public class MatrixImputer {
     }
 
     public static float[][] imputeUntilNoNansOnlyNN(float[][] data) {
+        R2_CUTOFF = 0.8f;
+        int numNans = getNumNans(data);
         float[][] newData = data;
         do {
-            newData = getImputedMatrix(newData);
-        } while (checkIfHasNan(newData));
+            int priorNum = numNans;
+            newData = getImputedMatrix(newData, false);
+            numNans = getNumNans(newData);
+
+            if (priorNum == numNans) {
+                R2_CUTOFF /= 1.1f;
+                System.out.println("New R^2 Cutoff " + R2_CUTOFF);
+            }
+
+        } while (numNans > 0);
+        return newData;
+    }
+
+    public static float[][] imputeUntilNoNans(float[][] data) {
+        R2_CUTOFF = 0.5f;
+        int numNans = getNumNans(data);
+        float[][] newData = data;
+        do {
+            int priorNum = numNans;
+            newData = getImputedMatrix(newData, true);
+            newData = getImputedMatrix(newData, false);
+            numNans = getNumNans(newData);
+
+            if (priorNum == numNans) {
+                R2_CUTOFF /= 1.1f;
+                System.out.println("New R^2 Cutoff " + R2_CUTOFF);
+            }
+
+        } while (numNans > 0);
         return newData;
     }
 

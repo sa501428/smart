@@ -49,7 +49,7 @@ public class AggregateProcessing {
                         "-k", "KR:INTER_KR", //"--verbose", // INTER_KR
                         //"-w", "20",
                         file, "2,8,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_35_Corr50_" + res + "_" + folder, folder + "_"
+                        "/Users/mshamim/Desktop/reSLICE/phnx_37_ImputeNN_" + res + "_" + folder, folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
                 MixerTools.main(strings);
