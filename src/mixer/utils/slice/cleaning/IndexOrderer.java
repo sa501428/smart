@@ -123,6 +123,8 @@ public class IndexOrderer {
         }
 
         List<Integer> problemIndices = Collections.synchronizedList(new ArrayList<>());
+        int[] clusterAssignment = new int[newIndexOrderAssignments.length];
+        Arrays.fill(clusterAssignment, IGNORE);
 
         AtomicInteger currDataIndex = new AtomicInteger(0);
         ParallelizedMixerTools.launchParallelizedCode(() -> {
@@ -145,7 +147,7 @@ public class IndexOrderer {
                             problemIndices.add(bestIndex);
                         }
                     }
-                    newIndexOrderAssignments[i] = bestIndex;
+                    clusterAssignment[i] = bestIndex;
                 }
                 i = currDataIndex.getAndIncrement();
             }
@@ -157,6 +159,24 @@ public class IndexOrderer {
             System.out.println("IndexOrderer problems: " + problemIndices.size() + " (" + percentProblem + " %)");
         }
 
+        int filtered = 0;
+        for (int z = 0; z < clusterAssignment.length; z++) {
+            int zMinus1 = Math.max(0, z - 1);
+            int zPlus1 = Math.min(z + 1, clusterAssignment.length - 1);
+            if (clusterAssignment[z] != clusterAssignment[zMinus1]
+                    && clusterAssignment[z] != clusterAssignment[zPlus1]) {
+                clusterAssignment[z] = IGNORE;
+                filtered++;
+            }
+        }
+        System.out.println("Post filtered: " + filtered);
+
+
+        for (int i = 0; i < clusterAssignment.length; i++) {
+            if (newIndexOrderAssignments[i] < CHECK_VAL) {
+                newIndexOrderAssignments[i] = clusterAssignment[i];
+            }
+        }
 
         return centroids.length;
     }

@@ -35,7 +35,7 @@ import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
-import mixer.utils.slice.cleaning.SimilarityMatrixTools;
+import mixer.utils.slice.cleaning.MatrixImputer;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
@@ -85,7 +85,8 @@ public abstract class CompositeGenomeWideMatrix {
         SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
         gwCleanMatrix = matrixCleanupReduction.getCleanFilteredZscoredMatrix(rowIndexToIntervalMap, weights);
-        corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
+        corrData = MatrixImputer.imputeUntilNoNansOnlyNN(gwCleanMatrix);
+        //corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
 
         File file1 = new File(outputDirectory, "zscore_matrix.npy");
         MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix);
