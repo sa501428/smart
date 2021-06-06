@@ -33,11 +33,11 @@ public class Test {
     private static float[][] data;
     private static int[] id;
     private static final Random generator = new Random(5);
-    private static int NUM_CLUSTERS = 3;
 
     public static void main(String[] args) {
 
-        List<List<Integer>> startingIndices = generateData();
+        int NUM_CLUSTERS = 6;
+        List<List<Integer>> startingIndices = generateData(NUM_CLUSTERS);
 
         MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_data.npy", data);
         MatrixTools.saveMatrixTextNumpy("/Users/mshamim/Desktop/testgmm/actual_ids.npy", id);
@@ -53,15 +53,15 @@ public class Test {
         plotter.plot(id, "/Users/mshamim/Desktop/testgmm/actual");
         plotter.plot(startingIndices, "/Users/mshamim/Desktop/testgmm/initial");
 
-        putInNans(data, .06); // .2 .1
+        //putInNans(data, .06); // .2 .1
 
         //approximateCorrection(data);
         //data = MatrixImputer.imputeUntilNoNans(data);
 
         System.out.println("Starting GMM");
         long start = System.nanoTime();
-        GaussianMixtureModels gmm = new GaussianMixtureModels(data, NUM_CLUSTERS, 20, startingIndices,
-                true);
+        GaussianMixtureModels gmm = new GaussianMixtureModels(data, NUM_CLUSTERS + 3, 20, startingIndices,
+                false);
         try {
             gmm.fit();
             int[] result = gmm.predict();
@@ -96,18 +96,17 @@ public class Test {
         return vals;
     }
 
-    private static List<List<Integer>> generateData() {
+    private static List<List<Integer>> generateData(int NUM_CLUSTERS) {
 
-        NUM_CLUSTERS = 6;
         int columnNums = 20;//100; // 2000
         int numPoints = 10000; //50k
 
         data = new float[numPoints][columnNums];
         id = new int[numPoints];
-        float[][] weights = generateRandomMatrix(NUM_CLUSTERS, 6); //6
-        float[][] offsets = generateRandomMatrix(NUM_CLUSTERS, 6);
+        float[][] weights = generateRandomMatrix(NUM_CLUSTERS, 10); //6
+        float[][] offsets = generateRandomMatrix(NUM_CLUSTERS, 10);
         List<List<Integer>> startingIndices = new ArrayList<>();
-        for (int s = 0; s < NUM_CLUSTERS; s++) {
+        for (int s = 0; s < NUM_CLUSTERS + 3; s++) {
             startingIndices.add(new ArrayList<>());
         }
 
@@ -125,7 +124,7 @@ public class Test {
             } else {
                 id[k] = 5;
             }
-            fillInRow(data, weights[id[k]], offsets[id[k]], startingIndices, k);
+            fillInRow(data, weights[id[k]], offsets[id[k]], startingIndices, k, NUM_CLUSTERS + 3);
         }
         return startingIndices;
     }
@@ -144,7 +143,8 @@ public class Test {
         return result;
     }
 
-    private static void fillInRow(float[][] data, float[] weight, float[] offset, List<List<Integer>> startingIndices, int k) {
+    private static void fillInRow(float[][] data, float[] weight, float[] offset,
+                                  List<List<Integer>> startingIndices, int k, int numClusters) {
         for (int z = 0; z < weight.length; z++) {
             data[k][z] = (float) (generator.nextGaussian() * weight[z] + offset[z]);
         }
@@ -155,20 +155,10 @@ public class Test {
             data[k][z] += 5 * (generator.nextFloat() - .5f);
         }
 
-        if (p75()) {
+        if (p50()) {
             startingIndices.get(id[k]).add(k);
         } else {
-            startingIndices.get(generator.nextInt(NUM_CLUSTERS)).add(k);
-        }
-    }
-
-    private static void updateGuesses(List<List<Integer>> startingIndices, int good, int bad1, int bad2, int index) {
-        if (p75()) {
-            startingIndices.get(good).add(index);
-        } else if (p50()) {
-            startingIndices.get(bad1).add(index);
-        } else {
-            startingIndices.get(bad2).add(index);
+            startingIndices.get(generator.nextInt(numClusters)).add(k);
         }
     }
 
@@ -178,37 +168,5 @@ public class Test {
 
     private static boolean p75() {
         return generator.nextBoolean() || generator.nextBoolean();
-    }
-
-    private static boolean p25() {
-        return generator.nextBoolean() && generator.nextBoolean();
-    }
-
-    private static List<List<Integer>> generateData0() {
-        List<List<Integer>> startingIndices = new ArrayList<>();
-        startingIndices.add(new ArrayList<>());
-        startingIndices.add(new ArrayList<>());
-        startingIndices.add(new ArrayList<>());
-        NUM_CLUSTERS = 3;
-        data = new float[1000][2];
-        for (int k = 0; k < data.length; k++) {
-            if (p50()) {
-                data[k][0] = (float) (generator.nextGaussian() * 15 + 1); // 15 3
-                data[k][1] = (float) (generator.nextGaussian() * 15 - 2); // 15 3
-                id[k] = 0;
-                updateGuesses(startingIndices, 0, 1, 2, k);
-            } else if (p50()) {
-                data[k][0] = (float) (generator.nextGaussian() * 3 + 12);
-                data[k][1] = (float) (generator.nextGaussian() * 3 - 8);
-                id[k] = 1;
-                updateGuesses(startingIndices, 1, 0, 2, k);
-            } else {
-                data[k][0] = (float) (generator.nextGaussian() * 2 - 7);
-                data[k][1] = (float) (generator.nextGaussian() * 2 + 10);
-                id[k] = 2;
-                updateGuesses(startingIndices, 2, 1, 0, k);
-            }
-        }
-        return startingIndices;
     }
 }

@@ -36,10 +36,14 @@ import mixer.MixerGlobals;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
+import mixer.utils.slice.gmm.GMMClusterCaster;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SliceMatrix extends CompositeGenomeWideMatrix {
 
@@ -50,7 +54,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                 badIndexLocations, metric, maxClusterSizeExpected);
     }
 
-    MatrixAndWeight makeCleanScaledInterMatrix(Dataset ds) {
+    float[][] makeCleanScaledInterMatrix(Dataset ds) {
         // height/width chromosomes
         Map<Integer, Integer> indexToLength = calculateActualLengthForChromosomes(chromosomes);
         IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, intraNorm, badIndexLocations,
@@ -61,16 +65,11 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         Dimension dimensions = new Dimension(chromosomes, indexToLength);
         Dimension compressedDimensions = new Dimension(chromosomes, indexToCompressedLength);
 
-        int[] weights = new int[compressedDimensions.length];
-        for (int i = 0; i < chromosomes.length; i++) {
-            Chromosome chr1 = chromosomes[i];
-            Map<Integer, Integer> colPosChrom1 = makeLocalReorderedIndexMap(chr1,
-                    badIndexLocations.getBadIndices(chr1), compressedDimensions.offset[i], orderer.get(chr1));
-            updateWeights(weights, colPosChrom1);
-        }
+        /*
+        int[] weights = getWeights(compressedDimensions, orderer);
         System.out.println("Weights");
         System.out.println(Arrays.toString(weights));
-
+        */
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println(dimensions.length + " by " + compressedDimensions.length);
@@ -101,7 +100,18 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         }
         System.out.println(".");
 
-        return new MatrixAndWeight(interMatrix, weights);
+        return GMMClusterCaster.cast(interMatrix, chromosomes, dimensions, compressedDimensions);
+    }
+
+    private int[] getWeights(Dimension compressedDimensions, IndexOrderer orderer) {
+        int[] weights = new int[compressedDimensions.length];
+        for (int i = 0; i < chromosomes.length; i++) {
+            Chromosome chr1 = chromosomes[i];
+            Map<Integer, Integer> colPosChrom1 = makeLocalReorderedIndexMap(chr1,
+                    badIndexLocations.getBadIndices(chr1), compressedDimensions.offset[i], orderer.get(chr1));
+            updateWeights(weights, colPosChrom1);
+        }
+        return weights;
     }
 
     private void updateWeights(int[] weights, Map<Integer, Integer> colPosChrom) {
@@ -182,14 +192,16 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                 if (b != null) {
                     for (ContactRecord cr : b.getContactRecords()) {
                         float val = cr.getCounts();
-                        int binX = cr.getBinX();
-                        int binY = cr.getBinY();
+                        if (!Float.isNaN(val)) {
+                            int binX = cr.getBinX();
+                            int binY = cr.getBinY();
 
-                        if (rowPosChrom1.containsKey(binX) && colPosChrom2.containsKey(binY)) {
-                            matrix[rowPosChrom1.get(binX)][colPosChrom2.get(binY)] += val;
-                        }
-                        if (rowPosChrom2.containsKey(binY) && colPosChrom1.containsKey(binX)) {
-                            matrix[rowPosChrom2.get(binY)][colPosChrom1.get(binX)] += val;
+                            if (rowPosChrom1.containsKey(binX) && colPosChrom2.containsKey(binY)) {
+                                matrix[rowPosChrom1.get(binX)][colPosChrom2.get(binY)] += val;
+                            }
+                            if (rowPosChrom2.containsKey(binY) && colPosChrom1.containsKey(binX)) {
+                                matrix[rowPosChrom2.get(binY)][colPosChrom1.get(binX)] += val;
+                            }
                         }
                     }
                 }

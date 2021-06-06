@@ -26,12 +26,14 @@ package mixer.utils.slice.gmm;
 
 import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
+import mixer.utils.slice.cleaning.QuickClusters;
 import mixer.utils.slice.gmm.robust.RobustGMMCovTools;
 import mixer.utils.slice.gmm.robust.RobustGMMTools;
 import mixer.utils.slice.gmm.simple.SimpleGMMCovTools;
 import mixer.utils.slice.gmm.simple.SimpleGMMTools;
 import org.apache.commons.math3.linear.RealMatrix;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -60,6 +62,19 @@ public class GaussianMixtureModels {
         if (startingIndices.size() != numClusters) {
             System.err.println("GMM Error: something weird about cluster sizes " + numClusters + " : " + startingIndices.size());
         }
+    }
+
+    public GaussianMixtureModels(float[][] extraction, int numClusters, int maxIters, boolean useRobustGMM) {
+        if (!useRobustGMM) {
+            this.data = removeNans(extraction);
+        } else {
+            this.data = extraction;
+        }
+        QuickClusters qc = new QuickClusters(data, numClusters, 0L, 30);
+        this.numClusters = numClusters;
+        this.maxIters = maxIters;
+        this.startingIndices = qc.getClusters();
+        this.useRobustGMM = useRobustGMM;
     }
 
     public void fit() {
@@ -97,27 +112,48 @@ public class GaussianMixtureModels {
         datasetFractionForCluster = SimpleGMMTools.updateDatasetFraction(probClusterForRow, data.length);
     }
 
-    public int[] predict() {
-        probabilities = new double[data.length][numClusters];
-
-        AtomicInteger currentIndex = new AtomicInteger(0);
-
-        ParallelizedMixerTools.launchParallelizedCode(() -> {
-            int i = currentIndex.getAndIncrement();
-            while (i < data.length) {
-                double[] logLikelihood = new double[numClusters];
-                for (int k = 0; k < numClusters; k++) {
-                    if (useRobustGMM) {
-                        logLikelihood[k] = RobustGMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k]);
-                    } else {
-                        logLikelihood[k] = SimpleGMMTools.multivariateNormal(data[i], meanVectors[k], covs[k]);
-                    }
-                }
-                probabilities[i] = SimpleGMMTools.convertLogLikelihoodToProb(logLikelihood);
-
-                i = currentIndex.getAndIncrement();
+    private static float[][] removeNans(float[][] matrix) {
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            if (hasNoNans(matrix[i])) {
+                indices.add(i);
             }
-        });
+        }
+        int numCols = matrix[0].length;
+        float[][] newMatrix = new float[indices.size()][numCols];
+        int counter = 0;
+        for (int k : indices) {
+            System.arraycopy(matrix[k], 0, newMatrix[counter], 0, numCols);
+            counter++;
+        }
+        return newMatrix;
+    }
+
+    private double[][] determineInitialProbabilities() {
+        double[][] r = new double[data.length][numClusters];
+        double baseline = (1 - startingProbability) / (numClusters - 1);
+        for (int i = 0; i < r.length; i++) {
+            Arrays.fill(r[i], baseline);
+        }
+        for (int k = 0; k < startingIndices.size(); k++) {
+            for (int i : startingIndices.get(k)) {
+                r[i][k] = startingProbability;
+            }
+        }
+        return r;
+    }
+
+    private static boolean hasNoNans(float[] vals) {
+        for (float val : vals) {
+            if (Float.isNaN(val)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int[] predict() {
+        probabilities = nanPredict(data, false);
 
         int[] assignments = new int[data.length];
         AtomicInteger currentIndex2 = new AtomicInteger(0);
@@ -140,17 +176,49 @@ public class GaussianMixtureModels {
         return assignments;
     }
 
-    private double[][] determineInitialProbabilities() {
-        double[][] r = new double[data.length][numClusters];
-        double baseline = (1 - startingProbability) / (numClusters - 1);
-        for (int i = 0; i < r.length; i++) {
-            Arrays.fill(r[i], baseline);
-        }
-        for (int k = 0; k < startingIndices.size(); k++) {
-            for (int i : startingIndices.get(k)) {
-                r[i][k] = startingProbability;
+    public void trimEmptyClusters() {
+        System.out.println("Dataset Fraction");
+        System.out.println(Arrays.toString(datasetFractionForCluster));
+    }
+
+    public double[][] nanPredict(float[][] data, boolean willHaveFullNanRows) {
+        double[][] probabilities = new double[data.length][numClusters];
+        if (willHaveFullNanRows) {
+            for (double[] row : probabilities) {
+                Arrays.fill(row, Double.NaN);
             }
         }
-        return r;
+
+        AtomicInteger currentIndex = new AtomicInteger(0);
+
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            int i = currentIndex.getAndIncrement();
+            while (i < data.length) {
+                boolean isInvalidRow = willHaveFullNanRows && hasAllNans(data[i]);
+                if (!isInvalidRow) {
+                    double[] logLikelihood = new double[numClusters];
+                    for (int k = 0; k < numClusters; k++) {
+                        if (useRobustGMM) {
+                            logLikelihood[k] = RobustGMMTools.multivariateNormal(data[i], meanVectors[k], covMatrices[k]);
+                        } else {
+                            logLikelihood[k] = SimpleGMMTools.multivariateNormal(data[i], meanVectors[k], covs[k]);
+                        }
+                    }
+                    probabilities[i] = SimpleGMMTools.convertLogLikelihoodToProb(logLikelihood);
+                }
+                i = currentIndex.getAndIncrement();
+            }
+        });
+        return probabilities;
+    }
+
+    private boolean hasAllNans(float[] vals) {
+        for (float val : vals) {
+            if (!Float.isNaN(val)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

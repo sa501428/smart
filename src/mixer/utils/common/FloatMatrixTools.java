@@ -31,6 +31,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -64,6 +65,17 @@ public class FloatMatrixTools {
             }
         }
         return numZeros;
+    }
+
+    public static float[][] convert(double[][] matrix) {
+        float[][] result = new float[matrix.length][matrix[0].length];
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] = (float) matrix[i][j];
+            }
+        }
+        System.out.println("Converted");
+        return result;
     }
 
 
@@ -145,6 +157,30 @@ public class FloatMatrixTools {
             System.arraycopy(matrix2[i], 0, combo[i], matrix1[i].length, matrix2[i].length);
         }
         return combo;
+    }
+
+    public static float[][] concatenateAll(List<float[][]> matrices) {
+        int numRows = matrices.get(0).length;
+        int numCols = getTotalColumns(matrices);
+        float[][] combo = new float[numRows][numCols];
+        int colOffset = 0;
+        for (float[][] matrix : matrices) {
+            int numColsInThisMatrix = matrix[0].length;
+            for (int i = 0; i < matrix.length; i++) {
+                System.arraycopy(matrix[i], 0, combo[i], colOffset, numColsInThisMatrix);
+            }
+            colOffset += numColsInThisMatrix;
+        }
+
+        return combo;
+    }
+
+    private static int getTotalColumns(List<float[][]> matrices) {
+        int totalCols = 0;
+        for (float[][] matrix : matrices) {
+            totalCols += matrix[0].length;
+        }
+        return totalCols;
     }
 
     public static float[][] transpose(float[][] matrix) {
