@@ -100,6 +100,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
         //LogTools.scaleDownThenLogThenScaleUp(interMatrix, weights);
         ZScoreTools.inPlaceZscoreDownCol(interMatrix);
+        LogTools.expInPlace(interMatrix);
         ZScoreTools.inPlaceScaleSqrtWeightCol(interMatrix, weights);
 
         return interMatrix;

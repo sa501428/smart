@@ -87,4 +87,26 @@ public class LogTools {
             }
         }
     }
+
+    public static void expInPlace(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = expTanhZ(val);
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    private static float expTanhZ(float val) {
+        double val1 = (val + 1) / 10; //+1
+        double val2 = 3 * Math.tanh(val1);
+        //return (float) val2;
+        return (float) Math.expm1(val2); // Math.expm1(val)
+    }
 }
