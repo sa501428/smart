@@ -47,7 +47,7 @@ public class GenomeWideGMMRunner {
                        List<List<Integer>> startingIndices, boolean useRobustGMM) {
         if (data.length > 0 && data[0].length > 0) {
             GaussianMixtureModels gmm = new GaussianMixtureModels(data,
-                    numClusters, 20, startingIndices, useRobustGMM);
+                    numClusters, 100, startingIndices, useRobustGMM);
             try {
                 gmm.fit();
                 int[] result = gmm.predict();

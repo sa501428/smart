@@ -71,4 +71,20 @@ public class LogTools {
             }
         }
     }
+
+    public static void scaleDownThenLogThenScaleUp(float[][] matrix, int[] weights) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                float val = matrix[i][j] / weights[j];
+                if (!Float.isNaN(val)) {
+                    val = (float) Math.log(val + 1);
+                    if (Float.isInfinite(val)) {
+                        matrix[i][j] = Float.NaN;
+                    } else {
+                        matrix[i][j] = val * weights[j];
+                    }
+                }
+            }
+        }
+    }
 }

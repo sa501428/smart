@@ -49,8 +49,8 @@ public class SimilarityMatrixTools {
         RobustCorrelationSimilarity.USE_ARC = true;
 
         SimilarityMetric[] metrics = new SimilarityMetric[]{
-                //RobustCosineSimilarity.SINGLETON,
-                RobustCorrelationSimilarity.SINGLETON
+                RobustCosineSimilarity.SINGLETON,
+                //RobustCorrelationSimilarity.SINGLETON
                 //RobustEuclideanDistance.SINGLETON,
                 //RobustManhattanDistance.SINGLETON
         };

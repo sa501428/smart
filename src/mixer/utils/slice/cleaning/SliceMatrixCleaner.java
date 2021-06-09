@@ -73,34 +73,6 @@ public class SliceMatrixCleaner {
     }
 
     /*
-    private void runUmapAndSaveMatrices(float[][] data, File outputDirectory,
-                                        Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        int numThreads = Math.max(1, Runtime.getRuntime().availableProcessors());
-        for (int dimensions = 2; dimensions < 4; dimensions++) {
-            System.out.println("Running UMAP with " + dimensions + " dimensions");
-            final Umap umap = new Umap();
-            umap.setNumberComponents(dimensions);
-            umap.setNumberNearestNeighbours(50); // 15 -> 50 for more global picture
-            umap.setThreads(numThreads);
-            umap.setMinDist(0.2f);  //0.1f -> 0.2f for more general features
-            umap.setVerbose(false);
-            umap.setSeed(generator.nextLong());
-            final float[][] result = umap.fitTransform(data);
-            File temp = new File(outputDirectory, "umap_" + dimensions + "d_embedding.npy");
-            FloatMatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), result);
-            System.gc();
-        }
-
-        int[][] indices = new int[data.length][2];
-        for (int i = 0; i < indices.length; i++) {
-            SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
-            indices[i][0] = interval.getChrIndex();
-            indices[i][1] = interval.getX1();
-        }
-        File temp = new File(outputDirectory, "genome_indices.npy");
-        MatrixTools.saveMatrixTextNumpy(temp.getAbsolutePath(), indices);
-    }
-
     public float[][] justRemoveBadRows(Set<Integer> badIndices, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[] weights) {
         return filterOutColumnsAndRowsGivenBadIndices(badIndices, data, rowIndexToIntervalMap);
     }

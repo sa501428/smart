@@ -33,10 +33,11 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
+import mixer.utils.common.LogTools;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
-import mixer.utils.slice.gmm.GMMClusterCaster;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -65,11 +66,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         Dimension dimensions = new Dimension(chromosomes, indexToLength);
         Dimension compressedDimensions = new Dimension(chromosomes, indexToCompressedLength);
 
-        /*
         int[] weights = getWeights(compressedDimensions, orderer);
-        System.out.println("Weights");
-        System.out.println(Arrays.toString(weights));
-        */
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println(dimensions.length + " by " + compressedDimensions.length);
@@ -100,7 +97,13 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         }
         System.out.println(".");
 
-        return GMMClusterCaster.cast(interMatrix, chromosomes, dimensions, compressedDimensions);
+        LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
+        //LogTools.scaleDownThenLogThenScaleUp(interMatrix, weights);
+        ZScoreTools.inPlaceZscoreDownCol(interMatrix);
+        ZScoreTools.inPlaceScaleSqrtWeightCol(interMatrix, weights);
+
+        return interMatrix;
+        //return GMMClusterCaster.cast(interMatrix, chromosomes, dimensions, compressedDimensions);
     }
 
     private int[] getWeights(Dimension compressedDimensions, IndexOrderer orderer) {

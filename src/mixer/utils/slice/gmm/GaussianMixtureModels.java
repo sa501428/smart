@@ -153,7 +153,7 @@ public class GaussianMixtureModels {
     }
 
     public int[] predict() {
-        probabilities = nanPredict(data, false);
+        probabilities = nanPredict(data, false, false);
 
         int[] assignments = new int[data.length];
         AtomicInteger currentIndex2 = new AtomicInteger(0);
@@ -181,7 +181,7 @@ public class GaussianMixtureModels {
         System.out.println(Arrays.toString(datasetFractionForCluster));
     }
 
-    public double[][] nanPredict(float[][] data, boolean willHaveFullNanRows) {
+    public double[][] nanPredict(float[][] data, boolean willHaveFullNanRows, boolean multiplyByClusterSize) {
         double[][] probabilities = new double[data.length][numClusters];
         if (willHaveFullNanRows) {
             for (double[] row : probabilities) {
@@ -209,6 +209,20 @@ public class GaussianMixtureModels {
                 i = currentIndex.getAndIncrement();
             }
         });
+
+        if (multiplyByClusterSize) {
+            double[] clusterSizes = new double[datasetFractionForCluster.length];
+            for (int i = 0; i < clusterSizes.length; i++) {
+                clusterSizes[i] = Math.sqrt(datasetFractionForCluster[i] * data.length);
+            }
+
+            for (int i = 0; i < probabilities.length; i++) {
+                for (int j = 0; j < probabilities[i].length; j++) {
+                    probabilities[i][j] *= clusterSizes[j];
+                }
+            }
+        }
+
         return probabilities;
     }
 

@@ -36,6 +36,7 @@ import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
+import mixer.utils.slice.gmm.SimpleScatterPlot;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -87,6 +88,9 @@ public abstract class CompositeGenomeWideMatrix {
         File file2 = new File(outputDirectory, "corr_matrix.npy");
         MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData);
 
+        runUmapAndSaveMatrices(projectedData, outputDirectory,
+                rowIndexToIntervalMap);
+
         /*
         SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix,
                 generator.nextLong(), outputDirectory, metric);
@@ -95,6 +99,19 @@ public abstract class CompositeGenomeWideMatrix {
         //corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
 
         */
+    }
+
+    private void runUmapAndSaveMatrices(float[][] data, File outputDirectory,
+                                        Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+        int[] indices = new int[data.length];
+        for (int i = 0; i < indices.length; i++) {
+            SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
+            indices[i] = interval.getChrIndex();
+        }
+
+        SimpleScatterPlot plotter = new SimpleScatterPlot(data);
+        File outfile = new File(outputDirectory, "umap");
+        plotter.plot(indices, outfile.getAbsolutePath());
     }
 
     public synchronized double processKMeansClusteringResult(Cluster[] clusters,

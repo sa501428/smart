@@ -26,7 +26,6 @@ package mixer.utils.slice.gmm;
 
 import javastraw.reader.basics.Chromosome;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.LogTools;
 import mixer.utils.slice.matrices.Dimension;
 
 import java.util.ArrayList;
@@ -36,8 +35,6 @@ public class GMMClusterCaster {
     public static float[][] cast(float[][] interMatrix, Chromosome[] chromosomes,
                                  Dimension dimensions, Dimension compressedDimensions) {
         List<float[][]> output = new ArrayList<>();
-
-        LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
 
         for (int i = 0; i < chromosomes.length; i++) {
             System.out.println("chrom " + chromosomes[i].getName());
@@ -58,13 +55,13 @@ public class GMMClusterCaster {
     }
 
     private static float[][] runGMM(float[][] extraction) {
-        for (int z = 10; z > 4; z--) {
+        for (int z = 8; z > 3; z--) {
             try {
                 GaussianMixtureModels gmm = new GaussianMixtureModels(extraction,
                         z, 50, false);
                 gmm.fit();
                 gmm.trimEmptyClusters();
-                return FloatMatrixTools.convert(gmm.nanPredict(extraction, true));
+                return FloatMatrixTools.convert(gmm.nanPredict(extraction, true, true));
             } catch (Exception e) {
                 System.err.println("Z " + z + " - failed");
                 System.err.println(e.getLocalizedMessage());
