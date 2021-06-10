@@ -25,7 +25,6 @@
 package mixer.clt;
 
 import jargs.gnu.CmdLineParser;
-import javastraw.reader.Dataset;
 import javastraw.reader.type.NormalizationHandler;
 import javastraw.reader.type.NormalizationType;
 
@@ -64,10 +63,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
      */
     public NormalizationType getNormalizationTypeOption(NormalizationHandler normalizationHandler) {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
-    }
-
-    public NormalizationType[][] getNormalizationTypeOption(List<Dataset> dsList) {
-        return retrieveNormalizationArray(optionToString(normalizationTypeOption), dsList);
     }
 
     public String getCompareReferenceOption() {
@@ -190,30 +185,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
         try {
             return normalizationHandler.getNormTypeFromString(norm);
-        } catch (IllegalArgumentException error) {
-            System.err.println("Normalization must be one of \"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\", \"GW_VC\", \"INTER_KR\", or \"INTER_VC\".");
-            System.exit(7);
-        }
-        return null;
-    }
-
-    private NormalizationType[][] retrieveNormalizationArray(String norm, List<Dataset> dsList) {
-        if (norm == null || norm.length() < 1)
-            return null;
-
-        try {
-            String[] strArray = norm.split(",");
-            NormalizationType[][] norms = new NormalizationType[2][strArray.length];
-            for (int i = 0; i < strArray.length; i++) {
-                String[] pair = strArray[i].split(":");
-                norms[0][i] = dsList.get(i).getNormalizationHandler().getNormTypeFromString(pair[0]);
-                if (pair.length == 2) {
-                    norms[1][i] = dsList.get(i).getNormalizationHandler().getNormTypeFromString(pair[1]);
-                } else {
-                    norms[1][i] = norms[i][0];
-                }
-            }
-            return norms;
         } catch (IllegalArgumentException error) {
             System.err.println("Normalization must be one of \"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\", \"GW_VC\", \"INTER_KR\", or \"INTER_VC\".");
             System.exit(7);

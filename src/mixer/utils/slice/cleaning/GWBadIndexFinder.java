@@ -30,6 +30,7 @@ import javastraw.reader.block.Block;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
+import mixer.algos.Slice;
 
 import java.io.IOException;
 import java.util.*;
@@ -41,10 +42,10 @@ public class GWBadIndexFinder {
     protected final int resolution;
     protected final Map<Integer, Set<Integer>> badIndices = new HashMap<>();
     protected final Map<Integer, Set<Integer>> emptyIndices = new HashMap<>();
-    protected final NormalizationType[] norms;
+    protected final List<NormalizationType[]> norms;
     private final GWRegionStatistics gwStats = new GWRegionStatistics();
 
-    public GWBadIndexFinder(Chromosome[] chromosomes, int resolution, NormalizationType[] norms) {
+    public GWBadIndexFinder(Chromosome[] chromosomes, int resolution, List<NormalizationType[]> norms) {
         this.resolution = resolution;
         this.norms = norms;
         for (Chromosome chrom : chromosomes) {
@@ -59,7 +60,7 @@ public class GWBadIndexFinder {
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
 
         List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
-                norms[dIndex], false);
+                norms.get(dIndex)[Slice.INTRA_INDEX], false);
         gwStats.update(chr1.getIndex(), chr2.getIndex(), lengthChr1, lengthChr2, blocks);
     }
 

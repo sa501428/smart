@@ -33,9 +33,9 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
+import mixer.algos.Slice;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -48,17 +48,17 @@ import java.util.Set;
 
 public class SliceMatrix extends CompositeGenomeWideMatrix {
 
-    public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType intraNorm, NormalizationType interNorm,
+    public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType[] norms,
                        int resolution, File outputDirectory, long seed, GWBadIndexFinder badIndexLocations,
-                       SimilarityMetric metric, int maxClusterSizeExpected) {
-        super(chromosomeHandler, ds, intraNorm, interNorm, resolution, outputDirectory, seed,
-                badIndexLocations, metric, maxClusterSizeExpected);
+                       int maxClusterSizeExpected) {
+        super(chromosomeHandler, ds, norms, resolution, outputDirectory, seed,
+                badIndexLocations, maxClusterSizeExpected);
     }
 
     float[][] makeCleanScaledInterMatrix(Dataset ds) {
         // height/width chromosomes
         Map<Integer, Integer> indexToLength = calculateActualLengthForChromosomes(chromosomes);
-        IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, intraNorm, badIndexLocations,
+        IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, norms[Slice.INTRA_INDEX], badIndexLocations,
                 generator.nextLong(), outputDirectory, maxClusterSizeExpected);
         Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
 
@@ -100,7 +100,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
         //LogTools.scaleDownThenLogThenScaleUp(interMatrix, weights);
         ZScoreTools.inPlaceZscoreDownCol(interMatrix);
-        LogTools.expInPlace(interMatrix);
+        //LogTools.expInPlace(interMatrix);
         ZScoreTools.inPlaceScaleSqrtWeightCol(interMatrix, weights);
 
         return interMatrix;
@@ -154,7 +154,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         try {
             if (!isIntra) {
                 blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
-                        interNorm, false);
+                        norms[Slice.INTER_INDEX], false);
                 if (blocks.size() < 1) {
                     System.err.println("Missing Interchromosomal Data " + zd.getKey());
                     System.exit(98);

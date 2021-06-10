@@ -30,16 +30,11 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.similaritymeasures.RobustManhattanDistance;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * experimental code
@@ -48,24 +43,22 @@ import java.util.Random;
  */
 public class Slice extends MixerCLT {
 
+    public static final int INTRA_INDEX = 0;
+    public static final int INTER_INDEX = 1;
     private final List<Dataset> datasetList = new ArrayList<>();
     private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    private NormalizationType[] intraNormArray;
-    private NormalizationType[] interNormArray;
-    public static SimilarityMetric metric = RobustManhattanDistance.SINGLETON; //  RobustMedianAbsoluteError
+    private List<NormalizationType[]> normsList;
     private String prefix = "";
-    private final boolean compareMaps;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
         super("slice [-r resolution] <-k NONE/VC/VC_SQRT/KR/SCALE>  [-w window] " +
                 "[--compare reference.bed] [--verbose] " + //"[--has-translocation] " +
                 "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
-        compareMaps = command.contains("dice");
     }
 
     @Override
@@ -93,24 +86,7 @@ public class Slice extends MixerCLT {
         ds = datasetList.get(0);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
-
-        intraNormArray = new NormalizationType[datasetList.size()];
-        interNormArray = new NormalizationType[datasetList.size()];
-
-        NormalizationType[][] preferredNorm = mixerParser.getNormalizationTypeOption(datasetList);
-        if (preferredNorm != null && preferredNorm.length > 0 && preferredNorm[0].length > 0) {
-            if (preferredNorm[0].length == intraNormArray.length) {
-                intraNormArray = preferredNorm[0];
-                interNormArray = preferredNorm[1];
-            } else {
-                Arrays.fill(intraNormArray, preferredNorm[0]);
-                Arrays.fill(interNormArray, preferredNorm[0]);
-            }
-        } else {
-            System.err.println("Normalization must be specified");
-            System.exit(9);
-        }
-
+        normsList = populateNormalizations(datasetList);
 
         List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
         if (possibleResolutions != null) {
@@ -132,6 +108,31 @@ public class Slice extends MixerCLT {
         }
     }
 
+
+    private List<NormalizationType[]> populateNormalizations(List<Dataset> datasetList) {
+        List<NormalizationType[]> normsList = new ArrayList<>();
+        for (Dataset ds : datasetList) {
+            NormalizationType[] norms = new NormalizationType[2];
+            Map<String, NormalizationType> normsForDataset = ds.getNormalizationTypesMap();
+            norms[INTRA_INDEX] = getNormInOrder(new String[]{"SCALE", "KR"}, normsForDataset);
+            norms[INTER_INDEX] = getNormInOrder(new String[]{"INTER_SCALE", "INTER_KR"}, normsForDataset);
+            normsList.add(norms);
+        }
+        return normsList;
+    }
+
+    private NormalizationType getNormInOrder(String[] keys, Map<String, NormalizationType> normsForDataset) {
+        for (String key : keys) {
+            if (normsForDataset.containsKey(key)) {
+                return normsForDataset.get(key);
+            }
+        }
+
+        System.err.println(Arrays.toString(keys) + " not found");
+        System.exit(11);
+        return null;
+    }
+
     @Override
     public void run() {
 
@@ -142,7 +143,7 @@ public class Slice extends MixerCLT {
         if (datasetList.size() < 1) return;
 
         FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, intraNormArray, interNormArray, outputDirectory, generator.nextLong(), metric);
+                chromosomeHandler, resolution, normsList, outputDirectory, generator.nextLong());
         withinClusters.extractFinalGWSubcompartments(prefix);
 
         System.out.println("\nClustering complete");

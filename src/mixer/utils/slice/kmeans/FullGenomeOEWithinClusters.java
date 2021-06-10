@@ -29,7 +29,6 @@ import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.gmm.GenomeWideGMMRunner;
 import mixer.utils.slice.matrices.SliceMatrix;
@@ -51,25 +50,24 @@ public class FullGenomeOEWithinClusters {
     private final Random generator = new Random(0);
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution,
-                                      NormalizationType[] intraNorms, NormalizationType[] interNorms,
-                                      File outputDirectory, long seed, SimilarityMetric metric) {
+                                      List<NormalizationType[]> normalizationTypes,
+                                      File outputDirectory, long seed) {
         this.chromosomeHandler = chromosomeHandler;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
         GWBadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
-                resolution, interNorms);
+                resolution, normalizationTypes);
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
         int absMaxClusters = numClusterSizeKValsUsed + startingClusterSizeK;
-        sliceMatrix = new SliceMatrix(
-                chromosomeHandler, datasets.get(0), intraNorms[0], interNorms[0], resolution, outputDirectory,
-                generator.nextLong(), badIndexFinder, metric, absMaxClusters);
+        sliceMatrix = new SliceMatrix(chromosomeHandler, datasets.get(0), normalizationTypes.get(0), resolution, outputDirectory,
+                generator.nextLong(), badIndexFinder, absMaxClusters);
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
-                    intraNorms[dI], interNorms[dI], resolution, outputDirectory,
-                    generator.nextLong(), badIndexFinder, metric, absMaxClusters);
+                    normalizationTypes.get(dI), resolution, outputDirectory,
+                    generator.nextLong(), badIndexFinder, absMaxClusters);
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 

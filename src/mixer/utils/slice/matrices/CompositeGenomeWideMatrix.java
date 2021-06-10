@@ -33,7 +33,6 @@ import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.gmm.SimpleScatterPlot;
@@ -45,7 +44,7 @@ import java.io.File;
 import java.util.*;
 
 public abstract class CompositeGenomeWideMatrix {
-    protected final NormalizationType intraNorm, interNorm;
+    protected final NormalizationType[] norms;
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
@@ -53,24 +52,21 @@ public abstract class CompositeGenomeWideMatrix {
     protected final File outputDirectory;
     private float[][] gwCleanMatrix, projectedData;
     protected final GWBadIndexFinder badIndexLocations;
-    protected final SimilarityMetric metric;
     protected final int maxClusterSizeExpected;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
-                                     NormalizationType intraNorm, NormalizationType interNorm,
+                                     NormalizationType[] norms,
                                      int resolution,
                                      File outputDirectory, long seed,
-                                     GWBadIndexFinder badIndexLocations, SimilarityMetric metric,
+                                     GWBadIndexFinder badIndexLocations,
                                      int maxClusterSizeExpected) {
         this.maxClusterSizeExpected = maxClusterSizeExpected;
-        this.intraNorm = intraNorm;
-        this.interNorm = interNorm;
-        System.out.println("Intra: " + intraNorm.getLabel() + " Inter: " + interNorm.getLabel());
+        this.norms = norms;
+        System.out.println("Norms: " + Arrays.toString(norms));
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
         this.generator.setSeed(seed);
         this.badIndexLocations = badIndexLocations;
-        this.metric = metric;
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         gwCleanMatrix = makeCleanScaledInterMatrix(ds);
