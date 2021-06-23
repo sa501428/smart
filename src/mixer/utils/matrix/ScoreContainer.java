@@ -24,7 +24,6 @@
 
 package mixer.utils.matrix;
 
-import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.shuffle.scoring.KLDivergenceScoring;
 import mixer.utils.shuffle.scoring.VarianceScoring;
@@ -81,11 +80,9 @@ public class ScoreContainer {
         for (int y = 0; y < ratios.length; y++) {
             for (int l = 0; l < ratios[0].length; l++) {
                 logRatios[y][l] = logShuffled[y][l] / logBaselines[y][l];
-                if (MixerGlobals.printVerboseComments) {
-                    ratios[y][l] = shuffled[y][l] / baselines[y][l];
-                    aggRatios[y][l] = aggShuffled[y][l] / aggBaselines[y][l];
-                    aggLogRatios[y][l] = aggLogShuffled[y][l] / aggLogBaselines[y][l];
-                }
+                ratios[y][l] = shuffled[y][l] / baselines[y][l];
+                aggRatios[y][l] = aggShuffled[y][l] / aggBaselines[y][l];
+                aggLogRatios[y][l] = aggLogShuffled[y][l] / aggLogBaselines[y][l];
             }
         }
     }
@@ -95,10 +92,8 @@ public class ScoreContainer {
         for (int k = 0; k < scoresForRound.length; k++) {
             shuffled[mapIndex][k] = calcMean(scoresForRound[k]);
             baselines[mapIndex][k] = calcMean(scoresBaselineForRound[k]);
-            if (MixerGlobals.printVerboseComments) {
-                logShuffled[mapIndex][k] = calcMean(logScoresForRound[k]);
-                logBaselines[mapIndex][k] = calcMean(logScoresBaselineForRound[k]);
-            }
+            logShuffled[mapIndex][k] = calcMean(logScoresForRound[k]);
+            logBaselines[mapIndex][k] = calcMean(logScoresBaselineForRound[k]);
         }
     }
 
@@ -112,10 +107,8 @@ public class ScoreContainer {
 
     public void updateAggregateScores(AggregateMatrix aggregate, ShuffledIndices[] globalAllIndices, int mapIndex) {
         float[][] aggMatrix = aggregate.getMatrixCopy();
-        if (MixerGlobals.printVerboseComments) {
-            updateAggMatrixScores(aggBaselines[mapIndex], aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, true);
-            updateAggMatrixScores(aggShuffled[mapIndex], aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, false);
-        }
+        updateAggMatrixScores(aggBaselines[mapIndex], aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, true);
+        updateAggMatrixScores(aggShuffled[mapIndex], aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, false);
         FloatMatrixTools.log(aggMatrix, 1);
         updateAggMatrixScores(aggLogBaselines[mapIndex], aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, true);
         updateAggMatrixScores(aggLogShuffled[mapIndex], aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, false);
@@ -123,11 +116,9 @@ public class ScoreContainer {
 
     public void savePlotsAndResults(File outfolder, String prefix, String[] names) {
         try {
-            if (MixerGlobals.printVerboseComments) {
-                writeToFile(outfolder, "average_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
-                writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", aggShuffled, aggBaselines, aggRatios, names);
-                writeToFile(outfolder, "average_scores_" + prefix + "_log.txt", logShuffled, logBaselines, logRatios, names);
-            }
+            writeToFile(outfolder, "average_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
+            writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", aggShuffled, aggBaselines, aggRatios, names);
+            writeToFile(outfolder, "average_scores_" + prefix + "_log.txt", logShuffled, logBaselines, logRatios, names);
             writeToFile(outfolder, "aggregate_scores_" + prefix + "_log.txt", aggLogShuffled, aggLogBaselines, aggLogRatios, names);
         } catch (Exception ee) {
             System.err.println("Unable to write results to text file");
