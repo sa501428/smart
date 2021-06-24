@@ -43,8 +43,9 @@ import java.util.*;
  */
 public class Slice extends MixerCLT {
 
-    public static final int INTRA_INDEX = 0;
-    public static final int INTER_INDEX = 1;
+    public static final int INTRA_SCALE_INDEX = 0;
+    public static final int INTER_SCALE_INDEX = 1;
+    public static final int GW_SCALE_INDEX = 2;
     private final List<Dataset> datasetList = new ArrayList<>();
     private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
@@ -112,10 +113,11 @@ public class Slice extends MixerCLT {
     private List<NormalizationType[]> populateNormalizations(List<Dataset> datasetList) {
         List<NormalizationType[]> normsList = new ArrayList<>();
         for (Dataset ds : datasetList) {
-            NormalizationType[] norms = new NormalizationType[2];
+            NormalizationType[] norms = new NormalizationType[3];
             Map<String, NormalizationType> normsForDataset = ds.getNormalizationTypesMap();
-            norms[INTRA_INDEX] = getNormInOrder(new String[]{"SCALE", "KR"}, normsForDataset);
-            norms[INTER_INDEX] = getNormInOrder(new String[]{"INTER_SCALE", "INTER_KR"}, normsForDataset);
+            norms[INTRA_SCALE_INDEX] = getNormInOrder(new String[]{"SCALE", "KR"}, normsForDataset);
+            norms[INTER_SCALE_INDEX] = getNormInOrder(new String[]{"INTER_SCALE", "INTER_KR"}, normsForDataset);
+            norms[GW_SCALE_INDEX] = getNormInOrder(new String[]{"GW_SCALE", "GW_KR"}, normsForDataset);
             normsList.add(norms);
         }
         return normsList;

@@ -31,6 +31,7 @@ import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
+import mixer.algos.Slice;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
@@ -69,10 +70,18 @@ public abstract class CompositeGenomeWideMatrix {
         this.badIndexLocations = badIndexLocations;
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
-        gwCleanMatrix = makeCleanScaledInterMatrix(ds);
+        gwCleanMatrix = makeCleanScaledInterMatrix(ds, norms[Slice.INTER_SCALE_INDEX]);
+        //gwCleanMatrix = makeComboNormMatrix(ds, norms);
     }
 
-    abstract float[][] makeCleanScaledInterMatrix(Dataset ds);
+    private float[][] makeComboNormMatrix(Dataset ds, NormalizationType[] norms) {
+        return FloatMatrixTools.concatenate(
+                makeCleanScaledInterMatrix(ds, norms[Slice.INTER_SCALE_INDEX]),
+                FloatMatrixTools.multiply(makeCleanScaledInterMatrix(ds, norms[Slice.GW_SCALE_INDEX]), 0.5f)
+        );
+    }
+
+    abstract float[][] makeCleanScaledInterMatrix(Dataset ds, NormalizationType interNorm);
 
 
     public void cleanUpMatricesBySparsity() {

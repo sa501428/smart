@@ -109,4 +109,138 @@ public class LogTools {
         //return (float) val2;
         return (float) Math.expm1(val2); // Math.expm1(val)
     }
+
+    public static void expInPlaceType2(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = (float) (Math.expm1(val - 1)); // Math.tanh
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    public static void expInPlaceType3(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = (float) Math.tanh(Math.expm1(val - 1)); //
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    public static void expInPlaceType4(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = (float) Math.tanh(val - 1); //
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    public static void expInPlaceType5(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = (float) Math.tanh(val); //
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    public static void eluInPlaceType6(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = elu(val - 1); //
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    private static float elu(float v) {
+        if (v < 0) {
+            return (float) (Math.expm1(v));
+        }
+        return v;
+    }
+
+    public static void reluInPlaceType7(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = relu(val - 0.5); //
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    private static float relu(double v) {
+        if (v < 0) {
+            return 0f;
+        }
+        return (float) v;
+    }
+
+    public static void eluInPlaceType8(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = elu(val - 0.5f); //
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
+
+    public static void eluInPlaceType9(float[][] interMatrix) {
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                float val = interMatrix[i][j];
+                if (!Float.isNaN(val)) {
+                    val = elu(val); //
+                    if (Float.isInfinite(val)) {
+                        val = Float.NaN;
+                    }
+                    interMatrix[i][j] = val;
+                }
+            }
+        }
+    }
 }

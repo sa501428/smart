@@ -51,7 +51,7 @@ public class IntraMatrixCleaner {
         eraseTheRowsColumnsWeDontWant(badIndices, matrix);
         // float[][] compressedMatrix = compress(matrix, smoothingInterval);
         removeEmptyEntries(matrix);
-        subtractOEBy1(matrix);
+        // subtractOEBy1(matrix);
         // ZScoreTools.inPlaceZscoreDownCol(matrix);
         // return rollingAverage(matrix, smoothingInterval);
         return matrix;

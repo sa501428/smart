@@ -50,7 +50,7 @@ public class IndexOrderer {
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
     private final int CHECK_VAL = -2;
-    private final float CORR_MIN = 0.4f;
+    private final float CORR_MIN = 0.2f;
     private final Random generator = new Random(0);
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
     private final File problemFile, initFile;
@@ -118,9 +118,7 @@ public class IndexOrderer {
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
                 numInitialClusters, generator.nextLong(), 100).generateCentroids(5);
 
-        if (true || MixerGlobals.printVerboseComments) {
-            System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
-        }
+        System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
 
         List<Integer> problemIndices = Collections.synchronizedList(new ArrayList<>());
         int[] clusterAssignment = new int[newIndexOrderAssignments.length];
@@ -184,7 +182,7 @@ public class IndexOrderer {
     private float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
         List<Integer> actualIndices = new ArrayList<>();
         for (int z = 0; z < newIndexOrderAssignments.length; z++) {
-            if (newIndexOrderAssignments[z] < CHECK_VAL && ArrayTools.percentNaN(matrix[z]) < .5) {
+            if (newIndexOrderAssignments[z] < CHECK_VAL && ArrayTools.percentNaN(matrix[z]) < .7) {
                 actualIndices.add(z);
             }
         }

@@ -60,7 +60,7 @@ public class GWBadIndexFinder {
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
 
         List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
-                norms.get(dIndex)[Slice.INTRA_INDEX], false);
+                norms.get(dIndex)[Slice.INTRA_SCALE_INDEX], false);
         gwStats.update(chr1.getIndex(), chr2.getIndex(), lengthChr1, lengthChr2, blocks);
     }
 

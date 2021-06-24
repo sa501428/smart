@@ -55,10 +55,10 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                 badIndexLocations, maxClusterSizeExpected);
     }
 
-    float[][] makeCleanScaledInterMatrix(Dataset ds) {
+    float[][] makeCleanScaledInterMatrix(Dataset ds, NormalizationType interNorm) {
         // height/width chromosomes
         Map<Integer, Integer> indexToLength = calculateActualLengthForChromosomes(chromosomes);
-        IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, norms[Slice.INTRA_INDEX], badIndexLocations,
+        IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, norms[Slice.INTRA_SCALE_INDEX], badIndexLocations,
                 generator.nextLong(), outputDirectory, maxClusterSizeExpected);
         Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
 
@@ -91,19 +91,33 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
 
                 fillInChromosomeRegion(interMatrix, badIndexLocations, zd, i == j, orderer,
                         chr1, dimensions.offset[i], compressedDimensions.offset[i],
-                        chr2, dimensions.offset[j], compressedDimensions.offset[j]);
+                        chr2, dimensions.offset[j], compressedDimensions.offset[j],
+                        interNorm);
                 System.out.print(".");
             }
         }
         System.out.println(".");
 
-        LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
+        /*
         //LogTools.scaleDownThenLogThenScaleUp(interMatrix, weights);
-        ZScoreTools.inPlaceZscoreDownCol(interMatrix);
         //LogTools.expInPlace(interMatrix);
+        */
+
+        // new try
+        LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
+
+        //File file1 = new File(outputDirectory, "raw_matrix.npy");
+        //MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), interMatrix);
+
+        ZScoreTools.inPlaceZscoreDownCol(interMatrix);
+
+        //float[][] matrixCopy = FloatMatrixTools.deepClone(interMatrix);
+        //LogTools.eluInPlaceType6(interMatrix);
         ZScoreTools.inPlaceScaleSqrtWeightCol(interMatrix, weights);
 
         return interMatrix;
+        //return FloatMatrixTools.concatenate(interMatrix, matrixCopy);
+        //return interMatrix;
         //return GMMClusterCaster.cast(interMatrix, chromosomes, dimensions, compressedDimensions);
     }
 
@@ -146,7 +160,8 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
     private void fillInChromosomeRegion(float[][] matrix, GWBadIndexFinder badIndices,
                                         MatrixZoomData zd, boolean isIntra, IndexOrderer orderer,
                                         Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
-                                        Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2) {
+                                        Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2,
+                                        NormalizationType interNorm) {
 
         int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
@@ -154,7 +169,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         try {
             if (!isIntra) {
                 blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
-                        norms[Slice.INTER_INDEX], false);
+                        interNorm, false);
                 if (blocks.size() < 1) {
                     System.err.println("Missing Interchromosomal Data " + zd.getKey());
                     System.exit(98);

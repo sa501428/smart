@@ -46,16 +46,30 @@ public class AggregateProcessing {
             for (int res : new int[]{100000}) { // 50000,25000,10000 100000 100000 50000
                 String folder = "SLICE_v" + MixerGlobals.versionNum;
                 String[] strings = new String[]{"slice", "-r", res + "",
-                        //"-k", "KR:GW_KR", //"--verbose", // INTER_KR
-                        //"-w", "20",
-                        file, "2,8,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_76_reset_gwkr_" + res + "_" + folder, folder + "_"
+                        file, "2,10,4",
+                        "/Users/mshamim/Desktop/reSLICE/phnx_115_reset_" + res + "_" + folder,
+                        folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
                 MixerTools.main(strings);
                 System.gc();
+
+                strings = new String[]{"shuffle",
+                        "-r", res + "", "-k", "INTER_KR", "-w", "" + 8,
+                        file,
+                        "/Users/mshamim/Desktop/B4/GSE63525_GM12878_subcompartments.bed," +
+                                "/Users/mshamim/Desktop/B4/SLICE_v3.27.02__19_kmeans_clusters.bed," +
+                                "/Users/mshamim/Desktop/B4/SLICE_v3.27.02__corr_19_gmm_clusters.bed",
+                        "/Users/mshamim/Desktop/reSLICE/shuffle_80_81",
+                        "RH2014,SLICE_80_Kmeans,SLICE_80_GMM"
+                };
+                System.out.println("-----------------------------------------------------");
+                //MixerTools.main(strings);
+                System.gc();
             }
         }
+
+
 
 
         /*
