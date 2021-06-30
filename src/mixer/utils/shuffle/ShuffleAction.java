@@ -35,6 +35,7 @@ import mixer.utils.shuffle.scoring.KLDivergenceScoring;
 import mixer.utils.shuffle.scoring.VarianceScoring;
 import mixer.utils.shuffle.stats.GenomeWideStatistics;
 import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.cleaning.VectorOrganizer;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -87,7 +88,7 @@ public class ShuffleAction {
         SliceUtils.collapseGWList(subcompartments);
         // todo, using only big size? todo sorting picture
         GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
-        statistics.saveInteractionMap(outfolder);
+        VectorOrganizer vo = new VectorOrganizer(statistics.getBasicResult());
         System.out.println("Interaction summary statistics saved");
     }
 

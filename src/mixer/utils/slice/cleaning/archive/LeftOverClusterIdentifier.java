@@ -173,7 +173,7 @@ public class LeftOverClusterIdentifier {
             int x1 = indx * resolution;
             int x2 = x1 + resolution;
 
-            intervals.add(new SubcompartmentInterval(chromosome.getIndex(), chromosome.getName(), x1, x2, metaID));
+            intervals.add(new SubcompartmentInterval(chromosome, x1, x2, metaID));
         }
         return intervals;
     }

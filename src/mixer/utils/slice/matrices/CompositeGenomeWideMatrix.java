@@ -102,7 +102,6 @@ public abstract class CompositeGenomeWideMatrix {
         gwCleanMatrix = matrixCleanupReduction.getCleanFilteredZscoredMatrix(rowIndexToIntervalMap, weights);
         projectedData = MatrixImputer.imputeUntilNoNansOnlyNN(gwCleanMatrix);
         //corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
-
         */
     }
 
@@ -199,11 +198,9 @@ public abstract class CompositeGenomeWideMatrix {
     }
 
     protected SubcompartmentInterval generateNewSubcompartment(SubcompartmentInterval interv, int currentClusterID) {
-        int chrIndex = interv.getChrIndex();
-        String chrName = interv.getChrName();
-        int x1 = interv.getX1();
-        int x2 = interv.getX2();
-        return new SubcompartmentInterval(chrIndex, chrName, x1, x2, currentClusterID);
+        SubcompartmentInterval newInterv = (SubcompartmentInterval) interv.deepClone();
+        newInterv.setClusterID(currentClusterID);
+        return newInterv;
     }
 
     public float[][] getData(boolean getCorrMatrix) {

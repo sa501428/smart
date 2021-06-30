@@ -150,6 +150,24 @@ public class GenomeWideStatistics {
         }
     }
 
+    public float[][] getBasicResult() {
+        double averageContact = (Math.log(2 * totalContact) / (2 * totalCounts));
+        float[][] result = new float[countsMatrix.length][countsMatrix.length];
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] = (float) Math.log(contactsMatrix[i][j] + contactsMatrix[j][i]);
+            }
+        }
+
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] /= (averageContact * (countsMatrix[i][j] + countsMatrix[j][i]));
+            }
+        }
+
+        return result;
+    }
+
     public void saveInteractionMap(File outfolder) {
 
         boolean useLog = false;

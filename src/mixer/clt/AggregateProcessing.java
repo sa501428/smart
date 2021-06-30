@@ -43,11 +43,11 @@ public class AggregateProcessing {
         };
 
         for (String file : files) {//100000,50000,
-            for (int res : new int[]{100000}) { // 50000,25000,10000 100000 100000 50000
+            for (int res : new int[]{25000}) { // 50000,25000,10000 100000 100000 50000
                 String folder = "SLICE_v" + MixerGlobals.versionNum;
                 String[] strings = new String[]{"slice", "-r", res + "",
                         file, "2,10,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_115_reset_" + res + "_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/phnx_118_reset_corrshort_" + res + "_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");

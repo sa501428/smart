@@ -55,8 +55,8 @@ public class CLTFactory {
             return new ChromosomeWalker();
         } else if (cmd.contains("shuffle") || cmd.contains("umap")) {
             return new ShuffleAndUMAP(cmd);
-        } else if (cmd.equals("rename")) {
-            return new Rename();
+        } else if (cmd.contains("rename")) {
+            return new Rename(cmd);
         } else if (cmd.equals("network")) {
             return new Network();
         } else if (cmd.equals("aba")) {

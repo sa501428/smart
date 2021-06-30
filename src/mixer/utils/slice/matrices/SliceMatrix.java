@@ -62,7 +62,6 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                 generator.nextLong(), outputDirectory, maxClusterSizeExpected);
         Map<Integer, Integer> indexToCompressedLength = calculateCompressedLengthForChromosomes(orderer.getIndexToRearrangedLength());
 
-
         Dimension dimensions = new Dimension(chromosomes, indexToLength);
         Dimension compressedDimensions = new Dimension(chromosomes, indexToCompressedLength);
 
@@ -98,27 +97,11 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         }
         System.out.println(".");
 
-        /*
-        //LogTools.scaleDownThenLogThenScaleUp(interMatrix, weights);
-        //LogTools.expInPlace(interMatrix);
-        */
-
-        // new try
         LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
-
-        //File file1 = new File(outputDirectory, "raw_matrix.npy");
-        //MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), interMatrix);
-
         ZScoreTools.inPlaceZscoreDownCol(interMatrix);
-
-        //float[][] matrixCopy = FloatMatrixTools.deepClone(interMatrix);
-        //LogTools.eluInPlaceType6(interMatrix);
         ZScoreTools.inPlaceScaleSqrtWeightCol(interMatrix, weights);
 
         return interMatrix;
-        //return FloatMatrixTools.concatenate(interMatrix, matrixCopy);
-        //return interMatrix;
-        //return GMMClusterCaster.cast(interMatrix, chromosomes, dimensions, compressedDimensions);
     }
 
     private int[] getWeights(Dimension compressedDimensions, IndexOrderer orderer) {
@@ -236,7 +219,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                 continue;
             }
             int newX = i * resolution;
-            SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome.getIndex(), chromosome.getName(), newX, newX + resolution, counter);
+            SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, newX, newX + resolution, counter);
             rowIndexToIntervalMap.put(offsetIndex1 + (counter), newRInterval);
             counter++;
         }

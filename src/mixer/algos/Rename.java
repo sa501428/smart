@@ -24,9 +24,16 @@
 
 package mixer.algos;
 
+import javastraw.feature1D.GenomeWideList;
+import javastraw.reader.Dataset;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.shuffle.stats.GenomeWideStatistics;
+import mixer.utils.slice.structures.SliceUtils;
+import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,9 +49,12 @@ public class Rename extends MixerCLT {
     private final Map<String, String> oldNameToNewColor = new HashMap<>();
     private String inputBedFile, outputBedFile;
     private String[] changes;
+    private final boolean useAutoRenaming;
 
-    public Rename() {
-        super("rename <old_name,new_name,R,G,B;A,B,0,0,0;B,A,1,1,1> <subcompartment.bed> <new_subcompartment.bed>");
+    public Rename(String name) {
+        super("rename <old_name,new_name,R,G,B;A,B,0,0,0;B,A,1,1,1> <subcompartment.bed> <new_subcompartment.bed>\n" +
+                "auto-rename <hic-file;resolution> <subcompartment.bed> <new_subcompartment.bed>");
+        useAutoRenaming = name.contains("auto");
     }
 
     @Override
@@ -60,12 +70,28 @@ public class Rename extends MixerCLT {
 
     @Override
     public void run() {
-        populateChanges();
+
+        if (useAutoRenaming) {
+            populateChangesAutomatically(outputBedFile);
+        } else {
+            populateChanges();
+        }
+
         try {
             parseAndWrite();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void populateChangesAutomatically(String outfile) {
+        Dataset ds = HiCFileTools.extractDatasetForCLT(changes[0], true, false);
+        int resolution = Integer.parseInt(changes[1]);
+        ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
+        GenomeWideList<SubcompartmentInterval> subcompartments =
+                SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, inputBedFile);
+        GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
+        //statistics.saveInteractionMap(outfolder);
     }
 
     private void populateChanges() {

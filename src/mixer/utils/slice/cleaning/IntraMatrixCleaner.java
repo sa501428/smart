@@ -25,6 +25,7 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.basics.Chromosome;
+import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -54,7 +55,9 @@ public class IntraMatrixCleaner {
         // subtractOEBy1(matrix);
         // ZScoreTools.inPlaceZscoreDownCol(matrix);
         // return rollingAverage(matrix, smoothingInterval);
-        return matrix;
+        return SimilarityMatrixTools.getNonNanSimilarityMatrix(matrix,
+                RobustCorrelationSimilarity.SINGLETON, 100, 283746L);
+        //return matrix;
     }
 
     private static void subtractOEBy1(float[][] matrix) {

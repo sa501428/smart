@@ -35,8 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric, int numPerCentroid,
-                                                      long seed) {
+    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric,
+                                                      int numPerCentroid, long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
             return getAsymmetricMatrix(matrix, new SimilarityMetric[]{metric}, matrix.length / numPerCentroid, seed);
         }
