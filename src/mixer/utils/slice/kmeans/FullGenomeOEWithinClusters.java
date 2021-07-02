@@ -29,8 +29,10 @@ import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
+import mixer.algos.Slice;
+import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
-import mixer.utils.slice.gmm.GenomeWideGMMRunner;
+import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -42,7 +44,7 @@ public class FullGenomeOEWithinClusters {
     public static int startingClusterSizeK = 2;
     public static int numClusterSizeKValsUsed = 10;
     public static int numAttemptsForKMeans = 3;
-    protected final File outputDirectory;
+    private final File outputDirectory;
     private final ChromosomeHandler chromosomeHandler;
     private final SliceMatrix sliceMatrix;
     private final int maxIters = 200;
@@ -75,36 +77,14 @@ public class FullGenomeOEWithinClusters {
     }
 
     public void extractFinalGWSubcompartments(String prefix) {
-
         System.out.println("Genomewide clustering");
         runClusteringOnRawMatrixWithNans(prefix);
-        runClusteringOnCorrMatrix(prefix + "_corr");
+        if (Slice.USE_INTER_CORR_CLUSTERING) {
+            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr");
+        }
     }
 
-    private void runClusteringOnCorrMatrix(String prefix) {
-
-        Map<Integer, GenomeWideList<SubcompartmentInterval>> gmmClustersToResults = new HashMap<>();
-        Map<Integer, GenomeWideList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
-        Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
-
-        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, sliceMatrix, true);
-        double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
-        for (double[] row : iterToWcssAicBic) {
-            Arrays.fill(row, Double.MAX_VALUE);
-        }
-
-        for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-            runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
-                    maxIters, kmeansClustersToResults, kmeansIndicesMap);
-            exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix);
-
-            runGMMClusteringLoop(z, 20, kmeansIndicesMap.get(z), gmmClustersToResults);
-            exportGMMClusteringResults(z, gmmClustersToResults, prefix);
-        }
-        System.out.println(".");
-    }
-
-    private void runClusteringOnRawMatrixWithNans(String prefix) {
+    public void runClusteringOnRawMatrixWithNans(String prefix) {
         Map<Integer, GenomeWideList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
         Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
 
@@ -122,9 +102,9 @@ public class FullGenomeOEWithinClusters {
         System.out.println(".");
     }
 
-    private void exportKMeansClusteringResults(int z, double[][] iterToWcssAicBic,
-                                               Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                               String prefix) {
+    public void exportKMeansClusteringResults(int z, double[][] iterToWcssAicBic,
+                                              Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+                                              String prefix) {
         int k = z + startingClusterSizeK;
         String outIterPath = new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(outIterPath, iterToWcssAicBic);
@@ -134,21 +114,10 @@ public class FullGenomeOEWithinClusters {
         gwList.simpleExport(outBedFile);
     }
 
-    private void exportGMMClusteringResults(int z, Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                            String prefix) {
-        int k = z + startingClusterSizeK;
-        if (numClustersToResults.containsKey(k)) {
-            GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
-            SliceUtils.collapseGWList(gwList);
-            File outBedFile = new File(outputDirectory, prefix + "_" + k + "_gmm_clusters.bed");
-            gwList.simpleExport(outBedFile);
-        }
-    }
-
-    private void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
-                                                 double[][] iterToWcssAicBic, int z, int maxIters,
-                                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                                 Map<Integer, List<List<Integer>>> indicesMap) {
+    public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
+                                                double[][] iterToWcssAicBic, int z, int maxIters,
+                                                Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+                                                Map<Integer, List<List<Integer>>> indicesMap) {
         int numClusters = z + startingClusterSizeK;
         int numColumns = kmeansRunner.getNumColumns();
         int numRows = kmeansRunner.getNumRows();
@@ -169,14 +138,6 @@ public class FullGenomeOEWithinClusters {
         }
     }
 
-    private void runGMMClusteringLoop(int z, int maxIters, List<List<Integer>> startingIndices,
-                                      Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults) {
-        int numClusters = z + startingClusterSizeK;
-        GenomeWideGMMRunner gmmRunner = new GenomeWideGMMRunner(chromosomeHandler, sliceMatrix);
-        gmmRunner.launch(numClusters, maxIters, numClustersToResults, startingIndices, false);
-        System.out.print("*");
-    }
-
     private void setMseAicBicValues(int z, double[][] iterToWcssAicBic, int numClusters, double sumOfSquares,
                                     int numRows, int numColumns) {
         iterToWcssAicBic[0][z] = numClusters;
@@ -185,5 +146,21 @@ public class FullGenomeOEWithinClusters {
         iterToWcssAicBic[2][z] = sumOfSquares + 2 * numColumns * numClusters;
         // BIC .5*k*d*log(n)
         iterToWcssAicBic[3][z] = sumOfSquares + 0.5 * numColumns * numClusters * Math.log(numRows);
+    }
+
+    public File getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    public ChromosomeHandler getChromosomeHandler() {
+        return chromosomeHandler;
+    }
+
+    public CompositeGenomeWideMatrix getSliceMatrix() {
+        return sliceMatrix;
+    }
+
+    public int getMaxIters() {
+        return maxIters;
     }
 }

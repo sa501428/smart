@@ -26,8 +26,6 @@ package mixer.utils.slice.cleaning;
 
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
-import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.utils.ColumnCleaner;
 import mixer.utils.slice.cleaning.utils.RowCleaner;
 import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -42,34 +40,24 @@ public class SliceMatrixCleaner {
     protected final File outputDirectory;
     protected float[][] data;
     protected final Random generator = new Random(0);
+    protected int resolution;
 
-    public SliceMatrixCleaner(float[][] data, long seed, File outputDirectory, SimilarityMetric metric) {
+    public SliceMatrixCleaner(float[][] data, long seed, File outputDirectory, int resolution) {
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
-
-        // after this, there should be no infinities, no negative numbers
-        // just real numbers >= 0 or NaNs
+        this.resolution = resolution;
         this.data = data;
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
     }
 
-    public float[][] getCleanFilteredZscoredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
-                                                   int[] weights) {
-        LogTools.simpleLogWithCleanup(this.data, Float.NaN);
-
-        System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
-        MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
-        System.out.println("Matrix size after column cleanup " + mw.matrix.length + " x " + mw.matrix[0].length);
-
-        data = (new RowCleaner(mw.matrix, rowIndexToIntervalMap, weights)).getCleanedData().matrix;
-        System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
-
-        System.out.println("Final matrix size " + data.length + " x " + data[0].length);
-
-        ZScoreTools.inPlaceZscoreDownCol(data);
-        ZScoreTools.inPlaceScaleSqrtWeightCol(data, mw.weights);
-
-        return data;
+    public static void setZerosToNan(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] < 1e-20) {
+                    matrix[i][j] = Float.NaN;
+                }
+            }
+        }
     }
 
     /*
@@ -77,4 +65,26 @@ public class SliceMatrixCleaner {
         return filterOutColumnsAndRowsGivenBadIndices(badIndices, data, rowIndexToIntervalMap);
     }
     */
+
+    public MatrixAndWeight getCleanFilteredZscoredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
+                                                         int[] weights) {
+        LogTools.simpleLogWithCleanup(data, Float.NaN);
+        setZerosToNan(data);
+
+        System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
+        //MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
+        //data = mw.matrix;
+        //weights = mw.weights;
+        //System.out.println("Matrix size after column cleanup " + mw.matrix.length + " x " + mw.matrix[0].length);
+
+        data = (new RowCleaner(data, rowIndexToIntervalMap, weights)).getCleanedData(resolution, outputDirectory).matrix;
+        System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
+
+        System.out.println("Final matrix size " + data.length + " x " + data[0].length);
+
+        ZScoreTools.inPlaceZscoreDownCol(data);
+        ZScoreTools.inPlaceScaleSqrtWeightCol(data, weights);
+
+        return new MatrixAndWeight(data, weights);
+    }
 }

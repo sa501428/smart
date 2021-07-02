@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 public class VectorGroup {
-    private final float threshold = 0.7f;
+    private final float threshold = 0.5f;
     private final Set<Integer> indices = new HashSet<>();
     private final List<float[]> vectors = new ArrayList<>();
 

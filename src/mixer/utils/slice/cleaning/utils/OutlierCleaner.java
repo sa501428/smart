@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.cleaning.utils;
 
+import javastraw.tools.MatrixTools;
 import javastraw.tools.ParallelizedJuicerTools;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
@@ -31,35 +32,35 @@ import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.QuickCentroids;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OutlierCleaner {
-    private static final float DIST_CUTOFF = 5;
+    private static final float DIST_CUTOFF = 3;
     protected final int NUM_POINTS_PER_CENTROID = 30;
     private final float[][] matrix;
     boolean useOnlyCorr;
+    private final int ONE_MB = 1000000;
+    int numInitialClusters = 100;
 
     public OutlierCleaner(float[][] matrix, boolean useOnlyCorr) {
         this.matrix = matrix;
         this.useOnlyCorr = useOnlyCorr;
     }
 
-    public Set<Integer> getConsistentOutliers() {
+    public Set<Integer> getConsistentOutliers(int resolution, File outputDirectory) {
         Set<Integer> outlierIndices = getCorrOutlierIndices(matrix, useOnlyCorr);
         if (!useOnlyCorr) {
-            int numInitialClusters = matrix.length / NUM_POINTS_PER_CENTROID;
-            float[][] centroids = new QuickCentroids(matrix, numInitialClusters, 5L).generateCentroids(5);
-            Set<Integer> distOutlierIndices = new HashSet<>();
+            float[][] centroids = new QuickCentroids(matrix, numInitialClusters, 5L).generateCentroids(ONE_MB / resolution);
             for (SimilarityMetric metric : new SimilarityMetric[]{RobustEuclideanDistance.SINGLETON,
                     RobustManhattanDistance.SINGLETON}) {
-                distOutlierIndices.addAll(getOutlierIndices(matrix, centroids, metric));
+                outlierIndices.addAll(getOutlierIndices(matrix, centroids, metric, outputDirectory));
             }
-            outlierIndices.retainAll(distOutlierIndices);
         }
-        System.out.println("Number of dist outliers (corr:" + useOnlyCorr + ") " + outlierIndices.size());
+        System.out.println("Number of dist outliers (use_only_corr:" + useOnlyCorr + ") " + outlierIndices.size());
 
         return outlierIndices;
     }
@@ -69,7 +70,8 @@ public class OutlierCleaner {
         return correlator.getOutlierIndices();
     }
 
-    private Set<Integer> getOutlierIndices(float[][] matrix, float[][] centroids, SimilarityMetric metric) {
+    private Set<Integer> getOutlierIndices(float[][] matrix, float[][] centroids,
+                                           SimilarityMetric metric, File outputDirectory) {
         float[] minDist = new float[matrix.length];
         Arrays.fill(minDist, Float.MAX_VALUE);
         AtomicInteger rowIndex = new AtomicInteger(0);
@@ -86,6 +88,11 @@ public class OutlierCleaner {
             }
         });
 
+        float[][] mtrx = new float[1][minDist.length];
+        mtrx[0] = minDist;
+        File outfile = new File(outputDirectory, metric.toString() + "_distances.npy");
+        MatrixTools.saveMatrixTextNumpy(outfile.getAbsolutePath(), mtrx);
+
         return indexOfOutliers(minDist);
     }
 
@@ -94,8 +101,8 @@ public class OutlierCleaner {
         float mu = ArrayTools.getNonZeroMean(minDist);
         float std = ArrayTools.getNonZeroStd(minDist, mu);
         for (int k = 0; k < minDist.length; k++) {
-            float zscore = (minDist[k] - mu) / std;
-            if (zscore > DIST_CUTOFF) {
+            float zScore = (minDist[k] - mu) / std;
+            if (zScore > DIST_CUTOFF) {
                 outliers.add(k);
             }
         }

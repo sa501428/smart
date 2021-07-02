@@ -34,8 +34,6 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
 import mixer.algos.Slice;
-import mixer.utils.common.LogTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -55,7 +53,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                 badIndexLocations, maxClusterSizeExpected);
     }
 
-    float[][] makeCleanScaledInterMatrix(Dataset ds, NormalizationType interNorm) {
+    MatrixAndWeight makeCleanScaledInterMatrix(Dataset ds, NormalizationType interNorm) {
         // height/width chromosomes
         Map<Integer, Integer> indexToLength = calculateActualLengthForChromosomes(chromosomes);
         IndexOrderer orderer = new IndexOrderer(ds, chromosomes, resolution, norms[Slice.INTRA_SCALE_INDEX], badIndexLocations,
@@ -97,11 +95,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         }
         System.out.println(".");
 
-        LogTools.simpleLogWithCleanup(interMatrix, Float.NaN);
-        ZScoreTools.inPlaceZscoreDownCol(interMatrix);
-        ZScoreTools.inPlaceScaleSqrtWeightCol(interMatrix, weights);
-
-        return interMatrix;
+        return new MatrixAndWeight(interMatrix, weights);
     }
 
     private int[] getWeights(Dimension compressedDimensions, IndexOrderer orderer) {

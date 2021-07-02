@@ -55,7 +55,10 @@ public final class RobustManhattanDistance extends SimilarityMetric {
         numDiffs++;
       }
     }
-    numDiffs = Math.max(numDiffs, 1);
+    if (numDiffs < 1) {
+      //System.err.println("Vector too sparse");
+      return Float.MAX_VALUE;
+    }
     return sumOfError / numDiffs;
   }
 }

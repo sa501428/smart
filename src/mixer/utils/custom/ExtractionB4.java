@@ -59,7 +59,7 @@ public class ExtractionB4 {
                     //ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                     true, 1, 0);
             removeEmptyValues(matrix);
-            NearDiagonalTrim.trim(chrom19, matrix, RESOLUTION);
+            NearDiagonalTrim.nanFill(chrom19, matrix, RESOLUTION);
             float[] sums = getAbsRowSums(matrix);
             fillEmptyRows(matrix, sums);
 

@@ -36,8 +36,8 @@ public final class RobustCosineSimilarity extends SimilarityMetric {
   @Override
   public float distance(final float[] x, final float[] y) {
     double dotProduct = 0.0;
-    double normX = 0.0;
-    double normY = 0.0;
+    double normX = 1e-100;
+    double normY = 1e-100;
     for (int i = 0; i < x.length; i++) {
       float product = x[i] * y[i];
       if (!Float.isNaN(product)) {

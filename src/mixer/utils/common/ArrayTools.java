@@ -29,12 +29,13 @@ import java.util.Collection;
 public class ArrayTools {
 
     private static final float ZERO = 1e-10f;
+    private static final float CUTOFF = 0.9f * Float.MAX_VALUE;
 
     public static float getNonZeroStd(float[] numNonZeros, float mean) {
         int count = 0;
         float total = 0;
         for (float val : numNonZeros) {
-            if (val > 0) {
+            if (val > ZERO && val < CUTOFF) {
                 float diff = val - mean;
                 total += (diff * diff);
                 count++;
@@ -51,7 +52,7 @@ public class ArrayTools {
         int count = 0;
         float total = 0;
         for (float val : numNonZeros) {
-            if (val > ZERO) {
+            if (val > ZERO && val < CUTOFF) {
                 total += val;
                 count++;
             }
@@ -65,7 +66,7 @@ public class ArrayTools {
 
         for (float[] array : allArrays) {
             for (float val : array) {
-                if (val > ZERO) {
+                if (val > ZERO && val < CUTOFF) {
                     total += val;
                     count++;
                 }
@@ -79,7 +80,7 @@ public class ArrayTools {
         double total = 0;
         for (float[] array : allArrays) {
             for (float val : array) {
-                if (val > 0) {
+                if (val > ZERO && val < CUTOFF) {
                     float diff = val - mean;
                     total += (diff * diff);
                     count++;
@@ -123,5 +124,12 @@ public class ArrayTools {
             sum += val;
         }
         return sum / array.length;
+    }
+
+    public static int[] concatenate(int[] arr1, int[] arr2) {
+        int[] output = new int[arr1.length + arr2.length];
+        System.arraycopy(arr1, 0, output, 0, arr1.length);
+        System.arraycopy(arr2, 0, output, arr1.length, arr2.length);
+        return output;
     }
 }

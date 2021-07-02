@@ -26,6 +26,7 @@ package mixer.utils.slice.cleaning.utils;
 
 import mixer.utils.slice.matrices.MatrixAndWeight;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,13 +41,14 @@ public abstract class DimensionCleaner {
         this.weights = weights;
     }
 
-    public MatrixAndWeight getCleanedData() {
-        return filterOutDimension(data);
+    public MatrixAndWeight getCleanedData(int resolution, File outputDirectory) {
+        return filterOutDimension(data, resolution, outputDirectory);
     }
 
-    private MatrixAndWeight filterOutDimension(float[][] matrix) {
+    private MatrixAndWeight filterOutDimension(float[][] matrix, int resolution, File outputDirectory) {
         Set<Integer> badIndices = getSparseIndices(matrix);
-        Set<Integer> outlierIndices = (new OutlierCleaner(getAppropriatelyFlippedMatrix(), useOnlyCorr())).getConsistentOutliers();
+        Set<Integer> outlierIndices = (new OutlierCleaner(getAppropriatelyFlippedMatrix(),
+                useOnlyCorr())).getConsistentOutliers(resolution, outputDirectory);
         badIndices.addAll(outlierIndices);
 
         if (badIndices.size() == 0) {

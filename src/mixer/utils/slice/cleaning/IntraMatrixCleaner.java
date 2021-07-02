@@ -25,39 +25,36 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.basics.Chromosome;
-import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 
 import java.util.Arrays;
 import java.util.Set;
 
 public class IntraMatrixCleaner {
 
-    private static void eraseTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix) {
+    private static void nanFillTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix, int resFactor) {
         if (badIndices.size() < 1) return;
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j : badIndices) {
-                matrix[i][j] = Float.NaN;
+                matrix[i][j / resFactor] = Float.NaN;
             }
         }
 
         for (int i : badIndices) {
-            Arrays.fill(matrix[i], Float.NaN);
+            Arrays.fill(matrix[i / resFactor], Float.NaN);
         }
     }
 
     public static float[][] cleanAndCompress(Chromosome chrom, float[][] matrix, int resolution,
-                                             int smoothingInterval, Set<Integer> badIndices) {
-        NearDiagonalTrim.trim(chrom, matrix, resolution);
-        eraseTheRowsColumnsWeDontWant(badIndices, matrix);
+                                             Set<Integer> badIndices, int resFactor) {
+        //NearDiagonalTrim.nanFill(chrom, matrix, resolution);
+        nanFillTheRowsColumnsWeDontWant(badIndices, matrix, resFactor);
         // float[][] compressedMatrix = compress(matrix, smoothingInterval);
-        removeEmptyEntries(matrix);
-        // subtractOEBy1(matrix);
+        //nanFillZeroEntries(matrix);
+        //subtractOEBy1(matrix);
         // ZScoreTools.inPlaceZscoreDownCol(matrix);
         // return rollingAverage(matrix, smoothingInterval);
-        return SimilarityMatrixTools.getNonNanSimilarityMatrix(matrix,
-                RobustCorrelationSimilarity.SINGLETON, 100, 283746L);
-        //return matrix;
+        return matrix;
     }
 
     private static void subtractOEBy1(float[][] matrix) {
@@ -70,7 +67,7 @@ public class IntraMatrixCleaner {
         }
     }
 
-    private static void removeEmptyEntries(float[][] matrix) {
+    private static void nanFillZeroEntries(float[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 if (matrix[i][j] < 1e-10) {

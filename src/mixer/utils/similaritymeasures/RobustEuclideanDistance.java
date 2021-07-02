@@ -54,7 +54,7 @@ public final class RobustEuclideanDistance extends SimilarityMetric {
       }
     }
     if (numVals < 1) {
-      System.err.println("Vector too sparse");
+      //System.err.println("Vector too sparse");
       return Float.MAX_VALUE;
     }
     return x.length * sumOfSquares / numVals;
