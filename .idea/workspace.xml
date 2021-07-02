@@ -31,30 +31,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup, auto renaming setup">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/common/Unused.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/CorrMatrixClusterer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/custom/ExtractionB4.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/custom/ExtractionB4.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustCosineSimilarity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustEuclideanDistance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustManhattanDistance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustManhattanDistance.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/NearDiagonalTrim.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/NearDiagonalTrim.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/archive/LeftOverClusterIdentifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/archive/LeftOverClusterIdentifier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/DimensionCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/DimensionCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/OutlierCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/OutlierCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/VectorGroup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/VectorGroup.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,14 +199,7 @@
       <workItem from="1624639797972" duration="1558000" />
       <workItem from="1624806015665" duration="2079000" />
       <workItem from="1624933616075" duration="14287000" />
-      <workItem from="1625162214238" duration="21001000" />
-    </task>
-    <task id="LOCAL-00092" summary="bug fixes; code cleanup">
-      <created>1615086186443</created>
-      <option name="number" value="00092" />
-      <option name="presentableId" value="LOCAL-00092" />
-      <option name="project" value="LOCAL" />
-      <updated>1615086186443</updated>
+      <workItem from="1625162214238" duration="22274000" />
     </task>
     <task id="LOCAL-00093" summary="dual norm combo">
       <created>1615221522218</created>
@@ -564,7 +537,14 @@
       <option name="project" value="LOCAL" />
       <updated>1625072030973</updated>
     </task>
-    <option name="localTasksCounter" value="141" />
+    <task id="LOCAL-00141" summary="bug fixes, slice encode version">
+      <created>1625210192790</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
+      <option name="project" value="LOCAL" />
+      <updated>1625210192790</updated>
+    </task>
+    <option name="localTasksCounter" value="142" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -589,7 +569,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Basic ABA code added" />
     <MESSAGE value="bug fixes, code cleanup" />
     <MESSAGE value="revert" />
     <MESSAGE value="redo initial clustering, change initial cleaning, weigh zscore" />
@@ -614,7 +593,8 @@
     <MESSAGE value="Bug fix" />
     <MESSAGE value="experimenting with additional transforms" />
     <MESSAGE value="code cleanup, auto renaming setup" />
-    <option name="LAST_COMMIT_MESSAGE" value="code cleanup, auto renaming setup" />
+    <MESSAGE value="bug fixes, slice encode version" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes, slice encode version" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -26,6 +26,7 @@ package mixer.utils.slice.cleaning.utils;
 
 import javastraw.tools.MatrixTools;
 import javastraw.tools.ParallelizedJuicerTools;
+import mixer.MixerGlobals;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
@@ -88,10 +89,12 @@ public class OutlierCleaner {
             }
         });
 
-        float[][] mtrx = new float[1][minDist.length];
-        mtrx[0] = minDist;
-        File outfile = new File(outputDirectory, metric.toString() + "_distances.npy");
-        MatrixTools.saveMatrixTextNumpy(outfile.getAbsolutePath(), mtrx);
+        if (MixerGlobals.printVerboseComments) {
+            float[][] mtrx = new float[1][minDist.length];
+            mtrx[0] = minDist;
+            File outfile = new File(outputDirectory, metric.toString() + "_distances.npy");
+            MatrixTools.saveMatrixTextNumpy(outfile.getAbsolutePath(), mtrx);
+        }
 
         return indexOfOutliers(minDist);
     }

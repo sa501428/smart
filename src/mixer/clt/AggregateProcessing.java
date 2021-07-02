@@ -25,8 +25,10 @@
 package mixer.clt;
 
 
-import mixer.MixerGlobals;
 import mixer.MixerTools;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created for testing multiple CLTs at once
@@ -37,31 +39,57 @@ public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
         String[] files = new String[]{
-                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic" //,
+                //"/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic" //,
                 //"/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic",
                 //"/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic"
         };
 
-        for (String file : files) {//100000,50000,
-            for (int res : new int[]{25000}) { // 50000,25000,10000 100000 100000 50000
-                String folder = "SLICE_v" + MixerGlobals.versionNum;
+        files = new String[]{
+                "/Users/mshamim/Desktop/hicfiles/SCALE/hap1_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/SCALE/imr90_rh14_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/SCALE/K562_2014_SCALE_30.hic"
+        };
+
+        String[] stems = new String[]{
+                "hap1",
+                "imr",
+                "k562"
+        };
+
+
+        for (int f = 0; f < files.length; f++) {//
+            String file = files[f];
+            String stem = stems[f];
+            for (int res : new int[]{25000, 100000, 50000}) { // 50000,25000,10000 100000 100000 50000
+                String folder = stem + "_SLICE";
                 String[] strings = new String[]{"slice", "-r", res + "",
                         file, "2,10,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_118_reset_corrshort_" + res + "_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/phnx_136_" + res + "_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
                 MixerTools.main(strings);
                 System.gc();
+            }
+        }
 
-                strings = new String[]{"shuffle",
-                        "-r", res + "", "-k", "INTER_KR", "-w", "" + 8,
-                        file,
-                        "/Users/mshamim/Desktop/B4/GSE63525_GM12878_subcompartments.bed," +
-                                "/Users/mshamim/Desktop/B4/SLICE_v3.27.02__19_kmeans_clusters.bed," +
-                                "/Users/mshamim/Desktop/B4/SLICE_v3.27.02__corr_19_gmm_clusters.bed",
-                        "/Users/mshamim/Desktop/reSLICE/shuffle_80_81",
-                        "RH2014,SLICE_80_Kmeans,SLICE_80_GMM"
+        String mains = "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
+                "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed," +
+                "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_track_hg19.bed,";
+
+        Map<Integer, String> map = new HashMap<>();
+        map.put(100, "/Users/mshamim/Desktop/reSLICE/phnx_136_reset_cleaning2_100000_SLICE_v3.29.00/SLICE_v3.29.00__5_kmeans_clusters.bed");
+        map.put(25, "/Users/mshamim/Desktop/reSLICE/phnx_136_reset_cleaning2_25000_SLICE_v3.29.00/SLICE_v3.29.00__5_kmeans_clusters.bed");
+        map.put(50, "/Users/mshamim/Desktop/reSLICE/phnx_136_reset_cleaning2_50000_SLICE_v3.29.00/SLICE_v3.29.00__5_kmeans_clusters.bed");
+
+        for (String k : new String[]{"INTER_KR", "GW_KR", "KR"}) {
+            for (int r : new int[]{100}) { // 25, 50,
+                String[] strings = new String[]{"shuffle",
+                        "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
+                        files[0],
+                        mains + map.get(r),
+                        "/Users/mshamim/Desktop/reSLICE/shuffle_136_v16_" + r + "_" + k,
+                        "RH2014,SCI,SNIPER,SLICE_" + r
                 };
                 System.out.println("-----------------------------------------------------");
                 //MixerTools.main(strings);

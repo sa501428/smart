@@ -65,7 +65,9 @@ public abstract class CompositeGenomeWideMatrix {
                                      int maxClusterSizeExpected) {
         this.maxClusterSizeExpected = maxClusterSizeExpected;
         this.norms = norms;
-        System.out.println("Norms: " + Arrays.toString(norms));
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Norms: " + Arrays.toString(norms));
+        }
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
         this.generator.setSeed(seed);
@@ -94,15 +96,19 @@ public abstract class CompositeGenomeWideMatrix {
                 gwCleanMatrix.weights);
 
 
-        File file1 = new File(outputDirectory, "zscore_matrix.npy");
-        MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix.matrix);
+        if (MixerGlobals.printVerboseComments) {
+            File file1 = new File(outputDirectory, "zscore_matrix.npy");
+            MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix.matrix);
+        }
 
         if (Slice.USE_INTER_CORR_CLUSTERING) {
             projectedData = new MatrixAndWeight(SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix.matrix,
                     50, generator.nextLong()), gwCleanMatrix.weights);
 
-            File file2 = new File(outputDirectory, "corr_matrix.npy");
-            MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData.matrix);
+            if (MixerGlobals.printVerboseComments) {
+                File file2 = new File(outputDirectory, "corr_matrix.npy");
+                MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData.matrix);
+            }
 
             runUmapAndSaveMatrices(projectedData.matrix, outputDirectory,
                     rowIndexToIntervalMap);

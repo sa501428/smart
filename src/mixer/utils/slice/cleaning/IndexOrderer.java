@@ -89,8 +89,9 @@ public class IndexOrderer {
             System.out.print(".");
         }
 
-        writeOutInitialResults();
-        //System.exit(7);
+        if (MixerGlobals.printVerboseComments) {
+            writeOutInitialResults();
+        }
     }
 
     public static float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
@@ -105,7 +106,7 @@ public class IndexOrderer {
         for (int i = 0; i < actualIndices.size(); i++) {
             System.arraycopy(matrix[actualIndices.get(i)], 0, tempCleanMatrix[i], 0, tempCleanMatrix[i].length);
         }
-        if (true || MixerGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("New clean matrix: " + tempCleanMatrix.length + " rows kept from " + matrix.length);
         }
         return tempCleanMatrix;
@@ -152,7 +153,9 @@ public class IndexOrderer {
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
                 numInitialClusters, generator.nextLong(), 100).generateCentroids(5);
 
-        System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
+        }
 
         List<Integer> problemIndices = Collections.synchronizedList(new ArrayList<>());
         int[] clusterAssignment = new int[newIndexOrderAssignments.length];
@@ -186,9 +189,11 @@ public class IndexOrderer {
         });
 
 
-        synchronized (problemIndices) {
-            double percentProblem = 100 * (problemIndices.size() + 0.0) / (matrix.length + 0.0);
-            System.out.println("IndexOrderer problems: " + problemIndices.size() + " (" + percentProblem + " %)");
+        if (MixerGlobals.printVerboseComments) {
+            synchronized (problemIndices) {
+                double percentProblem = 100 * (problemIndices.size() + 0.0) / (matrix.length + 0.0);
+                System.out.println("IndexOrderer problems: " + problemIndices.size() + " (" + percentProblem + " %)");
+            }
         }
 
         int filtered = 0;
@@ -201,8 +206,9 @@ public class IndexOrderer {
                 filtered++;
             }
         }
-        System.out.println("Post filtered: " + filtered);
-
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Post filtered: " + filtered);
+        }
 
         for (int i = 0; i < clusterAssignment.length; i++) {
             if (newIndexOrderAssignments[i] < CHECK_VAL) {
