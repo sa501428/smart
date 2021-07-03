@@ -58,9 +58,12 @@ public class Slice extends MixerCLT {
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
-        super("slice [-r resolution] <-k NONE/VC/VC_SQRT/KR/SCALE>  [-w window] " +
-                "[--compare reference.bed] [--verbose] " + //"[--has-translocation] " +
-                "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
+        super("slice [-r resolution] [--verbose] " +
+                //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
+                "<file.hic> <K0,KF,nK> <outfolder> <prefix_>\n" +
+                "   K0 - minimum number of clusters\n" +
+                "   KF - maximum number of clusters\n" +
+                "   nK - number of times to rerun kmeans");
     }
 
     @Override

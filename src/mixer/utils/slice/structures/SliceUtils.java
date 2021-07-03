@@ -34,9 +34,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class SliceUtils {
+
+    private static final AtomicInteger idCounter = new AtomicInteger(0);
 
     public static void reSort(GenomeWideList<SubcompartmentInterval> subcompartments) {
         subcompartments.filterLists((chr, featureList) -> {
@@ -147,6 +150,7 @@ public class SliceUtils {
 
         Set<SubcompartmentInterval> anchors = new HashSet<>();
         String nextLine;
+        Map<String, Integer> idToVal = new HashMap<>();
 
         int errorCount = 0;
         while ((nextLine = bufferedReader.readLine()) != null) {
@@ -162,7 +166,14 @@ public class SliceUtils {
                 int start1 = Integer.parseInt(tokens[1]);
                 int end1 = Integer.parseInt(tokens[2]);
                 String id = tokens[3].toUpperCase();
-                int val = Integer.parseInt(tokens[4]);
+
+                int val;
+                try {
+                    val = Integer.parseInt(tokens[4]);
+                } catch (Exception e) {
+                    val = 0;
+                }
+                val = updateMapAndConfirmVal(id, val, idToVal);
 
                 Chromosome chrom = handler.getChromosomeFromName(chr1Name);
                 if (chrom == null) {
@@ -184,5 +195,29 @@ public class SliceUtils {
         if (anchors.size() < 1) System.err.println("BED File empty - file may have problems or error was encountered");
         bufferedReader.close();
         return new ArrayList<>(anchors);
+    }
+
+    private static int updateMapAndConfirmVal(String id, int val, Map<String, Integer> idToVal) {
+        if (idToVal.containsKey(id)) {
+            return idToVal.get(id);
+        } else {
+            int newVal = val;
+            boolean valueIsAlreadyPresent = false;
+            for (Integer valInMap : idToVal.values()) {
+                valueIsAlreadyPresent |= valInMap.intValue() == val;
+            }
+
+            if (valueIsAlreadyPresent) {
+                newVal = idCounter.incrementAndGet();
+            } else {
+                idCounter.set(val);
+                idCounter.incrementAndGet();
+            }
+            idToVal.put(id, newVal);
+            return newVal;
+            //int val2 = idCounter.incrementAndGet();
+            //idToVal.put(id, val2);
+            //return val2;
+        }
     }
 }
