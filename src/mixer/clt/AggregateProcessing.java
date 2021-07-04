@@ -56,18 +56,18 @@ public class AggregateProcessing {
                 "k562"
         };
 
-        for (int f = 0; f < files.length; f++) {//
+        for (int f = 2; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
             for (int res : new int[]{25000, 100000, 50000}) { // 50000,25000,10000 100000 100000 50000
                 String folder = stem + "_SLICE";
                 String[] strings = new String[]{"slice", "-r", res + "",
                         file, "2,10,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_136_" + res + "_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/phnx_140_" + res + "_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
-                //MixerTools.main(strings);
+                MixerTools.main(strings);
                 System.gc();
             }
         }
@@ -103,7 +103,7 @@ public class AggregateProcessing {
                             "SLICE,SNIPER"
                     };
                     System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+                    //MixerTools.main(strings);
                     System.gc();
                 }
             }

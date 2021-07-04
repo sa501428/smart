@@ -120,6 +120,17 @@ public class GWBadIndexFinder {
         return badIndices.get(chrom.getIndex());
     }
 
+    public Set<Integer> getBadGenomePositionsAtResolution(Chromosome chrom, int newResolution) {
+        if (newResolution == resolution) return getBadIndices(chrom);
+        Set<Integer> newPositions = new HashSet<>();
+        for (Integer pos : getBadIndices(chrom)) {
+            long genomePos = (long) resolution * pos;
+            int newPos = (int) (genomePos / newResolution);
+            newPositions.add(newPos);
+        }
+        return newPositions;
+    }
+
     public Set<Integer> getEmptyIndices(Chromosome chrom) {
         return emptyIndices.get(chrom.getIndex());
     }

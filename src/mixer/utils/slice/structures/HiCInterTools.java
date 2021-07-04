@@ -80,7 +80,7 @@ public class HiCInterTools {
         return getIdealCompression(genomelength, resolution, totalCounts);
     }
 
-    private static int getLowestResolution(Dataset ds) {
+    public static int getLowestResolution(Dataset ds) {
         List<HiCZoom> zooms = ds.getBpZooms();
         int maxResolution = zooms.get(0).getBinSize();
         for (HiCZoom zoom : zooms) {

@@ -32,6 +32,7 @@ import javastraw.tools.MatrixTools;
 import mixer.algos.Slice;
 import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.SimpleTranslocationFinder;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
@@ -62,14 +63,19 @@ public class FullGenomeOEWithinClusters {
                 resolution, normalizationTypes);
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
+        SimpleTranslocationFinder translocationFinder = new SimpleTranslocationFinder(datasets,
+                chromosomeHandler.getAutosomalChromosomesArray(), normalizationTypes, badIndexFinder);
+
+        //System.exit(23);
+
         int absMaxClusters = numClusterSizeKValsUsed + startingClusterSizeK;
         sliceMatrix = new SliceMatrix(chromosomeHandler, datasets.get(0), normalizationTypes.get(0), resolution, outputDirectory,
-                generator.nextLong(), badIndexFinder, absMaxClusters);
+                generator.nextLong(), badIndexFinder, absMaxClusters, translocationFinder.getSet(0));
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
                     normalizationTypes.get(dI), resolution, outputDirectory,
-                    generator.nextLong(), badIndexFinder, absMaxClusters);
+                    generator.nextLong(), badIndexFinder, absMaxClusters, translocationFinder.getSet(dI));
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 

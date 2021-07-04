@@ -24,7 +24,9 @@
 
 package mixer.utils.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ArrayTools {
 
@@ -131,5 +133,14 @@ public class ArrayTools {
         System.arraycopy(arr1, 0, output, 0, arr1.length);
         System.arraycopy(arr2, 0, output, arr1.length, arr2.length);
         return output;
+    }
+
+    public static float[] toArray(Collection<Float> initialVals) {
+        List<Float> vals = new ArrayList<>(initialVals);
+        float[] values = new float[vals.size()];
+        for (int z = 0; z < vals.size(); z++) {
+            values[z] = vals.get(z).floatValue();
+        }
+        return values;
     }
 }
