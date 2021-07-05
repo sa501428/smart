@@ -64,9 +64,8 @@ public class FullGenomeOEWithinClusters {
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
         SimpleTranslocationFinder translocationFinder = new SimpleTranslocationFinder(datasets,
-                chromosomeHandler.getAutosomalChromosomesArray(), normalizationTypes, badIndexFinder);
-
-        //System.exit(23);
+                chromosomeHandler.getAutosomalChromosomesArray(), normalizationTypes, badIndexFinder,
+                outputDirectory);
 
         int absMaxClusters = numClusterSizeKValsUsed + startingClusterSizeK;
         sliceMatrix = new SliceMatrix(chromosomeHandler, datasets.get(0), normalizationTypes.get(0), resolution, outputDirectory,

@@ -25,21 +25,18 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.basics.Chromosome;
-import mixer.utils.common.ArrayTools;
-import mixer.utils.common.QuickMedian;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 
 public class TranslocationSet {
-    private static final float TRANSLOCATION_CUTOFF = 3;
     private final Set<String> translocations = new HashSet<>();
-    Map<String, Float> maxInRegion = new HashMap<>();
+    Map<String, List<Rectangle>> maxInRegion = new HashMap<>();
 
-    public void put(Chromosome chr1, Chromosome chr2, float val) {
-        maxInRegion.put(key(chr1, chr2), val);
+    public void put(Chromosome chr1, Chromosome chr2, List<Rectangle> vals) {
+        maxInRegion.put(key(chr1, chr2), vals);
+        translocations.add(key(chr1, chr2));
     }
 
     public String key(Chromosome chr1, Chromosome chr2) {
@@ -52,24 +49,5 @@ public class TranslocationSet {
 
     public boolean getHasTranslocation(Chromosome chr1, Chromosome chr2) {
         return translocations.contains(key(chr1, chr2));
-    }
-
-    public void determineTranslocations() {
-        float[] values = ArrayTools.toArray(maxInRegion.values());
-        float mean = ArrayTools.getNonZeroMean(values);
-        float median = QuickMedian.fastMedian(values);
-        float stdDev = ArrayTools.getNonZeroStd(values, mean);
-        float mad = 1.4826f * QuickMedian.fastMedianAbsDeviation(values, median);
-
-        for (String key : maxInRegion.keySet()) {
-            Float val = maxInRegion.get(key);
-            float zscore = (val - mean) / stdDev;
-            float robustZscore = (val - median) / mad;
-            //System.out.println("Translocation: "+key +" z: "+zscore +"  rz: "+robustZscore);
-            if (zscore > TRANSLOCATION_CUTOFF) {
-                translocations.add(key);
-                System.out.println("*** Translocation: " + key + " z: " + zscore + "  rz: " + robustZscore + "");
-            }
-        }
     }
 }

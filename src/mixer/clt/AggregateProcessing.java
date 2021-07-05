@@ -27,8 +27,7 @@ package mixer.clt;
 
 import mixer.MixerTools;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 /**
  * Created for testing multiple CLTs at once
@@ -47,63 +46,68 @@ public class AggregateProcessing {
         files = new String[]{
                 "/Users/mshamim/Desktop/hicfiles/SCALE/hap1_SCALE_30.hic",
                 "/Users/mshamim/Desktop/hicfiles/SCALE/imr90_rh14_SCALE_30.hic",
-                "/Users/mshamim/Desktop/hicfiles/SCALE/K562_2014_SCALE_30.hic"
+                "/Users/mshamim/Desktop/hicfiles/SCALE/K562_2014_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic"
         };
 
         String[] stems = new String[]{
                 "hap1",
                 "imr",
-                "k562"
+                "k562",
+                "gm"
         };
 
-        for (int f = 2; f < files.length; f++) {//
+        for (int f = 0; f < files.length; f++) {// files.length
             String file = files[f];
             String stem = stems[f];
-            for (int res : new int[]{25000, 100000, 50000}) { // 50000,25000,10000 100000 100000 50000
+            for (int res : new int[]{100000}) { // 50000, 25000 ,  50000,25000,10000 100000 100000 50000
                 String folder = stem + "_SLICE";
                 String[] strings = new String[]{"slice", "-r", res + "",
                         file, "2,10,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_140_" + res + "_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + res + "_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
-                MixerTools.main(strings);
+                //MixerTools.main(strings);
                 System.gc();
             }
         }
 
-        String mains = "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
-                "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed," +
-                "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_track_hg19.bed,";
+        System.gc();
 
-        Map<Integer, String> map = new HashMap<>();
-        map.put(100, "/Users/mshamim/Desktop/reSLICE/phnx_136_reset_cleaning2_100000_SLICE_v3.29.00/SLICE_v3.29.00__5_kmeans_clusters.bed");
-        map.put(25, "/Users/mshamim/Desktop/reSLICE/phnx_136_reset_cleaning2_25000_SLICE_v3.29.00/SLICE_v3.29.00__5_kmeans_clusters.bed");
-        map.put(50, "/Users/mshamim/Desktop/reSLICE/phnx_136_reset_cleaning2_50000_SLICE_v3.29.00/SLICE_v3.29.00__5_kmeans_clusters.bed");
+        String[] labels = new String[4];
+        Arrays.fill(labels, "SLICE,SNIPER");
+        labels[3] = "SLICE,SNIPER,RH2014,SCI";
 
-        String[] beds = new String[]{
-                "/Users/mshamim/Desktop/reSLICE/mult_types/hap1_100k_SLICE__5_kmeans_clusters.bed," +
-                        "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/HAP1_track_hg19.bed",
-                "/Users/mshamim/Desktop/reSLICE/mult_types/imr_100k_SLICE__5_kmeans_clusters.bed," +
-                        "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/IMR90_track_hg19.bed",
-                "/Users/mshamim/Desktop/reSLICE/mult_types/k562_100k_SLICE__5_kmeans_clusters.bed," +
-                        "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/K562_track_hg19.bed"
-        };
-
-        for (int f = 0; f < files.length; f++) {//
+        for (int f = 3; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
             for (String k : new String[]{"INTER_SCALE", "GW_SCALE"}) {//, "KR"
-                for (int r : new int[]{100}) { // 25, 50,
+                for (int r : new int[]{100}) { // 50, 25
+
+                    String[] beds = new String[]{
+                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_hap1_SLICE/hap1_SLICE__5_kmeans_clusters.bed," +
+                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/HAP1_track_hg19.bed",
+                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_imr_SLICE/imr_SLICE__5_kmeans_clusters.bed," +
+                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/IMR90_track_hg19.bed",
+                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_k562_SLICE/k562_SLICE__5_kmeans_clusters.bed," +
+                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/K562_track_hg19.bed",
+                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_gm_SLICE/gm_SLICE__5_kmeans_clusters.bed," +
+                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
+                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
+                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed"
+                    };
+
+
                     String[] strings = new String[]{"shuffle",
                             "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
                             file,
                             beds[f],
-                            "/Users/mshamim/Desktop/reSLICE/shuffle_slice_vs_sniper_" + stem + "_" + r + "_" + k,
-                            "SLICE,SNIPER"
+                            "/Users/mshamim/Desktop/reSLICE/shuffle2_152_slice_vs_sniper_" + stem + "_" + r + "_" + k,
+                            labels[f]
                     };
                     System.out.println("-----------------------------------------------------");
-                    //MixerTools.main(strings);
+                    MixerTools.main(strings);
                     System.gc();
                 }
             }
