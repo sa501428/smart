@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
+import mixer.MixerGlobals;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.slice.cleaning.utils.RowCleaner;
@@ -76,17 +77,18 @@ public class SliceMatrixCleaner {
         removeHighGlobalThresh(data, weights);
         renormalize(data, weights);
 
-
-        System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
+        }
         //MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
         //data = mw.matrix;
         //weights = mw.weights;
         //System.out.println("Matrix size after column cleanup " + mw.matrix.length + " x " + mw.matrix[0].length);
 
         data = (new RowCleaner(data, rowIndexToIntervalMap, weights)).getCleanedData(resolution, outputDirectory).matrix;
-        System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
-
-        System.out.println("Final matrix size " + data.length + " x " + data[0].length);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
+        }
 
         ZScoreTools.inPlaceZscoreDownCol(data);
         ZScoreTools.inPlaceScaleSqrtWeightCol(data, weights);
@@ -97,7 +99,9 @@ public class SliceMatrixCleaner {
     private void renormalize(float[][] data, int[] weights) {
         double mu = getGlobalMean(data, weights);
         double std = getGlobalStdDev(data, weights, mu);
-        System.out.println("mu " + mu + " std" + std);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("mu " + mu + " std" + std);
+        }
         fixToNormalRange(data, mu, std);
     }
 
@@ -115,13 +119,17 @@ public class SliceMatrixCleaner {
                 }
             }
         }
-        System.out.println("Num fixed part 2: z < -2 : " + numFixed);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Num fixed part 2: z < -2 : " + numFixed);
+        }
     }
 
     private void removeHighGlobalThresh(float[][] data, int[] weights) {
         double mu = getGlobalMean(data, weights);
         double std = getGlobalStdDev(data, weights, mu);
-        System.out.println("mu " + mu + " std" + std);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("mu " + mu + " std" + std);
+        }
         thresholdByMax(data, mu, std, MAX_ZSCORE);
     }
 
@@ -138,7 +146,9 @@ public class SliceMatrixCleaner {
                 }
             }
         }
-        System.out.println("Num fixed z > 5 : " + numFixed);
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Num fixed z > 5 : " + numFixed);
+        }
     }
 
     private double getGlobalStdDev(float[][] data, int[] weights, double mu) {

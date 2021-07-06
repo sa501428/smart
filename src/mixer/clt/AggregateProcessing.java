@@ -60,7 +60,7 @@ public class AggregateProcessing {
         for (int f = 0; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
-            for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+            for (int res : new int[]{25}) { //  ,100000,   50000,25000,10000 100000 100000 50000
                 String folder = stem + "_SLICE_170";
                 String[] strings = new String[]{"slice", "-r", res + "000",
                         file, "2,10,4",
@@ -90,7 +90,7 @@ public class AggregateProcessing {
             String file = files[f];
             String stem = stems[f];
             for (String k : new String[]{normtype1[f]}) {// "GW_SCALE", "KR" ,normtype2[f]
-                for (int r : new int[]{100}) { // 100 50, 25
+                for (int r : new int[]{25}) { // 100 50, 25
 
                     String[] beds = new String[]{ //phnx_170_znottrans_25000_hap1_SLICE_170
                             "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_hap1_SLICE_170/hap1_SLICE_170__5_kmeans_clusters.bed," +
@@ -119,20 +119,6 @@ public class AggregateProcessing {
                 }
             }
         }
-
-        String[] strings = new String[]{"shuffle",
-                "-r", "100000", "-k", "INTER_SCALE", "-w", "" + 16,
-                files[1],
-                "/Users/mshamim/Desktop/reSLICE/phnx_170A_znottrans_100000_imr_SLICE_170A/imr_SLICE_170A__5_kmeans_clusters.bed," +
-                        "/Users/mshamim/Desktop/reSLICE/phnx_170B_znottrans_100000_imr_SLICE_170B/imr_SLICE_170B__5_kmeans_clusters.bed," +
-                        "/Users/mshamim/Desktop/reSLICE/phnx_170C_znottrans_100000_imr_SLICE_170C/imr_SLICE_170C__5_kmeans_clusters.bed," +
-                        "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/IMR90_track_hg19.bed",
-                "/Users/mshamim/Desktop/reSLICE/shuffle2_170_slice_A_vs_B_vs_sniper_imr_100_INTER_SCALE",
-                "SLICE_A,SLICE_B,SLICE_C,SNIPER"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
 
 
 

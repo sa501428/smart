@@ -61,8 +61,9 @@ public class OutlierCleaner {
                 outlierIndices.addAll(getOutlierIndices(matrix, centroids, metric, outputDirectory));
             }
         }
-        System.out.println("Number of dist outliers (use_only_corr:" + useOnlyCorr + ") " + outlierIndices.size());
-
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Number of dist outliers (use_only_corr:" + useOnlyCorr + ") " + outlierIndices.size());
+        }
         return outlierIndices;
     }
 
