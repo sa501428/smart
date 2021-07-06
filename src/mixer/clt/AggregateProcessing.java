@@ -57,18 +57,18 @@ public class AggregateProcessing {
                 "gm"
         };
 
-        for (int f = 0; f < files.length; f++) {// files.length
+        for (int f = 0; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
-            for (int res : new int[]{100000}) { // 50000, 25000 ,  50000,25000,10000 100000 100000 50000
-                String folder = stem + "_SLICE";
-                String[] strings = new String[]{"slice", "-r", res + "",
+            for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                String folder = stem + "_SLICE_170";
+                String[] strings = new String[]{"slice", "-r", res + "000",
                         file, "2,10,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + res + "_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + res + "000_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
-                //MixerTools.main(strings);
+                MixerTools.main(strings);
                 System.gc();
             }
         }
@@ -79,20 +79,27 @@ public class AggregateProcessing {
         Arrays.fill(labels, "SLICE,SNIPER");
         labels[3] = "SLICE,SNIPER,RH2014,SCI";
 
-        for (int f = 3; f < files.length; f++) {//
+        String[] normtype1 = new String[]{
+                "INTER_SCALE", "INTER_SCALE", "INTER_SCALE", "INTER_KR"
+        };
+        String[] normtype2 = new String[]{
+                "GW_SCALE", "GW_SCALE", "GW_SCALE", "GW_KR"
+        };
+
+        for (int f = 0; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
-            for (String k : new String[]{"INTER_SCALE", "GW_SCALE"}) {//, "KR"
-                for (int r : new int[]{100}) { // 50, 25
+            for (String k : new String[]{normtype1[f]}) {// "GW_SCALE", "KR" ,normtype2[f]
+                for (int r : new int[]{100}) { // 100 50, 25
 
-                    String[] beds = new String[]{
-                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_hap1_SLICE/hap1_SLICE__5_kmeans_clusters.bed," +
+                    String[] beds = new String[]{ //phnx_170_znottrans_25000_hap1_SLICE_170
+                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_hap1_SLICE_170/hap1_SLICE_170__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/HAP1_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_imr_SLICE/imr_SLICE__5_kmeans_clusters.bed," +
+                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_imr_SLICE_170/imr_SLICE_170__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/IMR90_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_k562_SLICE/k562_SLICE__5_kmeans_clusters.bed," +
+                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_k562_SLICE_170/k562_SLICE_170__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/K562_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_153_trans_" + r + "000_gm_SLICE/gm_SLICE__5_kmeans_clusters.bed," +
+                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_gm_SLICE_170/gm_SLICE_170__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed"
@@ -103,7 +110,7 @@ public class AggregateProcessing {
                             "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
                             file,
                             beds[f],
-                            "/Users/mshamim/Desktop/reSLICE/shuffle2_152_slice_vs_sniper_" + stem + "_" + r + "_" + k,
+                            "/Users/mshamim/Desktop/reSLICE/shuffle2_170_slice_vs_sniper_" + stem + "_" + r + "_" + k,
                             labels[f]
                     };
                     System.out.println("-----------------------------------------------------");
@@ -112,6 +119,20 @@ public class AggregateProcessing {
                 }
             }
         }
+
+        String[] strings = new String[]{"shuffle",
+                "-r", "100000", "-k", "INTER_SCALE", "-w", "" + 16,
+                files[1],
+                "/Users/mshamim/Desktop/reSLICE/phnx_170A_znottrans_100000_imr_SLICE_170A/imr_SLICE_170A__5_kmeans_clusters.bed," +
+                        "/Users/mshamim/Desktop/reSLICE/phnx_170B_znottrans_100000_imr_SLICE_170B/imr_SLICE_170B__5_kmeans_clusters.bed," +
+                        "/Users/mshamim/Desktop/reSLICE/phnx_170C_znottrans_100000_imr_SLICE_170C/imr_SLICE_170C__5_kmeans_clusters.bed," +
+                        "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/IMR90_track_hg19.bed",
+                "/Users/mshamim/Desktop/reSLICE/shuffle2_170_slice_A_vs_B_vs_sniper_imr_100_INTER_SCALE",
+                "SLICE_A,SLICE_B,SLICE_C,SNIPER"
+        };
+        System.out.println("-----------------------------------------------------");
+        //MixerTools.main(strings);
+        System.gc();
 
 
 

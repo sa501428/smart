@@ -38,7 +38,6 @@ import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
-import mixer.utils.slice.cleaning.TranslocationSet;
 import mixer.utils.slice.gmm.SimpleScatterPlot;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
 import mixer.utils.slice.structures.SliceUtils;
@@ -57,14 +56,13 @@ public abstract class CompositeGenomeWideMatrix {
     private MatrixAndWeight gwCleanMatrix, projectedData = null;
     protected final GWBadIndexFinder badIndexLocations;
     protected final int maxClusterSizeExpected;
-    protected final TranslocationSet translocationSet;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
                                      NormalizationType[] norms,
                                      int resolution,
                                      File outputDirectory, long seed,
                                      GWBadIndexFinder badIndexLocations,
-                                     int maxClusterSizeExpected, TranslocationSet translocationSet) {
+                                     int maxClusterSizeExpected) {
         this.maxClusterSizeExpected = maxClusterSizeExpected;
         this.norms = norms;
         if (MixerGlobals.printVerboseComments) {
@@ -74,7 +72,6 @@ public abstract class CompositeGenomeWideMatrix {
         this.outputDirectory = outputDirectory;
         this.generator.setSeed(seed);
         this.badIndexLocations = badIndexLocations;
-        this.translocationSet = translocationSet;
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
         gwCleanMatrix = makeCleanScaledInterMatrix(ds, norms[Slice.INTER_SCALE_INDEX]);

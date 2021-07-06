@@ -36,6 +36,8 @@ import java.util.Random;
 
 public class SliceMatrixCleaner {
 
+    private static final int MAX_ZSCORE = 5;
+    private static final int MAX_NORMAL_ZSCORE = 2;
     public static int NUM_PER_CENTROID = 100;
     protected final File outputDirectory;
     protected float[][] data;
@@ -68,8 +70,12 @@ public class SliceMatrixCleaner {
 
     public MatrixAndWeight getCleanFilteredZscoredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                          int[] weights) {
-        LogTools.simpleLogWithCleanup(data, Float.NaN);
         setZerosToNan(data);
+        scaleDown(data, weights);
+        LogTools.simpleLogWithCleanup(data, Float.NaN);
+        removeHighGlobalThresh(data, weights);
+        renormalize(data, weights);
+
 
         System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
         //MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
@@ -86,5 +92,91 @@ public class SliceMatrixCleaner {
         ZScoreTools.inPlaceScaleSqrtWeightCol(data, weights);
 
         return new MatrixAndWeight(data, weights);
+    }
+
+    private void renormalize(float[][] data, int[] weights) {
+        double mu = getGlobalMean(data, weights);
+        double std = getGlobalStdDev(data, weights, mu);
+        System.out.println("mu " + mu + " std" + std);
+        fixToNormalRange(data, mu, std);
+    }
+
+    private void fixToNormalRange(float[][] data, double mu, double std) {
+        int numFixed = 0;
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j])) {
+                    double zscore = (data[i][j] - mu) / std;
+                    if (zscore > SliceMatrixCleaner.MAX_NORMAL_ZSCORE ||
+                            zscore < -SliceMatrixCleaner.MAX_NORMAL_ZSCORE) { //
+                        data[i][j] = Float.NaN;
+                        numFixed++;
+                    }
+                }
+            }
+        }
+        System.out.println("Num fixed part 2: z < -2 : " + numFixed);
+    }
+
+    private void removeHighGlobalThresh(float[][] data, int[] weights) {
+        double mu = getGlobalMean(data, weights);
+        double std = getGlobalStdDev(data, weights, mu);
+        System.out.println("mu " + mu + " std" + std);
+        thresholdByMax(data, mu, std, MAX_ZSCORE);
+    }
+
+    private void thresholdByMax(float[][] data, double mu, double std, int maxZscore) {
+        int numFixed = 0;
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j])) {
+                    double zscore = (data[i][j] - mu) / std;
+                    if (zscore > maxZscore) {
+                        data[i][j] = Float.NaN;
+                        numFixed++;
+                    }
+                }
+            }
+        }
+        System.out.println("Num fixed z > 5 : " + numFixed);
+    }
+
+    private double getGlobalStdDev(float[][] data, int[] weights, double mu) {
+        double squares = 0;
+        long count = 0;
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j])) {
+                    double diff = data[i][j] - mu;
+                    squares += diff * diff * weights[j];
+                    count += weights[j];
+                }
+            }
+        }
+        return Math.sqrt(squares / count);
+    }
+
+    private double getGlobalMean(float[][] data, int[] weights) {
+        double total = 0;
+        long count = 0;
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j])) {
+                    total += data[i][j] * weights[j];
+                    count += weights[j];
+                }
+            }
+        }
+        return total / count;
+    }
+
+    private void scaleDown(float[][] data, int[] weights) {
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j])) {
+                    data[i][j] /= weights[j];
+                }
+            }
+        }
     }
 }

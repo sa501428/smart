@@ -36,7 +36,6 @@ import mixer.MixerGlobals;
 import mixer.algos.Slice;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
-import mixer.utils.slice.cleaning.TranslocationSet;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -49,9 +48,9 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
 
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType[] norms,
                        int resolution, File outputDirectory, long seed, GWBadIndexFinder badIndexLocations,
-                       int maxClusterSizeExpected, TranslocationSet translocationSet) {
+                       int maxClusterSizeExpected) {
         super(chromosomeHandler, ds, norms, resolution, outputDirectory, seed,
-                badIndexLocations, maxClusterSizeExpected, translocationSet);
+                badIndexLocations, maxClusterSizeExpected);
     }
 
     MatrixAndWeight makeCleanScaledInterMatrix(Dataset ds, NormalizationType interNorm) {
@@ -85,12 +84,10 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
             for (int j = i; j < chromosomes.length; j++) {
                 Chromosome chr2 = chromosomes[j];
 
-                boolean hasTranslocation = translocationSet.getHasTranslocation(chr1, chr2);
-
                 fillInChromosomeRegion(interMatrix, badIndexLocations, ds, resolution, i == j, orderer,
                         chr1, dimensions.offset[i], compressedDimensions.offset[i],
                         chr2, dimensions.offset[j], compressedDimensions.offset[j],
-                        interNorm, hasTranslocation);
+                        interNorm);
                 System.out.print(".");
             }
         }
@@ -139,12 +136,12 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
                                         Dataset ds, int resolution, boolean isIntra, IndexOrderer orderer,
                                         Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
                                         Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2,
-                                        NormalizationType interNorm, boolean hasTranslocation) {
+                                        NormalizationType interNorm) {
         int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
         int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
         List<Block> blocks = null;
         try {
-            if (!isIntra && !hasTranslocation) {
+            if (!isIntra) {
                 final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, resolution);
                 blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0, lengthChr2,
                         interNorm, false);
@@ -171,25 +168,18 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         }
 
         copyValuesToArea(matrix, blocks,
-                rowPosChrom1, colPosChrom1, rowPosChrom2, colPosChrom2, isIntra, hasTranslocation);
+                rowPosChrom1, colPosChrom1, rowPosChrom2, colPosChrom2, isIntra);
     }
 
 
     private void copyValuesToArea(float[][] matrix, List<Block> blocks,
                                   Map<Integer, Integer> rowPosChrom1, Map<Integer, Integer> colPosChrom1,
                                   Map<Integer, Integer> rowPosChrom2, Map<Integer, Integer> colPosChrom2,
-                                  boolean isIntra, boolean hasTranslocation) {
-        if (isIntra || hasTranslocation) {
+                                  boolean isIntra) {
+        if (isIntra) {
             for (int binX : rowPosChrom1.keySet()) {
                 for (int binY : colPosChrom2.keySet()) {
                     matrix[rowPosChrom1.get(binX)][colPosChrom2.get(binY)] = Float.NaN;
-                }
-            }
-            if (hasTranslocation) {
-                for (int binX : rowPosChrom2.keySet()) {
-                    for (int binY : colPosChrom1.keySet()) {
-                        matrix[rowPosChrom2.get(binX)][colPosChrom1.get(binY)] = Float.NaN;
-                    }
                 }
             }
         } else {
