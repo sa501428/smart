@@ -50,7 +50,6 @@ public class SliceMatrixCleaner {
         generator.setSeed(seed);
         this.resolution = resolution;
         this.data = data;
-        System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
     }
 
     public static void setZerosToNan(float[][] matrix) {

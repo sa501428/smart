@@ -32,9 +32,6 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/OutlierCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/OutlierCleaner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -199,14 +196,7 @@
       <workItem from="1624639797972" duration="1558000" />
       <workItem from="1624806015665" duration="2079000" />
       <workItem from="1624933616075" duration="14287000" />
-      <workItem from="1625162214238" duration="70462000" />
-    </task>
-    <task id="LOCAL-00098" summary="debugging messages">
-      <created>1615913922639</created>
-      <option name="number" value="00098" />
-      <option name="presentableId" value="LOCAL-00098" />
-      <option name="project" value="LOCAL" />
-      <updated>1615913922640</updated>
+      <workItem from="1625162214238" duration="71428000" />
     </task>
     <task id="LOCAL-00099" summary="network analysis and loop fine-tuning">
       <created>1616622929667</created>
@@ -544,7 +534,14 @@
       <option name="project" value="LOCAL" />
       <updated>1625529873995</updated>
     </task>
-    <option name="localTasksCounter" value="147" />
+    <task id="LOCAL-00147" summary="verbose printing">
+      <created>1625553499248</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
+      <option name="project" value="LOCAL" />
+      <updated>1625553499248</updated>
+    </task>
+    <option name="localTasksCounter" value="148" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -569,7 +566,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="subtract O/E by 1" />
     <MESSAGE value="imputation, change cleaning, use bitset, gmm updates" />
     <MESSAGE value="non robust gmm, change cleanup process, use doubles in gmm, backup gmm code" />
     <MESSAGE value="use log likelihoods, fix gmm issues" />
@@ -594,7 +590,8 @@
     <MESSAGE value="initial translocation filter" />
     <MESSAGE value="translocation filterer added" />
     <MESSAGE value="remove translocation detector, add filtering by zscore" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove translocation detector, add filtering by zscore" />
+    <MESSAGE value="verbose printing" />
+    <option name="LAST_COMMIT_MESSAGE" value="verbose printing" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
