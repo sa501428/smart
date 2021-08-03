@@ -97,14 +97,14 @@ public class FullGenomeOEWithinClusters {
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
                     maxIters, kmeansClustersToResults, kmeansIndicesMap);
-            exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix);
+            exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix, kmeansIndicesMap);
         }
         System.out.println(".");
     }
 
     public void exportKMeansClusteringResults(int z, double[][] iterToWcssAicBic,
                                               Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                              String prefix) {
+                                              String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap) {
         int k = z + startingClusterSizeK;
         String outIterPath = new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(outIterPath, iterToWcssAicBic);
@@ -112,6 +112,7 @@ public class FullGenomeOEWithinClusters {
         SliceUtils.collapseGWList(gwList);
         File outBedFile = new File(outputDirectory, prefix + "_" + k + "_kmeans_clusters.bed");
         gwList.simpleExport(outBedFile);
+        sliceMatrix.plotUmapProjection(outputDirectory, kmeansIndicesMap.get(z), prefix + "_" + k + "_kmeans_clusters");
     }
 
     public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,

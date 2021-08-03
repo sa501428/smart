@@ -54,6 +54,7 @@ public abstract class CompositeGenomeWideMatrix {
     protected final Random generator = new Random(0);
     protected final File outputDirectory;
     private MatrixAndWeight gwCleanMatrix, projectedData = null;
+    private float[][] umapProjection;
     protected final GWBadIndexFinder badIndexLocations;
     protected final int maxClusterSizeExpected;
 
@@ -87,7 +88,6 @@ public abstract class CompositeGenomeWideMatrix {
 
     abstract MatrixAndWeight makeCleanScaledInterMatrix(Dataset ds, NormalizationType interNorm);
 
-
     public void cleanUpMatricesBySparsity() {
 
         SliceMatrixCleaner matrixCleanupReduction = new SliceMatrixCleaner(gwCleanMatrix.matrix,
@@ -101,17 +101,18 @@ public abstract class CompositeGenomeWideMatrix {
             MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix.matrix);
         }
 
-        if (Slice.USE_INTER_CORR_CLUSTERING) {
+        if (Slice.USE_INTER_CORR_CLUSTERING || Slice.PROJECT_TO_UMAP) {
             projectedData = new MatrixAndWeight(SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix.matrix,
                     50, generator.nextLong()), gwCleanMatrix.weights);
+
+            umapProjection = SimpleScatterPlot.getUmapProjection2D(projectedData.matrix);
 
             if (MixerGlobals.printVerboseComments) {
                 File file2 = new File(outputDirectory, "corr_matrix.npy");
                 MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData.matrix);
             }
 
-            runUmapAndSaveMatrices(projectedData.matrix, outputDirectory,
-                    rowIndexToIntervalMap);
+            runUmapAndSaveMatricesByChrom(outputDirectory);
         }
 
         /*
@@ -120,17 +121,33 @@ public abstract class CompositeGenomeWideMatrix {
         */
     }
 
-    private void runUmapAndSaveMatrices(float[][] data, File outputDirectory,
-                                        Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        int[] indices = new int[data.length];
+
+    public void runUmapAndSaveMatricesByChrom(File outputDirectory) {
+        int[] indices = new int[umapProjection.length];
         for (int i = 0; i < indices.length; i++) {
             SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
             indices[i] = interval.getChrIndex();
         }
 
-        SimpleScatterPlot plotter = new SimpleScatterPlot(data);
-        File outfile = new File(outputDirectory, "umap");
-        plotter.plot(indices, outfile.getAbsolutePath());
+        plotUmapProjection(outputDirectory, indices, "chrom");
+    }
+
+    public void plotUmapProjection(File outputDirectory, List<List<Integer>> colorList, String stem) {
+        int[] colors = new int[umapProjection.length];
+        Arrays.fill(colors, -1);
+        for (int index = 0; index < colorList.size(); index++) {
+            for (Integer val : colorList.get(index)) {
+                colors[val] = index;
+            }
+        }
+
+        plotUmapProjection(outputDirectory, colors, stem);
+    }
+
+    public void plotUmapProjection(File outputDirectory, int[] colors, String stem) {
+        SimpleScatterPlot plotter = new SimpleScatterPlot(umapProjection);
+        File outfile = new File(outputDirectory, "umap_" + stem);
+        plotter.plot(colors, outfile.getAbsolutePath());
     }
 
     public synchronized double processKMeansClusteringResult(Cluster[] clusters,

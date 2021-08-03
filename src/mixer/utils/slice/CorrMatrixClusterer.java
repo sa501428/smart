@@ -55,7 +55,7 @@ public class CorrMatrixClusterer {
         for (int z = 0; z < FullGenomeOEWithinClusters.numClusterSizeKValsUsed; z++) {
             parent.runRepeatedKMeansClusteringLoop(FullGenomeOEWithinClusters.numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
                     parent.getMaxIters(), kmeansClustersToResults, kmeansIndicesMap);
-            parent.exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix);
+            parent.exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix, kmeansIndicesMap);
 
             runGMMClusteringLoop(z, 20, kmeansIndicesMap.get(z), gmmClustersToResults, parent);
             exportGMMClusteringResults(z, gmmClustersToResults, prefix, parent);

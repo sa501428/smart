@@ -57,14 +57,16 @@ public class AggregateProcessing {
                 "gm"
         };
 
-        for (int f = 0; f < files.length; f++) {//
+        String id = "506";
+
+        for (int f = 3; f < 4; f++) {// files.length
             String file = files[f];
             String stem = stems[f];
-            for (int res : new int[]{25}) { //  ,100000,   50000,25000,10000 100000 100000 50000
-                String folder = stem + "_SLICE_170";
+            for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                String folder = stem + "_SLICE_" + id;
                 String[] strings = new String[]{"slice", "-r", res + "000",
                         file, "2,10,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + res + "000_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
@@ -86,20 +88,20 @@ public class AggregateProcessing {
                 "GW_SCALE", "GW_SCALE", "GW_SCALE", "GW_KR"
         };
 
-        for (int f = 0; f < files.length; f++) {//
+        for (int f = 1; f < 2; f++) {//files.length
             String file = files[f];
             String stem = stems[f];
             for (String k : new String[]{normtype1[f]}) {// "GW_SCALE", "KR" ,normtype2[f]
-                for (int r : new int[]{25}) { // 100 50, 25
+                for (int r : new int[]{100}) { // 100 50, 25
 
                     String[] beds = new String[]{ //phnx_170_znottrans_25000_hap1_SLICE_170
-                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_hap1_SLICE_170/hap1_SLICE_170__5_kmeans_clusters.bed," +
+                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_hap1_SLICE_" + id + "/hap1_SLICE_" + id + "__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/HAP1_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_imr_SLICE_170/imr_SLICE_170__5_kmeans_clusters.bed," +
+                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_imr_SLICE_" + id + "/imr_SLICE_" + id + "__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/IMR90_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_k562_SLICE_170/k562_SLICE_170__5_kmeans_clusters.bed," +
+                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_k562_SLICE_" + id + "/k562_SLICE_" + id + "__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/K562_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_170_znottrans_" + r + "000_gm_SLICE_170/gm_SLICE_170__5_kmeans_clusters.bed," +
+                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_gm_SLICE_" + id + "/gm_SLICE_" + id + "__5_kmeans_clusters.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
                                     "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed"
@@ -110,18 +112,15 @@ public class AggregateProcessing {
                             "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
                             file,
                             beds[f],
-                            "/Users/mshamim/Desktop/reSLICE/shuffle2_170_slice_vs_sniper_" + stem + "_" + r + "_" + k,
+                            "/Users/mshamim/Desktop/reSLICE/shuffle2_" + id + "_slice_vs_sniper_" + stem + "_" + r + "_" + k,
                             labels[f]
                     };
                     System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+                    //MixerTools.main(strings);
                     System.gc();
                 }
             }
         }
-
-
-
 
         /*
 

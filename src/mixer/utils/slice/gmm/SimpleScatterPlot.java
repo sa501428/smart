@@ -46,11 +46,12 @@ public class SimpleScatterPlot {
     private String stem = "";
 
     public SimpleScatterPlot(float[][] points) {
-        this.points = setPoints(points);
+        this.points = getUmapProjection2D(points);
+        if (points[0].length > 2) stem = "_umap";
         updateBounds();
     }
 
-    private float[][] setPoints(float[][] points) {
+    public static float[][] getUmapProjection2D(float[][] points) {
         if (points[0].length > 2) {
             final Umap umap = new Umap();
             umap.setNumberComponents(2);
@@ -59,7 +60,6 @@ public class SimpleScatterPlot {
             umap.setMinDist(0.5f); // 0.2 ->0.8 -> 0.5  //0.1f -> 0.2f for more general features
             umap.setVerbose(false);
             umap.setSeed(0L);
-            stem = "_umap";
             return umap.fitTransform(points);
         }
         return points;
