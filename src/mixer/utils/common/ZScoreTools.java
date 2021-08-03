@@ -27,7 +27,7 @@ package mixer.utils.common;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class ZScoreTools {
 
-    private static final float ZERO = 1e-10f;
+    private static final float ZERO = 0;//1e-10f;
 
     public static void inPlaceScaleSqrtWeightCol(float[][] matrix, int[] weights) {
         if (weights.length != matrix[0].length) {

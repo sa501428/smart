@@ -57,7 +57,13 @@ public class AggregateProcessing {
                 "gm"
         };
 
-        String id = "506";
+        // 512, 516 weird? linear approx region of exp_tanh
+        // 515 global zscore didn't work
+        // 517 fix 515 bug
+        // 518 zscore cols
+        // 519 plain - very good
+
+        String id = "519";
 
         for (int f = 3; f < 4; f++) {// files.length
             String file = files[f];

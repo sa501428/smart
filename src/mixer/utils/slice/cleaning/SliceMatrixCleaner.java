@@ -25,6 +25,7 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
+import mixer.algos.Slice;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.slice.cleaning.utils.RowCleaner;
@@ -70,11 +71,19 @@ public class SliceMatrixCleaner {
 
     public MatrixAndWeight getCleanFilteredZscoredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                          int[] weights) {
-        setZerosToNan(data);
-        scaleDown(data, weights);
-        LogTools.simpleLogWithCleanup(data, Float.NaN);
-        removeHighGlobalThresh(data, weights);
-        renormalize(data, weights);
+        if (Slice.USE_EXP_TANH) {
+            scaleDown(data, weights);
+            //LogTools.simpleLogWithCleanup(data, Float.NaN);
+            //globalZscore(data, weights);
+            //ZScoreTools.inPlaceZscoreDownCol(data);
+            //setExpTanh(data);
+        } else {
+            setZerosToNan(data);
+            scaleDown(data, weights);
+            LogTools.simpleLogWithCleanup(data, Float.NaN);
+            removeHighGlobalThresh(data, weights);
+            renormalize(data, weights);
+        }
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
@@ -93,6 +102,22 @@ public class SliceMatrixCleaner {
         ZScoreTools.inPlaceScaleSqrtWeightCol(data, weights);
 
         return new MatrixAndWeight(data, weights);
+    }
+
+    private void globalZscore(float[][] data, int[] weights) {
+        double mu = getGlobalMean(data, weights);
+        double std = getGlobalStdDev(data, weights, mu);
+        setGlobalZscore(data, mu, std);
+    }
+
+    private void setExpTanh(float[][] data) {
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j])) {
+                    data[i][j] = (float) Math.exp(Math.tanh(data[i][j]));
+                }
+            }
+        }
     }
 
     private void renormalize(float[][] data, int[] weights) {
@@ -120,6 +145,16 @@ public class SliceMatrixCleaner {
         }
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Num fixed part 2: z < -2 : " + numFixed);
+        }
+    }
+
+    private void setGlobalZscore(float[][] data, double mu, double std) {
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j])) {
+                    data[i][j] = (float) ((data[i][j] - mu) / std);
+                }
+            }
         }
     }
 
@@ -155,7 +190,7 @@ public class SliceMatrixCleaner {
         long count = 0;
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
-                if (!Float.isNaN(data[i][j])) {
+                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
                     double diff = data[i][j] - mu;
                     squares += diff * diff * weights[j];
                     count += weights[j];
@@ -170,7 +205,7 @@ public class SliceMatrixCleaner {
         long count = 0;
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
-                if (!Float.isNaN(data[i][j])) {
+                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
                     total += data[i][j] * weights[j];
                     count += weights[j];
                 }

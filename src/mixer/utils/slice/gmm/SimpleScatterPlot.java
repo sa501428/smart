@@ -55,9 +55,9 @@ public class SimpleScatterPlot {
         if (points[0].length > 2) {
             final Umap umap = new Umap();
             umap.setNumberComponents(2);
-            umap.setNumberNearestNeighbours(50); // 50 // 15 -> 50 for more global picture
+            umap.setNumberNearestNeighbours(20); // 50 // 15 -> 50 for more global picture
             umap.setThreads(10);
-            umap.setMinDist(0.5f); // 0.2 ->0.8 -> 0.5  //0.1f -> 0.2f for more general features
+            umap.setMinDist(0.2f); // 0.2 ->0.8 -> 0.5  //0.1f -> 0.2f for more general features
             umap.setVerbose(false);
             umap.setSeed(0L);
             return umap.fitTransform(points);
