@@ -25,6 +25,7 @@
 package mixer.utils.slice.kmeans.kmeansfloat;
 
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.concurrent.BrokenBarrierException;
@@ -48,6 +49,7 @@ public class Worker implements Runnable {
     // this value from all the workers in numberOfMoves().
     private int mMoves;
     private final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
+    private final SimilarityMetric manhattan = RobustManhattanDistance.SINGLETON;
 
     /**
      * Constructor
@@ -136,6 +138,9 @@ public class Worker implements Runnable {
      * Compute the euclidean distance between the two arguments.
      */
     private float distanceL2Norm(float[] coord, float[] center) {
+        if (ConcurrentKMeans.useKMedians) {
+            return manhattan.distance(coord, center);
+        }
         if (ConcurrentKMeans.useNonNanVersion) {
             return euclidean.distance(coord, center);
         }

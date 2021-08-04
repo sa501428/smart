@@ -37,6 +37,7 @@ import java.util.Arrays;
 public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
+
         String[] files = new String[]{
                 //"/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic" //,
                 //"/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic",
@@ -62,16 +63,21 @@ public class AggregateProcessing {
         // 517 fix 515 bug
         // 518 zscore cols
         // 519 plain - very good
+        // 520 no log, global zscore, exp tanh
+        // 521 no log, column zscore, exp tanh
+        // 522 old style thresholding no logs
+        // build from 519 with kmedians in play
+        // 601 allow z-score global threshold > 5; re expm1 after
 
-        String id = "519";
+        String id = "603";
 
-        for (int f = 3; f < 4; f++) {// files.length
+        for (int f = 0; f < 4; f++) {// files.length
             String file = files[f];
             String stem = stems[f];
             for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
                 String folder = stem + "_SLICE_" + id;
                 String[] strings = new String[]{"slice", "-r", res + "000",
-                        file, "2,10,4",
+                        file, "2,7,4",
                         "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
                         folder + "_"
                 };

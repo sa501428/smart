@@ -74,7 +74,7 @@ public class ColumnCleaner extends DimensionCleaner {
         int[] numInvalids = new int[matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (Float.isNaN(matrix[i][j]) || matrix[i][j] < ZERO) {
+                if (Float.isNaN(matrix[i][j])) {
                     numInvalids[j]++;
                 }
             }

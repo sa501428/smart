@@ -34,12 +34,15 @@ import mixer.MixerGlobals;
 import mixer.algos.Slice;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.gmm.SimpleScatterPlot;
 import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
+import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -95,6 +98,7 @@ public abstract class CompositeGenomeWideMatrix {
         gwCleanMatrix = matrixCleanupReduction.getCleanFilteredZscoredMatrix(rowIndexToIntervalMap,
                 gwCleanMatrix.weights);
 
+        inPlaceScaleSqrtWeightCol();
 
         if (MixerGlobals.printVerboseComments) {
             File file1 = new File(outputDirectory, "zscore_matrix.npy");
@@ -119,6 +123,10 @@ public abstract class CompositeGenomeWideMatrix {
         projectedData = MatrixImputer.imputeUntilNoNansOnlyNN(gwCleanMatrix);
         //corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
         */
+    }
+
+    public void inPlaceScaleSqrtWeightCol() {
+        ZScoreTools.inPlaceScaleSqrtWeightCol(gwCleanMatrix.matrix, gwCleanMatrix.weights);
     }
 
 
@@ -184,13 +192,9 @@ public abstract class CompositeGenomeWideMatrix {
 
             for (int i : cluster.getMemberIndexes()) {
                 if (useCorr) {
-                    withinClusterSumOfSquares +=
-                            RobustEuclideanDistance.getNonNanMeanSquaredError(cluster.getCenter(),
-                                    projectedData.matrix[i]);
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i]);
                 } else {
-                    withinClusterSumOfSquares +=
-                            RobustEuclideanDistance.getNonNanMeanSquaredError(cluster.getCenter(),
-                                    gwCleanMatrix.matrix[i]);
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i]);
                 }
 
                 if (rowIndexToIntervalMap.containsKey(i)) {
@@ -211,6 +215,13 @@ public abstract class CompositeGenomeWideMatrix {
         SliceUtils.reSort(subcompartments);
 
         return withinClusterSumOfSquares;
+    }
+
+    protected double getDistance(float[] center, float[] vector) {
+        if (ConcurrentKMeans.useKMedians) {
+            return RobustManhattanDistance.SINGLETON.distance(center, vector);
+        }
+        return RobustEuclideanDistance.getNonNanMeanSquaredError(center, vector);
     }
 
     public synchronized void processGMMClusteringResult(int[] clusterID,

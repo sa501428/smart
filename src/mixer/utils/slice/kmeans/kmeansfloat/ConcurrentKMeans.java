@@ -41,6 +41,7 @@ public class ConcurrentKMeans implements KMeans {
     // 2D array holding the coordinates to be clustered.
     public static float[][] mCoordinates;
     public static final boolean useNonNanVersion = true;
+    public static boolean useKMedians = false;
     // The desired number of clusters and maximum number
     // of iterations.
     private final int mK;
@@ -288,7 +289,8 @@ public class ConcurrentKMeans implements KMeans {
         }
 
 
-        int[] indices = new SmartInitialization(mCoordinates, mK, random.nextInt(coordCount)).getSmartKmeansInitialization();
+        int[] indices = new SmartInitialization(mCoordinates, mK,
+                random.nextInt(coordCount), useKMedians).getSmartClusterInitialization();
         mProtoClusters = new ProtoCluster[mK];
         for (int i = 0; i < mK; i++) {
             int coordIndex = indices[i];

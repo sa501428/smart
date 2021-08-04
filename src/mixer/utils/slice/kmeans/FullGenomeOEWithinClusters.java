@@ -32,6 +32,7 @@ import javastraw.tools.MatrixTools;
 import mixer.algos.Slice;
 import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
@@ -78,17 +79,25 @@ public class FullGenomeOEWithinClusters {
 
     public void extractFinalGWSubcompartments(String prefix) {
         System.out.println("Genomewide clustering");
-        runClusteringOnRawMatrixWithNans(prefix);
+        runClusteringOnRawMatrixWithNans(prefix, false);
         if (Slice.USE_INTER_CORR_CLUSTERING) {
-            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr");
+            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", false);
+        }
+
+        sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
+        runClusteringOnRawMatrixWithNans(prefix, true);
+        if (Slice.USE_INTER_CORR_CLUSTERING) {
+            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", true);
         }
     }
 
-    public void runClusteringOnRawMatrixWithNans(String prefix) {
+    public void runClusteringOnRawMatrixWithNans(String prefix, boolean useKMedians) {
+        ConcurrentKMeans.useKMedians = useKMedians;
         Map<Integer, GenomeWideList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
         Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
 
-        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, sliceMatrix, false);
+        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, sliceMatrix,
+                false, useKMedians);
         double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
         for (double[] row : iterToWcssAicBic) {
             Arrays.fill(row, Double.MAX_VALUE);
@@ -96,29 +105,34 @@ public class FullGenomeOEWithinClusters {
 
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
-                    maxIters, kmeansClustersToResults, kmeansIndicesMap);
-            exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix, kmeansIndicesMap);
+                    maxIters, kmeansClustersToResults, kmeansIndicesMap, useKMedians);
+            exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
         System.out.println(".");
+        ConcurrentKMeans.useKMedians = false;
     }
 
     public void exportKMeansClusteringResults(int z, double[][] iterToWcssAicBic,
                                               Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                              String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap) {
+                                              String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
+                                              boolean useKMedians) {
         int k = z + startingClusterSizeK;
-        String outIterPath = new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath();
+        String kstem = "kmeans";
+        if (useKMedians) kstem = "kmedians";
+        String outIterPath = new File(outputDirectory, kstem + "_cluster_size_WCSS_AIC_BIC.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(outIterPath, iterToWcssAicBic);
         GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
         SliceUtils.collapseGWList(gwList);
-        File outBedFile = new File(outputDirectory, prefix + "_" + k + "_kmeans_clusters.bed");
+        File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
         gwList.simpleExport(outBedFile);
-        sliceMatrix.plotUmapProjection(outputDirectory, kmeansIndicesMap.get(z), prefix + "_" + k + "_kmeans_clusters");
+        sliceMatrix.plotUmapProjection(outputDirectory, kmeansIndicesMap.get(z), prefix + "_" + k + "_" + kstem + "_clusters");
     }
 
     public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
                                                 double[][] iterToWcssAicBic, int z, int maxIters,
                                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                                Map<Integer, List<List<Integer>>> indicesMap) {
+                                                Map<Integer, List<List<Integer>>> indicesMap,
+                                                boolean useKMedians) {
         int numClusters = z + startingClusterSizeK;
         int numColumns = kmeansRunner.getNumColumns();
         int numRows = kmeansRunner.getNumRows();

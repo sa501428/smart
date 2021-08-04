@@ -54,7 +54,7 @@ public class GenomeWideKmeansRunner {
 
     public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler,
                                   CompositeGenomeWideMatrix interMatrix,
-                                  boolean useCorrMatrix) {
+                                  boolean useCorrMatrix, boolean useKmedians) {
         this.useCorrMatrix = useCorrMatrix;
         this.interMatrix = interMatrix;
         matrix = interMatrix.getData(useCorrMatrix);

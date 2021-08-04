@@ -73,15 +73,25 @@ public class SliceMatrixCleaner {
                                                          int[] weights) {
         if (Slice.USE_EXP_TANH) {
             scaleDown(data, weights);
-            //LogTools.simpleLogWithCleanup(data, Float.NaN);
+            LogTools.simpleLogWithCleanup(data, Float.NaN);
             //globalZscore(data, weights);
             //ZScoreTools.inPlaceZscoreDownCol(data);
             //setExpTanh(data);
+
+            //File file1 = new File(outputDirectory, "scaled_down_vals_matrix.npy");
+            //MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), data);
+            //file1 = new File(outputDirectory, "scaled_down_vals_weights.npy");
+            //MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), weights);
+
+            //scaleDown(data, weights);
+            removeHighGlobalThreshNoWeights(data, 10);
+            LogTools.simpleExpm1(data);
+            //renormalize(data, weights);
         } else {
             setZerosToNan(data);
             scaleDown(data, weights);
             LogTools.simpleLogWithCleanup(data, Float.NaN);
-            removeHighGlobalThresh(data, weights);
+            removeHighGlobalThresh(data, weights, MAX_ZSCORE);
             renormalize(data, weights);
         }
 
@@ -99,14 +109,13 @@ public class SliceMatrixCleaner {
         }
 
         ZScoreTools.inPlaceZscoreDownCol(data);
-        ZScoreTools.inPlaceScaleSqrtWeightCol(data, weights);
 
         return new MatrixAndWeight(data, weights);
     }
 
     private void globalZscore(float[][] data, int[] weights) {
-        double mu = getGlobalMean(data, weights);
-        double std = getGlobalStdDev(data, weights, mu);
+        double mu = getGlobalNonZeroMean(data, weights);
+        double std = getGlobalNonZeroStdDev(data, weights, mu);
         setGlobalZscore(data, mu, std);
     }
 
@@ -121,8 +130,8 @@ public class SliceMatrixCleaner {
     }
 
     private void renormalize(float[][] data, int[] weights) {
-        double mu = getGlobalMean(data, weights);
-        double std = getGlobalStdDev(data, weights, mu);
+        double mu = getGlobalNonZeroMean(data, weights);
+        double std = getGlobalNonZeroStdDev(data, weights, mu);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("mu " + mu + " std" + std);
         }
@@ -158,20 +167,26 @@ public class SliceMatrixCleaner {
         }
     }
 
-    private void removeHighGlobalThresh(float[][] data, int[] weights) {
-        double mu = getGlobalMean(data, weights);
-        double std = getGlobalStdDev(data, weights, mu);
+    private void removeHighGlobalThreshNoWeights(float[][] data, int cutoff) {
+        double mu = getGlobalNonZeroMeanNoWeights(data);
+        double std = getGlobalNonZeroStdDevNoWeights(data, mu);
+        thresholdByMax(data, mu, std, cutoff);
+    }
+
+    private void removeHighGlobalThresh(float[][] data, int[] weights, int cutoff) {
+        double mu = getGlobalNonZeroMean(data, weights);
+        double std = getGlobalNonZeroStdDev(data, weights, mu);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("mu " + mu + " std" + std);
         }
-        thresholdByMax(data, mu, std, MAX_ZSCORE);
+        thresholdByMax(data, mu, std, cutoff);
     }
 
     private void thresholdByMax(float[][] data, double mu, double std, int maxZscore) {
         int numFixed = 0;
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
-                if (!Float.isNaN(data[i][j])) {
+                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
                     double zscore = (data[i][j] - mu) / std;
                     if (zscore > maxZscore) {
                         data[i][j] = Float.NaN;
@@ -180,12 +195,12 @@ public class SliceMatrixCleaner {
                 }
             }
         }
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("Num fixed z > 5 : " + numFixed);
+        if (true || MixerGlobals.printVerboseComments) {
+            System.out.println("Num fixed z > " + maxZscore + " : " + numFixed);
         }
     }
 
-    private double getGlobalStdDev(float[][] data, int[] weights, double mu) {
+    private double getGlobalNonZeroStdDev(float[][] data, int[] weights, double mu) {
         double squares = 0;
         long count = 0;
         for (int i = 0; i < data.length; i++) {
@@ -200,7 +215,22 @@ public class SliceMatrixCleaner {
         return Math.sqrt(squares / count);
     }
 
-    private double getGlobalMean(float[][] data, int[] weights) {
+    private double getGlobalNonZeroStdDevNoWeights(float[][] data, double mu) {
+        double squares = 0;
+        long count = 0;
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
+                    double diff = data[i][j] - mu;
+                    squares += diff * diff;
+                    count++;
+                }
+            }
+        }
+        return Math.sqrt(squares / count);
+    }
+
+    private double getGlobalNonZeroMean(float[][] data, int[] weights) {
         double total = 0;
         long count = 0;
         for (int i = 0; i < data.length; i++) {
@@ -208,6 +238,20 @@ public class SliceMatrixCleaner {
                 if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
                     total += data[i][j] * weights[j];
                     count += weights[j];
+                }
+            }
+        }
+        return total / count;
+    }
+
+    private double getGlobalNonZeroMeanNoWeights(float[][] data) {
+        double total = 0;
+        long count = 0;
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
+                    total += data[i][j];
+                    count++;
                 }
             }
         }
