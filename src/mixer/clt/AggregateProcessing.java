@@ -58,6 +58,17 @@ public class AggregateProcessing {
                 "gm"
         };
 
+        files = new String[]{
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_15.hic",
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_29.hic",
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_43.hic",
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_58.hic",
+                "/Users/mshamim/Desktop/hicfiles/GM12878_primary14_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic"
+        };
+
+        stems = new String[]{"p15", "p29", "p43", "p58", "primary", "gmMega"};
+
         // 512, 516 weird? linear approx region of exp_tanh
         // 515 global zscore didn't work
         // 517 fix 515 bug
@@ -68,10 +79,16 @@ public class AggregateProcessing {
         // 522 old style thresholding no logs
         // build from 519 with kmedians in play
         // 601 allow z-score global threshold > 5; re expm1 after
+        // 603 fix median bugs etc
+        // 604 try with GW_SCALE
+        // 605 INTER_SCALE, -2 < x < 2
+        // 700 remove z > 8, no effective log
+        // 701 dont remove any z
+        // 702 -2 < z < 2; revert log after
 
-        String id = "603";
+        String id = "702";
 
-        for (int f = 0; f < 4; f++) {// files.length
+        for (int f = 0; f < files.length; f++) {// files.length
             String file = files[f];
             String stem = stems[f];
             for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000

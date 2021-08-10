@@ -74,19 +74,9 @@ public class SliceMatrixCleaner {
         if (Slice.USE_EXP_TANH) {
             scaleDown(data, weights);
             LogTools.simpleLogWithCleanup(data, Float.NaN);
-            //globalZscore(data, weights);
-            //ZScoreTools.inPlaceZscoreDownCol(data);
-            //setExpTanh(data);
-
-            //File file1 = new File(outputDirectory, "scaled_down_vals_matrix.npy");
-            //MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), data);
-            //file1 = new File(outputDirectory, "scaled_down_vals_weights.npy");
-            //MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), weights);
-
-            //scaleDown(data, weights);
-            removeHighGlobalThreshNoWeights(data, 10);
+            removeHighGlobalThresh(data, weights, 4);
+            renormalize(data, weights);
             LogTools.simpleExpm1(data);
-            //renormalize(data, weights);
         } else {
             setZerosToNan(data);
             scaleDown(data, weights);
