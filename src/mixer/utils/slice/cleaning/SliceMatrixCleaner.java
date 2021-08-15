@@ -71,18 +71,13 @@ public class SliceMatrixCleaner {
 
     public MatrixAndWeight getCleanFilteredZscoredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                          int[] weights) {
-        if (Slice.USE_EXP_TANH) {
-            scaleDown(data, weights);
-            LogTools.simpleLogWithCleanup(data, Float.NaN);
-            removeHighGlobalThresh(data, weights, 4);
-            renormalize(data, weights);
-            LogTools.simpleExpm1(data);
-        } else {
+        if (Slice.FILTER_OUTLIERS) {
             setZerosToNan(data);
             scaleDown(data, weights);
             LogTools.simpleLogWithCleanup(data, Float.NaN);
-            removeHighGlobalThresh(data, weights, MAX_ZSCORE);
-            renormalize(data, weights);
+            removeHighGlobalThresh(data, weights, 5);
+            renormalize(data, weights, -2, 2);
+            LogTools.simpleExpm1(data);
         }
 
         if (MixerGlobals.printVerboseComments) {
@@ -119,23 +114,22 @@ public class SliceMatrixCleaner {
         }
     }
 
-    private void renormalize(float[][] data, int[] weights) {
+    private void renormalize(float[][] data, int[] weights, int lowCutOff, int highCutOff) {
         double mu = getGlobalNonZeroMean(data, weights);
         double std = getGlobalNonZeroStdDev(data, weights, mu);
         if (MixerGlobals.printVerboseComments) {
             System.out.println("mu " + mu + " std" + std);
         }
-        fixToNormalRange(data, mu, std);
+        fixToNormalRange(data, mu, std, lowCutOff, highCutOff);
     }
 
-    private void fixToNormalRange(float[][] data, double mu, double std) {
+    private void fixToNormalRange(float[][] data, double mu, double std, int lowCutOff, int highCutOff) {
         int numFixed = 0;
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
                 if (!Float.isNaN(data[i][j])) {
                     double zscore = (data[i][j] - mu) / std;
-                    if (zscore > SliceMatrixCleaner.MAX_NORMAL_ZSCORE ||
-                            zscore < -SliceMatrixCleaner.MAX_NORMAL_ZSCORE) { //
+                    if (zscore < lowCutOff || zscore > highCutOff) { //
                         data[i][j] = Float.NaN;
                         numFixed++;
                     }

@@ -32,9 +32,10 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -195,14 +196,9 @@
       <workItem from="1628062162027" duration="9561000" />
       <workItem from="1628145793983" duration="1538000" />
       <workItem from="1628493223395" duration="588000" />
-      <workItem from="1628623450347" duration="2762000" />
-    </task>
-    <task id="LOCAL-00102" summary="auto umap for scatterplot when needed; update version">
-      <created>1617136958745</created>
-      <option name="number" value="00102" />
-      <option name="presentableId" value="LOCAL-00102" />
-      <option name="project" value="LOCAL" />
-      <updated>1617136958745</updated>
+      <workItem from="1628623450347" duration="5482000" />
+      <workItem from="1628746253814" duration="1325000" />
+      <workItem from="1628800784616" duration="1149000" />
     </task>
     <task id="LOCAL-00103" summary="new tests">
       <created>1617147583284</created>
@@ -540,7 +536,14 @@
       <option name="project" value="LOCAL" />
       <updated>1628073288347</updated>
     </task>
-    <option name="localTasksCounter" value="151" />
+    <task id="LOCAL-00151" summary="set a default, -2&lt;z&lt;2, revert log, no kmedians for now">
+      <created>1628629357451</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
+      <option name="project" value="LOCAL" />
+      <updated>1628629357451</updated>
+    </task>
+    <option name="localTasksCounter" value="152" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -565,7 +568,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="use log likelihoods, fix gmm issues" />
     <MESSAGE value="code cleanup, optimize runtime; reduce matrix calculations" />
     <MESSAGE value="support for simple and robust GMM" />
     <MESSAGE value="code cleanup, remove duplicate code" />
@@ -590,7 +592,8 @@
     <MESSAGE value="verbose printing" />
     <MESSAGE value="umap plotting" />
     <MESSAGE value="k-medians added" />
-    <option name="LAST_COMMIT_MESSAGE" value="k-medians added" />
+    <MESSAGE value="set a default, -2&lt;z&lt;2, revert log, no kmedians for now" />
+    <option name="LAST_COMMIT_MESSAGE" value="set a default, -2&lt;z&lt;2, revert log, no kmedians for now" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

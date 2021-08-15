@@ -26,6 +26,7 @@ package mixer.clt;
 
 
 import mixer.MixerTools;
+import mixer.algos.Slice;
 
 import java.util.Arrays;
 
@@ -85,26 +86,33 @@ public class AggregateProcessing {
         // 700 remove z > 8, no effective log
         // 701 dont remove any z
         // 702 -2 < z < 2; revert log after
+        // 703 -2 < z < 8; revert log after
+        // 704 same as 703 with kmeans on projected
+        // 800 no filtering
+        // 801 filtering
+        String id = "802";
+        boolean doFiltering = true;
+        {
+            Slice.FILTER_OUTLIERS = doFiltering;
 
-        String id = "702";
-
-        for (int f = 0; f < files.length; f++) {// files.length
-            String file = files[f];
-            String stem = stems[f];
-            for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
-                String folder = stem + "_SLICE_" + id;
-                String[] strings = new String[]{"slice", "-r", res + "000",
-                        file, "2,7,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
-                        folder + "_"
-                };
-                System.out.println("-----------------------------------------------------");
-                MixerTools.main(strings);
-                System.gc();
+            for (int f = 0; f < files.length; f++) {// files.length
+                String file = files[f];
+                String stem = stems[f];
+                for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                    String folder = stem + "_SLICE_" + id;
+                    String[] strings = new String[]{"slice", "-r", res + "000",
+                            file, "2,7,4",
+                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
+                            folder + "_"
+                    };
+                    System.out.println("-----------------------------------------------------");
+                    MixerTools.main(strings);
+                    System.gc();
+                }
             }
-        }
 
-        System.gc();
+            System.gc();
+        }
 
         String[] labels = new String[4];
         Arrays.fill(labels, "SLICE,SNIPER");
