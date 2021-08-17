@@ -132,33 +132,4 @@ public class ParallelizedStatTools {
             }
         });
     }
-
-    private double getGlobalNonZeroStdDevNoWeights(float[][] data, double mu) {
-        double squares = 0;
-        long count = 0;
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[i].length; j++) {
-                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
-                    double diff = data[i][j] - mu;
-                    squares += diff * diff;
-                    count++;
-                }
-            }
-        }
-        return Math.sqrt(squares / count);
-    }
-
-    private double getGlobalNonZeroMeanNoWeights(float[][] data) {
-        double total = 0;
-        long count = 0;
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[i].length; j++) {
-                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
-                    total += data[i][j];
-                    count++;
-                }
-            }
-        }
-        return total / count;
-    }
 }

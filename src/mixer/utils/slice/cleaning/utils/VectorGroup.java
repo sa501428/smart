@@ -24,12 +24,15 @@
 
 package mixer.utils.slice.cleaning.utils;
 
+import javastraw.tools.ParallelizedJuicerTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class VectorGroup {
     private final float threshold = 0.5f;
@@ -46,14 +49,22 @@ public class VectorGroup {
     }
 
     public boolean shouldInclude(float[] vector) {
-        for (float[] vec : vectors) {
-            float corr = RobustCorrelationSimilarity.SINGLETON.distance(vec, vector);
-            if (Math.abs(corr) > threshold) {
-                return true;
-            }
-        }
+        AtomicBoolean includeIt = new AtomicBoolean(false);
 
-        return false;
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            while (i < (vectors).size() && !includeIt.get()) {
+                float[] vec = vectors.get(i);
+                float corr = RobustCorrelationSimilarity.SINGLETON.distance(vec, vector);
+                if (Math.abs(corr) > threshold) {
+                    includeIt.set(true);
+                }
+                i = index.getAndIncrement();
+            }
+        });
+
+        return includeIt.get();
     }
 
     public int size() {

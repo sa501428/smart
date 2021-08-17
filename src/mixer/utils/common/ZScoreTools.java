@@ -24,6 +24,10 @@
 
 package mixer.utils.common;
 
+import javastraw.tools.ParallelizedJuicerTools;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class ZScoreTools {
 
@@ -35,71 +39,107 @@ public class ZScoreTools {
             System.exit(54);
         }
 
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
-                    matrix[i][j] = (float) (Math.sqrt(weights[j]) * val);
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            while (i < matrix.length) {
+                for (int j = 0; j < matrix[i].length; j++) {
+                    float val = matrix[i][j];
+                    if (!Float.isNaN(val)) {
+                        matrix[i][j] = (float) (Math.sqrt(weights[j]) * val);
+                    }
                 }
+                i = index.getAndIncrement();
             }
-        }
+        });
     }
 
     public static void inPlaceZscoreDownCol(float[][] matrix) {
         float[] colMeans = getColMean(matrix);
         float[] colStdDevs = getColStdDev(matrix, colMeans);
 
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
-                    matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            while (i < matrix.length) {
+                for (int j = 0; j < matrix[i].length; j++) {
+                    float val = matrix[i][j];
+                    if (!Float.isNaN(val)) {
+                        matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+                    }
                 }
+                i = index.getAndIncrement();
             }
-        }
+        });
     }
 
 
     public static float[] getColMean(float[][] matrix) {
-        double[] colSums = new double[matrix[0].length];
-        int[] colSize = new int[colSums.length];
+        final double[] totalColSums = new double[matrix[0].length];
+        final int[] totalColSize = new int[totalColSums.length];
 
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (isValid(val)) {
-                    colSums[j] += val;
-                    colSize[j] += 1;
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            double[] colSums = new double[matrix[0].length];
+            int[] colSize = new int[totalColSums.length];
+            while (i < matrix.length) {
+                for (int j = 0; j < matrix[i].length; j++) {
+                    float val = matrix[i][j];
+                    if (isValid(val)) {
+                        colSums[j] += val;
+                        colSize[j] += 1;
+                    }
+                }
+                i = index.getAndIncrement();
+            }
+            synchronized (totalColSize) {
+                for (int k = 0; k < totalColSize.length; k++) {
+                    totalColSums[k] += colSums[k];
+                    totalColSize[k] += colSize[k];
                 }
             }
-        }
+        });
 
-        float[] colMeans = new float[colSums.length];
-        for (int k = 0; k < colSums.length; k++) {
-            colMeans[k] = (float) (colSums[k] / Math.max(colSize[k], 1));
+        float[] colMeans = new float[totalColSums.length];
+        for (int k = 0; k < totalColSums.length; k++) {
+            colMeans[k] = (float) (totalColSums[k] / Math.max(totalColSize[k], 1));
         }
         return colMeans;
     }
 
     public static float[] getColStdDev(float[][] matrix, float[] means) {
 
-        double[] squares = new double[means.length];
-        int[] colSize = new int[means.length];
+        double[] totalSquares = new double[means.length];
+        int[] totalColSize = new int[means.length];
 
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (isValid(val)) {
-                    float diff = val - means[j];
-                    squares[j] += diff * diff;
-                    colSize[j] += 1;
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            double[] squares = new double[matrix[0].length];
+            int[] colSize = new int[squares.length];
+            while (i < matrix.length) {
+                for (int j = 0; j < matrix[i].length; j++) {
+                    float val = matrix[i][j];
+                    if (isValid(val)) {
+                        float diff = val - means[j];
+                        squares[j] += diff * diff;
+                        colSize[j] += 1;
+                    }
+                }
+                i = index.getAndIncrement();
+            }
+            synchronized (totalColSize) {
+                for (int k = 0; k < totalColSize.length; k++) {
+                    totalSquares[k] += squares[k];
+                    totalColSize[k] += colSize[k];
                 }
             }
-        }
+        });
 
         float[] stdDev = new float[means.length];
-        for (int k = 0; k < squares.length; k++) {
-            stdDev[k] = (float) Math.sqrt(squares[k] / Math.max(colSize[k], 1));
+        for (int k = 0; k < totalSquares.length; k++) {
+            stdDev[k] = (float) Math.sqrt(totalSquares[k] / Math.max(totalColSize[k], 1));
         }
         return stdDev;
     }
@@ -107,66 +147,4 @@ public class ZScoreTools {
     private static boolean isValid(float val) {
         return !Float.isNaN(val) && val > ZERO; //
     }
-
-    /*
-    public static void inPlaceZscoreRows(float[][] matrix) {
-        float[] rowMeans = getRowMean(matrix);
-        float[] rowStdDevs = getRowStdDev(matrix, rowMeans);
-
-        for (int i = 0; i < matrix.length; i++) {
-            float rowMean = rowMeans[i];
-            float rowStd = rowStdDevs[i];
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (!Float.isNaN(val)) {
-                    matrix[i][j] = (val - rowMean) / rowStd;
-                }
-            }
-        }
-    }
-
-    public static float[] getRowStdDev(float[][] matrix, float[] means) {
-
-        double[] squares = new double[means.length];
-        int[] rowSize = new int[means.length];
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (isValid(val)) {
-                    float diff = val - means[i];
-                    squares[i] += diff * diff;
-                    rowSize[i] += 1;
-                }
-            }
-        }
-
-        float[] stdDev = new float[means.length];
-        for (int k = 0; k < squares.length; k++) {
-            stdDev[k] = (float) Math.sqrt(squares[k] / Math.max(rowSize[k], 1));
-        }
-        return stdDev;
-    }
-
-    public static float[] getRowMean(float[][] matrix) {
-        double[] rowSums = new double[matrix.length];
-        int[] rowSize = new int[rowSums.length];
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                float val = matrix[i][j];
-                if (isValid(val)) {
-                    rowSums[i] += val;
-                    rowSize[i] += 1;
-                }
-            }
-        }
-
-        float[] rowMeans = new float[rowSums.length];
-        for (int k = 0; k < rowSums.length; k++) {
-            rowMeans[k] = (float) (rowSums[k] / Math.max(rowSize[k], 1));
-        }
-        return rowMeans;
-    }
-    */
 }

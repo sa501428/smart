@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.cleaning.utils;
 
+import javastraw.tools.ParallelizedJuicerTools;
 import mixer.MixerGlobals;
 import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -31,6 +32,7 @@ import mixer.utils.slice.structures.SubcompartmentInterval;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RowCleaner extends DimensionCleaner {
     protected final static float PERCENT_NAN_ALLOWED = .5f;
@@ -73,15 +75,24 @@ public class RowCleaner extends DimensionCleaner {
     @Override
     protected int[] getNumberOfNansInDimension(float[][] matrix) {
         // invalid rows
-        int[] numInvalids = new int[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (Float.isNaN(matrix[i][j])) {
-                    numInvalids[i]++;
+        int[] totalNumInvalids = new int[matrix.length];
+
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            while (i < data.length) {
+                int numInvalids = 0;
+                for (int j = 0; j < matrix[i].length; j++) {
+                    if (Float.isNaN(matrix[i][j])) {
+                        numInvalids++;
+                    }
                 }
+                totalNumInvalids[i] = numInvalids;
+                i = index.getAndIncrement();
             }
-        }
-        return numInvalids;
+        });
+
+        return totalNumInvalids;
     }
 
     @Override

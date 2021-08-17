@@ -24,6 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
+import javastraw.tools.ParallelizedJuicerTools;
 import mixer.MixerGlobals;
 import mixer.algos.Slice;
 import mixer.utils.common.LogTools;
@@ -36,6 +37,7 @@ import mixer.utils.slice.structures.SubcompartmentInterval;
 import java.io.File;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SliceMatrixCleaner {
     public static int NUM_PER_CENTROID = 100;
@@ -98,20 +100,28 @@ public class SliceMatrixCleaner {
     }
 
     private void fixToNormalRange(float[][] data, double mu, double std, int lowCutOff, int highCutOff) {
-        int numFixed = 0;
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[i].length; j++) {
-                if (!Float.isNaN(data[i][j])) {
-                    double zscore = (data[i][j] - mu) / std;
-                    if (zscore < lowCutOff || zscore > highCutOff) { //
-                        data[i][j] = Float.NaN;
-                        numFixed++;
+        AtomicInteger totalNumFixed = new AtomicInteger();
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            int numFixed = 0;
+            while (i < data.length) {
+                for (int j = 0; j < data[i].length; j++) {
+                    if (!Float.isNaN(data[i][j])) {
+                        double zscore = (data[i][j] - mu) / std;
+                        if (zscore < lowCutOff || zscore > highCutOff) { //
+                            data[i][j] = Float.NaN;
+                            numFixed++;
+                        }
                     }
                 }
+                i = index.getAndIncrement();
             }
-        }
+            totalNumFixed.addAndGet(numFixed);
+        });
+
         if (MixerGlobals.printVerboseComments) {
-            System.out.println("Num fixed part 2: z < -2 : " + numFixed);
+            System.out.println("Num fixed part 2: z < -2 : " + totalNumFixed.get());
         }
     }
 
@@ -124,20 +134,28 @@ public class SliceMatrixCleaner {
     }
 
     private void thresholdByMax(float[][] data, double mu, double std, int maxZscore) {
-        int numFixed = 0;
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[i].length; j++) {
-                if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
-                    double zscore = (data[i][j] - mu) / std;
-                    if (zscore > maxZscore) {
-                        data[i][j] = Float.NaN;
-                        numFixed++;
+        AtomicInteger totalNumFixed = new AtomicInteger();
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            int numFixed = 0;
+            while (i < data.length) {
+                for (int j = 0; j < data[i].length; j++) {
+                    if (!Float.isNaN(data[i][j]) && data[i][j] > 0) {
+                        double zscore = (data[i][j] - mu) / std;
+                        if (zscore > maxZscore) {
+                            data[i][j] = Float.NaN;
+                            numFixed++;
+                        }
                     }
                 }
+                i = index.getAndIncrement();
             }
-        }
+            totalNumFixed.addAndGet(numFixed);
+        });
+
         if (true || MixerGlobals.printVerboseComments) {
-            System.out.println("Num fixed z > " + maxZscore + " : " + numFixed);
+            System.out.println("Num fixed z > " + maxZscore + " : " + totalNumFixed.get());
         }
     }
 }

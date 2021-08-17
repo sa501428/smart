@@ -25,7 +25,6 @@
 package mixer.clt;
 
 
-import mixer.MixerTools;
 import mixer.algos.Slice;
 
 /**
@@ -91,7 +90,9 @@ public class AggregateProcessing {
         // 802 exp(exp(x))
         // 803 = 801                  #
         // 804 = dont use the weights #
-        int id = 804;
+        // 805 = 804 with minor cleanup
+        // 806 = 804 with more cleanup
+        int id = 805;
         {
             boolean doFiltering = true;
 
@@ -109,7 +110,7 @@ public class AggregateProcessing {
                             folder + "_"
                     };
                     System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+                    //MixerTools.main(strings);
                     System.gc();
                 }
             }
@@ -120,16 +121,19 @@ public class AggregateProcessing {
         String beds = "/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_800__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/existing/GSE63525_GM12878_subcompartments.bed";
         String labels = "gmMega_800,gmMega_803,gmMega_804,p15_803,p15_804,rh2014";
 
+        beds = "/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_SCI_sub_compartments.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_track_hg19.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/GSE63525_GM12878_subcompartments.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_GM_MEGA_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P15_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P29_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P43_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P58_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_PRIMARY_100K.bed";
+        labels = "SCI,SNIPER,RH2014,SLICE_MEGA,SLICE_P15,SLICE_P29,SLICE_P43,SLICE_P58,SLICE_PRIMARY";
+
         for (int f = 5; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
             for (String k : new String[]{"GW_KR", "INTER_KR"}) {// "GW_SCALE", "KR" ,normtype2[f]
-                for (int r : new int[]{25, 10}) { // 100 50, 25
+                for (int r : new int[]{100}) { // 100 50, 25
                     String[] strings = new String[]{"shuffle",
                             "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
                             file,
                             beds,
-                            "/Users/mshamim/Desktop/reSLICE/shuffle_80X_" + stem + "_" + r + "_" + k,
+                            "/Users/mshamim/Desktop/reSLICE/shuffle_804_" + stem + "_" + r + "_" + k,
                             labels
                     };
                     System.out.println("-----------------------------------------------------");
@@ -137,6 +141,40 @@ public class AggregateProcessing {
                     System.gc();
                 }
             }
+        }
+
+
+        String[] strings;
+        String changes = "2,A1,34,139,34;" +
+                "3,A2,152,251,152;" +
+                "5,B1,220,20,60;" +
+                "4,B2,255,255,0;" +
+                "1,B3,112,128,144";
+
+        String[] bedfiles = new String[]{
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p29_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p43_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p58_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/primary_SLICE_804__5_kmeans_clusters.bed"
+        };
+
+        String[] bedstem = new String[]{
+                "P15",
+                "P29",
+                "P43",
+                "P58",
+                "PRIMARY"
+        };
+
+        for (int z = 0; z < bedfiles.length; z++) {
+            strings = new String[]{"rename",
+                    changes,
+                    bedfiles[z],
+                    "/Users/mshamim/Desktop/reSLICE/fin_slice/SLICE_" + bedstem[z] + "_100K.bed"
+            };
+            //MixerTools.main(strings);
+            System.gc();
         }
 
         /*
