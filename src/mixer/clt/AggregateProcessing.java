@@ -28,8 +28,6 @@ package mixer.clt;
 import mixer.MixerTools;
 import mixer.algos.Slice;
 
-import java.util.Arrays;
-
 /**
  * Created for testing multiple CLTs at once
  * Basically scratch space
@@ -88,17 +86,22 @@ public class AggregateProcessing {
         // 702 -2 < z < 2; revert log after
         // 703 -2 < z < 8; revert log after
         // 704 same as 703 with kmeans on projected
-        // 800 no filtering
+        // 800 no filtering           #
         // 801 filtering
-        String id = "802";
-        boolean doFiltering = true;
+        // 802 exp(exp(x))
+        // 803 = 801                  #
+        // 804 = dont use the weights #
+        int id = 804;
         {
-            Slice.FILTER_OUTLIERS = doFiltering;
+            boolean doFiltering = true;
 
-            for (int f = 0; f < files.length; f++) {// files.length
+            Slice.FILTER_OUTLIERS = doFiltering;
+            //Slice.USE_WEIGHTED_MEAN = id == 803;
+
+            for (int f = 4; f < 5; f++) {// files.length
                 String file = files[f];
                 String stem = stems[f];
-                for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                for (int res : new int[]{50, 25, 10}) { //  ,100000,   50000,25000,10000 100000 100000 50000
                     String folder = stem + "_SLICE_" + id;
                     String[] strings = new String[]{"slice", "-r", res + "000",
                             file, "2,7,4",
@@ -114,6 +117,29 @@ public class AggregateProcessing {
             System.gc();
         }
 
+        String beds = "/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_800__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/existing/GSE63525_GM12878_subcompartments.bed";
+        String labels = "gmMega_800,gmMega_803,gmMega_804,p15_803,p15_804,rh2014";
+
+        for (int f = 5; f < files.length; f++) {//
+            String file = files[f];
+            String stem = stems[f];
+            for (String k : new String[]{"GW_KR", "INTER_KR"}) {// "GW_SCALE", "KR" ,normtype2[f]
+                for (int r : new int[]{25, 10}) { // 100 50, 25
+                    String[] strings = new String[]{"shuffle",
+                            "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
+                            file,
+                            beds,
+                            "/Users/mshamim/Desktop/reSLICE/shuffle_80X_" + stem + "_" + r + "_" + k,
+                            labels
+                    };
+                    System.out.println("-----------------------------------------------------");
+                    //MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+        }
+
+        /*
         String[] labels = new String[4];
         Arrays.fill(labels, "SLICE,SNIPER");
         labels[3] = "SLICE,SNIPER,RH2014,SCI";
@@ -125,31 +151,17 @@ public class AggregateProcessing {
                 "GW_SCALE", "GW_SCALE", "GW_SCALE", "GW_KR"
         };
 
-        for (int f = 1; f < 2; f++) {//files.length
+        for (int f = 1; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
             for (String k : new String[]{normtype1[f]}) {// "GW_SCALE", "KR" ,normtype2[f]
                 for (int r : new int[]{100}) { // 100 50, 25
 
-                    String[] beds = new String[]{ //phnx_170_znottrans_25000_hap1_SLICE_170
-                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_hap1_SLICE_" + id + "/hap1_SLICE_" + id + "__5_kmeans_clusters.bed," +
-                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/HAP1_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_imr_SLICE_" + id + "/imr_SLICE_" + id + "__5_kmeans_clusters.bed," +
-                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/IMR90_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_k562_SLICE_" + id + "/k562_SLICE_" + id + "__5_kmeans_clusters.bed," +
-                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/sniper/K562_track_hg19.bed",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + r + "000_gm_SLICE_" + id + "/gm_SLICE_" + id + "__5_kmeans_clusters.bed," +
-                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
-                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
-                                    "/Users/mshamim/Desktop/research/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed"
-                    };
-
-
                     String[] strings = new String[]{"shuffle",
                             "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
                             file,
-                            beds[f],
-                            "/Users/mshamim/Desktop/reSLICE/shuffle2_" + id + "_slice_vs_sniper_" + stem + "_" + r + "_" + k,
+                            //beds[f],
+                            "/Users/mshamim/Desktop/reSLICE/shuffle2_" + "_slice_vs_sniper_" + stem + "_" + r + "_" + k,
                             labels[f]
                     };
                     System.out.println("-----------------------------------------------------");
