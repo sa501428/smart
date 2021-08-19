@@ -24,17 +24,20 @@
 
 package mixer.utils.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ArrayTools {
 
     private static final float ZERO = 1e-10f;
+    private static final float CUTOFF = 0.9f * Float.MAX_VALUE;
 
     public static float getNonZeroStd(float[] numNonZeros, float mean) {
         int count = 0;
         float total = 0;
         for (float val : numNonZeros) {
-            if (val > 0) {
+            if (val > ZERO && val < CUTOFF) {
                 float diff = val - mean;
                 total += (diff * diff);
                 count++;
@@ -51,7 +54,7 @@ public class ArrayTools {
         int count = 0;
         float total = 0;
         for (float val : numNonZeros) {
-            if (val > ZERO) {
+            if (val > ZERO && val < CUTOFF) {
                 total += val;
                 count++;
             }
@@ -65,7 +68,7 @@ public class ArrayTools {
 
         for (float[] array : allArrays) {
             for (float val : array) {
-                if (val > ZERO) {
+                if (val > ZERO && val < CUTOFF) {
                     total += val;
                     count++;
                 }
@@ -79,7 +82,7 @@ public class ArrayTools {
         double total = 0;
         for (float[] array : allArrays) {
             for (float val : array) {
-                if (val > 0) {
+                if (val > ZERO && val < CUTOFF) {
                     float diff = val - mean;
                     total += (diff * diff);
                     count++;
@@ -87,5 +90,57 @@ public class ArrayTools {
             }
         }
         return (float) Math.sqrt(total / count);
+    }
+
+    public static float percentNaN(float[] array) {
+        float counter = 0;
+        for (float val : array) {
+            if (Float.isNaN(val)) {
+                counter++;
+            }
+        }
+        return counter / array.length;
+    }
+
+    public static int max(int[] array) {
+        int maxVal = array[0];
+        for (int val : array) {
+            maxVal = Math.max(maxVal, val);
+        }
+        return maxVal;
+    }
+
+    public static double max(double[] array) {
+        double maxVal = -Double.MAX_VALUE;
+        for (double val : array) {
+            if (!Double.isNaN(val)) {
+                maxVal = Math.max(maxVal, val);
+            }
+        }
+        return maxVal;
+    }
+
+    public static int mean(int[] array) {
+        int sum = 0;
+        for (int val : array) {
+            sum += val;
+        }
+        return sum / array.length;
+    }
+
+    public static int[] concatenate(int[] arr1, int[] arr2) {
+        int[] output = new int[arr1.length + arr2.length];
+        System.arraycopy(arr1, 0, output, 0, arr1.length);
+        System.arraycopy(arr2, 0, output, arr1.length, arr2.length);
+        return output;
+    }
+
+    public static float[] toArray(Collection<Float> initialVals) {
+        List<Float> vals = new ArrayList<>(initialVals);
+        float[] values = new float[vals.size()];
+        for (int z = 0; z < vals.size(); z++) {
+            values[z] = vals.get(z).floatValue();
+        }
+        return values;
     }
 }

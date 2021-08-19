@@ -86,7 +86,7 @@ public class ClusterTools {
         for (int i = 0; i < n; i++) {
             Cluster expected = clusters[i];
             for (int j = 0; j < n; j++) {
-                distances[i][j] = euclidean.distance(clusters[j].getCenter(), expected.getCenter(), 0, 0);
+                distances[i][j] = euclidean.distance(clusters[j].getCenter(), expected.getCenter());
                 distancesNormalized[i][j] = distances[i][j] / clusters[j].getCenter().length;
             }
         }

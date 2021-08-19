@@ -45,7 +45,7 @@ public class QuickCentroids {
     private final Random generator = new Random(0);
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private float[][] centroids = null;
-    private float[] weights = null;
+    private int[] weights = null;
 
     public QuickCentroids(float[][] matrix, int numCentroids, long seed) {
         this.matrix = matrix;
@@ -62,7 +62,7 @@ public class QuickCentroids {
         this.maxIters = numIters;
     }
 
-    public float[][] generateCentroids() {
+    public float[][] generateCentroids(int minSizeNeeded) {
         ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
@@ -75,7 +75,7 @@ public class QuickCentroids {
 
             @Override
             public void kmeansComplete(Cluster[] clusters, long l) {
-                convertClustersToFloatMatrix(clusters);
+                convertClustersToFloatMatrix(clusters, minSizeNeeded);
                 System.out.print(".");
             }
 
@@ -104,10 +104,10 @@ public class QuickCentroids {
         }
     }
 
-    private void convertClustersToFloatMatrix(Cluster[] initialClusters) {
+    private void convertClustersToFloatMatrix(Cluster[] initialClusters, int minSizeNeeded) {
         List<Cluster> actualClusters = new ArrayList<>();
         for (Cluster c : initialClusters) {
-            if (c.getMemberIndexes().length > 2) {
+            if (c.getMemberIndexes().length > minSizeNeeded) {
                 actualClusters.add(c);
             }
         }
@@ -118,7 +118,7 @@ public class QuickCentroids {
         }
         AtomicInteger currRowIndex = new AtomicInteger(0);
         centroids = new float[actualClusters.size()][matrix[0].length];
-        weights = new float[actualClusters.size()];
+        weights = new int[actualClusters.size()];
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
             executor.execute(() -> {
@@ -166,7 +166,7 @@ public class QuickCentroids {
         return true;
     }
 
-    public float[] getWeights() {
+    public int[] getWeights() {
         return weights;
     }
 }

@@ -81,4 +81,12 @@ public class QuickMedian {
         }
         return fastMedian(arr);
     }
+
+    public static float fastMedianAbsDeviation(float[] values, float median) {
+        float[] absDeviation = new float[values.length];
+        for (int k = 0; k < values.length; k++) {
+            absDeviation[k] = Math.abs(median - values[k]);
+        }
+        return fastMedian(absDeviation);
+    }
 }

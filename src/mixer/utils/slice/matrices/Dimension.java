@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,11 +40,13 @@ public class Dimension {
     // simple binning
     public Dimension(Chromosome[] chromosomes, int resolution) {
         offset = new int[chromosomes.length];
+        interval = new int[chromosomes.length];
         for (int i = 0; i < chromosomes.length; i++) {
             length += (int) (chromosomes[i].getLength() / resolution + 1);
             if (i < chromosomes.length - 1) {
                 offset[i + 1] = length;
             }
+            interval[i] = length;
         }
     }
 

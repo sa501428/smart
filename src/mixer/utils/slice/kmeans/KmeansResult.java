@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,10 @@ package mixer.utils.slice.kmeans;
 
 public class KmeansResult {
     public final int[][] ids;
-    public final int[][] idsForIndex;
     public final double withinClusterSumOfSquares;
 
-    public KmeansResult(double withinClusterSumOfSquares, int[][] ids, int[][] idsForIndex) {
+    public KmeansResult(double withinClusterSumOfSquares, int[][] ids) {
         this.withinClusterSumOfSquares = withinClusterSumOfSquares;
         this.ids = ids;
-        this.idsForIndex = idsForIndex;
     }
 }

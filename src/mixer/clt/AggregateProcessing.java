@@ -24,8 +24,9 @@
 
 package mixer.clt;
 
-import mixer.MixerTools;
 
+import mixer.MixerTools;
+import mixer.algos.Slice;
 
 /**
  * Created for testing multiple CLTs at once
@@ -36,12 +37,479 @@ public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
 
+        String[] files = new String[]{
+                //"/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic" //,
+                //"/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic",
+                //"/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic"
+        };
+
+        files = new String[]{
+                "/Users/mshamim/Desktop/hicfiles/SCALE/hap1_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/SCALE/imr90_rh14_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/SCALE/K562_2014_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic"
+        };
+
+        String[] stems = new String[]{
+                "hap1",
+                "imr",
+                "k562",
+                "gm"
+        };
+
+        files = new String[]{
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_15.hic",
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_29.hic",
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_43.hic",
+                "/Users/mshamim/Desktop/subsampling_experiment/primary_58.hic",
+                "/Users/mshamim/Desktop/hicfiles/GM12878_primary14_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic"
+        };
+
+        stems = new String[]{"p15", "p29", "p43", "p58", "primary", "gmMega"};
+
+        // 512, 516 weird? linear approx region of exp_tanh
+        // 515 global zscore didn't work
+        // 517 fix 515 bug
+        // 518 zscore cols
+        // 519 plain - very good
+        // 520 no log, global zscore, exp tanh
+        // 521 no log, column zscore, exp tanh
+        // 522 old style thresholding no logs
+        // build from 519 with kmedians in play
+        // 601 allow z-score global threshold > 5; re expm1 after
+        // 603 fix median bugs etc
+        // 604 try with GW_SCALE
+        // 605 INTER_SCALE, -2 < x < 2
+        // 700 remove z > 8, no effective log
+        // 701 dont remove any z
+        // 702 -2 < z < 2; revert log after
+        // 703 -2 < z < 8; revert log after
+        // 704 same as 703 with kmeans on projected
+        // 800 no filtering           #
+        // 801 filtering
+        // 802 exp(exp(x))
+        // 803 = 801                  #
+        // 804 = dont use the weights #
+        // 805 = 804 with minor cleanup
+        // 806 = 804 with more cleanup, no row correlation cleaning
+        int id = 806;
+        {
+            boolean doFiltering = true;
+
+            Slice.FILTER_OUTLIERS = doFiltering;
+            //Slice.USE_WEIGHTED_MEAN = id == 803;
+
+            for (int f = 0; f < files.length; f++) {// files.length
+                String file = files[f];
+                String stem = stems[f];
+                for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                    String folder = stem + "_SLICE_" + id;
+                    String[] strings = new String[]{"slice", "-r", res + "000",
+                            file, "2,7,4",
+                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
+                            folder + "_"
+                    };
+                    System.out.println("-----------------------------------------------------");
+                    MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+
+            System.gc();
+        }
+
+        String beds = "/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_800__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/existing/GSE63525_GM12878_subcompartments.bed";
+        String labels = "gmMega_800,gmMega_803,gmMega_804,p15_803,p15_804,rh2014";
+
+        beds = "/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_SCI_sub_compartments.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_track_hg19.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/GSE63525_GM12878_subcompartments.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_GM_MEGA_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P15_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P29_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P43_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P58_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_PRIMARY_100K.bed";
+        labels = "SCI,SNIPER,RH2014,SLICE_MEGA,SLICE_P15,SLICE_P29,SLICE_P43,SLICE_P58,SLICE_PRIMARY";
+
+        for (int f = 5; f < files.length; f++) {//
+            String file = files[f];
+            String stem = stems[f];
+            for (String k : new String[]{"GW_KR", "INTER_KR"}) {// "GW_SCALE", "KR" ,normtype2[f]
+                for (int r : new int[]{100}) { // 100 50, 25
+                    String[] strings = new String[]{"shuffle",
+                            "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
+                            file,
+                            beds,
+                            "/Users/mshamim/Desktop/reSLICE/shuffle_804_" + stem + "_" + r + "_" + k,
+                            labels
+                    };
+                    System.out.println("-----------------------------------------------------");
+                    //MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+        }
+
+
+        String[] strings;
+        String changes = "2,A1,34,139,34;" +
+                "3,A2,152,251,152;" +
+                "5,B1,220,20,60;" +
+                "4,B2,255,255,0;" +
+                "1,B3,112,128,144";
+
+        String[] bedfiles = new String[]{
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p29_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p43_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/p58_SLICE_804__5_kmeans_clusters.bed",
+                "/Users/mshamim/Desktop/reSLICE/80X_beds/primary_SLICE_804__5_kmeans_clusters.bed"
+        };
+
+        String[] bedstem = new String[]{
+                "P15",
+                "P29",
+                "P43",
+                "P58",
+                "PRIMARY"
+        };
+
+        for (int z = 0; z < bedfiles.length; z++) {
+            strings = new String[]{"rename",
+                    changes,
+                    bedfiles[z],
+                    "/Users/mshamim/Desktop/reSLICE/fin_slice/SLICE_" + bedstem[z] + "_100K.bed"
+            };
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+        /*
+        String[] labels = new String[4];
+        Arrays.fill(labels, "SLICE,SNIPER");
+        labels[3] = "SLICE,SNIPER,RH2014,SCI";
+
+        String[] normtype1 = new String[]{
+                "INTER_SCALE", "INTER_SCALE", "INTER_SCALE", "INTER_KR"
+        };
+        String[] normtype2 = new String[]{
+                "GW_SCALE", "GW_SCALE", "GW_SCALE", "GW_KR"
+        };
+
+        for (int f = 1; f < files.length; f++) {//
+            String file = files[f];
+            String stem = stems[f];
+            for (String k : new String[]{normtype1[f]}) {// "GW_SCALE", "KR" ,normtype2[f]
+                for (int r : new int[]{100}) { // 100 50, 25
+
+                    String[] strings = new String[]{"shuffle",
+                            "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
+                            file,
+                            //beds[f],
+                            "/Users/mshamim/Desktop/reSLICE/shuffle2_" + "_slice_vs_sniper_" + stem + "_" + r + "_" + k,
+                            labels[f]
+                    };
+                    System.out.println("-----------------------------------------------------");
+                    //MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+        }
+
+        /*
+
+        String[] types = new String[]{"RAW", "LOG", "O_E", "LOG_E(O)"};
+        String[] corrs = new String[]{"IDENTITY", "COSINE", "MedianAbsDev", "PEARSON", "MANHATTAN",
+                "EUCLIDEAN", "COSINE_ZSCORE", "PEARSON_ZSCORE", "COSINE_ARC", "PEARSON_ARC"};
+        String[] filePrefixes = new String[]{"GM_RH_14_", "GM_Intact_18B_", "GM_15B_"};
+        String[] norms = new String[]{"INTER_KR", "SCALE", "KR"};
+
+        int[] metrics = new int[]{1, 3, 6, 7, 8, 9};//1, 3, 4, 5 , 7
+
+        HiCMatrix.NUM_CENTROIDS = 10;
+
+        for (int q = 0; q < 1; q++) {
+            for (int x : metrics) {
+                for (int y = 2; y < 3; y++) {
+                    String[] strings = new String[]{"gw-umap", //umap shuffle
+                            "-r", 100000 + "", // 50000
+                            "-k", norms[q],
+                            "-w", "" + 3,
+                            "--type", "" + y,
+                            "--corr", "" + x,
+                            //"-c", "1,2,10,14,17,18,19",
+                            files[q],
+                            //"/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/INTER-KR_GM_res_100000v3.18.07/INTER-KR_GM_res_100000v3.18.07__5_clusters_gm12878_rh14_30.subcompartment.bed," +
+                                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
+                                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
+                            "/Users/mshamim/Desktop/SLICE5/intra_umaps/NEW_SUBSET_CENT10_REALCOS_UMAP_" + filePrefixes[q] + "100K_" + types[y] + "_" + corrs[x]
+                            //"/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/REBOOT" + filePrefixes[q] + "50K_" + types[y] + "_" + corrs[x]
+                            , "InterSlice100,SLICE100,RH2014"
+                    };
+
+                    System.out.println("-----------------------------------------------------");
+                    MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+        }
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        for (int res : new int[]{100000}) { //100000
+            String folder = "GM12878_DualNorm2_ZscoreNoWidth_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "",
+                    "-k", "KR:INTER_KR", //"--verbose",
+                    file14, "2,13,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+        /*
+
+
+
+
+
+
+        for (int q = 0; q < files.length - 1; q++) {
+            for (int x = 0; x < corrs.length; x++) {
+                for (int y = 0; y < types.length; y++) {
+                    String[] strings = new String[]{"intra-umap", //umap shuffle
+                            "-r", 100000 + "", // 50000
+                            "-k", norms[q],
+                            "-w", "" + 2,
+                            "--type", "" + y,
+                            "--corr", "" + x,
+                            "-c", "1,14,19",
+                            files[q],
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
+                                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
+                            "/Users/mshamim/Desktop/SLICE.Reboot/intra_umaps/NEW_UMAP_PARAMS_" + filePrefixes[q] + "100K_" + types[y] + "_" + corrs[x]
+                            //"/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/REBOOT" + filePrefixes[q] + "50K_" + types[y] + "_" + corrs[x]
+                            //                             , "PRIMARY100,SLICE100,RH2014"
+                    };
+
+                    System.out.println("-----------------------------------------------------");
+                    //MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+        }
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+
+        for (String norm : new String[]{"KR:INTER_KR"}) { //"GW_KR",
+            String folder = "SHUFFLE_again6_DualNorm_W16_GM12878_" + norm + "_100K_v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"shuffle-umap", //umap
+                    "-r", 100000 + "",
+                    "-k", norm, "-w", "" + 16,
+                    file14,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_GM_100K_no2Pass.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/INTER-KR_GM_res_100000v3.18.07/INTER-KR_GM_res_100000v3.18.07__5_clusters_gm12878_rh14_30.subcompartment.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_track_hg19.bed," +
+                            "/Users/mshamim/Desktop/SLICE.Reboot/existing/GM12878_SCI_sub_compartments.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/" +
+                            folder
+                    , "RH2014,SLICE100,PRIMARY100,INTER_SLICE,SNIPER,SCI"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+        for (int res : new int[]{100000}) { //100000
+            String folder = "INTER-KR_GM_res_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "",
+                    "-k", "INTER_KR", //"--verbose",
+                    file14, "2,8,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+        file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
+        for (int res : new int[]{100000, 50000}) { //100000
+            String folder = "GM12878_DualNorm2_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "",
+                    "-k", "KR:INTER_KR", //"--verbose",
+                    file14, "2,20,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+
+            strings = new String[]{"shuffle", "-r", res + "", "-k", "KR", "-w", "" + (16 * (100000 / res)), file14,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
+                            "/" + folder + "__5_clusters_K562_2014_SCALE_30.subcompartment.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerGlobals.versionNum,
+                    "SLICE3"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+
+        files = new String[]{
+                "/Users/mshamim/Desktop/hicfiles/SCALE/K562_2014_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/SCALE/imr90_rh14_SCALE_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/SCALE/hap1_SCALE_30.hic"
+        };
+
+        String[] prefixes = new String[]{
+                "k562", "imr90", "hap1"
+        };
+
+        for (int res : new int[]{50000}) { //100000
+            for (int q = 0; q < files.length; q++) {
+                String folder = prefixes[q] + "_" + res + "v" + MixerGlobals.versionNum;
+                String[] strings = new String[]{"slice", "-r", res + "",
+                        "-k", "SCALE:INTER_SCALE", //"--verbose",
+                        files[q], "2,11,10",
+                        "/Users/mshamim/Desktop/SLICE.Reboot/DualNorm2/" + folder, folder + "_"
+                };
+                System.out.println("-----------------------------------------------------");
+                //MixerTools.main(strings);
+                System.gc();
+            }
+        }
+
+        for (int res : new int[]{50000}) { //100000
+            String folder = "GM12878_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "",
+                    "-k", "KR:INTER_KR", //"--verbose",
+                    file14, "2,16,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/DualNorm2/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+        /*
+
+        String file14 = "/Users/mshamim/Desktop/hicfiles/K562_2014_SCALE_30.hic";
+
+        for (int res : new int[]{50000}) { //100000
+            String folder = "K562_res_" + res + "v" + MixerGlobals.versionNum;
+            String[] strings = new String[]{"slice", "-r", res + "", "-k", "SCALE", //"--verbose",
+                    file14, "2,8,10",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+
+            strings = new String[]{"shuffle", "-r", res + "", "-k", "KR", "-w", "" + (16 * (100000 / res)), file14,
+                    //refs + "," +
+                    "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
+                            "/" + folder + "__5_clusters_K562_2014_SCALE_30.subcompartment.bed",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerGlobals.versionNum,
+                    "SLICE3"
+            };
+            System.out.println("-----------------------------------------------------");
+            MixerTools.main(strings);
+            System.gc();
+        }
+
+        /*
+
+        String[] strings = new String[]{"intra-shuffle", "-r", 100000 + "", "-k", "SCALE", "-w", "" + 4,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                        "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/INTACT18B_W4_REAL_OE_" + 100 + "K",
+                "PRIMARY,RH2014"
+        };
+
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+
+        strings = new String[]{"intra-shuffle", "-r", 100000 + "", "-k", "SCALE", "-w", "" + 4,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                        "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/INTACT18B_W4_REAL_LOGBASE_OE_" + 100 + "K",
+                "PRIMARY,RH2014"
+        };
+
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+
+        strings = new String[]{"intra-shuffle", "-r", 100000 + "", "-k", "SCALE", "-w", "" + 4,
+                file14,
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed," +
+                        "/Users/mshamim/Desktop/SLICE.Reboot/existing/GSE63525_GM12878_subcompartments.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/intra_shuffles/INTACT18B_W4_SIMPLE_" + 100 + "K",
+                "PRIMARY,RH2014"
+        };
+
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
+        System.gc();
+
+
         String[] strings;
         String changes = "3,A1,34,139,34;" +
                 "2,A2,152,251,152;" +
                 "5,B1,220,20,60;" +
                 "4,B2,255,255,0;" +
                 "1,B3,112,128,144";
+
+                strings = new String[]{"rename",
+                changes,
+                "/Users/mshamim/Desktop/SLICE.Reboot/GMPrimary_Final_100000_v3.17.05/GMPrimary_Final_100000_v3.17.05_5_clusters_GM12878_primary14_30.subcompartment.bed",
+                "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed"
+        };
+        //MixerTools.main(strings);
+        System.gc();
+
+        String outfolder = "/Users/mshamim/Desktop/SLICE.Reboot/deepcalls";
+
+        String[] bigFiles = new String[]{
+                "/Users/mshamim/Desktop/hicfiles/GM12878_intact_18.7B_8.15.20_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM_2019_mega_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_insitu_combined_15B_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_ultra_42B_1k_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic",
+                "/Users/mshamim/Desktop/hicfiles/GM12878_primary14_30.hic",
+                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/gm12878/GM12878_mnase_9.5B_2.11.20_30.hic"
+        };
+
+        String[] norms = new String[]{
+                "SCALE", "KR", "KR", "KR", "KR", "KR", "KR"
+        };
+
+        String[] fileNames = new String[]{
+                "GM_Intact_18B", "GM_2019_Mega", "GM12878_15B",
+                "Ultra_42B", "RH14_Mega", "RH14_Primary", "GM_MNASE_9.5B"
+        };
+
+        for(int q = 5; q < fileNames.length; q++) {
+            String folder = fileNames[q] + "_50K_v" + MixerGlobals.versionNum;
+            strings = new String[]{"slice", "-r", "50000", "-k", norms[q],
+                    bigFiles[q], "2,13,4",
+                    "/Users/mshamim/Desktop/SLICE.Reboot/ULTRAS/" + folder, fileNames[q]
+            };
+            System.out.println("-----------------------------------------------------");
+            //MixerTools.main(strings);
+            System.gc();
+        }
+
+
+
+
+        /*
 
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
         strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 40,
@@ -296,209 +764,6 @@ public class AggregateProcessing {
 
         //ExtractionB4.extract();
 
-        /*
-        String[] strings;
-
-        String refs = "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed," +
-                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
-                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed";
-        String file14 = "/Users/mss/Desktop/hic_files/gm12878_rh14_30.hic";
-
-        String folder = "new_change_test";
-        strings = new String[]{"slice", "-r", "100000", "-k", "KR",
-                "--type", "zscore-cosine", "--subsample", "50",
-                file14, "2,11,10",
-                "/Users/mss/Desktop/SLICE.work/tempslice/" + folder, folder + "_"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-
-        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map1_30.hic",
-                //"/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_4_clusters_map1_30.subcompartment.bed," +
-                //       "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_5_clusters_map1_30.subcompartment.bed," +
-                "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_10_clusters_map1_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle10",
-                //"collins1_c4,collins1_c5," +
-                "collins1_c10"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
-                "/Volumes/AidenLabWD7/Backup/AidenLab/LocalFiles/collins/map2_30.hic",
-                "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_4_clusters_map1_30.subcompartment.bed," +
-                        "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_5_clusters_map1_30.subcompartment.bed," +
-                        "/Users/mss/Desktop/SLICE.work/tempslice/collins_dice_test/collins_dice_test_10_clusters_map1_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle10",
-                "collins2_c4,collins2_c5,collins2_c10"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
-                file14,
-                "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed," +
-                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed," +
-                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
-                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine2_clusters_gm12878_rh14_30.subcompartment.bed," +
-                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine5_clusters_gm12878_rh14_30.subcompartment.bed," +
-                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine6_clusters_gm12878_rh14_30.subcompartment.bed," +
-                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine4_clusters_gm12878_rh14_30.subcompartment.bed," +
-                        "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_gm12878_rh14_100000_zscore-cosine10_clusters_gm12878_rh14_30.subcompartment.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle8",
-                "rh2014,sniper,sci,sliceNB2,sliceNB5,sliceNB6,sliceNB4,sliceNB10"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "16",
-                file14,
-                "/Users/mss/Desktop/new_baseline_slice_gm2014/sliceNB_5_clusters_gm12878_rh14_reordered.bed," +
-                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_track_hg19.bed," +
-                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GM12878_SCI_sub_compartments.bed," +
-                        "/Users/mss/Desktop/SLICE.work/subcompartment_analysis/slice/existing/GSE63525_GM12878_subcompartments.bed",
-                "/Users/mss/Desktop/SLICE.work/tempslice/shuffle20",
-                //"sliceNB_5clusters_reorder_1_skipsmall"
-                "SLICE5,SNIPER,SCI,RH2014"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        ///////////////////////////////////////////
-        ///////////////////////////////////////////
-        ///////////////////////////////////////////
-
-        String stem = "/Users/mss/Desktop/prosen/";
-
-        String dice50K = stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine10_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine2_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine3_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine4_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine5_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine6_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine7_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine8_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "dice_pro_sen/50000/diceNB50000_pro_sen_zscore-cosine9_clusters_mss_pro_30.subcompartment.bed";
-
-        String slicepro = stem + "slice_pro/50000/slc50000_pro_zscore-cosine10_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine2_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine3_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine4_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine5_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine6_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine7_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine8_clusters_mss_pro_30.subcompartment.bed," +
-                stem + "slice_pro/50000/slc50000_pro_zscore-cosine9_clusters_mss_pro_30.subcompartment.bed";
-
-        String slicesen = stem + "slice_sen/50000/slc50000_sen_zscore-cosine10_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine2_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine3_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine4_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine5_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine6_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine7_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine8_clusters_mss_sen_30.subcompartment.bed," +
-                stem + "slice_sen/50000/slc50000_sen_zscore-cosine9_clusters_mss_sen_30.subcompartment.bed";
-
-        String filePro = "/Users/mss/Desktop/hic_files/mss_pro_30.hic";
-        String fileSen = "/Users/mss/Desktop/hic_files/mss_sen_30.hic";
-
-        strings = new String[]{"shuffle", "-r", "50000", "-k", "KR", "-w", "30",
-                filePro,
-                dice50K,
-                "/Users/mss/Desktop/prosen/shuffle/dice_Pro",
-                "C10,C2,C3,C4,C5,C6,C7,C8,C9"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        strings = new String[]{"shuffle", "-r", "50000", "-k", "KR", "-w", "30",
-                fileSen,
-                dice50K,
-                "/Users/mss/Desktop/prosen/shuffle/dice_Sen",
-                "C10,C2,C3,C4,C5,C6,C7,C8,C9"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-        strings = new String[]{"shuffle", "-r", "50000", "-k", "KR", "-w", "30",
-                filePro,
-                slicepro,
-                "/Users/mss/Desktop/prosen/shuffle/slice_Pro",
-                "C10,C2,C3,C4,C5,C6,C7,C8,C9"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-
-        strings = new String[]{"shuffle", "-r", "50000", "-k", "KR", "-w", "30",
-                fileSen,
-                slicesen,
-                "/Users/mss/Desktop/prosen/shuffle/slice_Sen",
-                "C10,C2,C3,C4,C5,C6,C7,C8,C9"
-        };
-        System.out.println("-----------------------------------------------------");
-        //MixerTools.main(strings);
-        System.gc();
-
-
-        ///////////////////////////////////////////
-        ///////////////////////////////////////////
-        ///////////////////////////////////////////
-
-        folder = "covid_dice";
-        strings = new String[]{"dice", "-r", "100000", "-k", "KR",
-                "/Users/mss/Desktop/hic_files/marianna/HIC68_30.hic," +
-                        "/Users/mss/Desktop/hic_files/marianna/HIC80_30.hic",
-                "2,7,10", // 2,11,10
-                "/Users/mss/Desktop/hic_files/marianna/new_dice_V6_100K", folder + "_"
-        };
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
-
-
-        stem = "/Users/mss/Desktop/hic_files/marianna/new_dice_V6_100K/";
-        String dice100K = stem + "covid_dice_10_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_2_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_3_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_4_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_5_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_6_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_7_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_8_clusters_HIC68_30.subcompartment.bed," +
-                stem + "covid_dice_9_clusters_HIC68_30.subcompartment.bed";
-
-        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "30",
-                "/Users/mss/Desktop/hic_files/marianna/HIC68_30.hic",
-                dice100K,
-                "/Users/mss/Desktop/hic_files/marianna/new_dice_V6_100K/shuffle_dice_100K_68.hic",
-                "C10,C2,C3,C4,C5,C6,C7,C8,C9"
-        };
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
-
-        strings = new String[]{"shuffle", "-r", "100000", "-k", "KR", "-w", "30",
-                "/Users/mss/Desktop/hic_files/marianna/HIC80_30.hic",
-                dice100K,
-                "/Users/mss/Desktop/hic_files/marianna/new_dice_V6_100K/shuffle_dice_100K_80.hic",
-                "C10,C2,C3,C4,C5,C6,C7,C8,C9"
-        };
-        System.out.println("-----------------------------------------------------");
-        MixerTools.main(strings);
-        System.gc();
-
-         */
+       */
     }
 }

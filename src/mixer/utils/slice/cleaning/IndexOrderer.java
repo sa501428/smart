@@ -25,159 +25,79 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.ExtractingOEDataUtils;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.ExtractingOEDataUtils;
+import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
+import mixer.clt.ParallelizedMixerTools;
+import mixer.utils.common.ArrayTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.utils.slice.structures.SubcompartmentColors;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class IndexOrderer {
 
     private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
-    private final int DISTANCE = 5000000;
-    private final int resolution;
-    private final int minDistanceThreshold;
-    private final int numColsToJoin;
+    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000, TWENTY_MB = 20000000;
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
-    private final int CHECK_VAL = -2;
+    private static final int CHECK_VAL = -2;
     private final float CORR_MIN = 0.2f;
-    private final float INCREMENT = .1f;
     private final Random generator = new Random(0);
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
-    private final Map<Integer, int[]> indexToWeights = new HashMap<>();
-    private final int[] weights;
+    private final File problemFile, initFile;
+    private final int hires, lowres, resFactor;
 
-    public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int resolution, NormalizationType normalizationType,
-                        int numColumnsToPutTogether, GWBadIndexFinder badIndexLocations, long seed) {
-        this.resolution = resolution;
-        minDistanceThreshold = DISTANCE / resolution;
-        numColsToJoin = numColumnsToPutTogether;
+    public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int inputResolution, NormalizationType normalizationType,
+                        GWBadIndexFinder badIndexLocations, long seed, File outputDirectory,
+                        int maxClusterSizeExpected) {
+        lowres = Math.max(inputResolution, 100000);
+        hires = inputResolution;
+        resFactor = lowres / hires;
+        if (lowres % hires != 0) {
+            System.err.println(hires + "is not a factor of " + lowres + ". Invalid resolutions.");
+            System.exit(23);
+        }
+
+        problemFile = new File(outputDirectory, "problems.bed");
+        initFile = new File(outputDirectory, "initial_split.bed");
+
         generator.setSeed(seed);
         for (Chromosome chrom : chromosomes) {
-            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
+            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowres);
             try {
-                float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, resolution,
-                        normalizationType, 3f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, lowres,
+                        normalizationType, 10f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0);
                 Set<Integer> badIndices = badIndexLocations.getBadIndices(chrom);
 
-                matrix = IntraMatrixCleaner.clean(chrom, matrix, resolution, numColsToJoin, badIndices);
+                matrix = IntraMatrixCleaner.cleanAndCompress(chrom, matrix, lowres, badIndices, resFactor);
                 int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices);
-                chromToReorderedIndices.put(chrom, newOrderIndexes);
+                int[] hiResNewOrderIndexes = convertToHigherRes(newOrderIndexes, chrom);
+                chromToReorderedIndices.put(chrom, hiResNewOrderIndexes);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             System.out.print(".");
         }
-        weights = appendWeights(chromosomes);
-    }
-
-    private int[] appendWeights(Chromosome[] chromosomes) {
-        int totalLength = 0;
-        for (Chromosome chromosome : chromosomes) {
-            totalLength += indexToWeights.get(chromosome.getIndex()).length;
-        }
-        int[] finalWeights = new int[totalLength];
-        int offset = 0;
-        for (Chromosome chromosome : chromosomes) {
-            int[] region = indexToWeights.get(chromosome.getIndex());
-            System.arraycopy(region, 0, finalWeights, offset, region.length);
-            offset += region.length;
-        }
-        return finalWeights;
-    }
-
-    public Map<Integer, Integer> getIndexToRearrangedLength() {
-        return indexToRearrangedLength;
-    }
-
-    public int[] get(Chromosome chrom) {
-        return chromToReorderedIndices.get(chrom);
-    }
-
-    private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] matrix, Set<Integer> badIndices) {
-        int[] newIndexOrderAssignments = generateNewAssignments(matrix.length, badIndices);
-
-        int gCounter = doFirstRoundOfAssignmentsByCentroids(matrix, newIndexOrderAssignments, chromosome.getName());
-        gCounter = doSecondRoundOfAssignments(matrix, newIndexOrderAssignments, gCounter);
-        indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
-        indexToWeights.put(chromosome.getIndex(), generateWeights(gCounter, newIndexOrderAssignments));
-        return newIndexOrderAssignments;
-    }
-
-    private int[] generateNewAssignments(int length, Set<Integer> badIndices) {
-        int[] newIndexOrderAssignments = new int[length];
-        Arrays.fill(newIndexOrderAssignments, DEFAULT);
-        for (int k : badIndices) {
-            newIndexOrderAssignments[k] = IGNORE;
-        }
-        return newIndexOrderAssignments;
-    }
-
-    private int[] generateWeights(int maxlength, int[] assignments) {
-        int length = (int) Math.ceil((double) maxlength / numColsToJoin);
-        int[] weightsForChrom = new int[length];
-        for (int i : assignments) {
-            if (i > -1) {
-                weightsForChrom[i / numColsToJoin]++;
-            }
-        }
-        return weightsForChrom;
-    }
-
-    private int doFirstRoundOfAssignmentsByCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName) {
-        int numInitialCentroids = 10;
-        float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments), numInitialCentroids, generator.nextLong()).generateCentroids();
 
         if (MixerGlobals.printVerboseComments) {
-            System.out.println("IndexOrderer: Planned centroids for " + chromName + ": " + numInitialCentroids + " Actual centroids: " + centroids.length);
+            writeOutInitialResults();
         }
-        SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
-
-        int vectorLength = newIndexOrderAssignments.length;
-        int[] numDecentRelations = new int[centroids.length];
-        float[][] correlationCentroidsWithData = new float[centroids.length][vectorLength];
-        for (int k = 0; k < centroids.length; k++) {
-            for (int z = 0; z < vectorLength; z++) {
-                if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                    float corr = corrMetric.distance(centroids[k], matrix[z], 0, 0);
-                    correlationCentroidsWithData[k][z] = corr;
-                    if (corr > CORR_MIN || corr < -CORR_MIN) {
-                        numDecentRelations[k]++;
-                    }
-                } else {
-                    correlationCentroidsWithData[k][z] = Float.NaN;
-                }
-            }
-        }
-
-        int maxIndex = 0;
-        for (int k = 1; k < numDecentRelations.length; k++) {
-            if (numDecentRelations[maxIndex] < numDecentRelations[k]) {
-                maxIndex = k;
-            }
-        }
-
-        int gCounter = doSequentialOrdering(correlationCentroidsWithData[maxIndex], newIndexOrderAssignments, 0);
-        for (int c = 0; c < centroids.length; c++) {
-            if (c == maxIndex) continue;
-            gCounter = doSequentialOrdering(correlationCentroidsWithData[c],
-                    newIndexOrderAssignments, gCounter);
-        }
-
-        return gCounter;
     }
 
-    private float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
+    public static float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
         List<Integer> actualIndices = new ArrayList<>();
         for (int z = 0; z < newIndexOrderAssignments.length; z++) {
-            if (newIndexOrderAssignments[z] < CHECK_VAL) {
+            if (newIndexOrderAssignments[z] < CHECK_VAL && ArrayTools.percentNaN(matrix[z]) < .7) {
                 actualIndices.add(z);
             }
         }
@@ -192,71 +112,156 @@ public class IndexOrderer {
         return tempCleanMatrix;
     }
 
-    private int doSequentialOrdering(float[] correlationWithCentroid, int[] newIndexOrderAssignments, int startCounter) {
-        int counter = startCounter;
-        for (float cutoff = 1 - INCREMENT; cutoff >= CORR_MIN; cutoff -= INCREMENT) {
-            for (int z = 0; z < correlationWithCentroid.length; z++) {
-                if (newIndexOrderAssignments[z] < CHECK_VAL && correlationWithCentroid[z] > cutoff) {
-                    newIndexOrderAssignments[z] = counter++;
-                }
-            }
-        }
-
-        counter = getUpdatedNoMixIndex(counter);
-
-        for (float cutoff = CORR_MIN; cutoff < 1; cutoff += INCREMENT) {
-            for (int z = 0; z < correlationWithCentroid.length; z++) {
-                float corr = correlationWithCentroid[z];
-                float cutoff1 = -cutoff;
-                float cutoff2 = cutoff1 - INCREMENT;
-                if (newIndexOrderAssignments[z] < CHECK_VAL && corr < cutoff1 && corr >= cutoff2) {
-                    newIndexOrderAssignments[z] = counter++;
-                }
-            }
-        }
-
-        return getUpdatedNoMixIndex(counter);
+    public Map<Integer, Integer> getIndexToRearrangedLength() {
+        return indexToRearrangedLength;
     }
 
-    private int getUpdatedNoMixIndex(int counter) {
-        int temp = (counter / numColsToJoin);
-        if (counter % numColsToJoin > 0) {
-            temp++;
-        }
-        return temp * numColsToJoin;
+    public int[] get(Chromosome chrom) {
+        return chromToReorderedIndices.get(chrom);
     }
 
-    private int doSecondRoundOfAssignments(float[][] matrix, int[] newIndexOrderAssignments, int startCounter) {
-        int vectorLength = newIndexOrderAssignments.length;
-        int numRoundsThatHappen = 0;
-        int counter = startCounter;
-        SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
-        for (int cI = 0; cI < vectorLength; cI++) {
-            // handle stuff
-            if (newIndexOrderAssignments[cI] < CHECK_VAL) {
-                numRoundsThatHappen++;
-                newIndexOrderAssignments[cI] = counter++;
+    private int[] convertToHigherRes(int[] lowResOrderIndexes, Chromosome chrom) {
+        int hiResLength = (int) (chrom.getLength() / hires) + 1;
+        int[] hiResOrderAssignments = new int[hiResLength];
+        if ((hiResLength - 1) / resFactor >= lowResOrderIndexes.length) {
+            System.err.println("chromosome lengths are off");
+            System.exit(32);
+        }
 
-                for (int z = cI + 1; z < vectorLength; z++) {
-                    if (newIndexOrderAssignments[z] < CHECK_VAL) {
-                        float val = corrMetric.distance(matrix[cI], matrix[z], 0, 0);
-                        if (val >= CORR_MIN) {
-                            newIndexOrderAssignments[z] = counter++;
+        for (int i = 0; i < hiResOrderAssignments.length; i++) {
+            hiResOrderAssignments[i] = lowResOrderIndexes[i / resFactor];
+        }
+        return hiResOrderAssignments;
+    }
+
+    private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] initialMatrix, Set<Integer> badIndices) {
+        int[] newIndexOrderAssignments = generateNewAssignments(initialMatrix.length, badIndices);
+        int numPotentialClusters = (int) (chromosome.getLength() / TWENTY_MB) + 5;
+        numPotentialClusters = Math.max(numPotentialClusters, 6);
+
+        float[][] matrix = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(initialMatrix,
+                RobustCorrelationSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
+
+        int gCounter = doAssignmentsByCorrWithCentroids(matrix, newIndexOrderAssignments, chromosome.getName(),
+                numPotentialClusters);
+        indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
+        return newIndexOrderAssignments;
+    }
+
+    private int doAssignmentsByCorrWithCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName,
+                                                 int numInitialClusters) {
+        float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
+                numInitialClusters, generator.nextLong(), 100).generateCentroids(5);
+
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
+        }
+
+        List<Integer> problemIndices = Collections.synchronizedList(new ArrayList<>());
+        int[] clusterAssignment = new int[newIndexOrderAssignments.length];
+        Arrays.fill(clusterAssignment, IGNORE);
+
+        AtomicInteger currDataIndex = new AtomicInteger(0);
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
+            SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
+            int i = currDataIndex.getAndIncrement();
+            while (i < (matrix).length) {
+                if (newIndexOrderAssignments[i] < CHECK_VAL) {
+                    int bestIndex = IGNORE;
+                    float bestCorr = CORR_MIN;
+
+                    for (int j = 0; j < centroids.length; j++) {
+                        float corrVal = corrMetric.distance(centroids[j], matrix[i]);
+                        if (corrVal > bestCorr) {
+                            bestCorr = corrVal;
+                            bestIndex = j;
                         }
                     }
+                    if (bestIndex < 0) {
+                        synchronized (problemIndices) {
+                            problemIndices.add(bestIndex);
+                        }
+                    }
+                    clusterAssignment[i] = bestIndex;
                 }
-                counter = getUpdatedNoMixIndex(counter);
+                i = currDataIndex.getAndIncrement();
             }
-            // else it has already been handled
-            // or is a bad index, so skip
+        });
+
+
+        if (MixerGlobals.printVerboseComments) {
+            synchronized (problemIndices) {
+                double percentProblem = 100 * (problemIndices.size() + 0.0) / (matrix.length + 0.0);
+                System.out.println("IndexOrderer problems: " + problemIndices.size() + " (" + percentProblem + " %)");
+            }
+        }
+
+        int filtered = 0;
+        for (int z = 0; z < clusterAssignment.length; z++) {
+            int zMinus1 = Math.max(0, z - 1);
+            int zPlus1 = Math.min(z + 1, clusterAssignment.length - 1);
+            if (clusterAssignment[z] != clusterAssignment[zMinus1]
+                    && clusterAssignment[z] != clusterAssignment[zPlus1]) {
+                clusterAssignment[z] = IGNORE;
+                filtered++;
+            }
         }
         if (MixerGlobals.printVerboseComments) {
-            System.out.println("Num rounds " + numRoundsThatHappen);
+            System.out.println("Post filtered: " + filtered);
         }
-        return counter;
+
+        for (int i = 0; i < clusterAssignment.length; i++) {
+            if (newIndexOrderAssignments[i] < CHECK_VAL) {
+                newIndexOrderAssignments[i] = clusterAssignment[i];
+            }
+        }
+
+        return centroids.length;
     }
 
-    public int[] getWeights() {
-        return weights;
+    private int[] generateNewAssignments(int length, Set<Integer> badIndices) {
+        int[] newIndexOrderAssignments = new int[length];
+        Arrays.fill(newIndexOrderAssignments, DEFAULT);
+        for (int k : badIndices) {
+            newIndexOrderAssignments[k / resFactor] = IGNORE;
+        }
+        return newIndexOrderAssignments;
+    }
+
+    private void writeOutInitialResults() {
+        try {
+            final FileWriter fwProblem = new FileWriter(problemFile);
+            final FileWriter fwInit = new FileWriter(initFile);
+
+            for (Chromosome chrom : chromToReorderedIndices.keySet()) {
+                int[] vals = chromToReorderedIndices.get(chrom);
+                for (int i = 0; i < vals.length; i++) {
+                    if (vals[i] < 0) {
+                        writeRegionToFile(fwProblem, chrom, i, vals[i]);
+                    } else {
+                        writeRegionToFile(fwInit, chrom, i, vals[i]);
+                    }
+                }
+            }
+
+            try {
+                fwProblem.close();
+                fwInit.close();
+            } catch (IOException ww) {
+                ww.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void writeRegionToFile(FileWriter fw, Chromosome chrom, int pos, int val) throws IOException {
+
+        int x1 = hires * pos;
+        int x2 = x1 + hires;
+        String bedLine = "chr" + chrom.getName() + "\t" + x1 + "\t" + x2 + "\t" + val + "\t" + val
+                + "\t.\t" + x1 + "\t" + x2 + "\t" + SubcompartmentColors.getColorString(Math.abs(val));
+        fw.write(bedLine + "\n");
     }
 }

@@ -31,36 +31,61 @@ import java.util.Set;
 
 public class IntraMatrixCleaner {
 
-    private static void eraseTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix) {
+    private static void nanFillTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix, int resFactor) {
         if (badIndices.size() < 1) return;
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j : badIndices) {
-                matrix[i][j] = Float.NaN;
+                matrix[i][j / resFactor] = Float.NaN;
             }
         }
 
         for (int i : badIndices) {
-            Arrays.fill(matrix[i], Float.NaN);
+            Arrays.fill(matrix[i / resFactor], Float.NaN);
         }
     }
 
-    public static float[][] clean(Chromosome chrom, float[][] matrix, int resolution, int numColsToJoin, Set<Integer> badIndices) {
-        NearDiagonalTrim.trim(chrom, matrix, resolution);
-        eraseTheRowsColumnsWeDontWant(badIndices, matrix);
-        return rollingAverage(matrix, numColsToJoin);
-
+    public static float[][] cleanAndCompress(Chromosome chrom, float[][] matrix, int resolution,
+                                             Set<Integer> badIndices, int resFactor) {
+        //NearDiagonalTrim.nanFill(chrom, matrix, resolution);
+        nanFillTheRowsColumnsWeDontWant(badIndices, matrix, resFactor);
+        // float[][] compressedMatrix = compress(matrix, smoothingInterval);
+        //nanFillZeroEntries(matrix);
+        //subtractOEBy1(matrix);
+        // ZScoreTools.inPlaceZscoreDownCol(matrix);
+        // return rollingAverage(matrix, smoothingInterval);
+        return matrix;
     }
 
-    public static float[][] rollingAverage(float[][] matrix, int numColsToJoin) {
-        int bufferWidth = numColsToJoin / 2;
+    private static void subtractOEBy1(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (!Float.isNaN(matrix[i][j])) {
+                    matrix[i][j] -= 1; // because 1 means O = E -> 0 for corr calcs
+                }
+            }
+        }
+    }
+
+    private static void nanFillZeroEntries(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] < 1e-10) {
+                    matrix[i][j] = Float.NaN;
+                }
+            }
+        }
+    }
+
+    public static float[][] rollingAverage(float[][] matrix, int smoothingInterval) {
+        int bufferWidth = smoothingInterval / 2;
         for (int i = 0; i < matrix.length; i++) {
             float[] tempRow = new float[matrix[i].length];
             System.arraycopy(matrix[i], 0, tempRow, 0, tempRow.length);
             for (int j = 0; j < tempRow.length; j++) {
                 if (Float.isNaN(tempRow[j])) continue;
                 int startK = Math.max(j - bufferWidth, 0);
-                int endK = Math.min(j + bufferWidth, tempRow.length);
+                int endK = Math.min(j + 1 + bufferWidth, tempRow.length);
                 float total = 0;
                 int numVals = 0;
                 for (int k = startK; k < endK; k++) {
@@ -73,5 +98,16 @@ public class IntraMatrixCleaner {
             }
         }
         return matrix;
+    }
+
+    public static float[][] compress(float[][] interMatrix, int compressionFactor) {
+        int width = (int) Math.ceil(interMatrix[0].length / ((float) compressionFactor));
+        float[][] result = new float[interMatrix.length][width];
+        for (int i = 0; i < interMatrix.length; i++) {
+            for (int j = 0; j < interMatrix[i].length; j++) {
+                result[i][j / compressionFactor] += interMatrix[i][j];
+            }
+        }
+        return result;
     }
 }

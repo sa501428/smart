@@ -25,6 +25,7 @@
 package mixer.utils.slice.kmeans.kmeansfloat;
 
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.Arrays;
@@ -38,17 +39,23 @@ public class SmartInitialization {
     private final int numClusters;
     private final int[] bestIndices;
     private final float[] distFromClosestPoint;
+    private final SimilarityMetric metric;
 
-    public SmartInitialization(float[][] data, int numClusters, int initialID) {
+    public SmartInitialization(float[][] data, int numClusters, int initialID, boolean useKMedians) {
         this.data = data;
         this.numClusters = numClusters;
         bestIndices = new int[numClusters];
         bestIndices[0] = initialID;
         distFromClosestPoint = new float[data.length];
         Arrays.fill(distFromClosestPoint, Float.MAX_VALUE);
+        if (useKMedians) {
+            metric = RobustManhattanDistance.SINGLETON;
+        } else {
+            metric = RobustEuclideanDistance.SINGLETON;
+        }
     }
 
-    public int[] getSmartKmeansInitialization() {
+    public int[] getSmartClusterInitialization() {
 
         for (int c = 0; c < numClusters - 1; c++) {
             updateDistances(bestIndices[c]);
@@ -60,7 +67,6 @@ public class SmartInitialization {
 
     private void updateDistances(Integer index) {
 
-        final SimilarityMetric euclidean = RobustEuclideanDistance.SINGLETON;
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
@@ -70,7 +76,7 @@ public class SmartInitialization {
                 while (k < data.length) {
                     float newDist = 0;
                     if (k != index) {
-                        newDist = euclidean.distance(data[k], data[index], 0, 0);
+                        newDist = metric.distance(data[k], data[index]);
                     }
                     distFromClosestPoint[k] = Math.min(distFromClosestPoint[k], newDist);
                     k = currRowIndex.getAndIncrement();

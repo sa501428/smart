@@ -31,6 +31,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -49,6 +50,49 @@ public class FloatMatrixTools {
                 if (!Float.isNaN(val)) {
                     int newJ = j / batchSize;
                     matrix[i][j] = (val - colMeans[newJ]) / colStdDevs[newJ];
+                }
+            }
+        }
+    }
+
+    public static int[] getNumZerosInRow(float[][] data) {
+        int[] numZeros = new int[data.length];
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (data[i][j] < 1e-10) {
+                    numZeros[i]++;
+                }
+            }
+        }
+        return numZeros;
+    }
+
+    public static float[][] convert(double[][] matrix) {
+        float[][] result = new float[matrix.length][matrix[0].length];
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] = (float) matrix[i][j];
+            }
+        }
+        System.out.println("Converted");
+        return result;
+    }
+
+    public static float[][] multiply(float[][] matrix, float v) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] *= v;
+            }
+        }
+        return matrix;
+    }
+
+
+    private void inPlaceThreshold(float[][] matrix, float maxVal) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > maxVal) {
+                    matrix[i][j] = maxVal;
                 }
             }
         }
@@ -124,6 +168,30 @@ public class FloatMatrixTools {
         return combo;
     }
 
+    public static float[][] concatenateAll(List<float[][]> matrices) {
+        int numRows = matrices.get(0).length;
+        int numCols = getTotalColumns(matrices);
+        float[][] combo = new float[numRows][numCols];
+        int colOffset = 0;
+        for (float[][] matrix : matrices) {
+            int numColsInThisMatrix = matrix[0].length;
+            for (int i = 0; i < matrix.length; i++) {
+                System.arraycopy(matrix[i], 0, combo[i], colOffset, numColsInThisMatrix);
+            }
+            colOffset += numColsInThisMatrix;
+        }
+
+        return combo;
+    }
+
+    private static int getTotalColumns(List<float[][]> matrices) {
+        int totalCols = 0;
+        for (float[][] matrix : matrices) {
+            totalCols += matrix[0].length;
+        }
+        return totalCols;
+    }
+
     public static float[][] transpose(float[][] matrix) {
         float[][] result = new float[matrix[0].length][matrix.length];
         for (int i = 0; i < matrix.length; i++) {
@@ -134,10 +202,14 @@ public class FloatMatrixTools {
         return result;
     }
 
-    public static float[][] cleanUpMatrix(float[][] matrix) {
+    public static float[][] cleanUpMatrix(float[][] matrix, boolean shouldZeroNans) {
         for (int r = 0; r < matrix.length; r++) {
             for (int c = 0; c < matrix[r].length; c++) {
-                if (Float.isNaN(matrix[r][c]) || Float.isInfinite(matrix[r][c]) || Math.abs(matrix[r][c]) < 1E-10) {
+                float val = matrix[r][c];
+                if (Float.isInfinite(val) || Math.abs(val) < 1E-10) {
+                    matrix[r][c] = 0;
+                }
+                if (shouldZeroNans && Float.isNaN(val)) {
                     matrix[r][c] = 0;
                 }
             }
@@ -153,13 +225,13 @@ public class FloatMatrixTools {
             range = Math.log(1 + range) - minVal;
         }
 
-        BufferedImage image = new BufferedImage(matrix.length, matrix[0].length, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(matrix[0].length, matrix.length, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 if (useLog) {
-                    image.setRGB(i, j, mixColors((Math.log(1 + matrix[i][j]) - minVal) / range));
+                    image.setRGB(j, i, mixColors((Math.log(1 + matrix[i][j]) - minVal) / range));
                 } else {
-                    image.setRGB(i, j, mixColors(matrix[i][j] / range));
+                    image.setRGB(j, i, mixColors(matrix[i][j] / range));
                 }
             }
         }
@@ -172,7 +244,7 @@ public class FloatMatrixTools {
     }
 
     public static void saveOEMatrixToPNG(File file, float[][] matrix) {
-        double max = getMaxAbsLogVal(matrix);
+        double max = LogTools.getMaxAbsLogVal(matrix);
         int zoom = 50;
 
         BufferedImage image = new BufferedImage(zoom * matrix.length, zoom * matrix[0].length, BufferedImage.TYPE_INT_RGB);
@@ -194,17 +266,12 @@ public class FloatMatrixTools {
         }
     }
 
-    private static float getMaxAbsLogVal(float[][] matrix) {
-        double maxVal = Math.abs(Math.log(matrix[0][0]));
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                double temp = Math.abs(Math.log(matrix[i][j]));
-                if (temp > maxVal) {
-                    maxVal = temp;
-                }
-            }
+    public static float[][] deepClone(float[][] data) {
+        float[][] copy = new float[data.length][data[0].length];
+        for (int i = 0; i < data.length; i++) {
+            System.arraycopy(data[i], 0, copy[i], 0, data[i].length);
         }
-        return (float) maxVal;
+        return copy;
     }
 
     private static float getMaxVal(float[][] matrix) {

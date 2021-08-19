@@ -39,7 +39,7 @@ public final class RobustManhattanDistance extends SimilarityMetric {
   }
 
   @Override
-  public float distance(final float[] x, final float[] y, int index, int skip) {
+  public float distance(final float[] x, final float[] y) {
     //  D(x, y) = \sqrt{\sum_i (x_i - y_i)^2}
     double result = getNonNanMeanAbsoluteError(x, y);
     return (float) (result * x.length);
@@ -55,7 +55,10 @@ public final class RobustManhattanDistance extends SimilarityMetric {
         numDiffs++;
       }
     }
-    numDiffs = Math.max(numDiffs, 1);
+    if (numDiffs < 1) {
+      //System.err.println("Vector too sparse");
+      return Float.MAX_VALUE;
+    }
     return sumOfError / numDiffs;
   }
 }

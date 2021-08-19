@@ -53,12 +53,16 @@ public class CLTFactory {
             return new Slice(cmd);
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();
-        } else if (cmd.equals("shuffle")) {
-            return new Shuffle();
-        } else if (cmd.equals("rename")) {
-            return new Rename();
-        } else if (cmd.equals("umap")) {
-            return new UmapProjection();
+        } else if (cmd.contains("shuffle") || cmd.contains("umap")) {
+            return new ShuffleAndUMAP(cmd);
+        } else if (cmd.contains("rename")) {
+            return new Rename(cmd);
+        } else if (cmd.equals("network")) {
+            return new Network();
+        } else if (cmd.equals("aba")) {
+            return new ABA();
+        } else if (cmd.equals("finetune")) {
+            return new FineTune();
         }
 
         return null;

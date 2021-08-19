@@ -24,13 +24,13 @@
 
 package mixer.utils.custom;
 
-import javastraw.featurelist.GenomeWideList;
+import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
-import javastraw.reader.ExtractingOEDataUtils;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.ExtractingOEDataUtils;
+import javastraw.tools.HiCFileTools;
 import mixer.utils.slice.cleaning.NearDiagonalTrim;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -59,7 +59,7 @@ public class ExtractionB4 {
                     //ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                     true, 1, 0);
             removeEmptyValues(matrix);
-            NearDiagonalTrim.trim(chrom19, matrix, RESOLUTION);
+            NearDiagonalTrim.nanFill(chrom19, matrix, RESOLUTION);
             float[] sums = getAbsRowSums(matrix);
             fillEmptyRows(matrix, sums);
 

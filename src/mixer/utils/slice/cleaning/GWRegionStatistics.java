@@ -24,9 +24,9 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.reader.basics.Block;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ContactRecord;
+import javastraw.reader.block.Block;
+import javastraw.reader.block.ContactRecord;
 import mixer.utils.common.ArrayTools;
 
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class GWRegionStatistics {
         for (Block b : blocks) {
             if (b != null) {
                 for (ContactRecord cr : b.getContactRecords()) {
-                    RegionStatistics.add(cr, rowSums, colSums, rowNonZeros, colNonZeros);
+                    CRecordUtils.add(cr, rowSums, colSums, rowNonZeros, colNonZeros);
                 }
             }
         }

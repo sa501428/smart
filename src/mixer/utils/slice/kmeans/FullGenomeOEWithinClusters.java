@@ -24,16 +24,16 @@
 
 package mixer.utils.slice.kmeans;
 
-import javastraw.featurelist.GenomeWideList;
-import javastraw.reader.ChromosomeHandler;
+import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
-import javastraw.type.NormalizationType;
-import mixer.MixerGlobals;
-import mixer.utils.similaritymeasures.SimilarityMetric;
+import mixer.algos.Slice;
+import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
-import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
+import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -45,132 +45,139 @@ public class FullGenomeOEWithinClusters {
     public static int startingClusterSizeK = 2;
     public static int numClusterSizeKValsUsed = 10;
     public static int numAttemptsForKMeans = 3;
-    protected final File outputDirectory;
+    private final File outputDirectory;
     private final ChromosomeHandler chromosomeHandler;
-    private final int resolution;
-    private final NormalizationType[] norms;
     private final SliceMatrix sliceMatrix;
-    private final int maxIters = 1000;
+    private final int maxIters = 200;
 
     private final Random generator = new Random(0);
 
-    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution, NormalizationType[] norms,
-                                      File outputDirectory, long seed, String[] referenceBedFiles,
-                                      SimilarityMetric metric) {
+    public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution,
+                                      List<NormalizationType[]> normalizationTypes,
+                                      File outputDirectory, long seed) {
         this.chromosomeHandler = chromosomeHandler;
-        this.resolution = resolution;
-        this.norms = norms;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
         GWBadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
-                resolution, norms);
+                resolution, normalizationTypes);
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
-        sliceMatrix = new SliceMatrix(
-                chromosomeHandler, datasets.get(0), norms[0], resolution, outputDirectory, generator.nextLong(), referenceBedFiles,
-                badIndexFinder, metric);
+        int absMaxClusters = numClusterSizeKValsUsed + startingClusterSizeK;
+        sliceMatrix = new SliceMatrix(chromosomeHandler, datasets.get(0), normalizationTypes.get(0), resolution, outputDirectory,
+                generator.nextLong(), badIndexFinder, absMaxClusters);
 
         for (int dI = 1; dI < datasets.size(); dI++) {
             SliceMatrix additionalData = new SliceMatrix(chromosomeHandler, datasets.get(dI),
-                    norms[dI], resolution, outputDirectory, generator.nextLong(), new String[]{}, badIndexFinder, metric);
+                    normalizationTypes.get(dI), resolution, outputDirectory,
+                    generator.nextLong(), badIndexFinder, absMaxClusters);
             sliceMatrix.appendDataAlongExistingRows(additionalData);
         }
 
         sliceMatrix.cleanUpMatricesBySparsity();
     }
 
-    public void extractFinalGWSubcompartments(List<String> inputHicFilePaths,
-                                              String prefix, int index, boolean compareMaps) {
-
-        Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults = new HashMap<>();
-        Map<Integer, Cluster[]> bestClustersMap = new HashMap<>();
-        Map<Integer, int[]> bestIDsMap = new HashMap<>();
-        Map<Integer, int[][]> novelIDsForIndxMap = new HashMap<>();
-
-        if (MixerGlobals.printVerboseComments) {
-            sliceMatrix.exportData();
+    public void extractFinalGWSubcompartments(String prefix) {
+        System.out.println("Genomewide clustering");
+        runClusteringOnRawMatrixWithNans(prefix, false);
+        if (Slice.USE_INTER_CORR_CLUSTERING) {
+            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", false);
         }
 
-        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, sliceMatrix);
-        double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
-        Arrays.fill(iterToWcssAicBic[1], Double.MAX_VALUE);
-        Arrays.fill(iterToWcssAicBic[2], Double.MAX_VALUE);
-        Arrays.fill(iterToWcssAicBic[3], Double.MAX_VALUE);
+        /*
+        sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
+        runClusteringOnRawMatrixWithNans(prefix, true);
+        if (Slice.USE_INTER_CORR_CLUSTERING) {
+            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", true);
+        }
+        */
+    }
 
-        System.out.println("Genomewide clustering");
-        for (int numMaxIters : new int[]{50, 100}) {
-            for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-                runRepeatedClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
-                        numItersToResults, bestClustersMap, bestIDsMap, novelIDsForIndxMap, numMaxIters);
-            }
+    public void runClusteringOnRawMatrixWithNans(String prefix, boolean useKMedians) {
+        ConcurrentKMeans.useKMedians = useKMedians;
+        Map<Integer, GenomeWideList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
+        Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
+
+        GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, sliceMatrix,
+                false, useKMedians);
+        double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
+        for (double[] row : iterToWcssAicBic) {
+            Arrays.fill(row, Double.MAX_VALUE);
         }
 
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-            runRepeatedClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
-                    numItersToResults, bestClustersMap, bestIDsMap, novelIDsForIndxMap, maxIters);
-
-            exportClusteringResults(z, bestClustersMap, bestIDsMap,
-                    novelIDsForIndxMap, iterToWcssAicBic, inputHicFilePaths, index,
-                    numItersToResults, prefix);
+            runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
+                    maxIters, kmeansClustersToResults, kmeansIndicesMap, useKMedians);
+            exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
         System.out.println(".");
-        /* if (!compareMaps) {
-            System.out.println("Post processing");
-            LeftOverClusterIdentifier identifier = new LeftOverClusterIdentifier(chromosomeHandler, datasets.get(0), norms[0], resolution);
-            identifier.identify(numItersToResults, sliceMatrix.getBadIndices());
-        }*/
+        ConcurrentKMeans.useKMedians = false;
     }
 
-    private void exportClusteringResults(int z, Map<Integer, Cluster[]> bestClusters, Map<Integer, int[]> bestIDs, Map<Integer, int[][]> novelIDsForIndx,
-                                         double[][] iterToWcssAicBic, List<String> inputHicFilePaths, int index,
-                                         Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults,
-                                         String prefix) {
+    public void exportKMeansClusteringResults(int z, double[][] iterToWcssAicBic,
+                                              Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+                                              String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
+                                              boolean useKMedians) {
         int k = z + startingClusterSizeK;
-        ClusterTools.performStatisticalAnalysisBetweenClusters(outputDirectory, "final_gw_" + k,
-                bestClusters.get(k), bestIDs.get(k));
-        String outIDpath = new File(outputDirectory, "novel_ids_for_index_" + k + ".npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(outIDpath, novelIDsForIndx.get(k));
-        String outIterPath = new File(outputDirectory, "clusterSize_WCSS_AIC_BIC.npy").getAbsolutePath();
+        String kstem = "kmeans";
+        if (useKMedians) kstem = "kmedians";
+        String outIterPath = new File(outputDirectory, kstem + "_cluster_size_WCSS_AIC_BIC.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(outIterPath, iterToWcssAicBic);
-        String hicFileName = SliceUtils.cleanUpPath(inputHicFilePaths.get(index));
-        GenomeWideList<SubcompartmentInterval> gwList = numItersToResults.get(k);
+        GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
         SliceUtils.collapseGWList(gwList);
-        File outBedFile = new File(outputDirectory, prefix + "_" + k + "_clusters_" + hicFileName + ".subcompartment.bed");
+        File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
         gwList.simpleExport(outBedFile);
+        sliceMatrix.plotUmapProjection(outputDirectory, kmeansIndicesMap.get(z), prefix + "_" + k + "_" + kstem + "_clusters");
     }
 
-
-    private void runRepeatedClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
-                                           double[][] iterToWcssAicBic, int z,
-                                           Map<Integer, GenomeWideList<SubcompartmentInterval>> numItersToResults,
-                                           Map<Integer, Cluster[]> bestClustersMap, Map<Integer, int[]> bestIDsMap,
-                                           Map<Integer, int[][]> novelIDsForIndxMap, int maxIters) {
-        int k = z + startingClusterSizeK;
+    public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
+                                                double[][] iterToWcssAicBic, int z, int maxIters,
+                                                Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+                                                Map<Integer, List<List<Integer>>> indicesMap,
+                                                boolean useKMedians) {
+        int numClusters = z + startingClusterSizeK;
+        int numColumns = kmeansRunner.getNumColumns();
+        int numRows = kmeansRunner.getNumRows();
         for (int p = 0; p < attemptsForKMeans; p++) {
-            kmeansRunner.prepareForNewRun(k);
+            kmeansRunner.prepareForNewRun(numClusters);
             kmeansRunner.launchKmeansGWMatrix(generator.nextLong(), maxIters);
 
             int numActualClustersThisAttempt = kmeansRunner.getNumActualClusters();
-            double wcss = kmeansRunner.getWithinClusterSumOfSquares();
-
-            if (wcss < iterToWcssAicBic[1][z]) {
-                setMseAicBicValues(z, iterToWcssAicBic, numActualClustersThisAttempt, wcss);
-                numItersToResults.put(k, kmeansRunner.getFinalCompartments());
-                bestClustersMap.put(k, kmeansRunner.getRecentClustersClone());
-                bestIDsMap.put(k, kmeansRunner.getRecentIDsClone());
-                novelIDsForIndxMap.put(k, kmeansRunner.getRecentIDsForIndex());
+            if (numActualClustersThisAttempt == numClusters) {
+                double wcss = kmeansRunner.getWithinClusterSumOfSquares();
+                if (wcss < iterToWcssAicBic[1][z]) {
+                    setMseAicBicValues(z, iterToWcssAicBic, numClusters, wcss, numRows, numColumns);
+                    indicesMap.put(z, kmeansRunner.getIndicesMapCopy());
+                    numClustersToResults.put(numClusters, kmeansRunner.getFinalCompartments());
+                }
             }
             System.out.print(".");
         }
     }
 
-    private void setMseAicBicValues(int z, double[][] iterToWcssAicBic, int numClusters, double sumOfSquares) {
+    private void setMseAicBicValues(int z, double[][] iterToWcssAicBic, int numClusters, double sumOfSquares,
+                                    int numRows, int numColumns) {
         iterToWcssAicBic[0][z] = numClusters;
         iterToWcssAicBic[1][z] = sumOfSquares;
         // AIC
-        iterToWcssAicBic[2][z] = sumOfSquares + 2 * sliceMatrix.getWidth() * numClusters;
+        iterToWcssAicBic[2][z] = sumOfSquares + 2 * numColumns * numClusters;
         // BIC .5*k*d*log(n)
-        iterToWcssAicBic[3][z] = sumOfSquares + 0.5 * sliceMatrix.getWidth() * numClusters * Math.log(sliceMatrix.getLength());
+        iterToWcssAicBic[3][z] = sumOfSquares + 0.5 * numColumns * numClusters * Math.log(numRows);
+    }
+
+    public File getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    public ChromosomeHandler getChromosomeHandler() {
+        return chromosomeHandler;
+    }
+
+    public CompositeGenomeWideMatrix getSliceMatrix() {
+        return sliceMatrix;
+    }
+
+    public int getMaxIters() {
+        return maxIters;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 package mixer.utils.slice.structures;
 
 
-import javastraw.featurelist.Feature;
+import javastraw.feature1D.Feature;
 
 public class SimpleInterval extends Feature implements Comparable<SimpleInterval> {
     private final Integer x1; // genomic position, not bin position
@@ -34,7 +34,7 @@ public class SimpleInterval extends Feature implements Comparable<SimpleInterval
     private final Integer chrIndex;
 
 
-    SimpleInterval(int chrIndex, String chrName, int x1, int x2) {
+    public SimpleInterval(int chrIndex, String chrName, int x1, int x2) {
         this.chrIndex = chrIndex;
         this.chrName = chrName;
         this.x1 = x1;
