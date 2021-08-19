@@ -47,9 +47,9 @@ public abstract class DimensionCleaner {
 
     private MatrixAndWeight filterOutDimension(float[][] matrix, int resolution, File outputDirectory) {
         Set<Integer> badIndices = getSparseIndices(matrix);
-        Set<Integer> outlierIndices = (new OutlierCleaner(getAppropriatelyFlippedMatrix(),
-                useOnlyCorr())).getConsistentOutliers(resolution, outputDirectory);
-        badIndices.addAll(outlierIndices);
+        //Set<Integer> outlierIndices = (new OutlierCleaner(getAppropriatelyFlippedMatrix(),
+        //        useOnlyCorr())).getConsistentOutliers(resolution, outputDirectory);
+        //badIndices.addAll(outlierIndices);
 
         if (badIndices.size() == 0) {
             return new MatrixAndWeight(matrix, weights);

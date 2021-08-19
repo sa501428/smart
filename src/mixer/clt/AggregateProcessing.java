@@ -25,6 +25,7 @@
 package mixer.clt;
 
 
+import mixer.MixerTools;
 import mixer.algos.Slice;
 
 /**
@@ -91,18 +92,18 @@ public class AggregateProcessing {
         // 803 = 801                  #
         // 804 = dont use the weights #
         // 805 = 804 with minor cleanup
-        // 806 = 804 with more cleanup
-        int id = 805;
+        // 806 = 804 with more cleanup, no row correlation cleaning
+        int id = 806;
         {
             boolean doFiltering = true;
 
             Slice.FILTER_OUTLIERS = doFiltering;
             //Slice.USE_WEIGHTED_MEAN = id == 803;
 
-            for (int f = 4; f < 5; f++) {// files.length
+            for (int f = 0; f < files.length; f++) {// files.length
                 String file = files[f];
                 String stem = stems[f];
-                for (int res : new int[]{50, 25, 10}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
                     String folder = stem + "_SLICE_" + id;
                     String[] strings = new String[]{"slice", "-r", res + "000",
                             file, "2,7,4",
@@ -110,7 +111,7 @@ public class AggregateProcessing {
                             folder + "_"
                     };
                     System.out.println("-----------------------------------------------------");
-                    //MixerTools.main(strings);
+                    MixerTools.main(strings);
                     System.gc();
                 }
             }
