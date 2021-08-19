@@ -28,11 +28,11 @@ import javastraw.feature1D.GenomeWideList;
 import mixer.utils.slice.gmm.GenomeWideGMMRunner;
 import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
 import mixer.utils.slice.kmeans.GenomeWideKmeansRunner;
+import mixer.utils.slice.kmeans.KmeansEvaluator;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,15 +47,12 @@ public class CorrMatrixClusterer {
 
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(parent.getChromosomeHandler(),
                 parent.getSliceMatrix(), true, useKmedians);
-        double[][] iterToWcssAicBic = new double[4][FullGenomeOEWithinClusters.numClusterSizeKValsUsed];
-        for (double[] row : iterToWcssAicBic) {
-            Arrays.fill(row, Double.MAX_VALUE);
-        }
+        KmeansEvaluator evaluator = new KmeansEvaluator(FullGenomeOEWithinClusters.numClusterSizeKValsUsed);
 
         for (int z = 0; z < FullGenomeOEWithinClusters.numClusterSizeKValsUsed; z++) {
-            parent.runRepeatedKMeansClusteringLoop(FullGenomeOEWithinClusters.numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
+            parent.runRepeatedKMeansClusteringLoop(FullGenomeOEWithinClusters.numAttemptsForKMeans, kmeansRunner, evaluator, z,
                     parent.getMaxIters(), kmeansClustersToResults, kmeansIndicesMap, useKmedians);
-            parent.exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix, kmeansIndicesMap, useKmedians);
+            parent.exportKMeansClusteringResults(z, evaluator, kmeansClustersToResults, prefix, kmeansIndicesMap, useKmedians);
 
             runGMMClusteringLoop(z, 20, kmeansIndicesMap.get(z), gmmClustersToResults, parent);
             exportGMMClusteringResults(z, gmmClustersToResults, prefix, parent);

@@ -30,10 +30,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="parallelize more code">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="remove row correlation filtering">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansEvaluator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/DimensionCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/DimensionCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/CorrMatrixClusterer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/CorrMatrixClusterer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/RowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/RowCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,6 +117,19 @@
     <configuration name="GMM" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.utils.slice.gmm.Test" />
       <module name="Mixer" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -201,14 +217,7 @@
       <workItem from="1629192004833" duration="2062000" />
       <workItem from="1629224630973" duration="1000" />
       <workItem from="1629235037214" duration="1413000" />
-      <workItem from="1629398481676" duration="499000" />
-    </task>
-    <task id="LOCAL-00106" summary="error handling of GMM">
-      <created>1617639339501</created>
-      <option name="number" value="00106" />
-      <option name="presentableId" value="LOCAL-00106" />
-      <option name="project" value="LOCAL" />
-      <updated>1617639339501</updated>
+      <workItem from="1629398481676" duration="3525000" />
     </task>
     <task id="LOCAL-00107" summary="bug fix">
       <created>1617642977432</created>
@@ -546,7 +555,14 @@
       <option name="project" value="LOCAL" />
       <updated>1629236745890</updated>
     </task>
-    <option name="localTasksCounter" value="155" />
+    <task id="LOCAL-00155" summary="remove row correlation filtering">
+      <created>1629401541881</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
+      <option name="project" value="LOCAL" />
+      <updated>1629401541881</updated>
+    </task>
+    <option name="localTasksCounter" value="156" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -571,7 +587,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="code cleanup, remove duplicate code" />
     <MESSAGE value="code cleanup for robust gmm" />
     <MESSAGE value="fix up gmm and kmeans runs; redo corr matrix" />
     <MESSAGE value="bug fix, updated distances" />
@@ -596,7 +611,8 @@
     <MESSAGE value="set a default, -2&lt;z&lt;2, revert log, no kmedians for now" />
     <MESSAGE value="parallelize code" />
     <MESSAGE value="parallelize more code" />
-    <option name="LAST_COMMIT_MESSAGE" value="parallelize more code" />
+    <MESSAGE value="remove row correlation filtering" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove row correlation filtering" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
