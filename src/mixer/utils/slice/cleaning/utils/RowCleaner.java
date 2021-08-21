@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RowCleaner extends DimensionCleaner {
-    protected final static float PERCENT_NAN_ALLOWED = .5f;
+    protected final static float PERCENT_NAN_ALLOWED = .7f;
     private final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap;
 
     public RowCleaner(float[][] data, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[] weights) {

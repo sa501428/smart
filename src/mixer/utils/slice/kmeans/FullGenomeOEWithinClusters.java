@@ -28,7 +28,6 @@ import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
-import javastraw.tools.MatrixTools;
 import mixer.algos.Slice;
 import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
@@ -39,7 +38,10 @@ import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class FullGenomeOEWithinClusters {
     public static int startingClusterSizeK = 2;
@@ -100,29 +102,25 @@ public class FullGenomeOEWithinClusters {
 
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, sliceMatrix,
                 false, useKMedians);
-        double[][] iterToWcssAicBic = new double[4][numClusterSizeKValsUsed];
-        for (double[] row : iterToWcssAicBic) {
-            Arrays.fill(row, Double.MAX_VALUE);
-        }
+        KmeansEvaluator evaluator = new KmeansEvaluator(numClusterSizeKValsUsed);
 
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-            runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, iterToWcssAicBic, z,
+            runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, evaluator, z,
                     maxIters, kmeansClustersToResults, kmeansIndicesMap, useKMedians);
-            exportKMeansClusteringResults(z, iterToWcssAicBic, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
+            exportKMeansClusteringResults(z, evaluator, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
         System.out.println(".");
         ConcurrentKMeans.useKMedians = false;
     }
 
-    public void exportKMeansClusteringResults(int z, double[][] iterToWcssAicBic,
+    public void exportKMeansClusteringResults(int z, KmeansEvaluator evaluator,
                                               Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
                                               String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
                                               boolean useKMedians) {
         int k = z + startingClusterSizeK;
         String kstem = "kmeans";
         if (useKMedians) kstem = "kmedians";
-        String outIterPath = new File(outputDirectory, kstem + "_cluster_size_WCSS_AIC_BIC.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(outIterPath, iterToWcssAicBic);
+        evaluator.export(outputDirectory, kstem);
         GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
         SliceUtils.collapseGWList(gwList);
         File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
@@ -131,7 +129,7 @@ public class FullGenomeOEWithinClusters {
     }
 
     public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
-                                                double[][] iterToWcssAicBic, int z, int maxIters,
+                                                KmeansEvaluator evaluator, int z, int maxIters,
                                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
                                                 Map<Integer, List<List<Integer>>> indicesMap,
                                                 boolean useKMedians) {
@@ -145,24 +143,14 @@ public class FullGenomeOEWithinClusters {
             int numActualClustersThisAttempt = kmeansRunner.getNumActualClusters();
             if (numActualClustersThisAttempt == numClusters) {
                 double wcss = kmeansRunner.getWithinClusterSumOfSquares();
-                if (wcss < iterToWcssAicBic[1][z]) {
-                    setMseAicBicValues(z, iterToWcssAicBic, numClusters, wcss, numRows, numColumns);
+                if (wcss < evaluator.getWCSS(z)) {
+                    evaluator.setMseAicBicValues(z, numClusters, wcss, numRows, numColumns);
                     indicesMap.put(z, kmeansRunner.getIndicesMapCopy());
                     numClustersToResults.put(numClusters, kmeansRunner.getFinalCompartments());
                 }
             }
             System.out.print(".");
         }
-    }
-
-    private void setMseAicBicValues(int z, double[][] iterToWcssAicBic, int numClusters, double sumOfSquares,
-                                    int numRows, int numColumns) {
-        iterToWcssAicBic[0][z] = numClusters;
-        iterToWcssAicBic[1][z] = sumOfSquares;
-        // AIC
-        iterToWcssAicBic[2][z] = sumOfSquares + 2 * numColumns * numClusters;
-        // BIC .5*k*d*log(n)
-        iterToWcssAicBic[3][z] = sumOfSquares + 0.5 * numColumns * numClusters * Math.log(numRows);
     }
 
     public File getOutputDirectory() {

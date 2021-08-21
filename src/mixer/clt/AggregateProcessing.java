@@ -93,7 +93,7 @@ public class AggregateProcessing {
         // 804 = dont use the weights #
         // 805 = 804 with minor cleanup
         // 806 = 804 with more cleanup, no row correlation cleaning
-        int id = 806;
+        int id = 807;
         {
             boolean doFiltering = true;
 
