@@ -9,6 +9,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/general/jargs.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/general/java-straw-1.4.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/general/commons-math3-3.6.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/umap/umap-java.jar" path-in-jar="/" />
       <element id="library" level="project" name="org.jetbrains.kotlin:kotlin-stdlib:0.11.91.4" />
     </root>

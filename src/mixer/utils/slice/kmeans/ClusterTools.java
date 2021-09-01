@@ -22,12 +22,13 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.kmeans.kmeansfloat;
+package mixer.utils.slice.kmeans;
 
 import javastraw.tools.MatrixTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
+import robust.concurrent.kmeans.clustering.Cluster;
 
 import java.io.File;
 import java.util.ArrayList;

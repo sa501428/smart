@@ -25,9 +25,9 @@
 package mixer.utils.custom;
 
 import mixer.MixerGlobals;
-import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
-import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
+import robust.concurrent.kmeans.clustering.Cluster;
+import robust.concurrent.kmeans.clustering.KMeansListener;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -55,7 +55,7 @@ public class QuickClustering {
     }
 
     public int[] cluster() {
-        ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
+        RobustConcurrentKMeans kMeans = new RobustConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
@@ -66,7 +66,7 @@ public class QuickClustering {
             }
 
             @Override
-            public void kmeansComplete(Cluster[] clusters, long l) {
+            public void kmeansComplete(Cluster[] clusters) {
                 setAssignments(clusters);
                 System.out.print(".");
                 numActualClusters.set(clusters.length);

@@ -36,7 +36,7 @@ import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.NearDiagonalTrim;
-import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
+import mixer.utils.slice.kmeans.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.*;
