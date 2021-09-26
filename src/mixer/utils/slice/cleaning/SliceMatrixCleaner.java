@@ -24,9 +24,9 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.tools.ParallelizedJuicerTools;
 import mixer.MixerGlobals;
 import mixer.algos.Slice;
+import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ParallelizedStatTools;
 import mixer.utils.common.ZScoreTools;
@@ -102,7 +102,7 @@ public class SliceMatrixCleaner {
     private void fixToNormalRange(float[][] data, double mu, double std, int lowCutOff, int highCutOff) {
         AtomicInteger totalNumFixed = new AtomicInteger();
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             int numFixed = 0;
             while (i < data.length) {
@@ -136,7 +136,7 @@ public class SliceMatrixCleaner {
     private void thresholdByMax(float[][] data, double mu, double std, int maxZscore) {
         AtomicInteger totalNumFixed = new AtomicInteger();
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             int numFixed = 0;
             while (i < data.length) {

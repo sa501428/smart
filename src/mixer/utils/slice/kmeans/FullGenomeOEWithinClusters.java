@@ -31,7 +31,6 @@ import javastraw.reader.type.NormalizationType;
 import mixer.algos.Slice;
 import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
-import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
@@ -96,7 +95,6 @@ public class FullGenomeOEWithinClusters {
     }
 
     public void runClusteringOnRawMatrixWithNans(String prefix, boolean useKMedians) {
-        ConcurrentKMeans.useKMedians = useKMedians;
         Map<Integer, GenomeWideList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
         Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
 
@@ -110,7 +108,6 @@ public class FullGenomeOEWithinClusters {
             exportKMeansClusteringResults(z, evaluator, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
         System.out.println(".");
-        ConcurrentKMeans.useKMedians = false;
     }
 
     public void exportKMeansClusteringResults(int z, KmeansEvaluator evaluator,

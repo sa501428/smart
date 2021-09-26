@@ -24,7 +24,7 @@
 
 package mixer.utils.common;
 
-import javastraw.tools.ParallelizedJuicerTools;
+import mixer.clt.ParallelizedMixerTools;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,7 +37,7 @@ public class ParallelizedStatTools {
         accumCount[0] = 0;
 
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             double total = 0;
             long count = 0;
@@ -66,7 +66,7 @@ public class ParallelizedStatTools {
         countsTotal[0] = 0;
 
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             double squares = 0;
             long count = 0;
@@ -105,7 +105,7 @@ public class ParallelizedStatTools {
 
     public static void scaleDown(float[][] data, int[] weights) {
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             while (i < data.length) {
                 for (int j = 0; j < data[i].length; j++) {
@@ -120,7 +120,7 @@ public class ParallelizedStatTools {
 
     public static void setZerosToNan(float[][] matrix) {
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizedMixerTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {

@@ -25,9 +25,9 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
-import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
-import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
+import robust.concurrent.kmeans.clustering.Cluster;
+import robust.concurrent.kmeans.clustering.KMeansListener;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class QuickCentroids {
     }
 
     public float[][] generateCentroids(int minSizeNeeded) {
-        ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
+        RobustConcurrentKMeans kMeans = new RobustConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
@@ -74,7 +74,7 @@ public class QuickCentroids {
             }
 
             @Override
-            public void kmeansComplete(Cluster[] clusters, long l) {
+            public void kmeansComplete(Cluster[] clusters) {
                 convertClustersToFloatMatrix(clusters, minSizeNeeded);
                 System.out.print(".");
             }

@@ -28,12 +28,12 @@ import com.google.common.util.concurrent.AtomicDouble;
 import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.MixerGlobals;
-import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeans.kmeansfloat.ClusterTools;
-import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
-import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import robust.concurrent.kmeans.clustering.Cluster;
+import robust.concurrent.kmeans.clustering.KMeansListener;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMedians;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,7 @@ public class GenomeWideKmeansRunner {
     private int numClusters = 0;
     private final List<List<Integer>> indicesMap = new ArrayList<>();
     private final boolean useCorrMatrix;
+    private final boolean useKMedians;
 
     public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler,
                                   CompositeGenomeWideMatrix interMatrix,
@@ -59,6 +60,7 @@ public class GenomeWideKmeansRunner {
         this.interMatrix = interMatrix;
         matrix = interMatrix.getData(useCorrMatrix);
         this.chromosomeHandler = chromosomeHandler;
+        this.useKMedians = useKmedians;
     }
 
     public void prepareForNewRun(int numClusters) {
@@ -76,8 +78,14 @@ public class GenomeWideKmeansRunner {
                 System.out.println("Using seed " + seed);
             }
 
-            ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix,
-                    numClusters, maxIters, seed);
+            RobustConcurrentKMeans kMeans;
+            if (useKMedians) {
+                kMeans = new RobustConcurrentKMedians(matrix,
+                        numClusters, maxIters, seed);
+            } else {
+                kMeans = new RobustConcurrentKMeans(matrix,
+                        numClusters, maxIters, seed);
+            }
 
             KMeansListener kMeansListener = new KMeansListener() {
                 @Override
@@ -88,12 +96,12 @@ public class GenomeWideKmeansRunner {
                 }
 
                 @Override
-                public void kmeansComplete(Cluster[] preSortedClusters, long l) {
+                public void kmeansComplete(Cluster[] preSortedClusters) {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
                     populateIndicesMap(clusters);
                     System.out.print(".");
                     double wcss = interMatrix.processKMeansClusteringResult(clusters, finalCompartments,
-                            useCorrMatrix);
+                            useCorrMatrix, useKMedians);
                     numActualClusters.set(clusters.length);
                     withinClusterSumOfSquaresForRun.set(wcss);
                 }

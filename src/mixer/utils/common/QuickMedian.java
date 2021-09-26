@@ -26,6 +26,11 @@ package mixer.utils.common;
 
 import java.util.List;
 
+/*
+ * Adapted from
+ * https://www.codespeedy.com/find-median-of-an-array-using-quick-select-algorithm-in-java/
+ */
+
 public class QuickMedian {
 
     static int partition(float[] arr, int low, int high) {

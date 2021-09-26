@@ -41,10 +41,9 @@ import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.gmm.SimpleScatterPlot;
-import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import robust.concurrent.kmeans.clustering.Cluster;
 
 import java.io.File;
 import java.util.*;
@@ -160,7 +159,7 @@ public abstract class CompositeGenomeWideMatrix {
 
     public synchronized double processKMeansClusteringResult(Cluster[] clusters,
                                                              GenomeWideList<SubcompartmentInterval> subcompartments,
-                                                             boolean useCorr) {
+                                                             boolean useCorr, boolean useKMedians) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
@@ -192,9 +191,9 @@ public abstract class CompositeGenomeWideMatrix {
 
             for (int i : cluster.getMemberIndexes()) {
                 if (useCorr) {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i]);
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i], useKMedians);
                 } else {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i]);
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i], useKMedians);
                 }
 
                 if (rowIndexToIntervalMap.containsKey(i)) {
@@ -217,8 +216,8 @@ public abstract class CompositeGenomeWideMatrix {
         return withinClusterSumOfSquares;
     }
 
-    protected double getDistance(float[] center, float[] vector) {
-        if (ConcurrentKMeans.useKMedians) {
+    protected double getDistance(float[] center, float[] vector, boolean useKMedians) {
+        if (useKMedians) {
             return RobustManhattanDistance.SINGLETON.distance(center, vector);
         }
         return RobustEuclideanDistance.getNonNanMeanSquaredError(center, vector);
