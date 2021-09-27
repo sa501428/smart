@@ -49,7 +49,7 @@ public class Slice extends MixerCLT {
     public static final boolean USE_INTER_CORR_CLUSTERING = false;
     public static final boolean PROJECT_TO_UMAP = true;
     public static final boolean USE_WEIGHTED_MEAN = false;
-    public static boolean FILTER_OUTLIERS = false;
+    public static boolean FILTER_OUTLIERS = true;
     private final List<Dataset> datasetList = new ArrayList<>();
     private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);

@@ -111,7 +111,7 @@ public class AggregateProcessing {
                             folder + "_"
                     };
                     System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+                    //MixerTools.main(strings);
                     System.gc();
                 }
             }
@@ -125,20 +125,26 @@ public class AggregateProcessing {
         beds = "/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_SCI_sub_compartments.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_track_hg19.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/GSE63525_GM12878_subcompartments.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_GM_MEGA_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P15_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P29_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P43_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_P58_100K.bed,/Users/mshamim/Desktop/reSLICE/SLICE804/SLICE_PRIMARY_100K.bed";
         labels = "SCI,SNIPER,RH2014,SLICE_MEGA,SLICE_P15,SLICE_P29,SLICE_P43,SLICE_P58,SLICE_PRIMARY";
 
+        beds = "/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_SCI_sub_compartments.bed," +
+                "/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_track_hg19.bed," +
+                "/Users/mshamim/Desktop/reSLICE/SLICE804/GSE63525_GM12878_subcompartments.bed";
+        labels = "SCI,SNIPER,RH2014";
+
+
         for (int f = 5; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
-            for (String k : new String[]{"GW_KR", "INTER_KR"}) {// "GW_SCALE", "KR" ,normtype2[f]
+            for (String k : new String[]{"INTER_KR"}) {// "GW_SCALE", "KR" ,normtype2[f]
                 for (int r : new int[]{100}) { // 100 50, 25
                     String[] strings = new String[]{"shuffle",
                             "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
                             file,
                             beds,
-                            "/Users/mshamim/Desktop/reSLICE/shuffle_804_" + stem + "_" + r + "_" + k,
+                            "/Users/mshamim/Desktop/shuffle_vault/shuffle_900_" + stem + "_" + r + "_" + k,
                             labels
                     };
                     System.out.println("-----------------------------------------------------");
-                    //MixerTools.main(strings);
+                    MixerTools.main(strings);
                     System.gc();
                 }
             }

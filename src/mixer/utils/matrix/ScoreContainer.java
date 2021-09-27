@@ -31,6 +31,7 @@ import mixer.utils.shuffle.scoring.VarianceScoring;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ScoreContainer {
 
@@ -79,10 +80,10 @@ public class ScoreContainer {
     public void calculateRatios() {
         for (int y = 0; y < ratios.length; y++) {
             for (int l = 0; l < ratios[0].length; l++) {
-                logRatios[y][l] = logShuffled[y][l] / logBaselines[y][l];
-                ratios[y][l] = shuffled[y][l] / baselines[y][l];
-                aggRatios[y][l] = aggShuffled[y][l] / aggBaselines[y][l];
-                aggLogRatios[y][l] = aggLogShuffled[y][l] / aggLogBaselines[y][l];
+                logRatios[y][l] = logBaselines[y][l] / logShuffled[y][l];
+                ratios[y][l] = baselines[y][l] / shuffled[y][l];
+                aggRatios[y][l] = aggBaselines[y][l] / aggShuffled[y][l];
+                aggLogRatios[y][l] = aggLogBaselines[y][l] / aggLogShuffled[y][l];
             }
         }
     }
@@ -128,17 +129,30 @@ public class ScoreContainer {
     private void writeToFile(File outfolder, String filename, double[][] shuffle, double[][] baseline, double[][] ratio,
                              String[] names) throws IOException {
         FileWriter myWriter = new FileWriter(new File(outfolder, filename));
+        double[] geometricMeans = new double[scoreTypes.length];
+        Arrays.fill(geometricMeans, 1);
+
         for (int y = 0; y < ratio.length; y++) {
             myWriter.write(names[y] + "------------------\n");
             for (int z = 0; z < ratio[y].length; z++) {
-                myWriter.write(scoreTypes[z] + " Loss\n");
+                myWriter.write(scoreTypes[z] + " Score\n");
                 myWriter.write("Shuffled  : " + shuffle[y][z] + "\n");
                 myWriter.write("Baseline  : " + baseline[y][z] + "\n");
-                myWriter.write("Ratio     : " + ratio[y][z] + "\n\n");
-
+                myWriter.write("Score     : " + ratio[y][z] + "\n\n");
+                geometricMeans[z] *= ratio[y][z];
             }
             myWriter.write("----------------------------------------------------------------\n");
         }
+
+        for (int z = 0; z < scoreTypes.length; z++) {
+            geometricMeans[z] = Math.pow(geometricMeans[z], 1.0 / names.length);
+        }
+
+        myWriter.write("Geometric Mean of Scores------------------\n\n");
+        for (int z = 0; z < scoreTypes.length; z++) {
+            myWriter.write(scoreTypes[z] + " Score : " + geometricMeans[z] + "\n\n");
+        }
+
         myWriter.close();
     }
 }

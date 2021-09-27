@@ -80,19 +80,18 @@ public class FullGenomeOEWithinClusters {
 
     public void extractFinalGWSubcompartments(String prefix) {
         System.out.println("Genomewide clustering");
-        /*
         runClusteringOnRawMatrixWithNans(prefix, false);
         if (Slice.USE_INTER_CORR_CLUSTERING) {
             CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", false);
         }
-        */
 
-
+        /*
         sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
         runClusteringOnRawMatrixWithNans(prefix, true);
         if (Slice.USE_INTER_CORR_CLUSTERING) {
             CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", true);
         }
+        */
     }
 
     public void runClusteringOnRawMatrixWithNans(String prefix, boolean useKMedians) {
