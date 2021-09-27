@@ -68,7 +68,7 @@ public class SimilarityMatrixTools {
     private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics, int numInitCentroids, long seed) {
         final float[][] centroids;
         if (numInitCentroids != matrix.length) {
-            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 100);
+            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 20);
             centroids = centroidMaker.generateCentroids(5);
         } else {
             centroids = matrix;
@@ -187,7 +187,7 @@ public class SimilarityMatrixTools {
                                                                   int[] newIndexOrderAssignments, int checkVal) {
 
         QuickCentroids centroidMaker = new QuickCentroids(IndexOrderer.quickCleanMatrix(initialMatrix, newIndexOrderAssignments),
-                numInitCentroids, 0L, 100);
+                numInitCentroids, 0L, 20);
         final float[][] centroids = centroidMaker.generateCentroids(3);
         int[] weights = centroidMaker.getWeights();
 

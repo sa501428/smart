@@ -28,6 +28,7 @@ import mixer.MixerGlobals;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMedians;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class QuickCentroids {
 
-    private int maxIters = 1;
+    private int maxIters = 20;
     private final float[][] matrix;
     private final int initialNumClusters;
     private final Random generator = new Random(0);
@@ -63,7 +64,7 @@ public class QuickCentroids {
     }
 
     public float[][] generateCentroids(int minSizeNeeded) {
-        RobustConcurrentKMeans kMeans = new RobustConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
+        RobustConcurrentKMeans kMeans = new RobustConcurrentKMedians(matrix, initialNumClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override

@@ -55,6 +55,7 @@ public class IndexOrderer {
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
     private final File problemFile, initFile;
     private final int hires, lowres, resFactor;
+    private final boolean SHOULD_FILTER_SINGLE_COLUMNS = false;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int inputResolution, NormalizationType normalizationType,
                         GWBadIndexFinder badIndexLocations, long seed, File outputDirectory,
@@ -151,7 +152,7 @@ public class IndexOrderer {
     private int doAssignmentsByCorrWithCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName,
                                                  int numInitialClusters) {
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
-                numInitialClusters, generator.nextLong(), 100).generateCentroids(5);
+                numInitialClusters, generator.nextLong(), 20).generateCentroids(5);
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
@@ -196,18 +197,20 @@ public class IndexOrderer {
             }
         }
 
-        int filtered = 0;
-        for (int z = 0; z < clusterAssignment.length; z++) {
-            int zMinus1 = Math.max(0, z - 1);
-            int zPlus1 = Math.min(z + 1, clusterAssignment.length - 1);
-            if (clusterAssignment[z] != clusterAssignment[zMinus1]
-                    && clusterAssignment[z] != clusterAssignment[zPlus1]) {
-                clusterAssignment[z] = IGNORE;
-                filtered++;
+        if (SHOULD_FILTER_SINGLE_COLUMNS) {
+            int filtered = 0;
+            for (int z = 0; z < clusterAssignment.length; z++) {
+                int zMinus1 = Math.max(0, z - 1);
+                int zPlus1 = Math.min(z + 1, clusterAssignment.length - 1);
+                if (clusterAssignment[z] != clusterAssignment[zMinus1]
+                        && clusterAssignment[z] != clusterAssignment[zPlus1]) {
+                    clusterAssignment[z] = IGNORE;
+                    filtered++;
+                }
             }
-        }
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("Post filtered: " + filtered);
+            if (MixerGlobals.printVerboseComments) {
+                System.out.println("Post filtered: " + filtered);
+            }
         }
 
         for (int i = 0; i < clusterAssignment.length; i++) {
