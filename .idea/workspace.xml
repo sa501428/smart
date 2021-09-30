@@ -30,12 +30,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update centroid calculations, restore single column assignments">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,11 +95,11 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.common" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.algos" />
       <recent name="mixer.utils.matrix" />
       <recent name="mixer.utils.shuffle" />
-      <recent name="mixer.utils.similaritymeasures" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Aggregate">
@@ -116,17 +114,6 @@
     <configuration name="GMM" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.utils.slice.gmm.Test" />
       <module name="Mixer" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -221,13 +208,6 @@
       <workItem from="1630136305918" duration="61000" />
       <workItem from="1630450949574" duration="1406000" />
       <workItem from="1630455151349" duration="1880000" />
-    </task>
-    <task id="LOCAL-00111" summary="bug fixes, code cleanup and restructuring">
-      <created>1617923550875</created>
-      <option name="number" value="00111" />
-      <option name="presentableId" value="LOCAL-00111" />
-      <option name="project" value="LOCAL" />
-      <updated>1617923550875</updated>
     </task>
     <task id="LOCAL-00112" summary="outlier filtering, code cleanup">
       <created>1618022506502</created>
@@ -565,7 +545,14 @@
       <option name="project" value="LOCAL" />
       <updated>1632722943804</updated>
     </task>
-    <option name="localTasksCounter" value="160" />
+    <task id="LOCAL-00160" summary="restore kmeans, update shuffling">
+      <created>1632727716153</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
+      <option name="project" value="LOCAL" />
+      <updated>1632727716153</updated>
+    </task>
+    <option name="localTasksCounter" value="161" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -590,7 +577,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="imputation" />
     <MESSAGE value="remove quick flip regions" />
     <MESSAGE value="iterative GMM casting" />
     <MESSAGE value="casting code, various updates tested" />
@@ -615,7 +601,8 @@
     <MESSAGE value="set version" />
     <MESSAGE value="use kmedians, update jar, bug fix" />
     <MESSAGE value="update centroid calculations, restore single column assignments" />
-    <option name="LAST_COMMIT_MESSAGE" value="update centroid calculations, restore single column assignments" />
+    <MESSAGE value="restore kmeans, update shuffling" />
+    <option name="LAST_COMMIT_MESSAGE" value="restore kmeans, update shuffling" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

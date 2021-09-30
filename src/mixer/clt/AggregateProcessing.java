@@ -131,6 +131,14 @@ public class AggregateProcessing {
         labels = "SCI,SNIPER,RH2014";
 
 
+        beds = "/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_SCI_sub_compartments.bed," +
+                "/Users/mshamim/Desktop/reSLICE/SLICE804/GM12878_track_hg19.bed," +
+                "/Users/mshamim/Desktop/reSLICE/SLICE804/GSE63525_GM12878_subcompartments.bed," +
+                "/Users/mshamim/Desktop/various_hic_files/gm_451/gm_5_kmedians_clusters.bed," +
+                "/Users/mshamim/Desktop/various_hic_files/gm_452/gm_5_kmeans_clusters.bed";
+        labels = "SCI,SNIPER,RH2014,SLICE_KMEDIANS,SLICE_KMEANS";
+
+
         for (int f = 5; f < files.length; f++) {//
             String file = files[f];
             String stem = stems[f];
@@ -140,7 +148,7 @@ public class AggregateProcessing {
                             "-r", r + "000", "-k", k, "-w", "" + 16 * (100 / r),
                             file,
                             beds,
-                            "/Users/mshamim/Desktop/shuffle_vault/shuffle_900_" + stem + "_" + r + "_" + k,
+                            "/Users/mshamim/Desktop/shuffle_vault/shuffle_905_" + stem + "_" + r + "_" + k,
                             labels
                     };
                     System.out.println("-----------------------------------------------------");

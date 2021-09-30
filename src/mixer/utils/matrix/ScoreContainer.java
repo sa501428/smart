@@ -24,6 +24,7 @@
 
 package mixer.utils.matrix;
 
+import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.shuffle.scoring.KLDivergenceScoring;
 import mixer.utils.shuffle.scoring.VarianceScoring;
@@ -117,9 +118,11 @@ public class ScoreContainer {
 
     public void savePlotsAndResults(File outfolder, String prefix, String[] names) {
         try {
-            writeToFile(outfolder, "average_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
-            writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", aggShuffled, aggBaselines, aggRatios, names);
-            writeToFile(outfolder, "average_scores_" + prefix + "_log.txt", logShuffled, logBaselines, logRatios, names);
+            if (MixerGlobals.printVerboseComments) {
+                writeToFile(outfolder, "average_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
+                writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", aggShuffled, aggBaselines, aggRatios, names);
+                writeToFile(outfolder, "average_scores_" + prefix + "_log.txt", logShuffled, logBaselines, logRatios, names);
+            }
             writeToFile(outfolder, "aggregate_scores_" + prefix + "_log.txt", aggLogShuffled, aggLogBaselines, aggLogRatios, names);
         } catch (Exception ee) {
             System.err.println("Unable to write results to text file");
@@ -135,7 +138,7 @@ public class ScoreContainer {
         for (int y = 0; y < ratio.length; y++) {
             myWriter.write(names[y] + "------------------\n");
             for (int z = 0; z < ratio[y].length; z++) {
-                myWriter.write(scoreTypes[z] + " Score\n");
+                myWriter.write("CHIC Score (" + scoreTypes[z] + ")\n");
                 myWriter.write("Shuffled  : " + shuffle[y][z] + "\n");
                 myWriter.write("Baseline  : " + baseline[y][z] + "\n");
                 myWriter.write("Score     : " + ratio[y][z] + "\n\n");
@@ -148,9 +151,9 @@ public class ScoreContainer {
             geometricMeans[z] = Math.pow(geometricMeans[z], 1.0 / names.length);
         }
 
-        myWriter.write("Geometric Mean of Scores------------------\n\n");
+        myWriter.write("Geometric Mean of CHIC Scores------------------\n\n");
         for (int z = 0; z < scoreTypes.length; z++) {
-            myWriter.write(scoreTypes[z] + " Score : " + geometricMeans[z] + "\n\n");
+            myWriter.write("CHIC Score (" + scoreTypes[z] + "): " + geometricMeans[z] + "\n\n");
         }
 
         myWriter.close();
