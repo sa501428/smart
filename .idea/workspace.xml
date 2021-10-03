@@ -30,10 +30,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update score printing, code cleanup">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/remedian/Remedian.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/rougheval/Silhouette.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/rougheval/Subsampling.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,14 +219,7 @@
       <workItem from="1630136305918" duration="61000" />
       <workItem from="1630450949574" duration="1406000" />
       <workItem from="1630455151349" duration="1880000" />
-      <workItem from="1633034360953" duration="3213000" />
-    </task>
-    <task id="LOCAL-00113" summary="code cleanup">
-      <created>1618269119889</created>
-      <option name="number" value="00113" />
-      <option name="presentableId" value="LOCAL-00113" />
-      <option name="project" value="LOCAL" />
-      <updated>1618269119889</updated>
+      <workItem from="1633034360953" duration="4600000" />
     </task>
     <task id="LOCAL-00114" summary="excising a lot of code">
       <created>1618418099392</created>
@@ -566,7 +557,14 @@
       <option name="project" value="LOCAL" />
       <updated>1633034648537</updated>
     </task>
-    <option name="localTasksCounter" value="162" />
+    <task id="LOCAL-00162" summary="remedian implementation">
+      <created>1633294288813</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
+      <option name="project" value="LOCAL" />
+      <updated>1633294288814</updated>
+    </task>
+    <option name="localTasksCounter" value="163" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -591,7 +589,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="iterative GMM casting" />
     <MESSAGE value="casting code, various updates tested" />
     <MESSAGE value="possible decent direction" />
     <MESSAGE value="automate normalization detection" />
@@ -616,7 +613,8 @@
     <MESSAGE value="update centroid calculations, restore single column assignments" />
     <MESSAGE value="restore kmeans, update shuffling" />
     <MESSAGE value="update score printing, code cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="update score printing, code cleanup" />
+    <MESSAGE value="remedian implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="remedian implementation" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
