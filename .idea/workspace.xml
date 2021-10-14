@@ -31,7 +31,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/rougheval/Subsampling.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/Silhouette.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/rougheval/Silhouette.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,19 +114,6 @@
     <configuration name="GMM" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.utils.slice.gmm.Test" />
       <module name="Mixer" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -219,14 +208,8 @@
       <workItem from="1630136305918" duration="61000" />
       <workItem from="1630450949574" duration="1406000" />
       <workItem from="1630455151349" duration="1880000" />
-      <workItem from="1633034360953" duration="4600000" />
-    </task>
-    <task id="LOCAL-00114" summary="excising a lot of code">
-      <created>1618418099392</created>
-      <option name="number" value="00114" />
-      <option name="presentableId" value="LOCAL-00114" />
-      <option name="project" value="LOCAL" />
-      <updated>1618418099392</updated>
+      <workItem from="1633034360953" duration="6736000" />
+      <workItem from="1634187759078" duration="9031000" />
     </task>
     <task id="LOCAL-00115" summary="Basic ABA code added">
       <created>1618429970469</created>
@@ -564,7 +547,14 @@
       <option name="project" value="LOCAL" />
       <updated>1633294288814</updated>
     </task>
-    <option name="localTasksCounter" value="163" />
+    <task id="LOCAL-00163" summary="subsampling methods">
+      <created>1633296112562</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
+      <option name="project" value="LOCAL" />
+      <updated>1633296112562</updated>
+    </task>
+    <option name="localTasksCounter" value="164" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -589,7 +579,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="casting code, various updates tested" />
     <MESSAGE value="possible decent direction" />
     <MESSAGE value="automate normalization detection" />
     <MESSAGE value="Bug fix" />
@@ -614,7 +603,8 @@
     <MESSAGE value="restore kmeans, update shuffling" />
     <MESSAGE value="update score printing, code cleanup" />
     <MESSAGE value="remedian implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="remedian implementation" />
+    <MESSAGE value="subsampling methods" />
+    <option name="LAST_COMMIT_MESSAGE" value="subsampling methods" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

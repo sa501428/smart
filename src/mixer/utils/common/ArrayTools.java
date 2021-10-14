@@ -128,6 +128,29 @@ public class ArrayTools {
         return sum / array.length;
     }
 
+    public static double mean(double[] array) {
+        double sum = 0;
+        for (double val : array) {
+            sum += val;
+        }
+        return sum / array.length;
+    }
+
+    public static double nanMean(float[] array) {
+        double sum = 0;
+        int numEntries = 0;
+        for (float val : array) {
+            if (!Float.isNaN(val)) {
+                sum += val;
+                numEntries++;
+            }
+        }
+        if (numEntries > 0) {
+            return sum / numEntries;
+        }
+        return Float.NaN;
+    }
+
     public static int[] concatenate(int[] arr1, int[] arr2) {
         int[] output = new int[arr1.length + arr2.length];
         System.arraycopy(arr1, 0, output, 0, arr1.length);
