@@ -65,11 +65,12 @@ public class SimilarityMatrixTools {
         return answer;
     }
 
-    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics, int numInitCentroids, long seed) {
+    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics,
+                                                 int numInitCentroids, long seed) {
         final float[][] centroids;
         if (numInitCentroids != matrix.length) {
             QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 20);
-            centroids = centroidMaker.generateCentroids(5);
+            centroids = centroidMaker.generateCentroids(5, true);
         } else {
             centroids = matrix;
         }
@@ -188,7 +189,7 @@ public class SimilarityMatrixTools {
 
         QuickCentroids centroidMaker = new QuickCentroids(IndexOrderer.quickCleanMatrix(initialMatrix, newIndexOrderAssignments),
                 numInitCentroids, 0L, 20);
-        final float[][] centroids = centroidMaker.generateCentroids(3);
+        final float[][] centroids = centroidMaker.generateCentroids(3, true);
         int[] weights = centroidMaker.getWeights();
 
         int numCentroids = centroids.length;

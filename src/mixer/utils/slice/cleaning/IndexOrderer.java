@@ -152,7 +152,7 @@ public class IndexOrderer {
     private int doAssignmentsByCorrWithCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName,
                                                  int numInitialClusters) {
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
-                numInitialClusters, generator.nextLong(), 20).generateCentroids(5);
+                numInitialClusters, generator.nextLong(), 20).generateCentroids(5, true);
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);

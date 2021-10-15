@@ -35,6 +35,7 @@ import mixer.algos.Slice;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
+import mixer.utils.rougheval.SubsamplingManager;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
@@ -217,30 +218,20 @@ public abstract class CompositeGenomeWideMatrix {
     }
 
     public double getSilhouette(Cluster[] clusters, boolean useCorr, boolean useKMedians) {
-        double withinClusterSumOfSquares = 0;
-
-        for (int z = 0; z < clusters.length; z++) {
-            Cluster cluster = clusters[z];
-
-            if (cluster.getMemberIndexes().length < MIN_EXPECTED_CLUSTER_SIZE) {
-                withinClusterSumOfSquares += Float.MAX_VALUE;
+        double[] scores = new double[SubsamplingManager.NUMBER_OF_TYPES];
+        for (int type = 0; type < SubsamplingManager.NUMBER_OF_TYPES; type++) {
+            SubsamplingManager manager;
+            if (useCorr) {
+                manager = new SubsamplingManager(clusters, projectedData.matrix, useKMedians, type);
+            } else {
+                manager = new SubsamplingManager(clusters, gwCleanMatrix.matrix, useKMedians, type);
             }
-
-            for (int i : cluster.getMemberIndexes()) {
-                if (useCorr) {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i], useKMedians);
-                } else {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i], useKMedians);
-                }
-            }
+            scores[type] = manager.getScore();
         }
 
-        withinClusterSumOfSquares = withinClusterSumOfSquares / clusters.length;
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("Final WCSS " + withinClusterSumOfSquares);
-        }
+        System.out.println("Silhouette: " + Arrays.toString(scores));
 
-        return withinClusterSumOfSquares;
+        return ArrayTools.mean(scores);
     }
 
     protected double getDistance(float[] center, float[] vector, boolean useKMedians) {

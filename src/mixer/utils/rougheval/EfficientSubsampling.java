@@ -28,32 +28,47 @@ import mixer.utils.slice.cleaning.QuickCentroids;
 
 import java.util.*;
 
-public class Subsampling {
-    public float[][] subsampleAtRandom(float[][] matrix, int numValues, long seed) {
+public class EfficientSubsampling {
+    public static float[][] subsampleAtRandom(float[][] matrix, int numValues, long seed,
+                                              int[] memberIndexes) {
         int numCols = matrix[0].length;
         float[][] result = new float[numValues][numCols];
-        List<Integer> randomIndices = getRandomIndices(numValues, seed, matrix.length);
+        List<Integer> randomIndices = getRandomIndices(numValues, seed, memberIndexes);
         for (int i = 0; i < randomIndices.size(); i++) {
             System.arraycopy(matrix[randomIndices.get(i)], 0, result[i], 0, numCols);
         }
         return result;
     }
 
-    private List<Integer> getRandomIndices(int length, long seed, int bound) {
+    private static List<Integer> getRandomIndices(int length, long seed, int[] memberIndexes) {
         Random generator = new Random(seed);
         Set<Integer> indices = new HashSet<>(length);
         while (indices.size() < length) {
-            indices.add(generator.nextInt(bound));
+            int actualIndex = memberIndexes[generator.nextInt(memberIndexes.length)];
+            indices.add(actualIndex);
         }
         return new ArrayList<>(indices);
     }
 
-    public float[][] subsampleSpreadOut(float[][] matrix, int numValues, long seed, boolean useKMedians) {
-        return new QuickCentroids(matrix, numValues, seed, 0).generateCentroids(0, useKMedians);
+    public static float[][] subsampleSpreadOut(float[][] matrix, int numValues, long seed,
+                                               boolean useKMedians, int[] memberIndexes) {
+        return new QuickCentroids(getTempSubMatrix(matrix, memberIndexes), numValues, seed,
+                0).generateCentroids(0, useKMedians);
     }
 
-    public float[][] subsampleQuickClustering(float[][] matrix, int numValues, long seed, boolean useKMedians) {
-        return new QuickCentroids(matrix, numValues, seed).generateCentroids(0, useKMedians);
+    public static float[][] subsampleQuickClustering(float[][] matrix, int numValues, long seed,
+                                                     boolean useKMedians, int[] memberIndexes) {
+        return new QuickCentroids(getTempSubMatrix(matrix, memberIndexes), numValues,
+                seed).generateCentroids(0, useKMedians);
+    }
+
+    private static float[][] getTempSubMatrix(float[][] matrix, int[] memberIndexes) {
+        float[][] result = new float[memberIndexes.length][matrix[0].length];
+        for (int i = 0; i < memberIndexes.length; i++) {
+            int k0 = memberIndexes[i];
+            System.arraycopy(matrix[k0], 0, result[i], 0, result[i].length);
+        }
+        return result;
     }
 
 

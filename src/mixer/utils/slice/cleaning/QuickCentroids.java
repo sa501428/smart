@@ -63,8 +63,13 @@ public class QuickCentroids {
         this.maxIters = numIters;
     }
 
-    public float[][] generateCentroids(int minSizeNeeded) {
-        RobustConcurrentKMeans kMeans = new RobustConcurrentKMedians(matrix, initialNumClusters, maxIters, generator.nextLong());
+    public float[][] generateCentroids(int minSizeNeeded, boolean useKmedians) {
+        RobustConcurrentKMeans kMeans;
+        if (useKmedians) {
+            kMeans = new RobustConcurrentKMedians(matrix, initialNumClusters, maxIters, generator.nextLong());
+        } else {
+            kMeans = new RobustConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
+        }
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
