@@ -52,11 +52,13 @@ public class CorrMatrixClusterer {
         for (int z = 0; z < FullGenomeOEWithinClusters.numClusterSizeKValsUsed; z++) {
             parent.runRepeatedKMeansClusteringLoop(FullGenomeOEWithinClusters.numAttemptsForKMeans, kmeansRunner, evaluator, z,
                     parent.getMaxIters(), kmeansClustersToResults, kmeansIndicesMap, useKmedians);
-            parent.exportKMeansClusteringResults(z, evaluator, kmeansClustersToResults, prefix, kmeansIndicesMap, useKmedians);
+            parent.exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKmedians);
 
             runGMMClusteringLoop(z, 20, kmeansIndicesMap.get(z), gmmClustersToResults, parent);
             exportGMMClusteringResults(z, gmmClustersToResults, prefix, parent);
         }
+        parent.exportEvaluatorInfo(evaluator, useKmedians);
+
         System.out.println(".");
     }
 

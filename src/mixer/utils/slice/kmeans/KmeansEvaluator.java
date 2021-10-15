@@ -59,6 +59,7 @@ public class KmeansEvaluator {
         iterToWcssAicBic[AIC_INDEX][z] = sumOfSquares + 2 * numColumns * numClusters;
         iterToWcssAicBic[BIC_INDEX][z] = sumOfSquares + 0.5 * numColumns * numClusters * Math.log(numRows);
         iterToWcssAicBic[S_INDEX][z] = silhouette;
+        System.out.println("Fin Silhouette " + silhouette);
     }
 
     public void export(File outputDirectory, String kstem) {

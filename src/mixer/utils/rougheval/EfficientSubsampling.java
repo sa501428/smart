@@ -52,12 +52,14 @@ public class EfficientSubsampling {
 
     public static float[][] subsampleSpreadOut(float[][] matrix, int numValues, long seed,
                                                boolean useKMedians, int[] memberIndexes) {
+        System.err.println("ALPHA " + numValues + " , " + memberIndexes.length);
         return new QuickCentroids(getTempSubMatrix(matrix, memberIndexes), numValues, seed,
                 0).generateCentroids(0, useKMedians);
     }
 
     public static float[][] subsampleQuickClustering(float[][] matrix, int numValues, long seed,
                                                      boolean useKMedians, int[] memberIndexes) {
+        System.err.println("BETA " + numValues + " , " + memberIndexes.length);
         return new QuickCentroids(getTempSubMatrix(matrix, memberIndexes), numValues,
                 seed).generateCentroids(0, useKMedians);
     }

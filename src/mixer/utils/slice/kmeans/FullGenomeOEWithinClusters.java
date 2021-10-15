@@ -80,18 +80,17 @@ public class FullGenomeOEWithinClusters {
 
     public void extractFinalGWSubcompartments(String prefix) {
         System.out.println("Genomewide clustering");
-        runClusteringOnRawMatrixWithNans(prefix, false);
+        //runClusteringOnRawMatrixWithNans(prefix, false);
         if (Slice.USE_INTER_CORR_CLUSTERING) {
-            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", false);
+            //CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", false);
         }
 
-        /*
+
         sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
         runClusteringOnRawMatrixWithNans(prefix, true);
         if (Slice.USE_INTER_CORR_CLUSTERING) {
             CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", true);
         }
-        */
     }
 
     public void runClusteringOnRawMatrixWithNans(String prefix, boolean useKMedians) {
@@ -105,19 +104,19 @@ public class FullGenomeOEWithinClusters {
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, evaluator, z,
                     maxIters, kmeansClustersToResults, kmeansIndicesMap, useKMedians);
-            exportKMeansClusteringResults(z, evaluator, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
+            exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
+        exportEvaluatorInfo(evaluator, useKMedians);
         System.out.println(".");
     }
 
-    public void exportKMeansClusteringResults(int z, KmeansEvaluator evaluator,
+    public void exportKMeansClusteringResults(int z,
                                               Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
                                               String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
                                               boolean useKMedians) {
         int k = z + startingClusterSizeK;
         String kstem = "kmeans";
         if (useKMedians) kstem = "kmedians";
-        evaluator.export(outputDirectory, kstem);
         GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
         SliceUtils.collapseGWList(gwList);
         File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
@@ -165,5 +164,11 @@ public class FullGenomeOEWithinClusters {
 
     public int getMaxIters() {
         return maxIters;
+    }
+
+    public void exportEvaluatorInfo(KmeansEvaluator evaluator, boolean useKmedians) {
+        String kstem = "kmeans";
+        if (useKmedians) kstem = "kmedians";
+        evaluator.export(outputDirectory, kstem);
     }
 }
