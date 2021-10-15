@@ -47,6 +47,7 @@ public class GenomeWideKmeansRunner {
     private final CompositeGenomeWideMatrix interMatrix;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private final AtomicDouble withinClusterSumOfSquaresForRun = new AtomicDouble(0);
+    private final AtomicDouble silhouetteForRun = new AtomicDouble(0);
     private GenomeWideList<SubcompartmentInterval> finalCompartments;
     private int numClusters = 0;
     private final List<List<Integer>> indicesMap = new ArrayList<>();
@@ -67,6 +68,7 @@ public class GenomeWideKmeansRunner {
         this.numClusters = numClusters;
         numActualClusters.set(0);
         withinClusterSumOfSquaresForRun.set(0);
+        silhouetteForRun.set(0);
         indicesMap.clear();
         finalCompartments = new GenomeWideList<>(chromosomeHandler);
     }
@@ -100,10 +102,12 @@ public class GenomeWideKmeansRunner {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
                     populateIndicesMap(clusters);
                     System.out.print(".");
-                    double wcss = interMatrix.processKMeansClusteringResult(clusters, finalCompartments,
-                            useCorrMatrix, useKMedians);
+                    interMatrix.processKMeansClusteringResult(clusters, finalCompartments);
+                    double wcss = interMatrix.getWCSS(clusters, useCorrMatrix, useKMedians);
+                    double silhouette = interMatrix.getSilhouette(clusters, useCorrMatrix, useKMedians);
                     numActualClusters.set(clusters.length);
                     withinClusterSumOfSquaresForRun.set(wcss);
+                    silhouetteForRun.set(silhouette);
                 }
 
                 @Override
@@ -147,6 +151,10 @@ public class GenomeWideKmeansRunner {
 
     public double getWithinClusterSumOfSquares() {
         return withinClusterSumOfSquaresForRun.get();
+    }
+
+    public double getSilhouette() {
+        return silhouetteForRun.get();
     }
 
     public GenomeWideList<SubcompartmentInterval> getFinalCompartments() {

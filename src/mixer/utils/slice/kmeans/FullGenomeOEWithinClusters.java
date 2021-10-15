@@ -141,7 +141,8 @@ public class FullGenomeOEWithinClusters {
             if (numActualClustersThisAttempt == numClusters) {
                 double wcss = kmeansRunner.getWithinClusterSumOfSquares();
                 if (wcss < evaluator.getWCSS(z)) {
-                    evaluator.setMseAicBicValues(z, numClusters, wcss, numRows, numColumns);
+                    evaluator.setMseAicBicValues(z, numClusters, wcss, numRows, numColumns,
+                            kmeansRunner.getSilhouette());
                     indicesMap.put(z, kmeansRunner.getIndicesMapCopy());
                     numClustersToResults.put(numClusters, kmeansRunner.getFinalCompartments());
                 }

@@ -59,7 +59,6 @@ public class ClusterTools {
             sortedClusters[i] = tempClusters.get(i);
         }
 
-
         return sortedClusters;
     }
 

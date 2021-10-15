@@ -49,6 +49,7 @@ import java.io.File;
 import java.util.*;
 
 public abstract class CompositeGenomeWideMatrix {
+    private static final int MIN_EXPECTED_CLUSTER_SIZE = 5;
     protected final NormalizationType[] norms;
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
@@ -157,21 +158,15 @@ public abstract class CompositeGenomeWideMatrix {
         plotter.plot(colors, outfile.getAbsolutePath());
     }
 
-    public synchronized double processKMeansClusteringResult(Cluster[] clusters,
-                                                             GenomeWideList<SubcompartmentInterval> subcompartments,
-                                                             boolean useCorr, boolean useKMedians) {
+    public void processKMeansClusteringResult(Cluster[] clusters,
+                                              GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
             System.out.println("GW Composite data vs clustered into " + clusters.length + " clusters");
         }
 
-        double withinClusterSumOfSquares = 0;
-        int numGoodClusters = 0;
         int genomewideCompartmentID = 0;
-
-        Set<Integer> badIndices = new HashSet<>();
-
         for (int z = 0; z < clusters.length; z++) {
             Cluster cluster = clusters[z];
             int currentClusterID = ++genomewideCompartmentID;
@@ -180,22 +175,7 @@ public abstract class CompositeGenomeWideMatrix {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
             }
 
-            if (cluster.getMemberIndexes().length < 5) {
-                for (int badIndex : cluster.getMemberIndexes()) {
-                    badIndices.add(badIndex);
-                }
-                withinClusterSumOfSquares += Float.MAX_VALUE;
-            } else {
-                numGoodClusters++;
-            }
-
             for (int i : cluster.getMemberIndexes()) {
-                if (useCorr) {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i], useKMedians);
-                } else {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i], useKMedians);
-                }
-
                 if (rowIndexToIntervalMap.containsKey(i)) {
                     SubcompartmentInterval interv = rowIndexToIntervalMap.get(i);
                     if (interv != null) {
@@ -205,13 +185,60 @@ public abstract class CompositeGenomeWideMatrix {
             }
         }
 
-        withinClusterSumOfSquares = withinClusterSumOfSquares / numGoodClusters;
+        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
+        SliceUtils.reSort(subcompartments);
+    }
+
+    public double getWCSS(Cluster[] clusters, boolean useCorr, boolean useKMedians) {
+        double withinClusterSumOfSquares = 0;
+
+        for (int z = 0; z < clusters.length; z++) {
+            Cluster cluster = clusters[z];
+
+            if (cluster.getMemberIndexes().length < MIN_EXPECTED_CLUSTER_SIZE) {
+                withinClusterSumOfSquares += Float.MAX_VALUE;
+            }
+
+            for (int i : cluster.getMemberIndexes()) {
+                if (useCorr) {
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i], useKMedians);
+                } else {
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i], useKMedians);
+                }
+            }
+        }
+
+        withinClusterSumOfSquares = withinClusterSumOfSquares / clusters.length;
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Final WCSS " + withinClusterSumOfSquares);
         }
 
-        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
-        SliceUtils.reSort(subcompartments);
+        return withinClusterSumOfSquares;
+    }
+
+    public double getSilhouette(Cluster[] clusters, boolean useCorr, boolean useKMedians) {
+        double withinClusterSumOfSquares = 0;
+
+        for (int z = 0; z < clusters.length; z++) {
+            Cluster cluster = clusters[z];
+
+            if (cluster.getMemberIndexes().length < MIN_EXPECTED_CLUSTER_SIZE) {
+                withinClusterSumOfSquares += Float.MAX_VALUE;
+            }
+
+            for (int i : cluster.getMemberIndexes()) {
+                if (useCorr) {
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i], useKMedians);
+                } else {
+                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i], useKMedians);
+                }
+            }
+        }
+
+        withinClusterSumOfSquares = withinClusterSumOfSquares / clusters.length;
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Final WCSS " + withinClusterSumOfSquares);
+        }
 
         return withinClusterSumOfSquares;
     }
