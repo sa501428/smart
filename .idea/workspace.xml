@@ -31,18 +31,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="subsampling, query silhouette, bug fixes">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/org_jetbrains_kotlin_kotlin_stdlib_0_11_91_4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/org_jetbrains_kotlin_kotlin_stdlib_0_11_91_4.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/EfficientSubsampling.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/rougheval/EfficientSubsampling.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/Subsampling.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/SubsamplingManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/rougheval/SubsamplingManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/CorrMatrixClusterer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/CorrMatrixClusterer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansEvaluator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansEvaluator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,14 +212,9 @@
       <workItem from="1633034360953" duration="6736000" />
       <workItem from="1634187759078" duration="21873000" />
       <workItem from="1634328172076" duration="335000" />
-      <workItem from="1634328573534" duration="2477000" />
-    </task>
-    <task id="LOCAL-00118" summary="redo initial clustering, change initial cleaning, weigh zscore">
-      <created>1620078792972</created>
-      <option name="number" value="00118" />
-      <option name="presentableId" value="LOCAL-00118" />
-      <option name="project" value="LOCAL" />
-      <updated>1620078792972</updated>
+      <workItem from="1634328573534" duration="3868000" />
+      <workItem from="1634624043189" duration="37000" />
+      <workItem from="1635100678274" duration="2144000" />
     </task>
     <task id="LOCAL-00119" summary="code cleanup">
       <created>1620159386057</created>
@@ -565,7 +552,14 @@
       <option name="project" value="LOCAL" />
       <updated>1634320411057</updated>
     </task>
-    <option name="localTasksCounter" value="167" />
+    <task id="LOCAL-00167" summary="bug fixes">
+      <created>1634331472729</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1634331472729</updated>
+    </task>
+    <option name="localTasksCounter" value="168" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -590,7 +584,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="experimenting with additional transforms" />
     <MESSAGE value="code cleanup, auto renaming setup" />
     <MESSAGE value="bug fixes, slice encode version" />
     <MESSAGE value="verbose printing handling" />
@@ -615,7 +608,8 @@
     <MESSAGE value="Silhouette score" />
     <MESSAGE value="code cleanup, split up postprocessing/scoring" />
     <MESSAGE value="subsampling, query silhouette, bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="subsampling, query silhouette, bug fixes" />
+    <MESSAGE value="bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

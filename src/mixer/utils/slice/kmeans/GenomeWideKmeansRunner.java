@@ -106,11 +106,12 @@ public class GenomeWideKmeansRunner {
                     System.out.print("W");
                     double wcss = interMatrix.getWCSS(clusters, useCorrMatrix, useKMedians);
                     System.out.print("S");
-                    double silhouette = interMatrix.getSilhouette(clusters, useCorrMatrix, useKMedians);
+                    // todo
+                    //double silhouette = interMatrix.getSilhouette(clusters, useCorrMatrix, useKMedians);
 
                     numActualClusters.set(clusters.length);
                     withinClusterSumOfSquaresForRun.set(wcss);
-                    silhouetteForRun.set(silhouette);
+                    //silhouetteForRun.set(silhouette);
                 }
 
                 @Override

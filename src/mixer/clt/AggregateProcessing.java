@@ -26,7 +26,6 @@ package mixer.clt;
 
 
 import mixer.MixerTools;
-import mixer.algos.Slice;
 
 /**
  * Created for testing multiple CLTs at once
@@ -93,31 +92,24 @@ public class AggregateProcessing {
         // 804 = dont use the weights #
         // 805 = 804 with minor cleanup
         // 806 = 804 with more cleanup, no row correlation cleaning
-        int id = 810;
-        {
-            boolean doFiltering = true;
+        int id = 900;
 
-            Slice.FILTER_OUTLIERS = doFiltering;
-            //Slice.USE_WEIGHTED_MEAN = id == 803;
-
-            for (int f = 0; f < files.length; f++) {// files.length
-                String file = files[f];
-                String stem = stems[f];
-                for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
-                    String folder = stem + "_SLICE_" + id;
-                    String[] strings = new String[]{"slice", "-r", res + "000",
-                            file, "2,7,4",
-                            "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
-                            folder + "_"
-                    };
-                    System.out.println("-----------------------------------------------------");
-                    //MixerTools.main(strings);
-                    System.gc();
-                }
+        for (int f = 5; f < files.length; f++) {// files.length
+            String file = files[f];
+            String stem = stems[f];
+            for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                String folder = stem + "_SLICE_" + id;
+                String[] strings = new String[]{"slice", "-r", res + "000",
+                        file, "2,12,4",
+                        "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
+                        folder + "_"
+                };
+                System.out.println("-----------------------------------------------------");
+                MixerTools.main(strings);
+                System.gc();
             }
-
-            System.gc();
         }
+        System.gc();
 
         String beds = "/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_800__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/existing/GSE63525_GM12878_subcompartments.bed";
         String labels = "gmMega_800,gmMega_803,gmMega_804,p15_803,p15_804,rh2014";
@@ -152,7 +144,7 @@ public class AggregateProcessing {
                             labels
                     };
                     System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+                    //MixerTools.main(strings);
                     System.gc();
                 }
             }
