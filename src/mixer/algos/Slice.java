@@ -58,6 +58,7 @@ public class Slice extends MixerCLT {
     private File outputDirectory;
     private List<NormalizationType[]> normsList;
     private String prefix = "";
+    public static boolean USE_KMEANS = false, USE_KMEDIANS = true;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {

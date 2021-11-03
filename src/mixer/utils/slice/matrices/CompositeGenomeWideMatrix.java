@@ -101,10 +101,11 @@ public abstract class CompositeGenomeWideMatrix {
 
         inPlaceScaleSqrtWeightCol();
 
-        if (MixerGlobals.printVerboseComments) {
-            File file1 = new File(outputDirectory, "zscore_matrix.npy");
-            MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix.matrix);
-        }
+        File file0 = new File(outputDirectory, "genome_indices.npy");
+        MatrixTools.saveMatrixTextNumpy(file0.getAbsolutePath(), getGenomeIndices());
+
+        File file1 = new File(outputDirectory, "slice_matrix.npy");
+        MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix.matrix);
 
         if (Slice.USE_INTER_CORR_CLUSTERING || Slice.PROJECT_TO_UMAP) {
             projectedData = new MatrixAndWeight(SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix.matrix,
@@ -112,10 +113,8 @@ public abstract class CompositeGenomeWideMatrix {
 
             umapProjection = SimpleScatterPlot.getUmapProjection2D(projectedData.matrix);
 
-            if (MixerGlobals.printVerboseComments) {
-                File file2 = new File(outputDirectory, "corr_matrix.npy");
-                MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData.matrix);
-            }
+            File file2 = new File(outputDirectory, "corr_slice_matrix.npy");
+            MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData.matrix);
 
             runUmapAndSaveMatricesByChrom(outputDirectory);
         }
@@ -124,6 +123,18 @@ public abstract class CompositeGenomeWideMatrix {
         projectedData = MatrixImputer.imputeUntilNoNansOnlyNN(gwCleanMatrix);
         //corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
         */
+    }
+
+    protected int[][] getGenomeIndices() {
+        int n = gwCleanMatrix.matrix.length;
+        int[][] coordinates = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
+            coordinates[i][0] = interval.getChrIndex();
+            coordinates[i][1] = interval.getX1();
+            coordinates[i][2] = interval.getX2();
+        }
+        return coordinates;
     }
 
     public void inPlaceScaleSqrtWeightCol() {
