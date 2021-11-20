@@ -67,7 +67,7 @@ public class LeftOverClusterIdentifier {
             try {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(dataset, zd, chr1, resolution,
                         norm, threshold, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                        true, 1, 0);
+                        true, 1, 0, true);
                 NearDiagonalTrim.nanFill(chr1, allDataForRegion, resolution);
 
             } catch (Exception e) {

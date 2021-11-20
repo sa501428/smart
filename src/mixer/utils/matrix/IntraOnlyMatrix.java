@@ -56,11 +56,11 @@ public class IntraOnlyMatrix extends HiCMatrix {
             } else if (intraType == INTRA_TYPE.LOG_BASE_EXPECTED) {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
                         norm, 10, ExtractingOEDataUtils.ThresholdType.LOG_BASE_EXP_OF_OBS,
-                        true, 1, 0);
+                        true, 1, 0, true);
             } else if (intraType == INTRA_TYPE.TRUE_OE) {
                 allDataForRegion = HiCFileTools.getOEMatrixForChromosome(ds, zd, chr1, resolution,
                         norm, 10, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                        true, 1, 0);
+                        true, 1, 0, true);
             } else if (intraType == INTRA_TYPE.JUST_LOG) {
                 allDataForRegion = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr1,
                         0, lengthChr2, lengthChr1, lengthChr2, norm, true);

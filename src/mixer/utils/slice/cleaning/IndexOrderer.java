@@ -77,7 +77,7 @@ public class IndexOrderer {
             try {
                 float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, lowres,
                         normalizationType, 10f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                        true, 1, 0);
+                        true, 1, 0, true);
                 Set<Integer> badIndices = badIndexLocations.getBadIndices(chrom);
 
                 matrix = IntraMatrixCleaner.cleanAndCompress(chrom, matrix, lowres, badIndices, resFactor);
@@ -90,7 +90,7 @@ public class IndexOrderer {
             System.out.print(".");
         }
 
-        if (MixerGlobals.printVerboseComments) {
+        if (true || MixerGlobals.printVerboseComments) {
             writeOutInitialResults();
         }
     }
