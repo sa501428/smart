@@ -59,6 +59,7 @@ public class Slice extends MixerCLT {
     private List<NormalizationType[]> normsList;
     private String prefix = "";
     public static boolean USE_KMEANS = false, USE_KMEDIANS = true;
+    public static boolean USE_ENCODE_MODE = false;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
@@ -115,6 +116,8 @@ public class Slice extends MixerCLT {
         if (subsampling > 0) {
             SliceMatrixCleaner.NUM_PER_CENTROID = subsampling;
         }
+
+        USE_ENCODE_MODE = mixerParser.getENCODEOption();
     }
 
 

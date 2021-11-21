@@ -30,6 +30,7 @@ import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import mixer.algos.Slice;
 import mixer.utils.slice.CorrMatrixClusterer;
+import mixer.utils.slice.EncodeExportUtils;
 import mixer.utils.slice.cleaning.GWBadIndexFinder;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
@@ -81,19 +82,19 @@ public class FullGenomeOEWithinClusters {
     public void extractFinalGWSubcompartments(String prefix) {
         System.out.println("Genomewide clustering");
         if (Slice.USE_KMEANS) {
-            runClusteringOnRawMatrixWithNans(prefix, false);
-            if (Slice.USE_INTER_CORR_CLUSTERING) {
-                CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", false);
-            }
+            processClustering(prefix, false);
         }
-
 
         if (Slice.USE_KMEDIANS) {
             sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
-            runClusteringOnRawMatrixWithNans(prefix, true);
-            if (Slice.USE_INTER_CORR_CLUSTERING) {
-                CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", true);
-            }
+            processClustering(prefix, true);
+        }
+    }
+
+    private void processClustering(String prefix, boolean useKMedians) {
+        runClusteringOnRawMatrixWithNans(prefix, useKMedians);
+        if (Slice.USE_INTER_CORR_CLUSTERING) {
+            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", useKMedians);
         }
     }
 
@@ -109,6 +110,9 @@ public class FullGenomeOEWithinClusters {
             runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, evaluator, z,
                     maxIters, kmeansClustersToResults, kmeansIndicesMap, useKMedians);
             exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
+        }
+        if (Slice.USE_ENCODE_MODE) {
+            EncodeExportUtils.exportSubcompartments(sliceMatrix, kmeansIndicesMap, evaluator);
         }
         exportEvaluatorInfo(evaluator, useKMedians);
         System.out.println(".");

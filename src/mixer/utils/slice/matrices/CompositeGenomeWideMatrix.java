@@ -51,6 +51,7 @@ import java.util.*;
 
 public abstract class CompositeGenomeWideMatrix {
     private static final int MIN_EXPECTED_CLUSTER_SIZE = 5;
+    private static final double NUM_ITERS = 5;
     protected final NormalizationType[] norms;
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
@@ -229,20 +230,19 @@ public abstract class CompositeGenomeWideMatrix {
     }
 
     public double getSilhouette(Cluster[] clusters, boolean useCorr, boolean useKMedians) {
-        double[] scores = new double[SubsamplingManager.NUMBER_OF_TYPES];
-        for (int type = 0; type < SubsamplingManager.NUMBER_OF_TYPES; type++) {
-            SubsamplingManager manager;
-            if (useCorr) {
-                manager = new SubsamplingManager(clusters, projectedData.matrix, useKMedians, type);
-            } else {
-                manager = new SubsamplingManager(clusters, gwCleanMatrix.matrix, useKMedians, type);
-            }
-            scores[type] = manager.getScore();
+        double score = 0;
+        SubsamplingManager manager;
+        if (useCorr) {
+            manager = new SubsamplingManager(clusters, projectedData.matrix, useKMedians);
+        } else {
+            manager = new SubsamplingManager(clusters, gwCleanMatrix.matrix, useKMedians);
         }
-
-        System.out.println("Silhouette: " + Arrays.toString(scores));
-
-        return ArrayTools.mean(scores);
+        for (int iter = 0; iter < NUM_ITERS; iter++) {
+            score += manager.getScore();
+        }
+        score = score / NUM_ITERS;
+        System.out.println("Silhouette: " + score);
+        return score;
     }
 
     protected double getDistance(float[] center, float[] vector, boolean useKMedians) {

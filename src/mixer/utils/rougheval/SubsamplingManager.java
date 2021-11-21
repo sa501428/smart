@@ -35,30 +35,28 @@ import java.util.Random;
 
 public class SubsamplingManager {
 
-    public static final int NUMBER_OF_TYPES = 4;
     private final Cluster[] clusters;
     private final float[][] matrix;
-    private final boolean useKMedians;
-    private final int type;
     private final double compressionFactor;
-    private final MatrixSamplingContainer sample;
     private final SimilarityMetric metric;
     private final Random generator = new Random(0);
     private final double IDEAL_NUM_ROWS = 1000.0;
 
-
-    public SubsamplingManager(Cluster[] clusters, float[][] matrix, boolean useKMedians, int type) {
+    public SubsamplingManager(Cluster[] clusters, float[][] matrix, boolean useKMedians) {
         this.clusters = clusters;
         this.matrix = matrix;
         this.compressionFactor = matrix.length / IDEAL_NUM_ROWS;
-        this.useKMedians = useKMedians;
         if (useKMedians) {
             this.metric = RobustManhattanDistance.SINGLETON;
         } else {
             this.metric = RobustEuclideanDistance.SINGLETON;
         }
-        this.type = type;
-        this.sample = doSubSampling();
+    }
+
+    public double getScore() {
+        final MatrixSamplingContainer sample = doSubSampling();
+        Silhouette silhouette = new Silhouette(sample.subSampledMatrix, sample.clusterIndices, metric);
+        return silhouette.getScore();
     }
 
     private MatrixSamplingContainer doSubSampling() {
@@ -93,22 +91,7 @@ public class SubsamplingManager {
 
     private float[][] getSubMatrix(Cluster cluster) {
         int numValues = (int) ((cluster.getMemberIndexes().length / compressionFactor) + 1);
-        if (type == 0) {
-            return EfficientSubsampling.subsampleQuickClustering(matrix,
-                    numValues, generator.nextLong(), useKMedians,
-                    cluster.getMemberIndexes());
-        } else if (type == 1) {
-            return EfficientSubsampling.subsampleSpreadOut(matrix,
-                    numValues, generator.nextLong(), useKMedians,
-                    cluster.getMemberIndexes());
-        } else {
-            return EfficientSubsampling.subsampleAtRandom(matrix, numValues,
-                    generator.nextLong(), cluster.getMemberIndexes());
-        }
-    }
-
-    public double getScore() {
-        Silhouette silhouette = new Silhouette(sample.subSampledMatrix, sample.clusterIndices, metric);
-        return silhouette.getScore();
+        return EfficientSubsampling.subsampleAtRandom(matrix, numValues,
+                generator.nextLong(), cluster.getMemberIndexes());
     }
 }

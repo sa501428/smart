@@ -52,6 +52,10 @@ public class KmeansEvaluator {
         return iterToWcssAicBic[SUM_SQUARES_INDEX][index];
     }
 
+    public double getSilhouette(int index) {
+        return iterToWcssAicBic[S_INDEX][index];
+    }
+
     public void setMseAicBicValues(int z, int numClusters, double sumOfSquares, int numRows, int numColumns,
                                    double silhouette) {
         iterToWcssAicBic[K_INDEX][z] = numClusters;

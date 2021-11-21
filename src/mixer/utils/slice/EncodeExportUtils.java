@@ -22,14 +22,17 @@
  *  THE SOFTWARE.
  */
 
-package mixer;
+package mixer.utils.slice;
 
-/**
- * @author Muhammad Shamim
- * @since 11/25/14
- */
-public class MixerGlobals {
-    public static final String versionNum = "4.06.04";
-    public static final int bufferSize = 2097152;
-    public static boolean printVerboseComments = false;
+import mixer.utils.slice.kmeans.KmeansEvaluator;
+import mixer.utils.slice.matrices.SliceMatrix;
+
+import java.util.List;
+import java.util.Map;
+
+public class EncodeExportUtils {
+    public static void exportSubcompartments(SliceMatrix sliceMatrix, Map<Integer,
+            List<List<Integer>>> kmeansIndicesMap, KmeansEvaluator evaluator) {
+
+    }
 }
