@@ -58,7 +58,7 @@ public class IndexOrderer {
     private final boolean SHOULD_FILTER_SINGLE_COLUMNS = false;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int inputResolution, NormalizationType normalizationType,
-                        GWBadIndexFinder badIndexLocations, long seed, File outputDirectory,
+                        BadIndexFinder badIndexLocations, long seed, File outputDirectory,
                         int maxClusterSizeExpected) {
         lowres = Math.max(inputResolution, 100000);
         hires = inputResolution;

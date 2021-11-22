@@ -35,7 +35,7 @@ import mixer.algos.Slice;
 import java.io.IOException;
 import java.util.*;
 
-public class GWBadIndexFinder {
+public class BadIndexFinder {
 
     protected static final float ZSCORE_COVERAGE_MAX_ALLOWED_INTER = 5;
     protected static final float ZSCORE_MIN_NONZERO_COVERAGE_NEEDED_INTER = -3;
@@ -45,7 +45,7 @@ public class GWBadIndexFinder {
     protected final List<NormalizationType[]> norms;
     private final GWRegionStatistics gwStats = new GWRegionStatistics();
 
-    public GWBadIndexFinder(Chromosome[] chromosomes, int resolution, List<NormalizationType[]> norms) {
+    public BadIndexFinder(Chromosome[] chromosomes, int resolution, List<NormalizationType[]> norms) {
         this.resolution = resolution;
         this.norms = norms;
         for (Chromosome chrom : chromosomes) {

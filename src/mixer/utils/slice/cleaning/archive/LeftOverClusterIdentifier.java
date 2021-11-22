@@ -34,7 +34,7 @@ import javastraw.tools.ExtractingOEDataUtils;
 import javastraw.tools.HiCFileTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.NearDiagonalTrim;
 import mixer.utils.slice.kmeans.ClusterTools;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -57,7 +57,7 @@ public class LeftOverClusterIdentifier {
     }
 
     public void identify(Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
-                         GWBadIndexFinder badIndexFinder) {
+                         BadIndexFinder badIndexFinder) {
 
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(dataset, chr1, chr1, resolution);

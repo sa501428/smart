@@ -38,7 +38,7 @@ import mixer.utils.common.ZScoreTools;
 import mixer.utils.rougheval.SubsamplingManager;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
-import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.gmm.SimpleScatterPlot;
@@ -60,14 +60,14 @@ public abstract class CompositeGenomeWideMatrix {
     protected final File outputDirectory;
     private MatrixAndWeight gwCleanMatrix, projectedData = null;
     private float[][] umapProjection;
-    protected final GWBadIndexFinder badIndexLocations;
+    protected final BadIndexFinder badIndexLocations;
     protected final int maxClusterSizeExpected;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
                                      NormalizationType[] norms,
                                      int resolution,
                                      File outputDirectory, long seed,
-                                     GWBadIndexFinder badIndexLocations,
+                                     BadIndexFinder badIndexLocations,
                                      int maxClusterSizeExpected) {
         this.maxClusterSizeExpected = maxClusterSizeExpected;
         this.norms = norms;
@@ -299,7 +299,7 @@ public abstract class CompositeGenomeWideMatrix {
         );
     }
 
-    public GWBadIndexFinder getBadIndices() {
+    public BadIndexFinder getBadIndices() {
         return badIndexLocations;
     }
 

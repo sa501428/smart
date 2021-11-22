@@ -31,7 +31,7 @@ import javastraw.reader.type.NormalizationType;
 import mixer.algos.Slice;
 import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.EncodeExportUtils;
-import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
@@ -61,7 +61,7 @@ public class FullGenomeOEWithinClusters {
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
 
-        GWBadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
+        BadIndexFinder badIndexFinder = new BadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
                 resolution, normalizationTypes);
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
