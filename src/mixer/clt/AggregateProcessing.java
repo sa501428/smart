@@ -72,11 +72,11 @@ public class AggregateProcessing {
         for (int f = 5; f < files.length; f++) {// files.length
             String file = files[f];
             String stem = stems[f];
-            for (int res : new int[]{250}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+            for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
                 String folder = stem;
                 String[] strings = new String[]{"slice", "-r", res + "000", "--encode-mode",
                         file, "2,12,4",
-                        "/Users/mshamim/Desktop/reSLICE/encode_z5_" + res + "000_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/encode_z7_" + res + "000_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");

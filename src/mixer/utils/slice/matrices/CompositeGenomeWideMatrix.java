@@ -241,7 +241,7 @@ public abstract class CompositeGenomeWideMatrix {
             score += manager.getScore();
         }
         score = score / NUM_ITERS;
-        System.out.println("Silhouette: " + score);
+        //System.out.println("Silhouette: " + score);
         return score;
     }
 

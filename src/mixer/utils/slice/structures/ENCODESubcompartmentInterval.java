@@ -52,10 +52,16 @@ public class ENCODESubcompartmentInterval extends SubcompartmentInterval {
                 "\t" + SubcompartmentColors.getColorString(getClusterID()) + listOutAllIDs();
     }
 
+    public static String getHeader() {
+        return "#chrom\tchromStart\tchromEnd\tname\tscore\tstrand" +
+                "\tthickStart\tthickEnd\tnumAltClusterings\talternativeClusterAssignments";
+    }
+
     private String listOutAllIDs() {
-        StringBuilder allIDs = new StringBuilder();
-        for (int i = 0; i < otherIDs.length; i++) {
-            allIDs.append("\t").append(clusterSizes[i]).append(":").append(otherIDs[i]);
+        StringBuilder allIDs = new StringBuilder("\t").append(otherIDs.length);
+        allIDs.append("\t").append(clusterSizes[0]).append(":").append(otherIDs[0]);
+        for (int i = 1; i < otherIDs.length; i++) {
+            allIDs.append(",").append(clusterSizes[i]).append(":").append(otherIDs[i]);
         }
         return allIDs.toString();
     }

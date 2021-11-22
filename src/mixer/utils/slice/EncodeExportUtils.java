@@ -24,27 +24,24 @@
 
 package mixer.utils.slice;
 
-import javastraw.feature1D.GenomeWideList;
-import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.slice.kmeans.KmeansEvaluator;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.ENCODESubcompartmentInterval;
-import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 
 public class EncodeExportUtils {
     public static void exportSubcompartments(SliceMatrix sliceMatrix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
                                              KmeansEvaluator evaluator, String prefix, File outputDirectory,
-                                             ChromosomeHandler chromosomeHandler) {
+                                             int startingClusterSizeK) {
 
         List<Integer> keys = new ArrayList<>(kmeansIndicesMap.keySet());
         Collections.sort(keys);
 
-        int[] clusterSizes = convertToIntArray(keys);
-
+        int[] clusterSizes = convertToIntArray(keys, startingClusterSizeK);
         int bestIndex = getBestIndex(keys, evaluator);
 
         int[][] ids = new int[sliceMatrix.getData(false).length][keys.size()];
@@ -62,8 +59,7 @@ public class EncodeExportUtils {
         }
 
         Map<Integer, SubcompartmentInterval> map = sliceMatrix.getRowIndexToIntervalMap();
-        GenomeWideList<SubcompartmentInterval> subcompartments = new GenomeWideList<>(chromosomeHandler);
-        Set<SubcompartmentInterval> encodeSubcompartmentIntervals = new HashSet<>();
+        List<SubcompartmentInterval> encodeSubcompartmentIntervals = new ArrayList<>();
         for (int i = 0; i < ids.length; i++) {
             if (map.containsKey(i)) {
                 SubcompartmentInterval interv = map.get(i);
@@ -73,10 +69,19 @@ public class EncodeExportUtils {
                 }
             }
         }
-        subcompartments.addAll(new ArrayList<>(encodeSubcompartmentIntervals));
-        SliceUtils.reSort(subcompartments);
+
         File outBedFile = new File(outputDirectory, prefix + "_subcompartment_clusters.bed");
-        subcompartments.simpleExport(outBedFile);
+
+        try {
+            FileWriter filewriter = new FileWriter(outBedFile);
+            filewriter.write(ENCODESubcompartmentInterval.getHeader() + "\n");
+            for (SubcompartmentInterval interval : encodeSubcompartmentIntervals) {
+                filewriter.write(interval.toString() + "\n");
+            }
+            filewriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static ENCODESubcompartmentInterval generateENCODESubcompartment(SubcompartmentInterval interv,
@@ -86,10 +91,10 @@ public class EncodeExportUtils {
                 interv.getX1(), interv.getX2(), id[indx], clusterSizes, id);
     }
 
-    private static int[] convertToIntArray(List<Integer> keys) {
+    private static int[] convertToIntArray(List<Integer> keys, int offset) {
         int[] arr = new int[keys.size()];
         for (int i = 0; i < arr.length; i++) {
-            arr[i] = keys.get(i);
+            arr[i] = keys.get(i) + offset;
         }
         return arr;
     }
