@@ -54,14 +54,19 @@ public class ENCODESubcompartmentInterval extends SubcompartmentInterval {
 
     public static String getHeader() {
         return "#chrom\tchromStart\tchromEnd\tname\tscore\tstrand" +
-                "\tthickStart\tthickEnd\tnumAltClusterings\talternativeClusterAssignments";
+                "\tthickStart\tthickEnd\titemRGB\tnumAltClusterings" +
+                "\taltClusterNum\taltClusterAssignment";
     }
 
     private String listOutAllIDs() {
         StringBuilder allIDs = new StringBuilder("\t").append(otherIDs.length);
-        allIDs.append("\t").append(clusterSizes[0]).append(":").append(otherIDs[0]);
+        allIDs.append("\t").append(clusterSizes[0]);
         for (int i = 1; i < otherIDs.length; i++) {
-            allIDs.append(",").append(clusterSizes[i]).append(":").append(otherIDs[i]);
+            allIDs.append(",").append(clusterSizes[i]);
+        }
+        allIDs.append("\t").append(otherIDs[0]);
+        for (int i = 1; i < otherIDs.length; i++) {
+            allIDs.append(",").append(otherIDs[i]);
         }
         return allIDs.toString();
     }

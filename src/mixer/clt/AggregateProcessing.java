@@ -76,7 +76,7 @@ public class AggregateProcessing {
                 String folder = stem;
                 String[] strings = new String[]{"slice", "-r", res + "000", "--encode-mode",
                         file, "2,12,4",
-                        "/Users/mshamim/Desktop/reSLICE/encode_z7_" + res + "000_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/encode_z8_" + res + "000_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");

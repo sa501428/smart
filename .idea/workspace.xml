@@ -31,11 +31,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ENCODESubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ENCODESubcompartmentInterval.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -226,14 +221,7 @@
       <workItem from="1637484517652" duration="2225000" />
       <workItem from="1637526325847" duration="22000" />
       <workItem from="1637530440823" duration="898000" />
-      <workItem from="1637531377200" duration="11069000" />
-    </task>
-    <task id="LOCAL-00126" summary="support for simple and robust GMM">
-      <created>1620629471974</created>
-      <option name="number" value="00126" />
-      <option name="presentableId" value="LOCAL-00126" />
-      <option name="project" value="LOCAL" />
-      <updated>1620629471974</updated>
+      <workItem from="1637531377200" duration="11408000" />
     </task>
     <task id="LOCAL-00127" summary="code cleanup, remove duplicate code">
       <created>1620629794373</created>
@@ -571,7 +559,14 @@
       <option name="project" value="LOCAL" />
       <updated>1637608886416</updated>
     </task>
-    <option name="localTasksCounter" value="175" />
+    <task id="LOCAL-00175" summary="bug fixes">
+      <created>1637613478338</created>
+      <option name="number" value="00175" />
+      <option name="presentableId" value="LOCAL-00175" />
+      <option name="project" value="LOCAL" />
+      <updated>1637613478338</updated>
+    </task>
+    <option name="localTasksCounter" value="176" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -616,12 +611,12 @@
     <MESSAGE value="Silhouette score" />
     <MESSAGE value="code cleanup, split up postprocessing/scoring" />
     <MESSAGE value="subsampling, query silhouette, bug fixes" />
-    <MESSAGE value="bug fixes" />
     <MESSAGE value="comment out silhouette" />
     <MESSAGE value="code cleanup, change defaults, save genome coordinates" />
     <MESSAGE value="upgrade straw jar" />
     <MESSAGE value="random silhouette, encode option" />
-    <option name="LAST_COMMIT_MESSAGE" value="random silhouette, encode option" />
+    <MESSAGE value="bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
