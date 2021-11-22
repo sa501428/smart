@@ -112,7 +112,8 @@ public class FullGenomeOEWithinClusters {
             exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
         if (Slice.USE_ENCODE_MODE) {
-            EncodeExportUtils.exportSubcompartments(sliceMatrix, kmeansIndicesMap, evaluator);
+            EncodeExportUtils.exportSubcompartments(sliceMatrix, kmeansIndicesMap, evaluator, prefix,
+                    outputDirectory, chromosomeHandler);
         }
         exportEvaluatorInfo(evaluator, useKMedians);
         System.out.println(".");

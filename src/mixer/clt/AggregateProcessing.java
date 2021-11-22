@@ -67,41 +67,16 @@ public class AggregateProcessing {
 
         stems = new String[]{"p15", "p29", "p43", "p58", "primary", "gmMega"};
 
-        // 512, 516 weird? linear approx region of exp_tanh
-        // 515 global zscore didn't work
-        // 517 fix 515 bug
-        // 518 zscore cols
-        // 519 plain - very good
-        // 520 no log, global zscore, exp tanh
-        // 521 no log, column zscore, exp tanh
-        // 522 old style thresholding no logs
-        // build from 519 with kmedians in play
-        // 601 allow z-score global threshold > 5; re expm1 after
-        // 603 fix median bugs etc
-        // 604 try with GW_SCALE
-        // 605 INTER_SCALE, -2 < x < 2
-        // 700 remove z > 8, no effective log
-        // 701 dont remove any z
-        // 702 -2 < z < 2; revert log after
-        // 703 -2 < z < 8; revert log after
-        // 704 same as 703 with kmeans on projected
-        // 800 no filtering           #
-        // 801 filtering
-        // 802 exp(exp(x))
-        // 803 = 801                  #
-        // 804 = dont use the weights #
-        // 805 = 804 with minor cleanup
-        // 806 = 804 with more cleanup, no row correlation cleaning
-        int id = 900;
+
 
         for (int f = 5; f < files.length; f++) {// files.length
             String file = files[f];
             String stem = stems[f];
-            for (int res : new int[]{100}) { //  ,100000,   50000,25000,10000 100000 100000 50000
-                String folder = stem + "_SLICE_" + id;
-                String[] strings = new String[]{"slice", "-r", res + "000",
+            for (int res : new int[]{250}) { //  ,100000,   50000,25000,10000 100000 100000 50000
+                String folder = stem;
+                String[] strings = new String[]{"slice", "-r", res + "000", "--encode-mode",
                         file, "2,12,4",
-                        "/Users/mshamim/Desktop/reSLICE/phnx_" + id + "_z4_" + res + "000_" + folder,
+                        "/Users/mshamim/Desktop/reSLICE/encode_z5_" + res + "000_" + folder,
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
@@ -110,6 +85,8 @@ public class AggregateProcessing {
             }
         }
         System.gc();
+
+        /*
 
         String beds = "/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_800__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/gmMega_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_803__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/80X_beds/p15_SLICE_804__5_kmeans_clusters.bed,/Users/mshamim/Desktop/reSLICE/existing/GSE63525_GM12878_subcompartments.bed";
         String labels = "gmMega_800,gmMega_803,gmMega_804,p15_803,p15_804,rh2014";

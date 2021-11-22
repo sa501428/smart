@@ -40,7 +40,7 @@ public class SubsamplingManager {
     private final double compressionFactor;
     private final SimilarityMetric metric;
     private final Random generator = new Random(0);
-    private final double IDEAL_NUM_ROWS = 1000.0;
+    private final double IDEAL_NUM_ROWS = 500.0;
 
     public SubsamplingManager(Cluster[] clusters, float[][] matrix, boolean useKMedians) {
         this.clusters = clusters;

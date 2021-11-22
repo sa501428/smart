@@ -302,4 +302,8 @@ public abstract class CompositeGenomeWideMatrix {
     public GWBadIndexFinder getBadIndices() {
         return badIndexLocations;
     }
+
+    public Map<Integer, SubcompartmentInterval> getRowIndexToIntervalMap() {
+        return rowIndexToIntervalMap;
+    }
 }
