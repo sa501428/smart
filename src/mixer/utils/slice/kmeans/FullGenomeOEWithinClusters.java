@@ -52,14 +52,14 @@ public class FullGenomeOEWithinClusters {
     private final SliceMatrix sliceMatrix;
     private final int maxIters = 200;
 
-    private final Random generator = new Random(0);
+    private final Random generator;
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution,
                                       List<NormalizationType[]> normalizationTypes,
                                       File outputDirectory, long seed) {
         this.chromosomeHandler = chromosomeHandler;
         this.outputDirectory = outputDirectory;
-        generator.setSeed(seed);
+        generator = new Random(seed);
 
         BadIndexFinder badIndexFinder = new BadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
                 resolution, normalizationTypes);

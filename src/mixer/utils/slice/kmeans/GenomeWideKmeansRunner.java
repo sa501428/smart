@@ -90,7 +90,8 @@ public class GenomeWideKmeansRunner {
                 public void kmeansComplete(Cluster[] preSortedClusters) {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
                     System.out.print(".");
-                    result.processResultAndUpdateScoringMetrics(clusters, interMatrix, useKMedians, useCorrMatrix);
+                    result.processResultAndUpdateScoringMetrics(clusters, interMatrix, useKMedians,
+                            useCorrMatrix, 2 * seed);
                     thisRunIsNotDone.set(false);
                 }
 

@@ -39,10 +39,11 @@ public class SubsamplingManager {
     private final float[][] matrix;
     private final double compressionFactor;
     private final SimilarityMetric metric;
-    private final Random generator = new Random(0);
+    private final Random generator;
     private final double IDEAL_NUM_ROWS = 500.0;
 
-    public SubsamplingManager(Cluster[] clusters, float[][] matrix, boolean useKMedians) {
+    public SubsamplingManager(Cluster[] clusters, float[][] matrix, boolean useKMedians,
+                              long seed) {
         this.clusters = clusters;
         this.matrix = matrix;
         this.compressionFactor = matrix.length / IDEAL_NUM_ROWS;
@@ -51,6 +52,7 @@ public class SubsamplingManager {
         } else {
             this.metric = RobustEuclideanDistance.SINGLETON;
         }
+        generator = new Random(seed);
     }
 
     public double getScore() {

@@ -89,11 +89,12 @@ public class KmeansResult {
         return output;
     }
 
-    public void processResultAndUpdateScoringMetrics(Cluster[] clusters, CompositeGenomeWideMatrix matrix, boolean useKMedians, boolean useCorrMatrix) {
+    public void processResultAndUpdateScoringMetrics(Cluster[] clusters, CompositeGenomeWideMatrix matrix,
+                                                     boolean useKMedians, boolean useCorrMatrix, long seed) {
         populateIndicesMap(clusters);
         matrix.processKMeansClusteringResult(clusters, finalCompartments);
         wcss = getWCSS(clusters, matrix, useCorrMatrix, useKMedians);
-        silhouette = getSilhouette(clusters, matrix, useCorrMatrix, useKMedians);
+        silhouette = getSilhouette(clusters, matrix, useCorrMatrix, useKMedians, seed);
         numActualClusters = clusters.length;
     }
 
@@ -122,9 +123,10 @@ public class KmeansResult {
         return withinClusterSumOfSquares;
     }
 
-    private double getSilhouette(Cluster[] clusters, CompositeGenomeWideMatrix matrix, boolean useCorr, boolean useKMedians) {
+    private double getSilhouette(Cluster[] clusters, CompositeGenomeWideMatrix matrix, boolean useCorr,
+                                 boolean useKMedians, long seed) {
         double score = 0;
-        SubsamplingManager manager = new SubsamplingManager(clusters, matrix.getData(useCorr), useKMedians);
+        SubsamplingManager manager = new SubsamplingManager(clusters, matrix.getData(useCorr), useKMedians, seed);
         for (int iter = 0; iter < NUM_ITERS; iter++) {
             score += manager.getScore();
         }

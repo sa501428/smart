@@ -39,7 +39,7 @@ public class QuickClusters {
 
     private final float[][] matrix;
     private final int initialNumClusters;
-    private final Random generator = new Random(0);
+    private final Random generator;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private int maxIters = 20;
     private List<List<Integer>> indices = null;
@@ -47,7 +47,7 @@ public class QuickClusters {
     public QuickClusters(float[][] matrix, int numCentroids, long seed) {
         this.matrix = matrix;
         this.initialNumClusters = numCentroids;
-        generator.setSeed(seed);
+        generator = new Random(seed);
         if (matrix.length == 0 || matrix[0].length == 0) {
             System.err.println("Empty matrix provided for quick centroids");
             System.exit(5);

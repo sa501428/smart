@@ -43,12 +43,12 @@ public class SliceMatrixCleaner {
     public static int NUM_PER_CENTROID = 100;
     protected final File outputDirectory;
     protected float[][] data;
-    protected final Random generator = new Random(0);
+    protected final Random generator;
     protected int resolution;
 
     public SliceMatrixCleaner(float[][] data, long seed, File outputDirectory, int resolution) {
         this.outputDirectory = outputDirectory;
-        generator.setSeed(seed);
+        generator = new Random(seed);
         this.resolution = resolution;
         this.data = data;
     }

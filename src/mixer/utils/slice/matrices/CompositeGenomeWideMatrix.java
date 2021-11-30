@@ -51,7 +51,7 @@ public abstract class CompositeGenomeWideMatrix {
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
-    protected final Random generator = new Random(0);
+    protected final Random generator;
     protected final File outputDirectory;
     private MatrixAndWeight gwCleanMatrix, projectedData = null;
     private float[][] umapProjection;
@@ -71,7 +71,7 @@ public abstract class CompositeGenomeWideMatrix {
         }
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
-        this.generator.setSeed(seed);
+        generator = new Random(seed);
         this.badIndexLocations = badIndexLocations;
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();

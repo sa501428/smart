@@ -52,7 +52,7 @@ public class IndexOrderer {
     private final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
     private final float CORR_MIN = 0.2f;
-    private final Random generator = new Random(0);
+    private final Random generator;
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
     private final File problemFile, initFile;
     private final int hires, lowres, resFactor;
@@ -71,8 +71,7 @@ public class IndexOrderer {
 
         problemFile = new File(outputDirectory, "problems.bed");
         initFile = new File(outputDirectory, "initial_split.bed");
-
-        generator.setSeed(seed);
+        generator = new Random(seed);
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowres);
             try {
