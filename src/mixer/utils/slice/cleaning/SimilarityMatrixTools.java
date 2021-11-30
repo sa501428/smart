@@ -162,10 +162,12 @@ public class SimilarityMatrixTools {
                 int i = currRowIndex.getAndIncrement();
                 while (i < initialMatrix.length) {
                     if (newIndexOrderAssignments[i] < checkVal) {
-                        result[i][i] = 1;
+                        // result[i][i] = Float.NaN; // technically 1, but not useful
                         for (int j = i + 1; j < initialMatrix.length; j++) {
-                            result[i][j] = metric.distance(initialMatrix[j], initialMatrix[i]);
-                            result[j][i] = result[i][j];
+                            if (newIndexOrderAssignments[j] < checkVal) {
+                                result[i][j] = metric.distance(initialMatrix[j], initialMatrix[i]);
+                                result[j][i] = result[i][j];
+                            }
                         }
                     }
                     i = currRowIndex.getAndIncrement();

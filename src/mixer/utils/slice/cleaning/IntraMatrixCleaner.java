@@ -48,10 +48,15 @@ public class IntraMatrixCleaner {
         }
     }
 
-    public static float[][] clean(float[][] matrix, Set<Integer> badIndices, int resFactor) {
+    public static float[][] basicClean(float[][] matrix, Set<Integer> badIndices, int resFactor, int pixelDist) {
         nanFillTheRowsColumnsWeDontWant(badIndices, matrix, resFactor);
+        NearDiagonalTrim.trimDiagonalWithinPixelDist(matrix, pixelDist);
+        return matrix;
+    }
+
+    public static float[][] oeClean(float[][] matrix, Set<Integer> badIndices, int resFactor) {
+        basicClean(matrix, badIndices, resFactor, 3);
         nanFillZeroEntries(matrix);
-        NearDiagonalTrim.trimDiagonalWithinPixelDist(matrix, 3);
         nanFillExtremeOEValues(matrix);
         // float[][] compressedMatrix = compress(matrix, smoothingInterval);
         // ZScoreTools.inPlaceZscoreDownCol(matrix);
@@ -66,38 +71,6 @@ public class IntraMatrixCleaner {
                     if (Math.abs(matrix[i][j]) > INTRA_LINEAR_OE_CUTOFF) {
                         matrix[i][j] = Float.NaN;
                     }
-                }
-            }
-        }
-    }
-
-    private static void nanFillExtremeValues(float[][] matrix, boolean temp) {
-        // assume mu = 0
-        float std = stdevAssumMu0(matrix);
-        if (temp) {
-            System.err.println("filter " + INTRA_ZSCORE_CUTOFF * std + " " + std);
-            System.exit(2);
-        }
-        thresholdZscoreAssumMu0(matrix, std);
-    }
-
-    private static void thresholdZscoreAssumMu0(float[][] matrix, float std) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (!Float.isNaN(matrix[i][j])) {
-                    if (Math.abs(matrix[i][j] / std) > INTRA_ZSCORE_CUTOFF) {
-                        matrix[i][j] = Float.NaN;
-                    }
-                }
-            }
-        }
-    }
-
-    private static void subtractOEBy1(float[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (!Float.isNaN(matrix[i][j])) {
-                    matrix[i][j] -= 1; // because 1 means O = E -> 0 for corr calcs
                 }
             }
         }
@@ -147,30 +120,17 @@ public class IntraMatrixCleaner {
         return result;
     }
 
-    public static float stdevAssumMu0(float[][] matrix) {
-        double sumSquares = 0;
-        long count = 0;
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (!Float.isNaN(matrix[i][j])) {
-                    sumSquares += matrix[i][j] * matrix[i][j];
-                    count++;
-                }
-            }
-        }
-        return (float) Math.sqrt(sumSquares / count);
-    }
-
     public static void prioritizeHighOE(float[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 if (!Float.isNaN(matrix[i][j])) {
                     float val = matrix[i][j];
-                    int cutoff = 5;
-                    val = Math.max(-cutoff, Math.min(cutoff, val));
+                    //int cutoff = 5;
+                    //val = Math.max(-cutoff, Math.min(cutoff, val));
                     //val -= 2;
                     //matrix[i][j] = (float) Math.expm1(Math.round(matrix[i][j]));
-                    matrix[i][j] = (float) (Math.exp(val) - Math.exp(-val));
+                    //matrix[i][j] = (float) (Math.exp(val) - Math.exp(-val));
+                    matrix[i][j] = val * val * val;
                 }
             }
         }
