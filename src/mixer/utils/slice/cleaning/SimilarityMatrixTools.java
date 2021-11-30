@@ -143,7 +143,7 @@ public class SimilarityMatrixTools {
     }
 
     public static float[][] getSymmNonNanSimilarityMatrixWithMask(float[][] initialMatrix,
-                                                                  RobustCorrelationSimilarity metric,
+                                                                  SimilarityMetric metric,
                                                                   int[] newIndexOrderAssignments, int checkVal) {
 
         float[][] result = new float[initialMatrix.length][initialMatrix.length];

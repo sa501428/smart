@@ -33,6 +33,7 @@ import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.ArrayTools;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.slice.structures.SubcompartmentColors;
@@ -46,7 +47,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IndexOrderer {
 
     private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
-    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000, TWENTY_MB = 20000000;
+    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000,
+            TEN_MB = 10000000, TWENTY_MB = 20000000;
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
@@ -76,12 +78,13 @@ public class IndexOrderer {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowres);
             try {
                 float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, lowres,
-                        normalizationType, 10f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                        normalizationType, 100f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
                         true, 1, 0, true);
                 Set<Integer> badIndices = badIndexLocations.getBadIndices(chrom);
 
-                matrix = IntraMatrixCleaner.cleanAndCompress(chrom, matrix, lowres, badIndices, resFactor);
-                int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices);
+                IntraMatrixCleaner.clean(matrix, badIndices, resFactor);
+                float[][] matrix2 = IntraMatrixCleaner.prioritizeHighValues(matrix);
+                int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, matrix2, badIndices);
                 int[] hiResNewOrderIndexes = convertToHigherRes(newOrderIndexes, chrom);
                 chromToReorderedIndices.put(chrom, hiResNewOrderIndexes);
             } catch (Exception e) {
@@ -92,6 +95,7 @@ public class IndexOrderer {
 
         if (true || MixerGlobals.printVerboseComments) {
             writeOutInitialResults();
+            System.exit(3);
         }
     }
 
@@ -135,24 +139,34 @@ public class IndexOrderer {
         return hiResOrderAssignments;
     }
 
-    private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] initialMatrix, Set<Integer> badIndices) {
-        int[] newIndexOrderAssignments = generateNewAssignments(initialMatrix.length, badIndices);
-        int numPotentialClusters = (int) (chromosome.getLength() / TWENTY_MB) + 5;
-        numPotentialClusters = Math.max(numPotentialClusters, 6);
+    private int[] getNewOrderOfIndices(Chromosome chromosome,
+                                       float[][] matrix1, float[][] matrix2,
+                                       Set<Integer> badIndices) {
+        int[] newIndexOrderAssignments = generateNewAssignments(matrix1.length, badIndices);
+        int numPotentialClusters = (int) (chromosome.getLength() / TWENTY_MB) + 7;
+        numPotentialClusters = Math.max(numPotentialClusters, 7);
 
-        float[][] matrix = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(initialMatrix,
+        float[][] matrixCorr1 = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(matrix1,
                 RobustCorrelationSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
+        //float[][] matrixCorr2 = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(matrix2,
+        //        RobustCosineSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
 
-        int gCounter = doAssignmentsByCorrWithCentroids(matrix, newIndexOrderAssignments, chromosome.getName(),
-                numPotentialClusters);
-        indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
+        float[][] matrix = FloatMatrixTools.concatenate(matrixCorr1, matrix2);
+
+        try {
+            int gCounter = doAssignmentsByCorrWithCentroids(matrix, newIndexOrderAssignments, chromosome.getName(),
+                    numPotentialClusters);
+            indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return newIndexOrderAssignments;
     }
 
     private int doAssignmentsByCorrWithCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName,
                                                  int numInitialClusters) {
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
-                numInitialClusters, generator.nextLong(), 20).generateCentroids(5, true);
+                numInitialClusters, generator.nextLong(), 20).generateCentroids(2, false);
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);

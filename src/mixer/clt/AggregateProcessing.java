@@ -80,11 +80,20 @@ public class AggregateProcessing {
                         folder + "_"
                 };
                 System.out.println("-----------------------------------------------------");
-                MixerTools.main(strings);
+                //MixerTools.main(strings);
                 System.gc();
             }
         }
         System.gc();
+
+        String[] strings = new String[]{"slice", "-r", "100000", "--encode-mode",
+                "/Users/mshamim/Desktop/various_hic_files/HCT116_Degron/treated_degron_30_25k.hic",
+                "2,10,4",
+                "/Users/mshamim/Desktop/reSLICE/encode_z70HIGH_HCT_100K",
+                "hct"
+        };
+        System.out.println("-----------------------------------------------------");
+        MixerTools.main(strings);
 
         /*
 

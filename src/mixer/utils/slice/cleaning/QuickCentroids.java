@@ -54,7 +54,8 @@ public class QuickCentroids {
         generator.setSeed(seed);
         if (matrix.length == 0 || matrix[0].length == 0) {
             System.err.println("Empty matrix provided for quick centroids");
-            System.exit(5);
+            throw new RuntimeException("EMPTY MATRIX!");
+            //System.exit(5);
         }
     }
 
