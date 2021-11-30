@@ -35,9 +35,6 @@ import mixer.algos.Slice;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
-import mixer.utils.rougheval.SubsamplingManager;
-import mixer.utils.similaritymeasures.RobustEuclideanDistance;
-import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
@@ -50,8 +47,6 @@ import java.io.File;
 import java.util.*;
 
 public abstract class CompositeGenomeWideMatrix {
-    private static final int MIN_EXPECTED_CLUSTER_SIZE = 5;
-    private static final double NUM_ITERS = 5;
     protected final NormalizationType[] norms;
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
@@ -200,56 +195,6 @@ public abstract class CompositeGenomeWideMatrix {
 
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
-    }
-
-    public double getWCSS(Cluster[] clusters, boolean useCorr, boolean useKMedians) {
-        double withinClusterSumOfSquares = 0;
-
-        for (int z = 0; z < clusters.length; z++) {
-            Cluster cluster = clusters[z];
-
-            if (cluster.getMemberIndexes().length < MIN_EXPECTED_CLUSTER_SIZE) {
-                withinClusterSumOfSquares += Float.MAX_VALUE;
-            }
-
-            for (int i : cluster.getMemberIndexes()) {
-                if (useCorr) {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i], useKMedians);
-                } else {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i], useKMedians);
-                }
-            }
-        }
-
-        withinClusterSumOfSquares = withinClusterSumOfSquares / clusters.length;
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("Final WCSS " + withinClusterSumOfSquares);
-        }
-
-        return withinClusterSumOfSquares;
-    }
-
-    public double getSilhouette(Cluster[] clusters, boolean useCorr, boolean useKMedians) {
-        double score = 0;
-        SubsamplingManager manager;
-        if (useCorr) {
-            manager = new SubsamplingManager(clusters, projectedData.matrix, useKMedians);
-        } else {
-            manager = new SubsamplingManager(clusters, gwCleanMatrix.matrix, useKMedians);
-        }
-        for (int iter = 0; iter < NUM_ITERS; iter++) {
-            score += manager.getScore();
-        }
-        score = score / NUM_ITERS;
-        //System.out.println("Silhouette: " + score);
-        return score;
-    }
-
-    protected double getDistance(float[] center, float[] vector, boolean useKMedians) {
-        if (useKMedians) {
-            return RobustManhattanDistance.SINGLETON.distance(center, vector);
-        }
-        return RobustEuclideanDistance.getNonNanMeanSquaredError(center, vector);
     }
 
     public synchronized void processGMMClusteringResult(int[] clusterID,

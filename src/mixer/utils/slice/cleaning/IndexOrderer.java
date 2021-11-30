@@ -89,10 +89,7 @@ public class IndexOrderer {
             System.out.print(".");
         }
 
-        if (true || MixerGlobals.printVerboseComments) {
-            writeOutInitialResults();
-            System.exit(3);
-        }
+        writeOutInitialResults();
     }
 
     public static float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {

@@ -108,7 +108,7 @@ public class FullGenomeOEWithinClusters {
 
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, evaluator, z,
-                    maxIters, kmeansClustersToResults, kmeansIndicesMap, useKMedians);
+                    maxIters, kmeansClustersToResults, kmeansIndicesMap);
             exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
         if (Slice.USE_ENCODE_MODE) {
@@ -136,26 +136,26 @@ public class FullGenomeOEWithinClusters {
     public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
                                                 KmeansEvaluator evaluator, int z, int maxIters,
                                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                                Map<Integer, List<List<Integer>>> indicesMap,
-                                                boolean useKMedians) {
+                                                Map<Integer, List<List<Integer>>> indicesMap) {
         int numClusters = z + startingClusterSizeK;
         int numColumns = kmeansRunner.getNumColumns();
         int numRows = kmeansRunner.getNumRows();
         for (int p = 0; p < attemptsForKMeans; p++) {
-            kmeansRunner.prepareForNewRun(numClusters);
-            kmeansRunner.launchKmeansGWMatrix(generator.nextLong(), maxIters);
-
-            int numActualClustersThisAttempt = kmeansRunner.getNumActualClusters();
-            if (numActualClustersThisAttempt == numClusters) {
-                double wcss = kmeansRunner.getWithinClusterSumOfSquares();
-                if (wcss < evaluator.getWCSS(z)) {
-                    evaluator.setMseAicBicValues(z, numClusters, wcss, numRows, numColumns,
-                            kmeansRunner.getSilhouette());
-                    indicesMap.put(z, kmeansRunner.getIndicesMapCopy());
-                    numClustersToResults.put(numClusters, kmeansRunner.getFinalCompartments());
+            boolean noClusteringFound = true;
+            while (noClusteringFound) {
+                kmeansRunner.prepareForNewRun(numClusters);
+                kmeansRunner.launchKmeansGWMatrix(generator.nextLong(), maxIters);
+                KmeansResult currResult = kmeansRunner.getResult();
+                if (currResult.getNumActualClusters() == numClusters) {
+                    noClusteringFound = false;
+                    if (currResult.getWithinClusterSumOfSquares() < evaluator.getWCSS(z)) {
+                        evaluator.setMseAicBicValues(z, numRows, numColumns, currResult);
+                        indicesMap.put(z, currResult.getIndicesMapClone());
+                        numClustersToResults.put(numClusters, currResult.getFinalCompartmentsClone());
+                    }
                 }
+                System.out.print(".");
             }
-            System.out.print(".");
         }
     }
 
