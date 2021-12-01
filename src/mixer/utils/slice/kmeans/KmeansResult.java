@@ -28,6 +28,7 @@ import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.MixerGlobals;
 import mixer.utils.rougheval.SubsamplingManager;
+import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
@@ -46,7 +47,9 @@ public class KmeansResult {
     private final List<List<Integer>> indicesMap = new ArrayList<>();
     private int numActualClusters = 0;
     private double wcss = 0;
-    private double silhouette = 0;
+    private float silhouette = 0;
+    private float worstCorr = 0;
+    private float[][] clusterCorrMatrix;
 
     public KmeansResult(int numClusters, ChromosomeHandler chromosomeHandler) {
         numClustersDesired = numClusters;
@@ -65,8 +68,12 @@ public class KmeansResult {
         return wcss;
     }
 
-    public double getSilhouette() {
+    public float getSilhouette() {
         return silhouette;
+    }
+
+    public float getWorstCorr() {
+        return worstCorr;
     }
 
     public GenomeWideList<SubcompartmentInterval> getFinalCompartmentsClone() {
@@ -95,7 +102,20 @@ public class KmeansResult {
         matrix.processKMeansClusteringResult(clusters, finalCompartments);
         wcss = getWCSS(clusters, matrix, useCorrMatrix, useKMedians);
         silhouette = getSilhouette(clusters, matrix, useCorrMatrix, useKMedians, seed);
+        clusterCorrMatrix = calculateCorrelations(clusters);
+        worstCorr = getMaxOffDiag(clusterCorrMatrix);
         numActualClusters = clusters.length;
+    }
+
+    private float getMaxOffDiag(float[][] matrix) {
+        int n = matrix.length;
+        float maxVal = -1;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                maxVal = Math.max(maxVal, matrix[i][j]);
+            }
+        }
+        return maxVal;
     }
 
     public double getWCSS(Cluster[] clusters, CompositeGenomeWideMatrix matrix,
@@ -123,8 +143,8 @@ public class KmeansResult {
         return withinClusterSumOfSquares;
     }
 
-    private double getSilhouette(Cluster[] clusters, CompositeGenomeWideMatrix matrix, boolean useCorr,
-                                 boolean useKMedians, long seed) {
+    private float getSilhouette(Cluster[] clusters, CompositeGenomeWideMatrix matrix, boolean useCorr,
+                                boolean useKMedians, long seed) {
         double score = 0;
         SubsamplingManager manager = new SubsamplingManager(clusters, matrix.getData(useCorr), useKMedians, seed);
         for (int iter = 0; iter < NUM_ITERS; iter++) {
@@ -132,7 +152,7 @@ public class KmeansResult {
         }
         score = score / NUM_ITERS;
         //System.out.println("Silhouette: " + score);
-        return score;
+        return (float) score;
     }
 
     private double getDistance(float[] center, float[] vector, boolean useKMedians) {
@@ -151,5 +171,19 @@ public class KmeansResult {
             }
             indicesMap.add(group);
         }
+    }
+
+    private float[][] calculateCorrelations(Cluster[] clusters) {
+        int n = clusters.length;
+        float[][] matrix = new float[n][n];
+        for (int i = 0; i < n; i++) {
+            matrix[i][i] = 1;
+            for (int j = i + 1; j < n; j++) {
+                matrix[i][j] = RobustCorrelationSimilarity.SINGLETON.distance(
+                        clusters[i].getCenter(), clusters[j].getCenter());
+                matrix[j][i] = matrix[i][j];
+            }
+        }
+        return matrix;
     }
 }

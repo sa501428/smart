@@ -51,7 +51,6 @@ public class FullGenomeOEWithinClusters {
     private final ChromosomeHandler chromosomeHandler;
     private final SliceMatrix sliceMatrix;
     private final int maxIters = 200;
-
     private final Random generator;
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution,

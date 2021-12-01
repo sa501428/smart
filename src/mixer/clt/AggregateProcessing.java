@@ -95,24 +95,23 @@ public class AggregateProcessing {
         // 107 fifty mb split
         // 108 redid post analysis
         // restructure
-        int id = 109;
+        int id = 121;
 
         String[] strings = new String[]{"slice", "-r", "100000", "--encode-mode",
                 "/Users/mshamim/Desktop/various_hic_files/HCT116_Degron/treated_degron_30_25k.hic",
-                "2,10,4",
-                "/Users/mshamim/Desktop/reSLICE/encode_Z" + id + "_HIGH_HCT_100K",
+                "2,14,4",
+                "/Users/mshamim/Desktop/reSLICE/encode_HCT_Z" + id + "_100K",
                 "hct"
         };
         System.out.println("-----------------------------------------------------");
         MixerTools.main(strings);
 
         System.gc();
-        id = 110;
 
         strings = new String[]{"slice", "-r", "100000", "--encode-mode",
-                "/Users/mshamim/Desktop/various_hic_files/HCT116_Degron/treated_degron_30_25k.hic",
-                "2,10,4",
-                "/Users/mshamim/Desktop/reSLICE/encode_Z" + id + "_HIGH_HCT_100K",
+                "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic",
+                "2,14,4",
+                "/Users/mshamim/Desktop/reSLICE/encode_GM_Z" + id + "_100K",
                 "hct"
         };
         System.out.println("-----------------------------------------------------");

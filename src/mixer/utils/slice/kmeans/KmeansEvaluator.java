@@ -32,12 +32,13 @@ import java.util.Arrays;
 public class KmeansEvaluator {
 
     private final double[][] iterToWcssAicBic;
-    private static final int NUM_VALUES = 5;
     private static final int K_INDEX = 0;
     private static final int SUM_SQUARES_INDEX = 1;
     private static final int AIC_INDEX = 2;
     private static final int BIC_INDEX = 3;
     private static final int S_INDEX = 4;
+    private static final int C_INDEX = 5;
+    private static final int NUM_VALUES = 6;
 
 
     public KmeansEvaluator(int numClusterSizes) {
@@ -56,21 +57,26 @@ public class KmeansEvaluator {
         return iterToWcssAicBic[S_INDEX][index];
     }
 
+    public double getCorr(int index) {
+        return iterToWcssAicBic[C_INDEX][index];
+    }
+
     public void setMseAicBicValues(int z, int numRows, int numColumns, KmeansResult result) {
         int numClusters = result.getNumActualClusters();
         double sumOfSquares = result.getWithinClusterSumOfSquares();
-        double silhouette = result.getSilhouette();
+        float silhouette = result.getSilhouette();
+        float worstCorr = result.getWorstCorr();
 
         iterToWcssAicBic[K_INDEX][z] = numClusters;
         iterToWcssAicBic[SUM_SQUARES_INDEX][z] = sumOfSquares;
         iterToWcssAicBic[AIC_INDEX][z] = sumOfSquares + 2 * numColumns * numClusters;
         iterToWcssAicBic[BIC_INDEX][z] = sumOfSquares + 0.5 * numColumns * numClusters * Math.log(numRows);
         iterToWcssAicBic[S_INDEX][z] = silhouette;
-        System.out.println("Fin Silhouette for c=" + numClusters + " " + silhouette);
+        iterToWcssAicBic[C_INDEX][z] = worstCorr;
     }
 
     public void export(File outputDirectory, String kstem) {
-        String outIterPath = new File(outputDirectory, kstem + "_cluster_size_WCSS_AIC_BIC.npy").getAbsolutePath();
+        String outIterPath = new File(outputDirectory, kstem + "_cluster_post_stats.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(outIterPath, iterToWcssAicBic);
     }
 }
