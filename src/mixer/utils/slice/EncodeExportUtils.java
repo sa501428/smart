@@ -24,6 +24,7 @@
 
 package mixer.utils.slice;
 
+import mixer.MixerGlobals;
 import mixer.utils.slice.kmeans.KmeansEvaluator;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.ENCODESubcompartmentInterval;
@@ -72,11 +73,12 @@ public class EncodeExportUtils {
             }
         }
 
-        File outBedFile = new File(outputDirectory, prefix + "_subcompartment_clusters.bed");
+        File outBedFile = new File(outputDirectory, "slice_subcompartment_clusters.bed");
 
         try {
             FileWriter filewriter = new FileWriter(outBedFile);
             filewriter.write(ENCODESubcompartmentInterval.getHeader() + "\n");
+            filewriter.write("#subcompartments called by mixer-tools/slice version " + MixerGlobals.versionNum + "\n");
             for (SubcompartmentInterval interval : encodeSubcompartmentIntervals) {
                 filewriter.write(interval.toString() + "\n");
             }

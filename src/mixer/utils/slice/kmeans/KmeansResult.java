@@ -40,6 +40,7 @@ import java.util.List;
 
 public class KmeansResult {
 
+    private final static boolean SHOULD_CALC_SILHOUETTE = false;
     private static final int MIN_EXPECTED_CLUSTER_SIZE = 5;
     private static final double NUM_ITERS = 5;
     private final int numClustersDesired;
@@ -101,7 +102,9 @@ public class KmeansResult {
         populateIndicesMap(clusters);
         matrix.processKMeansClusteringResult(clusters, finalCompartments);
         wcss = getWCSS(clusters, matrix, useCorrMatrix, useKMedians);
-        silhouette = getSilhouette(clusters, matrix, useCorrMatrix, useKMedians, seed);
+        if (SHOULD_CALC_SILHOUETTE) {
+            silhouette = getSilhouette(clusters, matrix, useCorrMatrix, useKMedians, seed);
+        }
         clusterCorrMatrix = calculateCorrelations(clusters);
         worstCorr = getMaxOffDiag(clusterCorrMatrix);
         numActualClusters = clusters.length;

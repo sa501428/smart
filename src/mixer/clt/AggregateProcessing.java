@@ -95,7 +95,7 @@ public class AggregateProcessing {
         // 107 fifty mb split
         // 108 redid post analysis
         // restructure
-        int id = 122;
+        int id = 123;
 
         String[] strings = new String[]{"slice", "-r", "100000", "--encode-mode",
                 "/Users/mshamim/Desktop/various_hic_files/HCT116_Degron/treated_degron_30_25k.hic",
