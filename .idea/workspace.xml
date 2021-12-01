@@ -30,14 +30,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="set version">
-      <change afterPath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.2.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans_1_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans_1_0.xml" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +56,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="iterating_on_method" />
+        <entry key="$PROJECT_DIR$" value="evaluation" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -76,6 +72,7 @@
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
@@ -88,22 +85,22 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.rougheval" />
+      <recent name="mixer.utils.remedian" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice" />
       <recent name="mixer.utils.slice.gmm" />
-      <recent name="mixer.utils.slice.matrices" />
-      <recent name="mixer.utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.rougheval" />
+      <recent name="mixer.utils.common" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.algos" />
       <recent name="mixer.utils.matrix" />
-      <recent name="mixer.utils.shuffle" />
-      <recent name="mixer.utils.similaritymeasures" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Aggregate">
@@ -118,17 +115,6 @@
     <configuration name="GMM" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.utils.slice.gmm.Test" />
       <module name="Mixer" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -223,181 +209,22 @@
       <workItem from="1630136305918" duration="61000" />
       <workItem from="1630450949574" duration="1406000" />
       <workItem from="1630455151349" duration="1880000" />
-    </task>
-    <task id="LOCAL-00109" summary="incorporate GMM into SLICE; code cleanup">
-      <created>1617817538867</created>
-      <option name="number" value="00109" />
-      <option name="presentableId" value="LOCAL-00109" />
-      <option name="project" value="LOCAL" />
-      <updated>1617817538867</updated>
-    </task>
-    <task id="LOCAL-00110" summary="version number">
-      <created>1617817556430</created>
-      <option name="number" value="00110" />
-      <option name="presentableId" value="LOCAL-00110" />
-      <option name="project" value="LOCAL" />
-      <updated>1617817556430</updated>
-    </task>
-    <task id="LOCAL-00111" summary="bug fixes, code cleanup and restructuring">
-      <created>1617923550875</created>
-      <option name="number" value="00111" />
-      <option name="presentableId" value="LOCAL-00111" />
-      <option name="project" value="LOCAL" />
-      <updated>1617923550875</updated>
-    </task>
-    <task id="LOCAL-00112" summary="outlier filtering, code cleanup">
-      <created>1618022506502</created>
-      <option name="number" value="00112" />
-      <option name="presentableId" value="LOCAL-00112" />
-      <option name="project" value="LOCAL" />
-      <updated>1618022506503</updated>
-    </task>
-    <task id="LOCAL-00113" summary="code cleanup">
-      <created>1618269119889</created>
-      <option name="number" value="00113" />
-      <option name="presentableId" value="LOCAL-00113" />
-      <option name="project" value="LOCAL" />
-      <updated>1618269119889</updated>
-    </task>
-    <task id="LOCAL-00114" summary="excising a lot of code">
-      <created>1618418099392</created>
-      <option name="number" value="00114" />
-      <option name="presentableId" value="LOCAL-00114" />
-      <option name="project" value="LOCAL" />
-      <updated>1618418099392</updated>
-    </task>
-    <task id="LOCAL-00115" summary="Basic ABA code added">
-      <created>1618429970469</created>
-      <option name="number" value="00115" />
-      <option name="presentableId" value="LOCAL-00115" />
-      <option name="project" value="LOCAL" />
-      <updated>1618429970470</updated>
-    </task>
-    <task id="LOCAL-00116" summary="bug fixes, code cleanup">
-      <created>1618445860201</created>
-      <option name="number" value="00116" />
-      <option name="presentableId" value="LOCAL-00116" />
-      <option name="project" value="LOCAL" />
-      <updated>1618445860201</updated>
-    </task>
-    <task id="LOCAL-00117" summary="revert">
-      <created>1618706212714</created>
-      <option name="number" value="00117" />
-      <option name="presentableId" value="LOCAL-00117" />
-      <option name="project" value="LOCAL" />
-      <updated>1618706212714</updated>
-    </task>
-    <task id="LOCAL-00118" summary="redo initial clustering, change initial cleaning, weigh zscore">
-      <created>1620078792972</created>
-      <option name="number" value="00118" />
-      <option name="presentableId" value="LOCAL-00118" />
-      <option name="project" value="LOCAL" />
-      <updated>1620078792972</updated>
-    </task>
-    <task id="LOCAL-00119" summary="code cleanup">
-      <created>1620159386057</created>
-      <option name="number" value="00119" />
-      <option name="presentableId" value="LOCAL-00119" />
-      <option name="project" value="LOCAL" />
-      <updated>1620159386057</updated>
-    </task>
-    <task id="LOCAL-00120" summary="vector length check, bug fix, changes to params">
-      <created>1620238268438</created>
-      <option name="number" value="00120" />
-      <option name="presentableId" value="LOCAL-00120" />
-      <option name="project" value="LOCAL" />
-      <updated>1620238268438</updated>
-    </task>
-    <task id="LOCAL-00121" summary="subtract O/E by 1">
-      <created>1620238856025</created>
-      <option name="number" value="00121" />
-      <option name="presentableId" value="LOCAL-00121" />
-      <option name="project" value="LOCAL" />
-      <updated>1620238856025</updated>
-    </task>
-    <task id="LOCAL-00122" summary="imputation, change cleaning, use bitset, gmm updates">
-      <created>1620317544543</created>
-      <option name="number" value="00122" />
-      <option name="presentableId" value="LOCAL-00122" />
-      <option name="project" value="LOCAL" />
-      <updated>1620317544544</updated>
-    </task>
-    <task id="LOCAL-00123" summary="non robust gmm, change cleanup process, use doubles in gmm, backup gmm code">
-      <created>1620338018569</created>
-      <option name="number" value="00123" />
-      <option name="presentableId" value="LOCAL-00123" />
-      <option name="project" value="LOCAL" />
-      <updated>1620338018569</updated>
-    </task>
-    <task id="LOCAL-00124" summary="use log likelihoods, fix gmm issues">
-      <created>1620416808442</created>
-      <option name="number" value="00124" />
-      <option name="presentableId" value="LOCAL-00124" />
-      <option name="project" value="LOCAL" />
-      <updated>1620416808442</updated>
-    </task>
-    <task id="LOCAL-00125" summary="code cleanup, optimize runtime; reduce matrix calculations">
-      <created>1620423738332</created>
-      <option name="number" value="00125" />
-      <option name="presentableId" value="LOCAL-00125" />
-      <option name="project" value="LOCAL" />
-      <updated>1620423738332</updated>
-    </task>
-    <task id="LOCAL-00126" summary="support for simple and robust GMM">
-      <created>1620629471974</created>
-      <option name="number" value="00126" />
-      <option name="presentableId" value="LOCAL-00126" />
-      <option name="project" value="LOCAL" />
-      <updated>1620629471974</updated>
-    </task>
-    <task id="LOCAL-00127" summary="code cleanup, remove duplicate code">
-      <created>1620629794373</created>
-      <option name="number" value="00127" />
-      <option name="presentableId" value="LOCAL-00127" />
-      <option name="project" value="LOCAL" />
-      <updated>1620629794373</updated>
-    </task>
-    <task id="LOCAL-00128" summary="code cleanup, remove duplicate code">
-      <created>1620687592814</created>
-      <option name="number" value="00128" />
-      <option name="presentableId" value="LOCAL-00128" />
-      <option name="project" value="LOCAL" />
-      <updated>1620687592814</updated>
-    </task>
-    <task id="LOCAL-00129" summary="code cleanup for robust gmm">
-      <created>1620711899219</created>
-      <option name="number" value="00129" />
-      <option name="presentableId" value="LOCAL-00129" />
-      <option name="project" value="LOCAL" />
-      <updated>1620711899219</updated>
-    </task>
-    <task id="LOCAL-00130" summary="fix up gmm and kmeans runs; redo corr matrix">
-      <created>1620863059044</created>
-      <option name="number" value="00130" />
-      <option name="presentableId" value="LOCAL-00130" />
-      <option name="project" value="LOCAL" />
-      <updated>1620863059044</updated>
-    </task>
-    <task id="LOCAL-00131" summary="bug fix, updated distances">
-      <created>1620889786237</created>
-      <option name="number" value="00131" />
-      <option name="presentableId" value="LOCAL-00131" />
-      <option name="project" value="LOCAL" />
-      <updated>1620889786237</updated>
-    </task>
-    <task id="LOCAL-00132" summary="imputation">
-      <created>1620922860941</created>
-      <option name="number" value="00132" />
-      <option name="presentableId" value="LOCAL-00132" />
-      <option name="project" value="LOCAL" />
-      <updated>1620922860942</updated>
-    </task>
-    <task id="LOCAL-00133" summary="remove quick flip regions">
-      <created>1622526670520</created>
-      <option name="number" value="00133" />
-      <option name="presentableId" value="LOCAL-00133" />
-      <option name="project" value="LOCAL" />
-      <updated>1622526670520</updated>
+      <workItem from="1633034360953" duration="6736000" />
+      <workItem from="1634187759078" duration="21873000" />
+      <workItem from="1634328172076" duration="335000" />
+      <workItem from="1634328573534" duration="3868000" />
+      <workItem from="1634624043189" duration="37000" />
+      <workItem from="1635100678274" duration="2144000" />
+      <workItem from="1635964089049" duration="2958000" />
+      <workItem from="1636004103273" duration="594000" />
+      <workItem from="1636314678850" duration="3634000" />
+      <workItem from="1637364186121" duration="2402000" />
+      <workItem from="1637386773008" duration="4448000" />
+      <workItem from="1637484517652" duration="2225000" />
+      <workItem from="1637526325847" duration="22000" />
+      <workItem from="1637530440823" duration="898000" />
+      <workItem from="1637531377200" duration="35009000" />
+      <workItem from="1638168790665" duration="24608000" />
     </task>
     <task id="LOCAL-00134" summary="iterative GMM casting">
       <created>1623014026560</created>
@@ -567,7 +394,182 @@
       <option name="project" value="LOCAL" />
       <updated>1632636162715</updated>
     </task>
-    <option name="localTasksCounter" value="158" />
+    <task id="LOCAL-00158" summary="use kmedians, update jar, bug fix">
+      <created>1632716404888</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
+      <option name="project" value="LOCAL" />
+      <updated>1632716404888</updated>
+    </task>
+    <task id="LOCAL-00159" summary="update centroid calculations, restore single column assignments">
+      <created>1632722943804</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
+      <option name="project" value="LOCAL" />
+      <updated>1632722943804</updated>
+    </task>
+    <task id="LOCAL-00160" summary="restore kmeans, update shuffling">
+      <created>1632727716153</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
+      <option name="project" value="LOCAL" />
+      <updated>1632727716153</updated>
+    </task>
+    <task id="LOCAL-00161" summary="update score printing, code cleanup">
+      <created>1633034648537</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
+      <option name="project" value="LOCAL" />
+      <updated>1633034648537</updated>
+    </task>
+    <task id="LOCAL-00162" summary="remedian implementation">
+      <created>1633294288813</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
+      <option name="project" value="LOCAL" />
+      <updated>1633294288814</updated>
+    </task>
+    <task id="LOCAL-00163" summary="subsampling methods">
+      <created>1633296112562</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
+      <option name="project" value="LOCAL" />
+      <updated>1633296112562</updated>
+    </task>
+    <task id="LOCAL-00164" summary="Silhouette score">
+      <created>1634246095730</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
+      <option name="project" value="LOCAL" />
+      <updated>1634246095730</updated>
+    </task>
+    <task id="LOCAL-00165" summary="code cleanup, split up postprocessing/scoring">
+      <created>1634279167304</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
+      <option name="project" value="LOCAL" />
+      <updated>1634279167304</updated>
+    </task>
+    <task id="LOCAL-00166" summary="subsampling, query silhouette, bug fixes">
+      <created>1634320411057</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
+      <option name="project" value="LOCAL" />
+      <updated>1634320411057</updated>
+    </task>
+    <task id="LOCAL-00167" summary="bug fixes">
+      <created>1634331472729</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1634331472729</updated>
+    </task>
+    <task id="LOCAL-00168" summary="comment out silhouette">
+      <created>1635964205662</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
+      <option name="project" value="LOCAL" />
+      <updated>1635964205662</updated>
+    </task>
+    <task id="LOCAL-00169" summary="code cleanup, change defaults, save genome coordinates">
+      <created>1635965724346</created>
+      <option name="number" value="00169" />
+      <option name="presentableId" value="LOCAL-00169" />
+      <option name="project" value="LOCAL" />
+      <updated>1635965724346</updated>
+    </task>
+    <task id="LOCAL-00170" summary="upgrade straw jar">
+      <created>1637388602880</created>
+      <option name="number" value="00170" />
+      <option name="presentableId" value="LOCAL-00170" />
+      <option name="project" value="LOCAL" />
+      <updated>1637388602880</updated>
+    </task>
+    <task id="LOCAL-00171" summary="upgrade straw jar">
+      <created>1637487758999</created>
+      <option name="number" value="00171" />
+      <option name="presentableId" value="LOCAL-00171" />
+      <option name="project" value="LOCAL" />
+      <updated>1637487758999</updated>
+    </task>
+    <task id="LOCAL-00172" summary="upgrade straw jar">
+      <created>1637531135937</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
+      <option name="project" value="LOCAL" />
+      <updated>1637531135937</updated>
+    </task>
+    <task id="LOCAL-00173" summary="random silhouette, encode option">
+      <created>1637533333592</created>
+      <option name="number" value="00173" />
+      <option name="presentableId" value="LOCAL-00173" />
+      <option name="project" value="LOCAL" />
+      <updated>1637533333593</updated>
+    </task>
+    <task id="LOCAL-00174" summary="random silhouette, encode option">
+      <created>1637608886416</created>
+      <option name="number" value="00174" />
+      <option name="presentableId" value="LOCAL-00174" />
+      <option name="project" value="LOCAL" />
+      <updated>1637608886416</updated>
+    </task>
+    <task id="LOCAL-00175" summary="bug fixes">
+      <created>1637613478338</created>
+      <option name="number" value="00175" />
+      <option name="presentableId" value="LOCAL-00175" />
+      <option name="project" value="LOCAL" />
+      <updated>1637613478338</updated>
+    </task>
+    <task id="LOCAL-00176" summary="update bed printing">
+      <created>1637613820384</created>
+      <option name="number" value="00176" />
+      <option name="presentableId" value="LOCAL-00176" />
+      <option name="project" value="LOCAL" />
+      <updated>1637613820384</updated>
+    </task>
+    <task id="LOCAL-00177" summary="rename class">
+      <created>1637616868367</created>
+      <option name="number" value="00177" />
+      <option name="presentableId" value="LOCAL-00177" />
+      <option name="project" value="LOCAL" />
+      <updated>1637616868367</updated>
+    </task>
+    <task id="LOCAL-00178" summary="rename class">
+      <created>1638248826381</created>
+      <option name="number" value="00178" />
+      <option name="presentableId" value="LOCAL-00178" />
+      <option name="project" value="LOCAL" />
+      <updated>1638248826381</updated>
+    </task>
+    <task id="LOCAL-00179" summary="update cleaning, bug fix">
+      <created>1638299729895</created>
+      <option name="number" value="00179" />
+      <option name="presentableId" value="LOCAL-00179" />
+      <option name="project" value="LOCAL" />
+      <updated>1638299729895</updated>
+    </task>
+    <task id="LOCAL-00180" summary="code cleanup">
+      <created>1638306481905</created>
+      <option name="number" value="00180" />
+      <option name="presentableId" value="LOCAL-00180" />
+      <option name="project" value="LOCAL" />
+      <updated>1638306481905</updated>
+    </task>
+    <task id="LOCAL-00181" summary="set seeds">
+      <created>1638308407569</created>
+      <option name="number" value="00181" />
+      <option name="presentableId" value="LOCAL-00181" />
+      <option name="project" value="LOCAL" />
+      <updated>1638308407569</updated>
+    </task>
+    <task id="LOCAL-00182" summary="implement correlation check">
+      <created>1638333748522</created>
+      <option name="number" value="00182" />
+      <option name="presentableId" value="LOCAL-00182" />
+      <option name="project" value="LOCAL" />
+      <updated>1638333748522</updated>
+    </task>
+    <option name="localTasksCounter" value="183" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -592,32 +594,32 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="fix up gmm and kmeans runs; redo corr matrix" />
-    <MESSAGE value="bug fix, updated distances" />
-    <MESSAGE value="imputation" />
-    <MESSAGE value="remove quick flip regions" />
-    <MESSAGE value="iterative GMM casting" />
-    <MESSAGE value="casting code, various updates tested" />
-    <MESSAGE value="possible decent direction" />
-    <MESSAGE value="automate normalization detection" />
-    <MESSAGE value="Bug fix" />
-    <MESSAGE value="experimenting with additional transforms" />
-    <MESSAGE value="code cleanup, auto renaming setup" />
-    <MESSAGE value="bug fixes, slice encode version" />
-    <MESSAGE value="verbose printing handling" />
-    <MESSAGE value="update usage, bug fixes" />
-    <MESSAGE value="initial translocation filter" />
-    <MESSAGE value="translocation filterer added" />
-    <MESSAGE value="remove translocation detector, add filtering by zscore" />
-    <MESSAGE value="verbose printing" />
-    <MESSAGE value="umap plotting" />
-    <MESSAGE value="k-medians added" />
     <MESSAGE value="set a default, -2&lt;z&lt;2, revert log, no kmedians for now" />
     <MESSAGE value="parallelize code" />
     <MESSAGE value="parallelize more code" />
     <MESSAGE value="remove row correlation filtering" />
     <MESSAGE value="set version" />
-    <option name="LAST_COMMIT_MESSAGE" value="set version" />
+    <MESSAGE value="use kmedians, update jar, bug fix" />
+    <MESSAGE value="update centroid calculations, restore single column assignments" />
+    <MESSAGE value="restore kmeans, update shuffling" />
+    <MESSAGE value="update score printing, code cleanup" />
+    <MESSAGE value="remedian implementation" />
+    <MESSAGE value="subsampling methods" />
+    <MESSAGE value="Silhouette score" />
+    <MESSAGE value="code cleanup, split up postprocessing/scoring" />
+    <MESSAGE value="subsampling, query silhouette, bug fixes" />
+    <MESSAGE value="comment out silhouette" />
+    <MESSAGE value="code cleanup, change defaults, save genome coordinates" />
+    <MESSAGE value="upgrade straw jar" />
+    <MESSAGE value="random silhouette, encode option" />
+    <MESSAGE value="bug fixes" />
+    <MESSAGE value="update bed printing" />
+    <MESSAGE value="rename class" />
+    <MESSAGE value="update cleaning, bug fix" />
+    <MESSAGE value="code cleanup" />
+    <MESSAGE value="set seeds" />
+    <MESSAGE value="implement correlation check" />
+    <option name="LAST_COMMIT_MESSAGE" value="implement correlation check" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -629,6 +631,10 @@
           <url>file://$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java</url>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.ArrayIndexOutOfBoundsException" package="java.lang" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

@@ -38,6 +38,11 @@ public class NearDiagonalTrim {
 
     private static void trimDiagonalWithin(float[][] data, int resolution) {
         int pixelDistance = DISTANCE_CUTOFF / resolution;
+        trimDiagonalWithinPixelDist(data, pixelDistance);
+
+    }
+
+    public static void trimDiagonalWithinPixelDist(float[][] data, int pixelDistance) {
         for (int i = 0; i < data.length; i++) {
             int limit = Math.min(data[i].length, i + pixelDistance);
             for (int j = i; j < limit; j++) {

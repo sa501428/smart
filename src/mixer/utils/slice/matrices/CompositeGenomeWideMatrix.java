@@ -35,9 +35,7 @@ import mixer.algos.Slice;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
-import mixer.utils.similaritymeasures.RobustEuclideanDistance;
-import mixer.utils.similaritymeasures.RobustManhattanDistance;
-import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.SimilarityMatrixTools;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.gmm.SimpleScatterPlot;
@@ -53,18 +51,18 @@ public abstract class CompositeGenomeWideMatrix {
     protected final int resolution;
     protected final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
     protected final Chromosome[] chromosomes;
-    protected final Random generator = new Random(0);
+    protected final Random generator;
     protected final File outputDirectory;
     private MatrixAndWeight gwCleanMatrix, projectedData = null;
     private float[][] umapProjection;
-    protected final GWBadIndexFinder badIndexLocations;
+    protected final BadIndexFinder badIndexLocations;
     protected final int maxClusterSizeExpected;
 
     public CompositeGenomeWideMatrix(ChromosomeHandler chromosomeHandler, Dataset ds,
                                      NormalizationType[] norms,
                                      int resolution,
                                      File outputDirectory, long seed,
-                                     GWBadIndexFinder badIndexLocations,
+                                     BadIndexFinder badIndexLocations,
                                      int maxClusterSizeExpected) {
         this.maxClusterSizeExpected = maxClusterSizeExpected;
         this.norms = norms;
@@ -73,7 +71,7 @@ public abstract class CompositeGenomeWideMatrix {
         }
         this.resolution = resolution;
         this.outputDirectory = outputDirectory;
-        this.generator.setSeed(seed);
+        generator = new Random(seed);
         this.badIndexLocations = badIndexLocations;
 
         chromosomes = chromosomeHandler.getAutosomalChromosomesArray();
@@ -99,10 +97,11 @@ public abstract class CompositeGenomeWideMatrix {
 
         inPlaceScaleSqrtWeightCol();
 
-        if (MixerGlobals.printVerboseComments) {
-            File file1 = new File(outputDirectory, "zscore_matrix.npy");
-            MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix.matrix);
-        }
+        File file0 = new File(outputDirectory, "genome_indices.npy");
+        MatrixTools.saveMatrixTextNumpy(file0.getAbsolutePath(), getGenomeIndices());
+
+        File file1 = new File(outputDirectory, "slice_matrix.npy");
+        MatrixTools.saveMatrixTextNumpy(file1.getAbsolutePath(), gwCleanMatrix.matrix);
 
         if (Slice.USE_INTER_CORR_CLUSTERING || Slice.PROJECT_TO_UMAP) {
             projectedData = new MatrixAndWeight(SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix.matrix,
@@ -110,10 +109,8 @@ public abstract class CompositeGenomeWideMatrix {
 
             umapProjection = SimpleScatterPlot.getUmapProjection2D(projectedData.matrix);
 
-            if (MixerGlobals.printVerboseComments) {
-                File file2 = new File(outputDirectory, "corr_matrix.npy");
-                MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData.matrix);
-            }
+            File file2 = new File(outputDirectory, "corr_slice_matrix.npy");
+            MatrixTools.saveMatrixTextNumpy(file2.getAbsolutePath(), projectedData.matrix);
 
             runUmapAndSaveMatricesByChrom(outputDirectory);
         }
@@ -122,6 +119,18 @@ public abstract class CompositeGenomeWideMatrix {
         projectedData = MatrixImputer.imputeUntilNoNansOnlyNN(gwCleanMatrix);
         //corrData = SimilarityMatrixTools.getCosinePearsonCorrMatrix(gwCleanMatrix, 50, generator.nextLong());
         */
+    }
+
+    protected int[][] getGenomeIndices() {
+        int n = gwCleanMatrix.matrix.length;
+        int[][] coordinates = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
+            coordinates[i][0] = interval.getChrIndex();
+            coordinates[i][1] = interval.getX1();
+            coordinates[i][2] = interval.getX2();
+        }
+        return coordinates;
     }
 
     public void inPlaceScaleSqrtWeightCol() {
@@ -157,21 +166,15 @@ public abstract class CompositeGenomeWideMatrix {
         plotter.plot(colors, outfile.getAbsolutePath());
     }
 
-    public synchronized double processKMeansClusteringResult(Cluster[] clusters,
-                                                             GenomeWideList<SubcompartmentInterval> subcompartments,
-                                                             boolean useCorr, boolean useKMedians) {
+    public void processKMeansClusteringResult(Cluster[] clusters,
+                                              GenomeWideList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
             System.out.println("GW Composite data vs clustered into " + clusters.length + " clusters");
         }
 
-        double withinClusterSumOfSquares = 0;
-        int numGoodClusters = 0;
         int genomewideCompartmentID = 0;
-
-        Set<Integer> badIndices = new HashSet<>();
-
         for (int z = 0; z < clusters.length; z++) {
             Cluster cluster = clusters[z];
             int currentClusterID = ++genomewideCompartmentID;
@@ -180,22 +183,7 @@ public abstract class CompositeGenomeWideMatrix {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
             }
 
-            if (cluster.getMemberIndexes().length < 5) {
-                for (int badIndex : cluster.getMemberIndexes()) {
-                    badIndices.add(badIndex);
-                }
-                withinClusterSumOfSquares += Float.MAX_VALUE;
-            } else {
-                numGoodClusters++;
-            }
-
             for (int i : cluster.getMemberIndexes()) {
-                if (useCorr) {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), projectedData.matrix[i], useKMedians);
-                } else {
-                    withinClusterSumOfSquares += getDistance(cluster.getCenter(), gwCleanMatrix.matrix[i], useKMedians);
-                }
-
                 if (rowIndexToIntervalMap.containsKey(i)) {
                     SubcompartmentInterval interv = rowIndexToIntervalMap.get(i);
                     if (interv != null) {
@@ -205,22 +193,8 @@ public abstract class CompositeGenomeWideMatrix {
             }
         }
 
-        withinClusterSumOfSquares = withinClusterSumOfSquares / numGoodClusters;
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("Final WCSS " + withinClusterSumOfSquares);
-        }
-
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
-
-        return withinClusterSumOfSquares;
-    }
-
-    protected double getDistance(float[] center, float[] vector, boolean useKMedians) {
-        if (useKMedians) {
-            return RobustManhattanDistance.SINGLETON.distance(center, vector);
-        }
-        return RobustEuclideanDistance.getNonNanMeanSquaredError(center, vector);
     }
 
     public synchronized void processGMMClusteringResult(int[] clusterID,
@@ -270,7 +244,11 @@ public abstract class CompositeGenomeWideMatrix {
         );
     }
 
-    public GWBadIndexFinder getBadIndices() {
+    public BadIndexFinder getBadIndices() {
         return badIndexLocations;
+    }
+
+    public Map<Integer, SubcompartmentInterval> getRowIndexToIntervalMap() {
+        return rowIndexToIntervalMap;
     }
 }

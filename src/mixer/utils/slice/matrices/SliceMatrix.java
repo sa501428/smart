@@ -34,7 +34,7 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
 import mixer.algos.Slice;
-import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -47,7 +47,7 @@ import java.util.Set;
 public class SliceMatrix extends CompositeGenomeWideMatrix {
 
     public SliceMatrix(ChromosomeHandler chromosomeHandler, Dataset ds, NormalizationType[] norms,
-                       int resolution, File outputDirectory, long seed, GWBadIndexFinder badIndexLocations,
+                       int resolution, File outputDirectory, long seed, BadIndexFinder badIndexLocations,
                        int maxClusterSizeExpected) {
         super(chromosomeHandler, ds, norms, resolution, outputDirectory, seed,
                 badIndexLocations, maxClusterSizeExpected);
@@ -132,7 +132,7 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
         return indexToCompressedLength;
     }
 
-    private void fillInChromosomeRegion(float[][] matrix, GWBadIndexFinder badIndices,
+    private void fillInChromosomeRegion(float[][] matrix, BadIndexFinder badIndices,
                                         Dataset ds, int resolution, boolean isIntra, IndexOrderer orderer,
                                         Chromosome chr1, int offsetIndex1, int compressedOffsetIndex1,
                                         Chromosome chr2, int offsetIndex2, int compressedOffsetIndex2,

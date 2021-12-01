@@ -24,6 +24,7 @@
 
 package mixer.utils.matrix;
 
+import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.shuffle.scoring.KLDivergenceScoring;
 import mixer.utils.shuffle.scoring.VarianceScoring;
@@ -31,6 +32,7 @@ import mixer.utils.shuffle.scoring.VarianceScoring;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ScoreContainer {
 
@@ -79,10 +81,10 @@ public class ScoreContainer {
     public void calculateRatios() {
         for (int y = 0; y < ratios.length; y++) {
             for (int l = 0; l < ratios[0].length; l++) {
-                logRatios[y][l] = logShuffled[y][l] / logBaselines[y][l];
-                ratios[y][l] = shuffled[y][l] / baselines[y][l];
-                aggRatios[y][l] = aggShuffled[y][l] / aggBaselines[y][l];
-                aggLogRatios[y][l] = aggLogShuffled[y][l] / aggLogBaselines[y][l];
+                logRatios[y][l] = logBaselines[y][l] / logShuffled[y][l];
+                ratios[y][l] = baselines[y][l] / shuffled[y][l];
+                aggRatios[y][l] = aggBaselines[y][l] / aggShuffled[y][l];
+                aggLogRatios[y][l] = aggLogBaselines[y][l] / aggLogShuffled[y][l];
             }
         }
     }
@@ -116,9 +118,11 @@ public class ScoreContainer {
 
     public void savePlotsAndResults(File outfolder, String prefix, String[] names) {
         try {
-            writeToFile(outfolder, "average_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
-            writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", aggShuffled, aggBaselines, aggRatios, names);
-            writeToFile(outfolder, "average_scores_" + prefix + "_log.txt", logShuffled, logBaselines, logRatios, names);
+            if (MixerGlobals.printVerboseComments) {
+                writeToFile(outfolder, "average_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
+                writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", aggShuffled, aggBaselines, aggRatios, names);
+                writeToFile(outfolder, "average_scores_" + prefix + "_log.txt", logShuffled, logBaselines, logRatios, names);
+            }
             writeToFile(outfolder, "aggregate_scores_" + prefix + "_log.txt", aggLogShuffled, aggLogBaselines, aggLogRatios, names);
         } catch (Exception ee) {
             System.err.println("Unable to write results to text file");
@@ -128,17 +132,30 @@ public class ScoreContainer {
     private void writeToFile(File outfolder, String filename, double[][] shuffle, double[][] baseline, double[][] ratio,
                              String[] names) throws IOException {
         FileWriter myWriter = new FileWriter(new File(outfolder, filename));
+        double[] geometricMeans = new double[scoreTypes.length];
+        Arrays.fill(geometricMeans, 1);
+
         for (int y = 0; y < ratio.length; y++) {
             myWriter.write(names[y] + "------------------\n");
             for (int z = 0; z < ratio[y].length; z++) {
-                myWriter.write(scoreTypes[z] + " Loss\n");
+                myWriter.write("CHIC Score (" + scoreTypes[z] + ")\n");
                 myWriter.write("Shuffled  : " + shuffle[y][z] + "\n");
                 myWriter.write("Baseline  : " + baseline[y][z] + "\n");
-                myWriter.write("Ratio     : " + ratio[y][z] + "\n\n");
-
+                myWriter.write("Score     : " + ratio[y][z] + "\n\n");
+                geometricMeans[z] *= ratio[y][z];
             }
             myWriter.write("----------------------------------------------------------------\n");
         }
+
+        for (int z = 0; z < scoreTypes.length; z++) {
+            geometricMeans[z] = Math.pow(geometricMeans[z], 1.0 / names.length);
+        }
+
+        myWriter.write("Geometric Mean of CHIC Scores------------------\n\n");
+        for (int z = 0; z < scoreTypes.length; z++) {
+            myWriter.write("CHIC Score (" + scoreTypes[z] + "): " + geometricMeans[z] + "\n\n");
+        }
+
         myWriter.close();
     }
 }

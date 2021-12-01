@@ -46,18 +46,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IndexOrderer {
 
     private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
-    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000, TWENTY_MB = 20000000;
+    private final int DISTANCE = 5000000, ONE_HUNDRED_KB = 100000,
+            TEN_MB = 10000000, TWENTY_MB = 20000000, FIVE_MB = 5000000, FIFTY_MB = 50000000;
     private final int IGNORE = -1;
     private final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
     private final float CORR_MIN = 0.2f;
-    private final Random generator = new Random(0);
+    private final Random generator;
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
     private final File problemFile, initFile;
     private final int hires, lowres, resFactor;
+    private final boolean SHOULD_FILTER_SINGLE_COLUMNS = false;
 
     public IndexOrderer(Dataset ds, Chromosome[] chromosomes, int inputResolution, NormalizationType normalizationType,
-                        GWBadIndexFinder badIndexLocations, long seed, File outputDirectory,
+                        BadIndexFinder badIndexLocations, long seed, File outputDirectory,
                         int maxClusterSizeExpected) {
         lowres = Math.max(inputResolution, 100000);
         hires = inputResolution;
@@ -69,17 +71,14 @@ public class IndexOrderer {
 
         problemFile = new File(outputDirectory, "problems.bed");
         initFile = new File(outputDirectory, "initial_split.bed");
-
-        generator.setSeed(seed);
+        generator = new Random(seed);
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowres);
             try {
                 float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, lowres,
-                        normalizationType, 10f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                        true, 1, 0);
+                        normalizationType, 100f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
+                        true, 1, 0, true);
                 Set<Integer> badIndices = badIndexLocations.getBadIndices(chrom);
-
-                matrix = IntraMatrixCleaner.cleanAndCompress(chrom, matrix, lowres, badIndices, resFactor);
                 int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices);
                 int[] hiResNewOrderIndexes = convertToHigherRes(newOrderIndexes, chrom);
                 chromToReorderedIndices.put(chrom, hiResNewOrderIndexes);
@@ -89,9 +88,7 @@ public class IndexOrderer {
             System.out.print(".");
         }
 
-        if (MixerGlobals.printVerboseComments) {
-            writeOutInitialResults();
-        }
+        writeOutInitialResults();
     }
 
     public static float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
@@ -134,24 +131,33 @@ public class IndexOrderer {
         return hiResOrderAssignments;
     }
 
-    private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] initialMatrix, Set<Integer> badIndices) {
-        int[] newIndexOrderAssignments = generateNewAssignments(initialMatrix.length, badIndices);
-        int numPotentialClusters = (int) (chromosome.getLength() / TWENTY_MB) + 5;
-        numPotentialClusters = Math.max(numPotentialClusters, 6);
+    private int[] getNewOrderOfIndices(Chromosome chromosome, float[][] oeMatrix1, Set<Integer> badIndices) {
 
-        float[][] matrix = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(initialMatrix,
+        IntraMatrixCleaner.oeClean(oeMatrix1, badIndices, resFactor);
+        int[] newIndexOrderAssignments = generateNewAssignments(oeMatrix1.length, badIndices);
+        int numPotentialClusters = (int) (chromosome.getLength() / FIFTY_MB) + 7;
+        numPotentialClusters = Math.max(numPotentialClusters, 7);
+
+        float[][] matrixCorr1 = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(oeMatrix1,
                 RobustCorrelationSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
+        IntraMatrixCleaner.basicClean(matrixCorr1, badIndices, resFactor, FIVE_MB / lowres);
+        //float[][] matrix2 = IntraMatrixCleaner.prioritizeHighValues(matrix1);
+        //float[][] matrix = FloatMatrixTools.concatenate(matrixCorr1, matrix2);
 
-        int gCounter = doAssignmentsByCorrWithCentroids(matrix, newIndexOrderAssignments, chromosome.getName(),
-                numPotentialClusters);
-        indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
+        try {
+            int gCounter = doAssignmentsByCorrWithCentroids(matrixCorr1, newIndexOrderAssignments, chromosome.getName(),
+                    numPotentialClusters);
+            indexToRearrangedLength.put(chromosome.getIndex(), gCounter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return newIndexOrderAssignments;
     }
 
     private int doAssignmentsByCorrWithCentroids(float[][] matrix, int[] newIndexOrderAssignments, String chromName,
                                                  int numInitialClusters) {
         float[][] centroids = new QuickCentroids(quickCleanMatrix(matrix, newIndexOrderAssignments),
-                numInitialClusters, generator.nextLong(), 100).generateCentroids(5);
+                numInitialClusters, generator.nextLong(), 20).generateCentroids(2, false);
 
         if (MixerGlobals.printVerboseComments) {
             System.out.println("IndexOrderer: num centroids (init " + numInitialClusters + ") for " + chromName + ": " + centroids.length);
@@ -196,18 +202,20 @@ public class IndexOrderer {
             }
         }
 
-        int filtered = 0;
-        for (int z = 0; z < clusterAssignment.length; z++) {
-            int zMinus1 = Math.max(0, z - 1);
-            int zPlus1 = Math.min(z + 1, clusterAssignment.length - 1);
-            if (clusterAssignment[z] != clusterAssignment[zMinus1]
-                    && clusterAssignment[z] != clusterAssignment[zPlus1]) {
-                clusterAssignment[z] = IGNORE;
-                filtered++;
+        if (SHOULD_FILTER_SINGLE_COLUMNS) {
+            int filtered = 0;
+            for (int z = 0; z < clusterAssignment.length; z++) {
+                int zMinus1 = Math.max(0, z - 1);
+                int zPlus1 = Math.min(z + 1, clusterAssignment.length - 1);
+                if (clusterAssignment[z] != clusterAssignment[zMinus1]
+                        && clusterAssignment[z] != clusterAssignment[zPlus1]) {
+                    clusterAssignment[z] = IGNORE;
+                    filtered++;
+                }
             }
-        }
-        if (MixerGlobals.printVerboseComments) {
-            System.out.println("Post filtered: " + filtered);
+            if (MixerGlobals.printVerboseComments) {
+                System.out.println("Post filtered: " + filtered);
+            }
         }
 
         for (int i = 0; i < clusterAssignment.length; i++) {

@@ -31,8 +31,7 @@ public class DistanceOutlierFinder {
     public static Set<Integer> getOutliers(float[][] matrix, Set<Integer> badIndices) {
         Set<Integer> outliers = new HashSet<>();
         QuickCentroids centroidMaker = new QuickCentroids(matrix, 200, 0L, 100);
-        float[][] centroids = centroidMaker.generateCentroids(5);
-
+        float[][] centroids = centroidMaker.generateCentroids(5, true);
         return outliers;
     }
 }

@@ -24,32 +24,25 @@
 
 package mixer.utils.slice.kmeans;
 
-import com.google.common.util.concurrent.AtomicDouble;
-import javastraw.feature1D.GenomeWideList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.MixerGlobals;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
-import mixer.utils.slice.structures.SubcompartmentInterval;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMedians;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GenomeWideKmeansRunner {
 
     private final float[][] matrix;
     private final ChromosomeHandler chromosomeHandler;
     private final CompositeGenomeWideMatrix interMatrix;
-    private final AtomicInteger numActualClusters = new AtomicInteger(0);
-    private final AtomicDouble withinClusterSumOfSquaresForRun = new AtomicDouble(0);
-    private GenomeWideList<SubcompartmentInterval> finalCompartments;
-    private int numClusters = 0;
-    private final List<List<Integer>> indicesMap = new ArrayList<>();
+    private final AtomicBoolean thisRunIsNotDone = new AtomicBoolean(true);
+    private KmeansResult result = null;
+
     private final boolean useCorrMatrix;
     private final boolean useKMedians;
 
@@ -64,11 +57,8 @@ public class GenomeWideKmeansRunner {
     }
 
     public void prepareForNewRun(int numClusters) {
-        this.numClusters = numClusters;
-        numActualClusters.set(0);
-        withinClusterSumOfSquaresForRun.set(0);
-        indicesMap.clear();
-        finalCompartments = new GenomeWideList<>(chromosomeHandler);
+        result = new KmeansResult(numClusters, chromosomeHandler);
+        thisRunIsNotDone.set(true);
     }
 
     public void launchKmeansGWMatrix(long seed, int maxIters) {
@@ -78,6 +68,7 @@ public class GenomeWideKmeansRunner {
                 System.out.println("Using seed " + seed);
             }
 
+            int numClusters = result.getNumClustersDesired();
             RobustConcurrentKMeans kMeans;
             if (useKMedians) {
                 kMeans = new RobustConcurrentKMedians(matrix,
@@ -98,12 +89,10 @@ public class GenomeWideKmeansRunner {
                 @Override
                 public void kmeansComplete(Cluster[] preSortedClusters) {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
-                    populateIndicesMap(clusters);
                     System.out.print(".");
-                    double wcss = interMatrix.processKMeansClusteringResult(clusters, finalCompartments,
-                            useCorrMatrix, useKMedians);
-                    numActualClusters.set(clusters.length);
-                    withinClusterSumOfSquaresForRun.set(wcss);
+                    result.processResultAndUpdateScoringMetrics(clusters, interMatrix, useKMedians,
+                            useCorrMatrix, 2 * seed);
+                    thisRunIsNotDone.set(false);
                 }
 
                 @Override
@@ -119,20 +108,9 @@ public class GenomeWideKmeansRunner {
         waitUntilDone();
     }
 
-    private void populateIndicesMap(Cluster[] clusters) {
-        indicesMap.clear();
-        for (Cluster cluster : clusters) {
-            List<Integer> group = new ArrayList<>();
-            for (int member : cluster.getMemberIndexes()) {
-                group.add(member);
-            }
-            indicesMap.add(group);
-        }
-    }
-
     private void waitUntilDone() {
-        while (numActualClusters.get() < 1 && withinClusterSumOfSquaresForRun.get() == 0.0) {
-            System.out.print(".");
+        while (thisRunIsNotDone.get()) {
+            System.out.print("*");
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
@@ -141,39 +119,15 @@ public class GenomeWideKmeansRunner {
         }
     }
 
-    public int getNumActualClusters() {
-        return numActualClusters.get();
-    }
-
-    public double getWithinClusterSumOfSquares() {
-        return withinClusterSumOfSquaresForRun.get();
-    }
-
-    public GenomeWideList<SubcompartmentInterval> getFinalCompartments() {
-        return finalCompartments.deepClone();
-    }
-
-    public List<List<Integer>> getIndicesMapCopy() {
-        List<List<Integer>> output = new ArrayList<>();
-        for (List<Integer> group : indicesMap) {
-            output.add(getDeepCopy(group));
-        }
-        return output;
-    }
-
-    private List<Integer> getDeepCopy(List<Integer> listA) {
-        List<Integer> output = new ArrayList<>();
-        for (int a : listA) {
-            output.add(a);
-        }
-        return output;
-    }
-
     public int getNumColumns() {
         return matrix[0].length;
     }
 
     public int getNumRows() {
         return matrix.length;
+    }
+
+    public KmeansResult getResult() {
+        return result;
     }
 }

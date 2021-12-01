@@ -51,7 +51,7 @@ public class SimpleTranslocationFinder {
     public SimpleTranslocationFinder(List<Dataset> datasets,
                                      Chromosome[] chroms,
                                      List<NormalizationType[]> normalizationTypes,
-                                     GWBadIndexFinder badIndexFinder, File outputDirectory) {
+                                     BadIndexFinder badIndexFinder, File outputDirectory) {
         this.outputDirectory = outputDirectory;
 
         for (int z = 0; z < datasets.size(); z++) {
@@ -97,7 +97,7 @@ public class SimpleTranslocationFinder {
     }
 
     private DescriptiveStatistics initialPass(Chromosome[] chroms, Dataset ds, int lowestResZoom,
-                                              NormalizationType normGW, GWBadIndexFinder badIndexFinder) {
+                                              NormalizationType normGW, BadIndexFinder badIndexFinder) {
         DescriptiveStatistics gwStats = new DescriptiveStatistics();
         for (int i = 0; i < chroms.length; i++) {
             Chromosome chr1 = chroms[i];
@@ -125,7 +125,7 @@ public class SimpleTranslocationFinder {
     }
 
     private TranslocationSet secondPass(Chromosome[] chroms, Dataset ds, int lowestResZoom,
-                                        NormalizationType normGW, GWBadIndexFinder badIndexFinder,
+                                        NormalizationType normGW, BadIndexFinder badIndexFinder,
                                         double mean, double stdDev) {
         TranslocationSet translocationSet = new TranslocationSet();
         Feature2DList feature2DList = new Feature2DList();

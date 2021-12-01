@@ -49,7 +49,7 @@ public class Slice extends MixerCLT {
     public static final boolean USE_INTER_CORR_CLUSTERING = false;
     public static final boolean PROJECT_TO_UMAP = true;
     public static final boolean USE_WEIGHTED_MEAN = false;
-    public static boolean FILTER_OUTLIERS = false;
+    public static boolean FILTER_OUTLIERS = true;
     private final List<Dataset> datasetList = new ArrayList<>();
     private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
@@ -58,6 +58,8 @@ public class Slice extends MixerCLT {
     private File outputDirectory;
     private List<NormalizationType[]> normsList;
     private String prefix = "";
+    public static boolean USE_KMEANS = false, USE_KMEDIANS = true;
+    public static boolean USE_ENCODE_MODE = false;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
@@ -114,6 +116,8 @@ public class Slice extends MixerCLT {
         if (subsampling > 0) {
             SliceMatrixCleaner.NUM_PER_CENTROID = subsampling;
         }
+
+        USE_ENCODE_MODE = mixerParser.getENCODEOption();
     }
 
 

@@ -55,7 +55,8 @@ public class OutlierCleaner {
     public Set<Integer> getConsistentOutliers(int resolution, File outputDirectory) {
         Set<Integer> outlierIndices = getCorrOutlierIndices(matrix, useOnlyCorr);
         if (!useOnlyCorr) {
-            float[][] centroids = new QuickCentroids(matrix, numInitialClusters, 5L).generateCentroids(ONE_MB / resolution);
+            float[][] centroids = new QuickCentroids(matrix, numInitialClusters,
+                    5L).generateCentroids(ONE_MB / resolution, true);
             for (SimilarityMetric metric : new SimilarityMetric[]{RobustEuclideanDistance.SINGLETON,
                     RobustManhattanDistance.SINGLETON}) {
                 outlierIndices.addAll(getOutlierIndices(matrix, centroids, metric, outputDirectory));

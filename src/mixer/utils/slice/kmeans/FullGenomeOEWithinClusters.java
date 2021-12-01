@@ -30,7 +30,8 @@ import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import mixer.algos.Slice;
 import mixer.utils.slice.CorrMatrixClusterer;
-import mixer.utils.slice.cleaning.GWBadIndexFinder;
+import mixer.utils.slice.EncodeExportUtils;
+import mixer.utils.slice.cleaning.BadIndexFinder;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
@@ -50,17 +51,16 @@ public class FullGenomeOEWithinClusters {
     private final ChromosomeHandler chromosomeHandler;
     private final SliceMatrix sliceMatrix;
     private final int maxIters = 200;
-
-    private final Random generator = new Random(0);
+    private final Random generator;
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution,
                                       List<NormalizationType[]> normalizationTypes,
                                       File outputDirectory, long seed) {
         this.chromosomeHandler = chromosomeHandler;
         this.outputDirectory = outputDirectory;
-        generator.setSeed(seed);
+        generator = new Random(seed);
 
-        GWBadIndexFinder badIndexFinder = new GWBadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
+        BadIndexFinder badIndexFinder = new BadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
                 resolution, normalizationTypes);
         badIndexFinder.createInternalBadList(datasets, chromosomeHandler.getAutosomalChromosomesArray());
 
@@ -80,18 +80,20 @@ public class FullGenomeOEWithinClusters {
 
     public void extractFinalGWSubcompartments(String prefix) {
         System.out.println("Genomewide clustering");
-        /*
-        runClusteringOnRawMatrixWithNans(prefix, false);
-        if (Slice.USE_INTER_CORR_CLUSTERING) {
-            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", false);
+        if (Slice.USE_KMEANS) {
+            processClustering(prefix, false);
         }
-        */
 
+        if (Slice.USE_KMEDIANS) {
+            sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
+            processClustering(prefix, true);
+        }
+    }
 
-        sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
-        runClusteringOnRawMatrixWithNans(prefix, true);
+    private void processClustering(String prefix, boolean useKMedians) {
+        runClusteringOnRawMatrixWithNans(prefix, useKMedians);
         if (Slice.USE_INTER_CORR_CLUSTERING) {
-            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", true);
+            CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", useKMedians);
         }
     }
 
@@ -105,20 +107,24 @@ public class FullGenomeOEWithinClusters {
 
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, evaluator, z,
-                    maxIters, kmeansClustersToResults, kmeansIndicesMap, useKMedians);
-            exportKMeansClusteringResults(z, evaluator, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
+                    maxIters, kmeansClustersToResults, kmeansIndicesMap);
+            exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
+        if (Slice.USE_ENCODE_MODE) {
+            EncodeExportUtils.exportSubcompartments(sliceMatrix, kmeansIndicesMap, evaluator, prefix,
+                    outputDirectory, startingClusterSizeK);
+        }
+        exportEvaluatorInfo(evaluator, useKMedians);
         System.out.println(".");
     }
 
-    public void exportKMeansClusteringResults(int z, KmeansEvaluator evaluator,
+    public void exportKMeansClusteringResults(int z,
                                               Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
                                               String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
                                               boolean useKMedians) {
         int k = z + startingClusterSizeK;
         String kstem = "kmeans";
         if (useKMedians) kstem = "kmedians";
-        evaluator.export(outputDirectory, kstem);
         GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
         SliceUtils.collapseGWList(gwList);
         File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
@@ -129,25 +135,26 @@ public class FullGenomeOEWithinClusters {
     public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
                                                 KmeansEvaluator evaluator, int z, int maxIters,
                                                 Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
-                                                Map<Integer, List<List<Integer>>> indicesMap,
-                                                boolean useKMedians) {
+                                                Map<Integer, List<List<Integer>>> indicesMap) {
         int numClusters = z + startingClusterSizeK;
         int numColumns = kmeansRunner.getNumColumns();
         int numRows = kmeansRunner.getNumRows();
         for (int p = 0; p < attemptsForKMeans; p++) {
-            kmeansRunner.prepareForNewRun(numClusters);
-            kmeansRunner.launchKmeansGWMatrix(generator.nextLong(), maxIters);
-
-            int numActualClustersThisAttempt = kmeansRunner.getNumActualClusters();
-            if (numActualClustersThisAttempt == numClusters) {
-                double wcss = kmeansRunner.getWithinClusterSumOfSquares();
-                if (wcss < evaluator.getWCSS(z)) {
-                    evaluator.setMseAicBicValues(z, numClusters, wcss, numRows, numColumns);
-                    indicesMap.put(z, kmeansRunner.getIndicesMapCopy());
-                    numClustersToResults.put(numClusters, kmeansRunner.getFinalCompartments());
+            boolean noClusteringFound = true;
+            while (noClusteringFound) {
+                kmeansRunner.prepareForNewRun(numClusters);
+                kmeansRunner.launchKmeansGWMatrix(generator.nextLong(), maxIters);
+                KmeansResult currResult = kmeansRunner.getResult();
+                if (currResult.getNumActualClusters() == numClusters) {
+                    noClusteringFound = false;
+                    if (currResult.getWithinClusterSumOfSquares() < evaluator.getWCSS(z)) {
+                        evaluator.setMseAicBicValues(z, numRows, numColumns, currResult);
+                        indicesMap.put(z, currResult.getIndicesMapClone());
+                        numClustersToResults.put(numClusters, currResult.getFinalCompartmentsClone());
+                    }
                 }
+                System.out.print(".");
             }
-            System.out.print(".");
         }
     }
 
@@ -165,5 +172,11 @@ public class FullGenomeOEWithinClusters {
 
     public int getMaxIters() {
         return maxIters;
+    }
+
+    public void exportEvaluatorInfo(KmeansEvaluator evaluator, boolean useKmedians) {
+        String kstem = "kmeans";
+        if (useKmedians) kstem = "kmedians";
+        evaluator.export(outputDirectory, kstem);
     }
 }

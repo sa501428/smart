@@ -24,12 +24,15 @@
 
 package mixer.utils.slice.cleaning;
 
-import javastraw.reader.basics.Chromosome;
+import mixer.utils.common.FloatMatrixTools;
 
 import java.util.Arrays;
 import java.util.Set;
 
 public class IntraMatrixCleaner {
+
+    private static final int INTRA_ZSCORE_CUTOFF = 3;
+    private static final int INTRA_LINEAR_OE_CUTOFF = 30;
 
     private static void nanFillTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix, int resFactor) {
         if (badIndices.size() < 1) return;
@@ -45,23 +48,29 @@ public class IntraMatrixCleaner {
         }
     }
 
-    public static float[][] cleanAndCompress(Chromosome chrom, float[][] matrix, int resolution,
-                                             Set<Integer> badIndices, int resFactor) {
-        //NearDiagonalTrim.nanFill(chrom, matrix, resolution);
+    public static float[][] basicClean(float[][] matrix, Set<Integer> badIndices, int resFactor, int pixelDist) {
         nanFillTheRowsColumnsWeDontWant(badIndices, matrix, resFactor);
+        NearDiagonalTrim.trimDiagonalWithinPixelDist(matrix, pixelDist);
+        return matrix;
+    }
+
+    public static float[][] oeClean(float[][] matrix, Set<Integer> badIndices, int resFactor) {
+        basicClean(matrix, badIndices, resFactor, 3);
+        nanFillZeroEntries(matrix);
+        nanFillExtremeOEValues(matrix);
         // float[][] compressedMatrix = compress(matrix, smoothingInterval);
-        //nanFillZeroEntries(matrix);
-        //subtractOEBy1(matrix);
         // ZScoreTools.inPlaceZscoreDownCol(matrix);
         // return rollingAverage(matrix, smoothingInterval);
         return matrix;
     }
 
-    private static void subtractOEBy1(float[][] matrix) {
+    private static void nanFillExtremeOEValues(float[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 if (!Float.isNaN(matrix[i][j])) {
-                    matrix[i][j] -= 1; // because 1 means O = E -> 0 for corr calcs
+                    if (Math.abs(matrix[i][j]) > INTRA_LINEAR_OE_CUTOFF) {
+                        matrix[i][j] = Float.NaN;
+                    }
                 }
             }
         }
@@ -70,7 +79,7 @@ public class IntraMatrixCleaner {
     private static void nanFillZeroEntries(float[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] < 1e-10) {
+                if (Math.abs(matrix[i][j]) < 1e-10) {
                     matrix[i][j] = Float.NaN;
                 }
             }
@@ -109,5 +118,27 @@ public class IntraMatrixCleaner {
             }
         }
         return result;
+    }
+
+    public static void prioritizeHighOE(float[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (!Float.isNaN(matrix[i][j])) {
+                    float val = matrix[i][j];
+                    //int cutoff = 5;
+                    //val = Math.max(-cutoff, Math.min(cutoff, val));
+                    //val -= 2;
+                    //matrix[i][j] = (float) Math.expm1(Math.round(matrix[i][j]));
+                    //matrix[i][j] = (float) (Math.exp(val) - Math.exp(-val));
+                    matrix[i][j] = val * val * val;
+                }
+            }
+        }
+    }
+
+    public static float[][] prioritizeHighValues(float[][] matrix) {
+        float[][] highMatrix = FloatMatrixTools.deepClone(matrix);
+        IntraMatrixCleaner.prioritizeHighOE(highMatrix);
+        return highMatrix;
     }
 }

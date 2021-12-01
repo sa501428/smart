@@ -65,11 +65,12 @@ public class SimilarityMatrixTools {
         return answer;
     }
 
-    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics, int numInitCentroids, long seed) {
+    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics,
+                                                 int numInitCentroids, long seed) {
         final float[][] centroids;
         if (numInitCentroids != matrix.length) {
-            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 100);
-            centroids = centroidMaker.generateCentroids(5);
+            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 20);
+            centroids = centroidMaker.generateCentroids(5, true);
         } else {
             centroids = matrix;
         }
@@ -142,7 +143,7 @@ public class SimilarityMatrixTools {
     }
 
     public static float[][] getSymmNonNanSimilarityMatrixWithMask(float[][] initialMatrix,
-                                                                  RobustCorrelationSimilarity metric,
+                                                                  SimilarityMetric metric,
                                                                   int[] newIndexOrderAssignments, int checkVal) {
 
         float[][] result = new float[initialMatrix.length][initialMatrix.length];
@@ -161,10 +162,12 @@ public class SimilarityMatrixTools {
                 int i = currRowIndex.getAndIncrement();
                 while (i < initialMatrix.length) {
                     if (newIndexOrderAssignments[i] < checkVal) {
-                        result[i][i] = 1;
+                        // result[i][i] = Float.NaN; // technically 1, but not useful
                         for (int j = i + 1; j < initialMatrix.length; j++) {
-                            result[i][j] = metric.distance(initialMatrix[j], initialMatrix[i]);
-                            result[j][i] = result[i][j];
+                            if (newIndexOrderAssignments[j] < checkVal) {
+                                result[i][j] = metric.distance(initialMatrix[j], initialMatrix[i]);
+                                result[j][i] = result[i][j];
+                            }
                         }
                     }
                     i = currRowIndex.getAndIncrement();
@@ -187,8 +190,8 @@ public class SimilarityMatrixTools {
                                                                   int[] newIndexOrderAssignments, int checkVal) {
 
         QuickCentroids centroidMaker = new QuickCentroids(IndexOrderer.quickCleanMatrix(initialMatrix, newIndexOrderAssignments),
-                numInitCentroids, 0L, 100);
-        final float[][] centroids = centroidMaker.generateCentroids(3);
+                numInitCentroids, 0L, 20);
+        final float[][] centroids = centroidMaker.generateCentroids(3, true);
         int[] weights = centroidMaker.getWeights();
 
         int numCentroids = centroids.length;

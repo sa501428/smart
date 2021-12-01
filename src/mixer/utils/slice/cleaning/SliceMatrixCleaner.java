@@ -43,12 +43,12 @@ public class SliceMatrixCleaner {
     public static int NUM_PER_CENTROID = 100;
     protected final File outputDirectory;
     protected float[][] data;
-    protected final Random generator = new Random(0);
+    protected final Random generator;
     protected int resolution;
 
     public SliceMatrixCleaner(float[][] data, long seed, File outputDirectory, int resolution) {
         this.outputDirectory = outputDirectory;
-        generator.setSeed(seed);
+        generator = new Random(seed);
         this.resolution = resolution;
         this.data = data;
     }
@@ -78,11 +78,11 @@ public class SliceMatrixCleaner {
         //weights = mw.weights;
         //System.out.println("Matrix size after column cleanup " + mw.matrix.length + " x " + mw.matrix[0].length);
 
-        if (true || MixerGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("Matrix size before row cleanup " + data.length + " x " + data[0].length);
         }
         data = (new RowCleaner(data, rowIndexToIntervalMap, weights)).getCleanedData(resolution, outputDirectory).matrix;
-        if (true || MixerGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
         }
 
@@ -154,7 +154,7 @@ public class SliceMatrixCleaner {
             totalNumFixed.addAndGet(numFixed);
         });
 
-        if (true || MixerGlobals.printVerboseComments) {
+        if (MixerGlobals.printVerboseComments) {
             System.out.println("Num fixed z > " + maxZscore + " : " + totalNumFixed.get());
         }
     }

@@ -28,6 +28,7 @@ import mixer.MixerGlobals;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMedians;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +40,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class QuickCentroids {
 
-    private int maxIters = 1;
+    private int maxIters = 20;
     private final float[][] matrix;
     private final int initialNumClusters;
-    private final Random generator = new Random(0);
+    private final Random generator;
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private float[][] centroids = null;
     private int[] weights = null;
@@ -50,10 +51,11 @@ public class QuickCentroids {
     public QuickCentroids(float[][] matrix, int numCentroids, long seed) {
         this.matrix = matrix;
         this.initialNumClusters = numCentroids;
-        generator.setSeed(seed);
+        generator = new Random(seed);
         if (matrix.length == 0 || matrix[0].length == 0) {
             System.err.println("Empty matrix provided for quick centroids");
-            System.exit(5);
+            throw new RuntimeException("EMPTY MATRIX!");
+            //System.exit(5);
         }
     }
 
@@ -62,8 +64,13 @@ public class QuickCentroids {
         this.maxIters = numIters;
     }
 
-    public float[][] generateCentroids(int minSizeNeeded) {
-        RobustConcurrentKMeans kMeans = new RobustConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
+    public float[][] generateCentroids(int minSizeNeeded, boolean useKmedians) {
+        RobustConcurrentKMeans kMeans;
+        if (useKmedians) {
+            kMeans = new RobustConcurrentKMedians(matrix, initialNumClusters, maxIters, generator.nextLong());
+        } else {
+            kMeans = new RobustConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
+        }
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
