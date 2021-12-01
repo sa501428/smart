@@ -32,6 +32,7 @@ import mixer.utils.slice.structures.SubcompartmentInterval;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class EncodeExportUtils {
     public static void exportSubcompartments(SliceMatrix sliceMatrix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
@@ -43,6 +44,7 @@ public class EncodeExportUtils {
 
         int[] clusterSizes = convertToIntArray(keys, startingClusterSizeK);
         int bestIndex = getBestIndex(keys, evaluator);
+        bestIndex = Math.max(bestIndex, getIndexOf(clusterSizes, 5));
 
         int[][] ids = new int[sliceMatrix.getData(false).length][keys.size()];
         for (int[] row : ids) {
@@ -100,15 +102,20 @@ public class EncodeExportUtils {
     }
 
     private static int getBestIndex(List<Integer> keys, KmeansEvaluator evaluator) {
-        int bestIndex = 0;
-        double bestScore = evaluator.getSilhouette(keys.get(bestIndex));
-        for (int k = 0; k < keys.size(); k++) {
+        for (int k = keys.size() - 1; k > -1; k--) {
             Integer key = keys.get(k);
-            if (bestScore < evaluator.getSilhouette(key)) {
-                bestScore = evaluator.getSilhouette(key);
-                bestIndex = k;
+            double corr = evaluator.getCorr(key);
+            if (corr > 0 && corr < 0.8) {
+                return key;
             }
         }
-        return bestIndex;
+        return -1;
+    }
+
+    private static int getIndexOf(int[] array, int target) {
+        return IntStream.range(0, array.length)
+                .filter(i -> target == array[i])
+                .findFirst() // first occurrence
+                .orElse(-1); // No element found
     }
 }

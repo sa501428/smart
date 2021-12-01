@@ -33,9 +33,7 @@
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansEvaluator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansEvaluator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,14 +224,7 @@
       <workItem from="1637526325847" duration="22000" />
       <workItem from="1637530440823" duration="898000" />
       <workItem from="1637531377200" duration="35009000" />
-      <workItem from="1638168790665" duration="23835000" />
-    </task>
-    <task id="LOCAL-00133" summary="remove quick flip regions">
-      <created>1622526670520</created>
-      <option name="number" value="00133" />
-      <option name="presentableId" value="LOCAL-00133" />
-      <option name="project" value="LOCAL" />
-      <updated>1622526670520</updated>
+      <workItem from="1638168790665" duration="24608000" />
     </task>
     <task id="LOCAL-00134" summary="iterative GMM casting">
       <created>1623014026560</created>
@@ -571,7 +562,14 @@
       <option name="project" value="LOCAL" />
       <updated>1638308407569</updated>
     </task>
-    <option name="localTasksCounter" value="182" />
+    <task id="LOCAL-00182" summary="implement correlation check">
+      <created>1638333748522</created>
+      <option name="number" value="00182" />
+      <option name="presentableId" value="LOCAL-00182" />
+      <option name="project" value="LOCAL" />
+      <updated>1638333748522</updated>
+    </task>
+    <option name="localTasksCounter" value="183" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -596,7 +594,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="k-medians added" />
     <MESSAGE value="set a default, -2&lt;z&lt;2, revert log, no kmedians for now" />
     <MESSAGE value="parallelize code" />
     <MESSAGE value="parallelize more code" />
@@ -621,7 +618,8 @@
     <MESSAGE value="update cleaning, bug fix" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="set seeds" />
-    <option name="LAST_COMMIT_MESSAGE" value="set seeds" />
+    <MESSAGE value="implement correlation check" />
+    <option name="LAST_COMMIT_MESSAGE" value="implement correlation check" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
