@@ -46,10 +46,35 @@ public class ENCODESubcompartmentInterval extends SubcompartmentInterval {
     }
 
     @Override
+    public SubcompartmentInterval absorbAndReturnNewInterval(SubcompartmentInterval interval) {
+        return new ENCODESubcompartmentInterval(getChrIndex(), getChrName(), getX1(), interval.getX2(),
+                getClusterID(), clusterSizes, otherIDs);
+    }
+
+    @Override
+    public boolean overlapsWith(SubcompartmentInterval o) {
+        if (getChrIndex().equals(o.getChrIndex()) && getX2().equals(o.getX1())) {
+            if (o instanceof ENCODESubcompartmentInterval) {
+                ENCODESubcompartmentInterval o2 = (ENCODESubcompartmentInterval) o;
+                return confirmMatchOfAllIDs(o2.otherIDs);
+            }
+        }
+        return false;
+    }
+
+    private boolean confirmMatchOfAllIDs(int[] otherIDs2) {
+        boolean everythingMatchesSoFar = true;
+        for (int z = 0; z < otherIDs.length; z++) {
+            everythingMatchesSoFar &= (otherIDs[z] == otherIDs2[z]);
+        }
+        return everythingMatchesSoFar;
+    }
+
+    @Override
     public String toString() {
-        return "chr" + getChrName() + "\t" + getX1() + "\t" + getX2() + "\tC" + getClusterID() +
-                "\t" + getClusterID() + "\t.\t" + getX1() + "\t" + getX2() +
-                "\t" + SubcompartmentColors.getColorString(getClusterID()) + listOutAllIDs();
+        return "chr" + getChrName() + "\t" + getX1() + "\t" + getX2() + "\tC" + (getClusterID() + 1) +
+                "\t" + (getClusterID() + 1) + "\t.\t" + getX1() + "\t" + getX2() +
+                "\t" + SubcompartmentColors.getColorString((getClusterID() + 1)) + listOutAllIDs();
     }
 
     public static String getHeader() {
@@ -60,14 +85,16 @@ public class ENCODESubcompartmentInterval extends SubcompartmentInterval {
 
     private String listOutAllIDs() {
         StringBuilder allIDs = new StringBuilder("\t").append(otherIDs.length);
-        allIDs.append("\t").append(clusterSizes[0]);
+        allIDs.append("\t").append((clusterSizes[0] + 1));
         for (int i = 1; i < otherIDs.length; i++) {
             allIDs.append(",").append(clusterSizes[i]);
         }
+        allIDs.append(",").append(getWidthForResolution(1));
         allIDs.append("\t").append(otherIDs[0]);
         for (int i = 1; i < otherIDs.length; i++) {
             allIDs.append(",").append(otherIDs[i]);
         }
+        allIDs.append(",").append(0);
         return allIDs.toString();
     }
 }

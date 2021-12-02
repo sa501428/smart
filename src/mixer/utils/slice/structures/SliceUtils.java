@@ -52,7 +52,7 @@ public class SliceUtils {
         intraSubcompartments.filterLists((chr, featureList) -> collapseSubcompartmentIntervals(featureList));
     }
 
-    private static List<SubcompartmentInterval> collapseSubcompartmentIntervals(List<SubcompartmentInterval> intervals) {
+    public static List<SubcompartmentInterval> collapseSubcompartmentIntervals(List<SubcompartmentInterval> intervals) {
         if (intervals.size() > 0) {
 
             Collections.sort(intervals);

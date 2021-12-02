@@ -33,9 +33,9 @@
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ENCODESubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ENCODESubcompartmentInterval.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -227,13 +227,6 @@
       <workItem from="1637530440823" duration="898000" />
       <workItem from="1637531377200" duration="35009000" />
       <workItem from="1638168790665" duration="24608000" />
-    </task>
-    <task id="LOCAL-00134" summary="iterative GMM casting">
-      <created>1623014026560</created>
-      <option name="number" value="00134" />
-      <option name="presentableId" value="LOCAL-00134" />
-      <option name="project" value="LOCAL" />
-      <updated>1623014026560</updated>
     </task>
     <task id="LOCAL-00135" summary="casting code, various updates tested">
       <created>1623269578749</created>
@@ -571,7 +564,14 @@
       <option name="project" value="LOCAL" />
       <updated>1638333748522</updated>
     </task>
-    <option name="localTasksCounter" value="183" />
+    <task id="LOCAL-00183" summary="update encode printing">
+      <created>1638386709165</created>
+      <option name="number" value="00183" />
+      <option name="presentableId" value="LOCAL-00183" />
+      <option name="project" value="LOCAL" />
+      <updated>1638386709166</updated>
+    </task>
+    <option name="localTasksCounter" value="184" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -596,7 +596,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="set a default, -2&lt;z&lt;2, revert log, no kmedians for now" />
     <MESSAGE value="parallelize code" />
     <MESSAGE value="parallelize more code" />
     <MESSAGE value="remove row correlation filtering" />
@@ -621,7 +620,8 @@
     <MESSAGE value="code cleanup" />
     <MESSAGE value="set seeds" />
     <MESSAGE value="implement correlation check" />
-    <option name="LAST_COMMIT_MESSAGE" value="implement correlation check" />
+    <MESSAGE value="update encode printing" />
+    <option name="LAST_COMMIT_MESSAGE" value="update encode printing" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

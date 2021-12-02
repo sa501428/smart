@@ -28,6 +28,7 @@ import mixer.MixerGlobals;
 import mixer.utils.slice.kmeans.KmeansEvaluator;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.ENCODESubcompartmentInterval;
+import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -72,6 +73,8 @@ public class EncodeExportUtils {
                 }
             }
         }
+
+        encodeSubcompartmentIntervals = SliceUtils.collapseSubcompartmentIntervals(encodeSubcompartmentIntervals);
 
         File outBedFile = new File(outputDirectory, "slice_subcompartment_clusters.bed");
 
