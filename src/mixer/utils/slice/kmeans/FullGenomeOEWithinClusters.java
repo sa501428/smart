@@ -110,7 +110,7 @@ public class FullGenomeOEWithinClusters {
                     maxIters, kmeansClustersToResults, kmeansIndicesMap);
             exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
         }
-        if (Slice.USE_ENCODE_MODE) {
+        if (Slice.USE_ENCODE_MODE && useKMedians) {
             EncodeExportUtils.exportSubcompartments(sliceMatrix, kmeansIndicesMap, evaluator, prefix,
                     outputDirectory, startingClusterSizeK);
         }
