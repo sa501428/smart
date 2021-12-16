@@ -33,8 +33,7 @@
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ENCODESubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ENCODESubcompartmentInterval.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +60,9 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="1ivO8RiMhDvHpcU6yYItpXYofmd" />
   <component name="ProjectViewState">
@@ -226,13 +228,8 @@
       <workItem from="1637530440823" duration="898000" />
       <workItem from="1637531377200" duration="35009000" />
       <workItem from="1638168790665" duration="24608000" />
-    </task>
-    <task id="LOCAL-00136" summary="possible decent direction">
-      <created>1623278777564</created>
-      <option name="number" value="00136" />
-      <option name="presentableId" value="LOCAL-00136" />
-      <option name="project" value="LOCAL" />
-      <updated>1623278777564</updated>
+      <workItem from="1638858840802" duration="234000" />
+      <workItem from="1639629896666" duration="637000" />
     </task>
     <task id="LOCAL-00137" summary="automate normalization detection">
       <created>1623350915332</created>
@@ -570,7 +567,14 @@
       <option name="project" value="LOCAL" />
       <updated>1638422960566</updated>
     </task>
-    <option name="localTasksCounter" value="185" />
+    <task id="LOCAL-00185" summary="update encode cluster name printing">
+      <created>1638429014069</created>
+      <option name="number" value="00185" />
+      <option name="presentableId" value="LOCAL-00185" />
+      <option name="project" value="LOCAL" />
+      <updated>1638429014069</updated>
+    </task>
+    <option name="localTasksCounter" value="186" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -589,13 +593,11 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="parallelize code" />
     <MESSAGE value="parallelize more code" />
     <MESSAGE value="remove row correlation filtering" />
     <MESSAGE value="set version" />
@@ -620,7 +622,8 @@
     <MESSAGE value="set seeds" />
     <MESSAGE value="implement correlation check" />
     <MESSAGE value="update encode printing" />
-    <option name="LAST_COMMIT_MESSAGE" value="update encode printing" />
+    <MESSAGE value="update encode cluster name printing" />
+    <option name="LAST_COMMIT_MESSAGE" value="update encode cluster name printing" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

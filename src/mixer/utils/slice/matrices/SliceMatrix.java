@@ -206,14 +206,16 @@ public class SliceMatrix extends CompositeGenomeWideMatrix {
 
     private void updateSubcompartmentMap(Chromosome chromosome, Set<Integer> badIndices, int offsetIndex1, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
         int counter = 0;
-        int chrLength = (int) (chromosome.getLength() / resolution + 1);
-        for (int i = 0; i < chrLength; i++) {
+        int maxGenomeLen = (int) chromosome.getLength();
+        int chrBinLength = (int) (chromosome.getLength() / resolution + 1);
+        for (int i = 0; i < chrBinLength; i++) {
             if (badIndices.contains(i)) {
                 continue;
             }
-            int newX = i * resolution;
-            SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, newX, newX + resolution, counter);
-            rowIndexToIntervalMap.put(offsetIndex1 + (counter), newRInterval);
+            int x1 = i * resolution;
+            int x2 = Math.min(x1 + resolution, maxGenomeLen);
+            SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, counter);
+            rowIndexToIntervalMap.put(offsetIndex1 + counter, newRInterval);
             counter++;
         }
     }
