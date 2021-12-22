@@ -24,7 +24,7 @@
 
 package mixer.utils.custom;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.mzd.MatrixZoomData;
@@ -73,7 +73,7 @@ public class ExtractionB4 {
                             i * RESOLUTION, (i + 1) * RESOLUTION, result[i]);
                     intervalList.add(interval);
                 }
-                GenomeWideList<SubcompartmentInterval> finalCompartments = new GenomeWideList<>(ds.getChromosomeHandler());
+                GenomeWide1DList<SubcompartmentInterval> finalCompartments = new GenomeWide1DList<>(ds.getChromosomeHandler());
                 finalCompartments.addAll(intervalList);
 
                 File outBedFile = new File("/Users/mshamim/Desktop/B4_Gold",

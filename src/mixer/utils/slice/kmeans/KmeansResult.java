@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.kmeans;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.MixerGlobals;
 import mixer.utils.rougheval.SubsamplingManager;
@@ -44,7 +44,7 @@ public class KmeansResult {
     private static final int MIN_EXPECTED_CLUSTER_SIZE = 5;
     private static final double NUM_ITERS = 5;
     private final int numClustersDesired;
-    private final GenomeWideList<SubcompartmentInterval> finalCompartments;
+    private final GenomeWide1DList<SubcompartmentInterval> finalCompartments;
     private final List<List<Integer>> indicesMap = new ArrayList<>();
     private int numActualClusters = 0;
     private double wcss = 0;
@@ -54,7 +54,7 @@ public class KmeansResult {
 
     public KmeansResult(int numClusters, ChromosomeHandler chromosomeHandler) {
         numClustersDesired = numClusters;
-        finalCompartments = new GenomeWideList<>(chromosomeHandler);
+        finalCompartments = new GenomeWide1DList<>(chromosomeHandler);
     }
 
     public int getNumClustersDesired() {
@@ -77,7 +77,7 @@ public class KmeansResult {
         return worstCorr;
     }
 
-    public GenomeWideList<SubcompartmentInterval> getFinalCompartmentsClone() {
+    public GenomeWide1DList<SubcompartmentInterval> getFinalCompartmentsClone() {
         return finalCompartments.deepClone();
     }
 

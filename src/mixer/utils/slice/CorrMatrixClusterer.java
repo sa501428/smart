@@ -24,7 +24,7 @@
 
 package mixer.utils.slice;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import mixer.utils.slice.gmm.GenomeWideGMMRunner;
 import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
 import mixer.utils.slice.kmeans.GenomeWideKmeansRunner;
@@ -41,8 +41,8 @@ public class CorrMatrixClusterer {
 
     public static void runClusteringOnCorrMatrix(FullGenomeOEWithinClusters parent, String prefix, boolean useKmedians) {
 
-        Map<Integer, GenomeWideList<SubcompartmentInterval>> gmmClustersToResults = new HashMap<>();
-        Map<Integer, GenomeWideList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
+        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> gmmClustersToResults = new HashMap<>();
+        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
         Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
 
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(parent.getChromosomeHandler(),
@@ -62,11 +62,11 @@ public class CorrMatrixClusterer {
         System.out.println(".");
     }
 
-    private static void exportGMMClusteringResults(int z, Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+    private static void exportGMMClusteringResults(int z, Map<Integer, GenomeWide1DList<SubcompartmentInterval>> numClustersToResults,
                                                    String prefix, FullGenomeOEWithinClusters parent) {
         int k = z + FullGenomeOEWithinClusters.startingClusterSizeK;
         if (numClustersToResults.containsKey(k)) {
-            GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
+            GenomeWide1DList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
             SliceUtils.collapseGWList(gwList);
             File outBedFile = new File(parent.getOutputDirectory(), prefix + "_" + k + "_gmm_clusters.bed");
             gwList.simpleExport(outBedFile);
@@ -74,7 +74,7 @@ public class CorrMatrixClusterer {
     }
 
     private static void runGMMClusteringLoop(int z, int maxIters, List<List<Integer>> startingIndices,
-                                             Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+                                             Map<Integer, GenomeWide1DList<SubcompartmentInterval>> numClustersToResults,
                                              FullGenomeOEWithinClusters parent) {
         int numClusters = z + FullGenomeOEWithinClusters.startingClusterSizeK;
         GenomeWideGMMRunner gmmRunner = new GenomeWideGMMRunner(parent.getChromosomeHandler(), parent.getSliceMatrix());

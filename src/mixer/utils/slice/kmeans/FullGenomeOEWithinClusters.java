@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.kmeans;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
@@ -98,7 +98,7 @@ public class FullGenomeOEWithinClusters {
     }
 
     public void runClusteringOnRawMatrixWithNans(String prefix, boolean useKMedians) {
-        Map<Integer, GenomeWideList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
+        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
         Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
 
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(chromosomeHandler, sliceMatrix,
@@ -119,13 +119,13 @@ public class FullGenomeOEWithinClusters {
     }
 
     public void exportKMeansClusteringResults(int z,
-                                              Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+                                              Map<Integer, GenomeWide1DList<SubcompartmentInterval>> numClustersToResults,
                                               String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
                                               boolean useKMedians) {
         int k = z + startingClusterSizeK;
         String kstem = "kmeans";
         if (useKMedians) kstem = "kmedians";
-        GenomeWideList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
+        GenomeWide1DList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
         SliceUtils.collapseGWList(gwList);
         File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
         gwList.simpleExport(outBedFile);
@@ -134,7 +134,7 @@ public class FullGenomeOEWithinClusters {
 
     public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
                                                 KmeansEvaluator evaluator, int z, int maxIters,
-                                                Map<Integer, GenomeWideList<SubcompartmentInterval>> numClustersToResults,
+                                                Map<Integer, GenomeWide1DList<SubcompartmentInterval>> numClustersToResults,
                                                 Map<Integer, List<List<Integer>>> indicesMap) {
         int numClusters = z + startingClusterSizeK;
         int numColumns = kmeansRunner.getNumColumns();

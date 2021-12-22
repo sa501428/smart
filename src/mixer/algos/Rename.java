@@ -24,7 +24,7 @@
 
 package mixer.algos;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.HiCFileTools;
@@ -88,7 +88,7 @@ public class Rename extends MixerCLT {
         Dataset ds = HiCFileTools.extractDatasetForCLT(changes[0], true, false);
         int resolution = Integer.parseInt(changes[1]);
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
-        GenomeWideList<SubcompartmentInterval> subcompartments =
+        GenomeWide1DList<SubcompartmentInterval> subcompartments =
                 SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, inputBedFile);
         GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
         //statistics.saveInteractionMap(outfolder);

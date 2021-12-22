@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.gmm;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -43,7 +43,7 @@ public class GenomeWideGMMRunner {
         this.chromosomeHandler = chromosomeHandler;
     }
 
-    public void launch(int numClusters, long seed, Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
+    public void launch(int numClusters, long seed, Map<Integer, GenomeWide1DList<SubcompartmentInterval>> results,
                        List<List<Integer>> startingIndices, boolean useRobustGMM) {
         if (data.length > 0 && data[0].length > 0) {
             GaussianMixtureModels gmm = new GaussianMixtureModels(data,
@@ -59,8 +59,8 @@ public class GenomeWideGMMRunner {
         }
     }
 
-    private void populateMap(int[] result, Map<Integer, GenomeWideList<SubcompartmentInterval>> results, int numClusters) {
-        GenomeWideList<SubcompartmentInterval> finalCompartments = new GenomeWideList<>(chromosomeHandler);
+    private void populateMap(int[] result, Map<Integer, GenomeWide1DList<SubcompartmentInterval>> results, int numClusters) {
+        GenomeWide1DList<SubcompartmentInterval> finalCompartments = new GenomeWide1DList<>(chromosomeHandler);
         getCounts(result, numClusters);
         interMatrix.processGMMClusteringResult(result, finalCompartments);
         results.put(numClusters, finalCompartments);

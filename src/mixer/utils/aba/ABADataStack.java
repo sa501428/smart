@@ -27,7 +27,7 @@ package mixer.utils.aba;
 import javastraw.tools.HiCFileTools;
 import javastraw.tools.MatrixTools;
 import mixer.MixerGlobals;
-import org.apache.commons.math.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

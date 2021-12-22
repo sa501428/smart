@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.structures;
 
-import javastraw.feature1D.Feature;
+import javastraw.feature1D.Feature1D;
 
 public class ENCODESubcompartmentInterval extends SubcompartmentInterval {
 
@@ -40,7 +40,7 @@ public class ENCODESubcompartmentInterval extends SubcompartmentInterval {
     }
 
     @Override
-    public Feature deepClone() {
+    public Feature1D deepClone() {
         return new ENCODESubcompartmentInterval(getChrIndex(), getChrName(), getX1(), getX2(),
                 getClusterID(), clusterSizes, otherIDs);
     }

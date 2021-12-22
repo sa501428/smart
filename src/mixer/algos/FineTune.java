@@ -27,7 +27,6 @@ package mixer.algos;
 import javastraw.feature2D.Feature2D;
 import javastraw.feature2D.Feature2DList;
 import javastraw.feature2D.Feature2DParser;
-import javastraw.feature2D.FeatureFilter;
 import javastraw.reader.Dataset;
 import javastraw.reader.Matrix;
 import javastraw.reader.basics.Chromosome;
@@ -102,17 +101,13 @@ public class FineTune extends MixerCLT {
         for (Chromosome chr : handler.getChromosomeArray()) {
             chrNameToIndex.put(Feature2DList.getKey(chr, chr), chr);
         }
-        list.filterLists(new FeatureFilter() {
-            @Override
-            public List<Feature2D> filter(String chr, List<Feature2D> feature2DList) {
-                try {
-                    return locationsOfMaxVals(resolution, chrNameToIndex.get(chr), ds, feature2DList, norm);
-                } catch (Exception e) {
-                    System.err.println("Unable to remove low mapQ entries for " + chr);
-                    //e.printStackTrace();
-                }
-                return new ArrayList<>();
+        list.filterLists((String chr, List<Feature2D> feature2DList) -> {
+            try {
+                return locationsOfMaxVals(resolution, chrNameToIndex.get(chr), ds, feature2DList, norm);
+            } catch (Exception e) {
+                System.err.println("Unable to remove low mapQ entries for " + chr);
             }
+            return new ArrayList<>();
         });
 
     }

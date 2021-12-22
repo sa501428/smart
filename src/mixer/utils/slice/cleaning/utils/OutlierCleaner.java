@@ -25,7 +25,7 @@
 package mixer.utils.slice.cleaning.utils;
 
 import javastraw.tools.MatrixTools;
-import javastraw.tools.ParallelizedJuicerTools;
+import javastraw.tools.ParallelizationTools;
 import mixer.MixerGlobals;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
@@ -78,7 +78,7 @@ public class OutlierCleaner {
         float[] minDist = new float[matrix.length];
         Arrays.fill(minDist, Float.MAX_VALUE);
         AtomicInteger rowIndex = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             int i = rowIndex.getAndIncrement();
             while (i < matrix.length) {
                 for (int j = 0; j < centroids.length; j++) {

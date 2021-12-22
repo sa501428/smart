@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning.utils;
 
-import javastraw.tools.ParallelizedJuicerTools;
+import javastraw.tools.ParallelizationTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class VectorGroup {
         AtomicBoolean includeIt = new AtomicBoolean(false);
 
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             while (i < (vectors).size() && !includeIt.get()) {
                 float[] vec = vectors.get(i);

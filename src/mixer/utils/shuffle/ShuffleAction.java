@@ -24,7 +24,7 @@
 
 package mixer.utils.shuffle;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.type.NormalizationType;
@@ -84,7 +84,7 @@ public class ShuffleAction {
         scores[1][k] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true)).score(isBaseline);
     }
 
-    public void runGWStats(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
+    public void runGWStats(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder) {
         SliceUtils.collapseGWList(subcompartments);
         // todo, using only big size? todo sorting picture
         GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
@@ -92,7 +92,7 @@ public class ShuffleAction {
         System.out.println("Interaction summary statistics saved");
     }
 
-    public void runInterAnalysis(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
+    public void runInterAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder) {
         for (int y = 0; y < mapTypes.length; y++) {
             final HiCMatrix interMatrix = InterOnlyMatrix.getMatrix(ds, norm, resolution, mapTypes[y], metric);
             Map<Integer, List<Integer>> clusterToRowIndices = populateCluster(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(), subcompartments);
@@ -102,7 +102,7 @@ public class ShuffleAction {
         scoreContainer.calculateRatios();
     }
 
-    public void runIntraAnalysis(GenomeWideList<SubcompartmentInterval> subcompartments, File outfolder) {
+    public void runIntraAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder) {
         for (int y = 0; y < chromosomes.length; y++) {
             final HiCMatrix matrix = new IntraOnlyMatrix(ds, norm, resolution, chromosomes[y], intraType, metric, compressionFactor);
             Map<Integer, List<Integer>> clusterToRowIndices = populateCluster(matrix.getRowChromosomes(), matrix.getRowOffsets(), subcompartments);
@@ -229,7 +229,7 @@ public class ShuffleAction {
         return result;
     }
 
-    private Map<Integer, List<Integer>> populateCluster(Chromosome[] chromosomes, int[] offsets, GenomeWideList<SubcompartmentInterval> subcompartments) {
+    private Map<Integer, List<Integer>> populateCluster(Chromosome[] chromosomes, int[] offsets, GenomeWide1DList<SubcompartmentInterval> subcompartments) {
         Map<Integer, List<Integer>> clusterToIndices = new HashMap<>();
 
         for (int x = 0; x < chromosomes.length; x++) {

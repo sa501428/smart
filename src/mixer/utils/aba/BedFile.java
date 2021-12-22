@@ -24,7 +24,7 @@
 
 package mixer.utils.aba;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.mzd.MatrixZoomData;
@@ -32,7 +32,7 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
 import mixer.utils.slice.structures.SimpleInterval;
-import org.apache.commons.math.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,10 +46,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class BedFile {
-    private final GenomeWideList<SimpleInterval> featureGenomeWideList;
+    private final GenomeWide1DList<SimpleInterval> featureGenomeWide1DList;
 
     public BedFile(String bedListPath, ChromosomeHandler handler) {
-        featureGenomeWideList = populateBedFile(handler, bedListPath);
+        featureGenomeWide1DList = populateBedFile(handler, bedListPath);
     }
 
     public static RealMatrix extractLocalizedData(MatrixZoomData zd, SimpleInterval region, int overallWidth,
@@ -62,7 +62,7 @@ public class BedFile {
                 norm, true);
     }
 
-    public static GenomeWideList<SimpleInterval> populateBedFile(ChromosomeHandler handler, String bedFilePath) {
+    public static GenomeWide1DList<SimpleInterval> populateBedFile(ChromosomeHandler handler, String bedFilePath) {
         List<SimpleInterval> anchors = new ArrayList<>();
 
         try {
@@ -72,7 +72,7 @@ public class BedFile {
             ec.printStackTrace();
         }
 
-        return new GenomeWideList<>(handler, anchors);
+        return new GenomeWide1DList<>(handler, anchors);
     }
 
     private static List<SimpleInterval> parseBEDFile(String bedFilePath, ChromosomeHandler handler) throws IOException {
@@ -152,10 +152,10 @@ public class BedFile {
     }
 
     private List<SimpleInterval> get(int index) {
-        return featureGenomeWideList.getFeatures("" + index);
+        return featureGenomeWide1DList.getFeatures("" + index);
     }
 
     public int getNumTotalFeatures() {
-        return featureGenomeWideList.size();
+        return featureGenomeWide1DList.size();
     }
 }

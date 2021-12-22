@@ -26,7 +26,6 @@ package mixer.utils.network;
 
 import javastraw.feature2D.Feature2D;
 import javastraw.feature2D.Feature2DList;
-import javastraw.feature2D.FeatureFilter;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -56,17 +55,14 @@ public class MapQFilter {
         if (MixerGlobals.printVerboseComments) {
             System.out.println("Initial: " + list.getNumTotalFeatures());
         }
-        list.filterLists(new FeatureFilter() {
-            @Override
-            public List<Feature2D> filter(String chr, List<Feature2D> feature2DList) {
-                try {
-                    return removeLowMapQ(resolution, chrNameToIndex.get(chr), ds, feature2DList, norm);
-                } catch (Exception e) {
-                    System.err.println("Unable to remove low mapQ entries for " + chr);
-                    //e.printStackTrace();
-                }
-                return new ArrayList<>();
+        list.filterLists((chr, feature2DList) -> {
+            try {
+                return removeLowMapQ(resolution, chrNameToIndex.get(chr), ds, feature2DList, norm);
+            } catch (Exception e) {
+                System.err.println("Unable to remove low mapQ entries for " + chr);
+                //e.printStackTrace();
             }
+            return new ArrayList<>();
         });
 
 

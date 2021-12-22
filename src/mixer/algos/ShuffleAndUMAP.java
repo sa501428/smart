@@ -24,7 +24,7 @@
 
 package mixer.algos;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -122,7 +122,7 @@ public class ShuffleAndUMAP extends MixerCLT {
 
         if (doShuffle) {
             for (int i = 0; i < referenceBedFiles.length; i++) {
-                GenomeWideList<SubcompartmentInterval> subcompartments =
+                GenomeWide1DList<SubcompartmentInterval> subcompartments =
                         SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, referenceBedFiles[i]);
                 System.out.println("Processing " + prefix[i]);
                 File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);

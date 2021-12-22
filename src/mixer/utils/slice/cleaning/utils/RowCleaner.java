@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning.utils;
 
-import javastraw.tools.ParallelizedJuicerTools;
+import javastraw.tools.ParallelizationTools;
 import mixer.MixerGlobals;
 import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -78,7 +78,7 @@ public class RowCleaner extends DimensionCleaner {
         int[] totalNumInvalids = new int[matrix.length];
 
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             while (i < data.length) {
                 int numInvalids = 0;

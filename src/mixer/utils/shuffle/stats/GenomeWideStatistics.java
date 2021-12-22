@@ -24,7 +24,7 @@
 
 package mixer.utils.shuffle.stats;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.mzd.MatrixZoomData;
@@ -42,7 +42,7 @@ public class GenomeWideStatistics {
     private final Dataset ds;
     private final int resolution;
     private final NormalizationType norm;
-    private final GenomeWideList<SubcompartmentInterval> subcompartments;
+    private final GenomeWide1DList<SubcompartmentInterval> subcompartments;
     private final Set<Integer> clusterIDs = new HashSet<>();
     private final Map<String, Double> contacts = new HashMap<>();
     private final Map<String, Long> areas = new HashMap<>();
@@ -52,7 +52,7 @@ public class GenomeWideStatistics {
     private double[][] contactsMatrix;
     private long[][] countsMatrix;
 
-    public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm, GenomeWideList<SubcompartmentInterval> subcompartments) {
+    public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm, GenomeWide1DList<SubcompartmentInterval> subcompartments) {
         this.ds = ds;
         this.resolution = resolution;
         this.norm = norm;

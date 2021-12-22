@@ -24,7 +24,7 @@
 
 package mixer.utils.umap;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -83,9 +83,9 @@ public class UMAPAction {
     public void runAnalysis(String[] bedFiles, File outputDirectory,
                             ChromosomeHandler chromosomeHandler) {
 
-        List<GenomeWideList<SubcompartmentInterval>> allSubcompartments = new ArrayList<>();
+        List<GenomeWide1DList<SubcompartmentInterval>> allSubcompartments = new ArrayList<>();
         for (int i = 0; i < bedFiles.length; i++) {
-            GenomeWideList<SubcompartmentInterval> subcompartments =
+            GenomeWide1DList<SubcompartmentInterval> subcompartments =
                     SliceUtils.loadFromSubcompartmentBEDFile(chromosomeHandler, bedFiles[i]);
             SliceUtils.collapseGWList(subcompartments);
             allSubcompartments.add(subcompartments);
@@ -152,7 +152,7 @@ public class UMAPAction {
     }
 
     private void processMatrixForUMAP(float[][] matrix, int numBedFiles, Chromosome[] chromosomes, int[] offsets,
-                                      List<GenomeWideList<SubcompartmentInterval>> allSubcompartments,
+                                      List<GenomeWide1DList<SubcompartmentInterval>> allSubcompartments,
                                       File outputDirectory, String folderName, String filePrefix) {
 
 
@@ -196,7 +196,7 @@ public class UMAPAction {
     }
 
     private void populateIndexToClusterIDMap(Chromosome[] chromosomes, int[] offsets,
-                                             GenomeWideList<SubcompartmentInterval> subcompartments,
+                                             GenomeWide1DList<SubcompartmentInterval> subcompartments,
                                              int[][] indicesToClusterIDs, int colIndex) {
         for (int x = 0; x < chromosomes.length; x++) {
             Chromosome chrom = chromosomes[x];

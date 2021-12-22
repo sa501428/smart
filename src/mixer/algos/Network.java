@@ -27,7 +27,6 @@ package mixer.algos;
 import javastraw.feature2D.Feature2D;
 import javastraw.feature2D.Feature2DList;
 import javastraw.feature2D.Feature2DParser;
-import javastraw.feature2D.FeatureFilter;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.HiCFileTools;
@@ -90,15 +89,12 @@ public class Network extends MixerCLT {
     private List<Integer> identifyNetworks(Feature2DList list) {
         List<Integer> loopNetworkSizes = Collections.synchronizedList(new ArrayList<>());
 
-        list.filterLists(new FeatureFilter() {
-            @Override
-            public List<Feature2D> filter(String chr, List<Feature2D> feature2DList) {
-                ConnectedComponentBFS cc = processNetworksForChromosome(resolution, feature2DList);
+        list.filterLists((chr, feature2DList) -> {
+            ConnectedComponentBFS cc = processNetworksForChromosome(resolution, feature2DList);
 
-                loopNetworkSizes.addAll(cc.getClusterSizes());
+            loopNetworkSizes.addAll(cc.getClusterSizes());
 
-                return extractBigNetworks(cc, feature2DList);
-            }
+            return extractBigNetworks(cc, feature2DList);
         });
 
         return loopNetworkSizes;

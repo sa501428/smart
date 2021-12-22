@@ -25,7 +25,7 @@
 package mixer.utils.slice.cleaning;
 
 import javastraw.tools.MatrixTools;
-import javastraw.tools.ParallelizedJuicerTools;
+import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
@@ -46,7 +46,7 @@ public class MatrixImputer {
         System.out.println("Imputing...");
 
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             while (i < imputed.length) {
                 BitSet yIsNan = getIsNan(imputed[i]);
@@ -154,7 +154,7 @@ public class MatrixImputer {
         float[][] r2 = new float[initialData.length][initialData.length];
 
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedJuicerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             SimilarityMetric metric = RobustCorrelationSimilarity.SINGLETON;
             int i = index.getAndIncrement();
             while (i < r2.length) {

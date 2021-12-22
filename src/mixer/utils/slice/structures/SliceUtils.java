@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.structures;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.MixerGlobals;
@@ -41,14 +41,14 @@ public class SliceUtils {
 
     private static final AtomicInteger idCounter = new AtomicInteger(0);
 
-    public static void reSort(GenomeWideList<SubcompartmentInterval> subcompartments) {
+    public static void reSort(GenomeWide1DList<SubcompartmentInterval> subcompartments) {
         subcompartments.filterLists((chr, featureList) -> {
             Collections.sort(featureList);
             return featureList;
         });
     }
 
-    public static void collapseGWList(GenomeWideList<SubcompartmentInterval> intraSubcompartments) {
+    public static void collapseGWList(GenomeWide1DList<SubcompartmentInterval> intraSubcompartments) {
         intraSubcompartments.filterLists((chr, featureList) -> collapseSubcompartmentIntervals(featureList));
     }
 
@@ -77,7 +77,7 @@ public class SliceUtils {
         return intervals;
     }
 
-    public static void splitGWList(GenomeWideList<SubcompartmentInterval> intraSubcompartments, int width) {
+    public static void splitGWList(GenomeWide1DList<SubcompartmentInterval> intraSubcompartments, int width) {
         intraSubcompartments.filterLists((chr, featureList) -> splitSubcompartmentIntervals(featureList, width));
     }
 
@@ -106,14 +106,14 @@ public class SliceUtils {
     }
 
     public static void readInFileAndCollapse(String location, ChromosomeHandler handler) {
-        GenomeWideList<SubcompartmentInterval> subcompartments = loadFromSubcompartmentBEDFile(handler, location);
+        GenomeWide1DList<SubcompartmentInterval> subcompartments = loadFromSubcompartmentBEDFile(handler, location);
         SliceUtils.collapseGWList(subcompartments);
         subcompartments.simpleExport(new File(location + "_collapsed.bed"));
     }
 
     public static void readInFileAndSplitByResolutionLevel(String location, ChromosomeHandler handler) {
 
-        GenomeWideList<SubcompartmentInterval> subcompartments = loadFromSubcompartmentBEDFile(handler, location);
+        GenomeWide1DList<SubcompartmentInterval> subcompartments = loadFromSubcompartmentBEDFile(handler, location);
         SliceUtils.splitGWList(subcompartments, 100000);
         subcompartments.simpleExport(new File(location + "_split.bed"));
 
@@ -122,7 +122,7 @@ public class SliceUtils {
     /**
      * @return List of motif anchors from the provided bed file
      */
-    public static GenomeWideList<SubcompartmentInterval> loadFromSubcompartmentBEDFile(ChromosomeHandler handler, String bedFilePath) {
+    public static GenomeWide1DList<SubcompartmentInterval> loadFromSubcompartmentBEDFile(ChromosomeHandler handler, String bedFilePath) {
         List<SubcompartmentInterval> anchors = new ArrayList<>();
 
         try {
@@ -132,7 +132,7 @@ public class SliceUtils {
             ec.printStackTrace();
         }
 
-        return new GenomeWideList<>(handler, anchors);
+        return new GenomeWide1DList<>(handler, anchors);
     }
 
     /*

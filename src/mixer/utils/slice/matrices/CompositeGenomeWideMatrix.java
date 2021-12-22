@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.matrices;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -167,7 +167,7 @@ public abstract class CompositeGenomeWideMatrix {
     }
 
     public void processKMeansClusteringResult(Cluster[] clusters,
-                                              GenomeWideList<SubcompartmentInterval> subcompartments) {
+                                              GenomeWide1DList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
         if (MixerGlobals.printVerboseComments) {
@@ -198,7 +198,7 @@ public abstract class CompositeGenomeWideMatrix {
     }
 
     public synchronized void processGMMClusteringResult(int[] clusterID,
-                                                        GenomeWideList<SubcompartmentInterval> subcompartments) {
+                                                        GenomeWide1DList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
 

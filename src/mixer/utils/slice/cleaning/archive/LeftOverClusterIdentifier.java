@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning.archive;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -56,7 +56,7 @@ public class LeftOverClusterIdentifier {
         this.resolution = resolution;
     }
 
-    public void identify(Map<Integer, GenomeWideList<SubcompartmentInterval>> results,
+    public void identify(Map<Integer, GenomeWide1DList<SubcompartmentInterval>> results,
                          BadIndexFinder badIndexFinder) {
 
         for (Chromosome chr1 : chromosomeHandler.getAutosomalChromosomesArray()) {
@@ -104,7 +104,7 @@ public class LeftOverClusterIdentifier {
 
             if (indicesMissing.size() > 0) {
                 for (Integer key : results.keySet()) {
-                    GenomeWideList<SubcompartmentInterval> listForKey = results.get(key);
+                    GenomeWide1DList<SubcompartmentInterval> listForKey = results.get(key);
                     Map<Integer, float[]> cIDToCenter = getClusterCenters(allDataForRegion, listForKey.getFeatures("" + chr1.getIndex()), resolution);
 
                     List<SubcompartmentInterval> newlyAssignedSubcompartments = getNewlyAssignedCompartments(chr1, cIDToCenter, indicesMissing, allDataForRegion, resolution);

@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.structures;
 
-import javastraw.feature1D.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 
 import java.io.File;
@@ -38,16 +38,16 @@ public class UnusedTest {
 
         final int resolution = 100000;
 
-        GenomeWideList<SubcompartmentInterval> subcHuntley = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
+        GenomeWide1DList<SubcompartmentInterval> subcHuntley = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
         SliceUtils.splitGWList(subcHuntley, resolution);
 
-        GenomeWideList<SubcompartmentInterval> subcSNIPER = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSNIPER);
+        GenomeWide1DList<SubcompartmentInterval> subcSNIPER = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSNIPER);
         SliceUtils.splitGWList(subcSNIPER, resolution);
 
-        GenomeWideList<SubcompartmentInterval> subcSCI = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSCI);
+        GenomeWide1DList<SubcompartmentInterval> subcSCI = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSCI);
         SliceUtils.splitGWList(subcSCI, resolution);
 
-        GenomeWideList<SubcompartmentInterval> resultList = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
+        GenomeWide1DList<SubcompartmentInterval> resultList = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
 
         resultList.filterLists((key, features) -> {
             if (features.size() > 0) {
@@ -87,16 +87,16 @@ public class UnusedTest {
 
         final int resolution = 100000;
 
-        GenomeWideList<SubcompartmentInterval> subcHuntley = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
+        GenomeWide1DList<SubcompartmentInterval> subcHuntley = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
         SliceUtils.splitGWList(subcHuntley, resolution);
 
-        GenomeWideList<SubcompartmentInterval> subcSNIPER = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSNIPER);
+        GenomeWide1DList<SubcompartmentInterval> subcSNIPER = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSNIPER);
         SliceUtils.splitGWList(subcSNIPER, resolution);
 
-        GenomeWideList<SubcompartmentInterval> subcSCI = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSCI);
+        GenomeWide1DList<SubcompartmentInterval> subcSCI = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSCI);
         SliceUtils.splitGWList(subcSCI, resolution);
 
-        GenomeWideList<SubcompartmentInterval> resultList = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
+        GenomeWide1DList<SubcompartmentInterval> resultList = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
 
         resultList.filterLists((key, features) -> {
             if (features.size() > 0) {
@@ -138,16 +138,16 @@ public class UnusedTest {
 
         final int resolution = 100000;
 
-        GenomeWideList<SubcompartmentInterval> subcHuntley = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
+        GenomeWide1DList<SubcompartmentInterval> subcHuntley = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
         SliceUtils.splitGWList(subcHuntley, resolution);
 
-        GenomeWideList<SubcompartmentInterval> subcSNIPER = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSNIPER);
+        GenomeWide1DList<SubcompartmentInterval> subcSNIPER = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSNIPER);
         SliceUtils.splitGWList(subcSNIPER, resolution);
 
-        GenomeWideList<SubcompartmentInterval> subcSCI = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSCI);
+        GenomeWide1DList<SubcompartmentInterval> subcSCI = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationSCI);
         SliceUtils.splitGWList(subcSCI, resolution);
 
-        GenomeWideList<SubcompartmentInterval> resultList = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
+        GenomeWide1DList<SubcompartmentInterval> resultList = SliceUtils.loadFromSubcompartmentBEDFile(handler, locationHuntley);
 
         resultList.filterLists((key, features) -> {
             if (features.size() > 0) {
