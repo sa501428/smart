@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,41 @@ import mixer.MixerTools;
 public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
+
+        String path = "/Users/mshamim/Desktop/hg38_files/";
+        String[] stems = new String[]{"gm", "hepg2", "imr", "hct", "k562"};
+        String[] kStems = new String[]{"GM12878", "HepG2", "IMR90", "HCT116", "K562"};
+
+        for (int f : new int[]{0, 3}) {//= 0; f < stems.length; f++
+            String stem = stems[f];
+            String kStem = kStems[f];
+            String file = "/Volumes/AidenLabWD6/hicfiles/hg38/" + kStem + "_30.hic";
+            for (String k : new String[]{"INTER_SCALE"}) {// "GW_SCALE", "KR" ,normtype2[f]
+                for (int r : new int[]{100}) {
+                    String beds = path + "kyle/hmm_clustering/" + kStem + "_imputed_slice_hg38_6_clusters.bed,"
+                            + path + "kyle/hmm_clustering2/" + kStem + "_imputed.bed,"
+                            + path + stem + "_100k/c2/slice_GHMM_impute_1.bed,"
+                            + path + stem + "_100k/c2/slice_GHMM_impute_3.bed,"
+                            + path + stem + "_100k/c2/slice_GHMM_impute_4.bed,"
+                            //+path+stem+"_100k/kmedians/"+stem+"_5_kmedians_clusters.bed,"
+                            + path + stem + "_100k/kmedians/" + stem + "_6_kmedians_clusters.bed";
+                    String labels = "GS,GS2,I1,I3,I4,S6";
+
+                    String[] strings = new String[]{"shuffle",
+                            "-r", r + "000", "-k", k, "-w", "16",
+                            file,
+                            beds,
+                            path + stem + "_100k/shuffle_w16_redo_" + r + "_" + k,
+                            labels
+                    };
+                    System.out.println("-----------------------------------------------------");
+                    MixerTools.main(strings);
+                    System.gc();
+                }
+            }
+        }
+
+        /*
 
         String[] files = new String[]{
                 //"/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic" //,
