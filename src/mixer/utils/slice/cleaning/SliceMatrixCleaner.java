@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,12 +43,12 @@ public class SliceMatrixCleaner {
     public static int NUM_PER_CENTROID = 100;
     protected final File outputDirectory;
     protected float[][] data;
-    protected final Random generator;
+    protected final Random generator = new Random(2352);
     protected int resolution;
 
     public SliceMatrixCleaner(float[][] data, long seed, File outputDirectory, int resolution) {
         this.outputDirectory = outputDirectory;
-        generator = new Random(seed);
+        generator.setSeed(seed);
         this.resolution = resolution;
         this.data = data;
     }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,14 +51,14 @@ public class FullGenomeOEWithinClusters {
     private final ChromosomeHandler chromosomeHandler;
     private final SliceMatrix sliceMatrix;
     private final int maxIters = 200;
-    private final Random generator;
+    private final Random generator = new Random(2352);
 
     public FullGenomeOEWithinClusters(List<Dataset> datasets, ChromosomeHandler chromosomeHandler, int resolution,
                                       List<NormalizationType[]> normalizationTypes,
                                       File outputDirectory, long seed) {
         this.chromosomeHandler = chromosomeHandler;
         this.outputDirectory = outputDirectory;
-        generator = new Random(seed);
+        generator.setSeed(seed);
 
         BadIndexFinder badIndexFinder = new BadIndexFinder(chromosomeHandler.getAutosomalChromosomesArray(),
                 resolution, normalizationTypes);
