@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ShuffleAction {
 
     private final static int NUM_SCORES = 2;
-    private final Random generator = new Random(0);
+    //private final Random generator = new Random(0);
     private final Dataset ds;
     private final NormalizationType norm;
     private final int compressionFactor;
@@ -92,21 +92,22 @@ public class ShuffleAction {
         System.out.println("Interaction summary statistics saved");
     }
 
-    public void runInterAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder) {
+    public void runInterAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder,
+                                 Random generator) {
         for (int y = 0; y < mapTypes.length; y++) {
             final HiCMatrix interMatrix = InterOnlyMatrix.getMatrix(ds, norm, resolution, mapTypes[y], metric);
             Map<Integer, List<Integer>> clusterToRowIndices = populateCluster(interMatrix.getRowChromosomes(), interMatrix.getRowOffsets(), subcompartments);
             Map<Integer, List<Integer>> clusterToColIndices = populateCluster(interMatrix.getColChromosomes(), interMatrix.getColOffsets(), subcompartments);
-            shuffleMap(interMatrix, clusterToRowIndices, clusterToColIndices, outfolder, mapTypes[y].toString(), y);
+            shuffleMap(interMatrix, clusterToRowIndices, clusterToColIndices, outfolder, mapTypes[y].toString(), y, generator);
         }
         scoreContainer.calculateRatios();
     }
 
-    public void runIntraAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder) {
+    public void runIntraAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder, Random generator) {
         for (int y = 0; y < chromosomes.length; y++) {
             final HiCMatrix matrix = new IntraOnlyMatrix(ds, norm, resolution, chromosomes[y], intraType, metric, compressionFactor);
             Map<Integer, List<Integer>> clusterToRowIndices = populateCluster(matrix.getRowChromosomes(), matrix.getRowOffsets(), subcompartments);
-            shuffleMap(matrix, clusterToRowIndices, clusterToRowIndices, outfolder, chromosomes[y].getName(), y);
+            shuffleMap(matrix, clusterToRowIndices, clusterToRowIndices, outfolder, chromosomes[y].getName(), y, generator);
         }
         scoreContainer.calculateRatios();
     }
@@ -130,7 +131,7 @@ public class ShuffleAction {
 
     private void shuffleMap(HiCMatrix interMatrix, Map<Integer, List<Integer>> clusterToRowIndices,
                             Map<Integer, List<Integer>> clusterToColIndices,
-                            File outfolder, String name, int mapIndex) {
+                            File outfolder, String name, int mapIndex, Random generator) {
         boolean isBaseline = false;
 
         final AggregateMatrix aggregate = new AggregateMatrix(isBaseline);
@@ -147,16 +148,16 @@ public class ShuffleAction {
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             int k = currRowIndex.getAndIncrement();
             while (k < numRounds) {
-                ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, isBaseline);
+                ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, isBaseline, generator);
                 ShuffledIndices allColIndices;
                 if (isIntra) {
                     allColIndices = allRowIndices;
                 } else {
-                    allColIndices = getShuffledByClusterIndices(clusterToColIndices, isBaseline);
+                    allColIndices = getShuffledByClusterIndices(clusterToColIndices, isBaseline, generator);
                 }
                 if (k == 0) {
-                    globalAllIndices[0] = getShuffledByClusterIndices(clusterToRowIndices, isBaseline);
-                    globalAllIndices[1] = getShuffledByClusterIndices(clusterToColIndices, isBaseline);
+                    globalAllIndices[0] = getShuffledByClusterIndices(clusterToRowIndices, isBaseline, generator);
+                    globalAllIndices[1] = getShuffledByClusterIndices(clusterToColIndices, isBaseline, generator);
                 }
 
                 float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices, allColIndices.allIndices);
@@ -182,7 +183,8 @@ public class ShuffleAction {
         scoreContainer.updateAggregateScores(aggregate, globalAllIndices, mapIndex);
     }
 
-    private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices, boolean isBaseline) {
+    private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices,
+                                                        boolean isBaseline, Random generator) {
         List<Integer> allIndices = new ArrayList<>();
 
         List<Integer> order = new ArrayList<>(clusterToIndices.keySet());
