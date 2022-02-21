@@ -46,7 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ShuffleAction {
 
     private final static int NUM_SCORES = 2;
-    //private final Random generator = new Random(0);
     private final Dataset ds;
     private final NormalizationType norm;
     private final int compressionFactor;
@@ -129,9 +128,17 @@ public class ShuffleAction {
 
     }
 
+    private static long[] getSeedsForRound(Random generator, int numRounds) {
+        long[] seeds = new long[numRounds];
+        for (int i = 0; i < numRounds; i++) {
+            seeds[i] = generator.nextLong();
+        }
+        return seeds;
+    }
+
     private void shuffleMap(HiCMatrix interMatrix, Map<Integer, List<Integer>> clusterToRowIndices,
                             Map<Integer, List<Integer>> clusterToColIndices,
-                            File outfolder, String name, int mapIndex, Random generator) {
+                            File outfolder, String name, int mapIndex, Random random) {
         boolean isBaseline = false;
 
         final AggregateMatrix aggregate = new AggregateMatrix(isBaseline);
@@ -139,15 +146,17 @@ public class ShuffleAction {
         double[][] logScoresBaselineForRound = new double[NUM_SCORES][numRounds];
         double[][] scoresForRound = new double[NUM_SCORES][numRounds];
         double[][] logScoresForRound = new double[NUM_SCORES][numRounds];
-
-
+        
         AtomicInteger currRowIndex = new AtomicInteger(0);
 
+        long[] seeds = getSeedsForRound(random, numRounds);
 
         final ShuffledIndices[] globalAllIndices = new ShuffledIndices[2];
         ParallelizedMixerTools.launchParallelizedCode(() -> {
             int k = currRowIndex.getAndIncrement();
+            AggregateMatrix aggregateForThread = new AggregateMatrix(isBaseline);
             while (k < numRounds) {
+                Random generator = new Random(seeds[k]);
                 ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, isBaseline, generator);
                 ShuffledIndices allColIndices;
                 if (isIntra) {
@@ -169,8 +178,12 @@ public class ShuffleAction {
                 updateMatrixScores(logScoresBaselineForRound, k, matrix, allRowIndices.boundaries, allColIndices.boundaries, true);
                 updateMatrixScores(logScoresForRound, k, matrix, allRowIndices.boundaries, allColIndices.boundaries, false);
 
-                aggregate.addBToA(matrix);
+                aggregateForThread.addBToA(matrix);
                 k = currRowIndex.getAndIncrement();
+            }
+
+            synchronized (aggregate) {
+                aggregate.addBToA(aggregateForThread.getMatrixCopy());
             }
         });
 
@@ -231,7 +244,8 @@ public class ShuffleAction {
         return result;
     }
 
-    private Map<Integer, List<Integer>> populateCluster(Chromosome[] chromosomes, int[] offsets, GenomeWide1DList<SubcompartmentInterval> subcompartments) {
+    private Map<Integer, List<Integer>> populateCluster(Chromosome[] chromosomes, int[] offsets,
+                                                        GenomeWide1DList<SubcompartmentInterval> subcompartments) {
         Map<Integer, List<Integer>> clusterToIndices = new HashMap<>();
 
         for (int x = 0; x < chromosomes.length; x++) {
