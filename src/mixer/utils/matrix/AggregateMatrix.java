@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +24,14 @@
 
 package mixer.utils.matrix;
 
-import javastraw.tools.MatrixTools;
 import javastraw.tools.UNIXTools;
-import mixer.MixerGlobals;
 import mixer.utils.common.FloatMatrixTools;
 
 import java.io.File;
 
 public class AggregateMatrix {
 
-    private final String stem;
     private float[][] aggregate = null;
-
-    public AggregateMatrix(boolean isBaseline) {
-        if (isBaseline) {
-            stem = "baseline";
-        } else {
-            stem = "shuffled";
-        }
-    }
 
     private static void addBToA(float[][] a, float[][] b) {
         if (a.length == b.length && a[0].length == b[0].length) {
@@ -76,25 +65,22 @@ public class AggregateMatrix {
         divideBy(aggregate, numRounds);
     }
 
+    private static void saveToPNG(float[][] matrix, File outfolder, String name) {
+        File mapLogFile = new File(outfolder, name + ".png");
+        FloatMatrixTools.saveMatrixToPNG(mapLogFile, matrix, false);
+    }
+
     public void saveToPNG(File outfolder, String name) {
         File outfolder2 = new File(outfolder, name);
         UNIXTools.makeDir(outfolder2);
-        saveToPNG(aggregate, outfolder2, name, "");
-
-        if (MixerGlobals.printVerboseComments) {
-            String npyPath = new File(outfolder2, name + "_" + stem + ".npy").getAbsolutePath();
-            MatrixTools.saveMatrixTextNumpy(npyPath, aggregate);
-        }
-    }
-
-    private void saveToPNG(float[][] matrix, File outfolder, String name, String stem2) {
-        File mapFile = new File(outfolder, stem2 + name + "_" + stem + ".png");
-        File mapLogFile = new File(outfolder, stem2 + name + "_log_" + stem + ".png");
-        FloatMatrixTools.saveMatrixToPNG(mapFile, matrix, false);
-        FloatMatrixTools.saveMatrixToPNG(mapLogFile, matrix, true);
+        saveToPNG(aggregate, outfolder2, name);
     }
 
     public float[][] getMatrixCopy() {
         return FloatMatrixTools.deepClone(aggregate);
+    }
+
+    public boolean hasData() {
+        return aggregate != null;
     }
 }

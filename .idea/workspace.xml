@@ -30,10 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="fix random seed issues">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/CHICTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +58,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="evaluation" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -89,11 +90,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.rougheval" />
       <recent name="mixer.utils.remedian" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice" />
-      <recent name="mixer.utils.slice.gmm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -240,14 +241,7 @@
       <workItem from="1645048253033" duration="899000" />
       <workItem from="1645248393629" duration="1969000" />
       <workItem from="1645282755306" duration="235000" />
-      <workItem from="1645417394625" duration="1577000" />
-    </task>
-    <task id="LOCAL-00142" summary="verbose printing handling">
-      <created>1625243611555</created>
-      <option name="number" value="00142" />
-      <option name="presentableId" value="LOCAL-00142" />
-      <option name="project" value="LOCAL" />
-      <updated>1625243611555</updated>
+      <workItem from="1645417394625" duration="5930000" />
     </task>
     <task id="LOCAL-00143" summary="update usage, bug fixes">
       <created>1625293006359</created>
@@ -585,7 +579,14 @@
       <option name="project" value="LOCAL" />
       <updated>1645249867030</updated>
     </task>
-    <option name="localTasksCounter" value="191" />
+    <task id="LOCAL-00191" summary="fix random seed issues">
+      <created>1645424742631</created>
+      <option name="number" value="00191" />
+      <option name="presentableId" value="LOCAL-00191" />
+      <option name="project" value="LOCAL" />
+      <updated>1645424742632</updated>
+    </task>
+    <option name="localTasksCounter" value="192" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -609,7 +610,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="restore kmeans, update shuffling" />
     <MESSAGE value="update score printing, code cleanup" />
     <MESSAGE value="remedian implementation" />
     <MESSAGE value="subsampling methods" />
@@ -634,7 +634,8 @@
     <MESSAGE value="update java straw" />
     <MESSAGE value="initial randoms/seeds differently; fix bug for non-humans" />
     <MESSAGE value="fix random seed issue" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix random seed issue" />
+    <MESSAGE value="fix random seed issues" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix random seed issues" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
