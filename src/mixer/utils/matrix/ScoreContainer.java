@@ -36,19 +36,19 @@ public class ScoreContainer {
 
     private final String[] scoreTypes = {"Variation", "Relative Entropy"};
 
-    private final double[][] baselines;
-    private final double[][] shuffled;
-    private final double[][] ratios;
+    private final float[][] baselines;
+    private final float[][] shuffled;
+    private final float[][] ratios;
 
     public ScoreContainer(int numMaps, int numScores) {
-        baselines = new double[numMaps][numScores];
-        shuffled = new double[numMaps][numScores];
-        ratios = new double[numMaps][numScores];
+        baselines = new float[numMaps][numScores];
+        shuffled = new float[numMaps][numScores];
+        ratios = new float[numMaps][numScores];
     }
 
-    public static double[] updateAggMatrixScores(float[][] matrix, Integer[] rowBounds, Integer[] colBounds,
-                                                 boolean isBaseline) {
-        double[] scores = new double[2];
+    public static float[] updateAggMatrixScores(float[][] matrix, Integer[] rowBounds, Integer[] colBounds,
+                                                boolean isBaseline) {
+        float[] scores = new float[2];
         scores[0] = (new VarianceScoring(matrix, rowBounds, colBounds)).score(isBaseline);
         scores[1] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true)).score(isBaseline);
         return scores;
@@ -77,7 +77,7 @@ public class ScoreContainer {
         }
     }
 
-    private void writeToFile(File outfolder, String filename, double[][] shuffle, double[][] baseline, double[][] ratio,
+    private void writeToFile(File outfolder, String filename, float[][] shuffle, float[][] baseline, float[][] ratio,
                              String[] names) throws IOException {
         FileWriter myWriter = new FileWriter(new File(outfolder, filename));
         double[] geometricMeans = new double[scoreTypes.length];
