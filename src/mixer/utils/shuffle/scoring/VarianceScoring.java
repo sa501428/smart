@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ public class VarianceScoring extends ShuffleScore {
     }
 
     @Override
-    protected double score(Integer[] rBounds, Integer[] cBounds) {
+    protected float score(Integer[] rBounds, Integer[] cBounds) {
         double sumOfSquareErr = 0;
         int numElements = 0;
         for (int rI = 0; rI < rBounds.length - 1; rI++) {
@@ -54,6 +54,6 @@ public class VarianceScoring extends ShuffleScore {
                 }
             }
         }
-        return sumOfSquareErr / numElements;
+        return (float) (sumOfSquareErr / numElements);
     }
 }

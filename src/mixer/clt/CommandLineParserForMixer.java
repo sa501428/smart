@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option subsampleNumOption = addIntegerOption("subsample");
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option sliceWindowOption = addIntegerOption('w', "window");
+    private final Option seedOption = addIntegerOption("seed");
     private final Option sliceCompareOption = addStringOption("compare");
     private final Option translocationOption = addBooleanOption("has-translocation");
     private final Option encodeOption = addBooleanOption("encode-mode");
@@ -75,6 +76,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
      */
     public int getWindowSizeOption() {
         return optionToInt(sliceWindowOption);
+    }
+
+    public int getSeedOption() {
+        return optionToInt(seedOption);
     }
 
     public int getMatrixSizeOption() {

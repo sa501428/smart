@@ -99,12 +99,7 @@ public class ShuffleAndUMAP extends MixerCLT {
         intraType = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
         metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
 
-        long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
-        if (possibleSeeds != null && possibleSeeds.length > 0) {
-            for (long seed : possibleSeeds) {
-                randomSeed = seed;
-            }
-        }
+        randomSeed = mixerParser.getSeedOption();
 
         int minSize = mixerParser.getWindowSizeOption();
         if (minSize > 1) {
