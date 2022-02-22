@@ -185,7 +185,7 @@ public class ShuffleAction {
         boundaries.add(count);
 
         for (Integer index : order) {
-            List<Integer> indexList = clusterToIndices.get(index);
+            List<Integer> indexList = new ArrayList<>(clusterToIndices.get(index));
             Collections.shuffle(indexList, generator);
             int numToUse = (indexList.size() / compressionFactor) * compressionFactor;
             for (int z = 0; z < numToUse; z++) {

@@ -58,6 +58,7 @@ public class ScoreContainer {
         for (int y = 0; y < ratios.length; y++) {
             for (int l = 0; l < ratios[0].length; l++) {
                 ratios[y][l] = baselines[y][l] / shuffled[y][l];
+                // baseline/shuffled so that bigger is better
             }
         }
     }
@@ -70,7 +71,7 @@ public class ScoreContainer {
 
     public void savePlotsAndResults(File outfolder, String prefix, String[] names) {
         try {
-            writeToFile(outfolder, "aggregate_scores_" + prefix + "_log.txt", shuffled, baselines, ratios, names);
+            writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
         } catch (Exception ee) {
             System.err.println("Unable to write results to text file");
         }
