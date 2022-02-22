@@ -31,9 +31,9 @@ import java.io.File;
 
 public class AggregateMatrix {
 
-    private float[][] aggregate = null;
+    private double[][] aggregate = null;
 
-    private static void addBToA(float[][] a, float[][] b) {
+    private static void addBToA(double[][] a, double[][] b) {
         if (a.length == b.length && a[0].length == b[0].length) {
             for (int i = 0; i < a.length; i++) {
                 for (int j = 0; j < a[i].length; j++) {
@@ -46,7 +46,7 @@ public class AggregateMatrix {
         }
     }
 
-    private static void divideBy(float[][] matrix, float scalar) {
+    private static void divideBy(double[][] matrix, float scalar) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] /= scalar;
@@ -54,9 +54,14 @@ public class AggregateMatrix {
         }
     }
 
-    public synchronized void addBToA(float[][] matrix) {
+    private static void saveToPNG(double[][] matrix, File outfolder, String name) {
+        File mapLogFile = new File(outfolder, name + ".png");
+        FloatMatrixTools.saveMatrixToPNG(mapLogFile, FloatMatrixTools.convert(matrix), false);
+    }
+
+    public void add(double[][] matrix) {
         if (aggregate == null) {
-            aggregate = new float[matrix.length][matrix[0].length];
+            aggregate = new double[matrix.length][matrix[0].length];
         }
         addBToA(aggregate, matrix);
     }
@@ -65,9 +70,8 @@ public class AggregateMatrix {
         divideBy(aggregate, numRounds);
     }
 
-    private static void saveToPNG(float[][] matrix, File outfolder, String name) {
-        File mapLogFile = new File(outfolder, name + ".png");
-        FloatMatrixTools.saveMatrixToPNG(mapLogFile, matrix, false);
+    public void add(AggregateMatrix matrix) {
+        add(matrix.aggregate);
     }
 
     public void saveToPNG(File outfolder, String name) {
@@ -76,11 +80,11 @@ public class AggregateMatrix {
         saveToPNG(aggregate, outfolder2, name);
     }
 
-    public float[][] getMatrixCopy() {
-        return FloatMatrixTools.deepClone(aggregate);
-    }
-
     public boolean hasData() {
         return aggregate != null;
+    }
+
+    public float[][] getFloatMatrix() {
+        return FloatMatrixTools.deepClone(FloatMatrixTools.convert(aggregate));
     }
 }

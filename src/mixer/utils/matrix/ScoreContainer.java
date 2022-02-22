@@ -64,7 +64,7 @@ public class ScoreContainer {
     }
 
     public void updateAggregateScores(AggregateMatrix aggregate, ShuffledIndices[] globalAllIndices, int mapIndex) {
-        float[][] aggMatrix = aggregate.getMatrixCopy();
+        float[][] aggMatrix = aggregate.getFloatMatrix();
         baselines[mapIndex] = updateAggMatrixScores(aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, true);
         shuffled[mapIndex] = updateAggMatrixScores(aggMatrix, globalAllIndices[0].boundaries, globalAllIndices[1].boundaries, false);
     }

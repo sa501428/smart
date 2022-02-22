@@ -155,15 +155,15 @@ public class ShuffleAction {
                     allColIndices = getShuffledByClusterIndices(clusterToColIndices, false, generator);
                 }
 
-                float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices, allColIndices.allIndices);
+                double[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices, allColIndices.allIndices);
                 FloatMatrixTools.log(matrix, 1);
-                aggregateForThread.addBToA(matrix);
+                aggregateForThread.add(matrix);
                 k = currRowIndex.getAndIncrement();
             }
 
             synchronized (aggregate) {
                 if (aggregateForThread.hasData()) {
-                    aggregate.addBToA(aggregateForThread.getMatrixCopy());
+                    aggregate.add(aggregateForThread);
                 }
             }
         });
@@ -202,14 +202,14 @@ public class ShuffleAction {
         return new ShuffledIndices(allIndices, boundaries.toArray(output));
     }
 
-    private float[][] getShuffledMatrix(HiCMatrix interMatrix, List<Integer> allRowIndices, List<Integer> allColIndices) {
+    private double[][] getShuffledMatrix(HiCMatrix interMatrix, List<Integer> allRowIndices, List<Integer> allColIndices) {
         int numRows = allRowIndices.size() / compressionFactor;
         int numCols = allColIndices.size() / compressionFactor;
         int numRowsKept = numRows * compressionFactor;
         int numColsKept = numCols * compressionFactor;
         float[][] original = interMatrix.getMatrix();
 
-        float[][] result = new float[numRows][numCols];
+        double[][] result = new double[numRows][numCols];
         for (int i = 0; i < numRowsKept; i++) {
             final int i0 = allRowIndices.get(i);
             for (int j = 0; j < numColsKept; j++) {
