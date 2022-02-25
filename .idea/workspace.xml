@@ -31,8 +31,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/general/java-straw.2.11.1.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/java_straw_1_4_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/java_straw_1_4_1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/general/java-straw.2.4.3.jar" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -239,14 +242,10 @@
       <workItem from="1645248393629" duration="1969000" />
       <workItem from="1645282755306" duration="235000" />
       <workItem from="1645417394625" duration="6540000" />
-      <workItem from="1645467353652" duration="3467000" />
-    </task>
-    <task id="LOCAL-00146" summary="remove translocation detector, add filtering by zscore">
-      <created>1625529873995</created>
-      <option name="number" value="00146" />
-      <option name="presentableId" value="LOCAL-00146" />
-      <option name="project" value="LOCAL" />
-      <updated>1625529873995</updated>
+      <workItem from="1645467353652" duration="3656000" />
+      <workItem from="1645638309309" duration="200000" />
+      <workItem from="1645647864703" duration="393000" />
+      <workItem from="1645828569133" duration="62000" />
     </task>
     <task id="LOCAL-00147" summary="verbose printing">
       <created>1625553499248</created>
@@ -584,7 +583,14 @@
       <option name="project" value="LOCAL" />
       <updated>1645507272302</updated>
     </task>
-    <option name="localTasksCounter" value="195" />
+    <task id="LOCAL-00195" summary="switch double array to float array">
+      <created>1645510731888</created>
+      <option name="number" value="00195" />
+      <option name="presentableId" value="LOCAL-00195" />
+      <option name="project" value="LOCAL" />
+      <updated>1645510731888</updated>
+    </task>
+    <option name="localTasksCounter" value="196" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -608,7 +614,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Silhouette score" />
     <MESSAGE value="code cleanup, split up postprocessing/scoring" />
     <MESSAGE value="subsampling, query silhouette, bug fixes" />
     <MESSAGE value="comment out silhouette" />
@@ -633,7 +638,8 @@
     <MESSAGE value="update shuffle calculation" />
     <MESSAGE value="clone list of indices" />
     <MESSAGE value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
+    <MESSAGE value="switch double array to float array" />
+    <option name="LAST_COMMIT_MESSAGE" value="switch double array to float array" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
