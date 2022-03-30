@@ -126,6 +126,8 @@ public class Magic extends MixerCLT {
                 outputDirectory, generator.nextLong(), offset, binToColumn, numRows, numCols);
         matrix.export(new File(outputDirectory, "magic.npy").getAbsolutePath());
 
+        ClusteringMagic clustering = new ClusteringMagic(matrix, outputDirectory, chromosomeHandler, 10L);
+        clustering.extractFinalGWSubcompartments(prefix);
         System.out.println("\nClustering complete");
     }
 

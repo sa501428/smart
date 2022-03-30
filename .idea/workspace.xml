@@ -30,21 +30,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update straw">
-      <change afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/SubcompartmentBedFile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/UmapProjection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/drive/DriveMatrix.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -267,14 +254,7 @@
       <workItem from="1646855017960" duration="408000" />
       <workItem from="1647720922005" duration="5641000" />
       <workItem from="1648043848009" duration="1868000" />
-      <workItem from="1648622555483" duration="3813000" />
-    </task>
-    <task id="LOCAL-00148" summary="umap plotting">
-      <created>1627970394250</created>
-      <option name="number" value="00148" />
-      <option name="presentableId" value="LOCAL-00148" />
-      <option name="project" value="LOCAL" />
-      <updated>1627970394250</updated>
+      <workItem from="1648622555483" duration="4395000" />
     </task>
     <task id="LOCAL-00149" summary="umap plotting">
       <created>1627978630319</created>
@@ -612,7 +592,14 @@
       <option name="project" value="LOCAL" />
       <updated>1645828932212</updated>
     </task>
-    <option name="localTasksCounter" value="197" />
+    <task id="LOCAL-00197" summary="add magic">
+      <created>1648667394707</created>
+      <option name="number" value="00197" />
+      <option name="presentableId" value="LOCAL-00197" />
+      <option name="project" value="LOCAL" />
+      <updated>1648667394707</updated>
+    </task>
+    <option name="localTasksCounter" value="198" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -636,7 +623,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="subsampling, query silhouette, bug fixes" />
     <MESSAGE value="comment out silhouette" />
     <MESSAGE value="code cleanup, change defaults, save genome coordinates" />
     <MESSAGE value="upgrade straw jar" />
@@ -661,7 +647,8 @@
     <MESSAGE value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
     <MESSAGE value="switch double array to float array" />
     <MESSAGE value="update straw" />
-    <option name="LAST_COMMIT_MESSAGE" value="update straw" />
+    <MESSAGE value="add magic" />
+    <option name="LAST_COMMIT_MESSAGE" value="add magic" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
