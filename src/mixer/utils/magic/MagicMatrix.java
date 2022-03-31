@@ -86,9 +86,16 @@ public class MagicMatrix extends DriveMatrix {
                 if (m1 == null) continue;
                 MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
                 if (zd == null) continue;
-                populateMatrixFromIterator(zd.getDirectIterator(), offset[i], offset[j], binToClusterID);
+                if (norm.getLabel().equalsIgnoreCase("none")) {
+                    populateMatrixFromIterator(zd.getDirectIterator(), offset[i], offset[j], binToClusterID);
+                } else {
+                    populateMatrixFromIterator(zd.getNormalizedIterator(norm), offset[i], offset[j], binToClusterID);
+                }
+                System.out.print(".");
             }
+            System.out.println(".");
         }
+        System.out.println("MAGIC matrix loaded");
     }
 
     private void populateMatrixFromIterator(Iterator<ContactRecord> iterator, int rowOffset, int colOffset,

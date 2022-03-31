@@ -57,7 +57,7 @@ public class Magic extends MixerCLT {
     private File outputDirectory;
     private String prefix, bedpath;
     private NormalizationType norm = NormalizationHandler.NONE;
-    private int numCols = -1;
+    private int numCols = 0;
     private int numRows = -1;
 
     // subcompartment lanscape identification via clustering enrichment
@@ -173,6 +173,7 @@ public class Magic extends MixerCLT {
                 }
             }
         }
+        System.out.println("Bed file loaded");
         return binToColumnNumber;
     }
 }

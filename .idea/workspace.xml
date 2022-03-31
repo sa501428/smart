@@ -31,7 +31,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -254,14 +256,7 @@
       <workItem from="1646855017960" duration="408000" />
       <workItem from="1647720922005" duration="5641000" />
       <workItem from="1648043848009" duration="1868000" />
-      <workItem from="1648622555483" duration="4395000" />
-    </task>
-    <task id="LOCAL-00149" summary="umap plotting">
-      <created>1627978630319</created>
-      <option name="number" value="00149" />
-      <option name="presentableId" value="LOCAL-00149" />
-      <option name="project" value="LOCAL" />
-      <updated>1627978630319</updated>
+      <workItem from="1648622555483" duration="6414000" />
     </task>
     <task id="LOCAL-00150" summary="k-medians added">
       <created>1628073288347</created>
@@ -599,7 +594,14 @@
       <option name="project" value="LOCAL" />
       <updated>1648667394707</updated>
     </task>
-    <option name="localTasksCounter" value="198" />
+    <task id="LOCAL-00198" summary="fix clustering">
+      <created>1648667786448</created>
+      <option name="number" value="00198" />
+      <option name="presentableId" value="LOCAL-00198" />
+      <option name="project" value="LOCAL" />
+      <updated>1648667786448</updated>
+    </task>
+    <option name="localTasksCounter" value="199" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -623,7 +625,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="comment out silhouette" />
     <MESSAGE value="code cleanup, change defaults, save genome coordinates" />
     <MESSAGE value="upgrade straw jar" />
     <MESSAGE value="random silhouette, encode option" />
@@ -648,7 +649,8 @@
     <MESSAGE value="switch double array to float array" />
     <MESSAGE value="update straw" />
     <MESSAGE value="add magic" />
-    <option name="LAST_COMMIT_MESSAGE" value="add magic" />
+    <MESSAGE value="fix clustering" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix clustering" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
