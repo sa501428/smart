@@ -33,7 +33,10 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
+import mixer.utils.bed.BedFileMappings;
+import mixer.utils.common.ParallelizedStatTools;
 import mixer.utils.drive.DriveMatrix;
+import mixer.utils.slice.cleaning.utils.RowCleaner;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
@@ -48,11 +51,19 @@ public class MagicMatrix extends DriveMatrix {
 
 
     public MagicMatrix(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution,
-                       NormalizationType norm, File outputDirectory, long seed, int[] offset,
-                       Map<Integer, Integer> binToClusterID, int numRows, int numCols) {
-        matrix = new float[numRows][numCols];
+                       NormalizationType norm, File outputDirectory, long seed, BedFileMappings mappings) {
+        float[][] data = new float[mappings.getNumRows()][mappings.getNumCols()];
         rowIndexToIntervalMap = createIndexToIntervalMap(chromosomeHandler, resolution);
-        populateMatrix(ds, chromosomeHandler, resolution, norm, offset, binToClusterID);
+        populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings);
+
+        ParallelizedStatTools.setZerosToNan(data);
+        matrix = (new RowCleaner(data, rowIndexToIntervalMap, null)).getCleanedData(resolution, outputDirectory).matrix;
+
+
+    }
+
+    private void setZerosToNans(float[][] data) {
+
     }
 
     private Map<Integer, SubcompartmentInterval> createIndexToIntervalMap(ChromosomeHandler handler,
@@ -60,8 +71,7 @@ public class MagicMatrix extends DriveMatrix {
         Map<Integer, SubcompartmentInterval> map = new HashMap<>();
         int counter = 0;
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
-        for (int q = 0; q < chromosomes.length; q++) {
-            Chromosome chromosome = chromosomes[q];
+        for (Chromosome chromosome : chromosomes) {
             int maxGenomeLen = (int) chromosome.getLength();
             int chrBinLength = (int) (chromosome.getLength() / resolution + 1);
             for (int i = 0; i < chrBinLength; i++) {
@@ -76,8 +86,12 @@ public class MagicMatrix extends DriveMatrix {
     }
 
 
-    private void populateMatrix(Dataset ds, ChromosomeHandler handler, int resolution,
-                                NormalizationType norm, int[] offset, Map<Integer, Integer> binToClusterID) {
+    private void populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
+                                NormalizationType norm, BedFileMappings mappings) {
+
+        int[] offsets = mappings.getOffsets();
+        Map<Integer, Integer> binToClusterID = mappings.getBinToClusterID();
+
         // incorporate norm
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         for (int i = 0; i < chromosomes.length; i++) {
@@ -87,9 +101,9 @@ public class MagicMatrix extends DriveMatrix {
                 MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
                 if (zd == null) continue;
                 if (norm.getLabel().equalsIgnoreCase("none")) {
-                    populateMatrixFromIterator(zd.getDirectIterator(), offset[i], offset[j], binToClusterID);
+                    populateMatrixFromIterator(matrix, zd.getDirectIterator(), offsets[i], offsets[j], binToClusterID);
                 } else {
-                    populateMatrixFromIterator(zd.getNormalizedIterator(norm), offset[i], offset[j], binToClusterID);
+                    populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), offsets[i], offsets[j], binToClusterID);
                 }
                 System.out.print(".");
             }
@@ -98,7 +112,7 @@ public class MagicMatrix extends DriveMatrix {
         System.out.println("MAGIC matrix loaded");
     }
 
-    private void populateMatrixFromIterator(Iterator<ContactRecord> iterator, int rowOffset, int colOffset,
+    private void populateMatrixFromIterator(float[][] matrix, Iterator<ContactRecord> iterator, int rowOffset, int colOffset,
                                             Map<Integer, Integer> binToClusterID) {
         while (iterator.hasNext()) {
             ContactRecord cr = iterator.next();

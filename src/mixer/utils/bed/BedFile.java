@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.aba;
+package mixer.utils.bed;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
@@ -31,6 +31,7 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.MixerGlobals;
+import mixer.utils.aba.ABADataStack;
 import mixer.utils.slice.structures.SimpleInterval;
 import org.apache.commons.math3.linear.RealMatrix;
 

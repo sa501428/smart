@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils;
+package mixer.utils.bed;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;

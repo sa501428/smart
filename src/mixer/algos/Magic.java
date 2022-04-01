@@ -25,22 +25,18 @@
 package mixer.algos;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.SubcompartmentBedFile;
+import mixer.utils.bed.BedFileMappings;
 import mixer.utils.magic.ClusteringMagic;
 import mixer.utils.magic.MagicMatrix;
-import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -57,8 +53,6 @@ public class Magic extends MixerCLT {
     private File outputDirectory;
     private String prefix, bedpath;
     private NormalizationType norm = NormalizationHandler.NONE;
-    private int numCols = 0;
-    private int numRows = -1;
 
     // subcompartment lanscape identification via clustering enrichment
     public Magic(String command) {
@@ -118,62 +112,13 @@ public class Magic extends MixerCLT {
         if (givenChromosomes != null)
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
-        int[] offset = generateFromChromosomes(chromosomeHandler);
-
-        Map<Integer, Integer> binToColumn = populateFromBedFile(bedpath, chromosomeHandler, offset, resolution);
-
+        BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler, resolution);
         MagicMatrix matrix = new MagicMatrix(ds, chromosomeHandler, resolution, norm,
-                outputDirectory, generator.nextLong(), offset, binToColumn, numRows, numCols);
+                outputDirectory, generator.nextLong(), mappings);
         matrix.export(new File(outputDirectory, "magic.npy").getAbsolutePath());
 
         ClusteringMagic clustering = new ClusteringMagic(matrix, outputDirectory, chromosomeHandler, 10L);
         clustering.extractFinalGWSubcompartments(prefix);
         System.out.println("\nClustering complete");
-    }
-
-    private int[] generateFromChromosomes(ChromosomeHandler handler) {
-        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
-        int[] offsets = new int[chromosomes.length];
-        int offset = 0;
-        for (int z = 0; z < chromosomes.length; z++) {
-            Chromosome chromosome = chromosomes[z];
-            offsets[z] = offset;
-            offset += (int) (chromosome.getLength() / resolution) + 1;
-        }
-        numRows = offset;
-        return offsets;
-    }
-
-    private Map<Integer, Integer> populateFromBedFile(String bedpath, ChromosomeHandler handler,
-                                                      int[] offsets, int resolution) {
-        SubcompartmentBedFile bedFile = new SubcompartmentBedFile(bedpath, handler);
-        if (bedFile.getNumTotalFeatures() < 1) {
-            System.err.println("bed file is empty or incorrect path provided.");
-            System.exit(3);
-        }
-
-        Map<Integer, Integer> binToColumnNumber = new HashMap<>();
-        Map<Integer, Integer> clusterNumToColIndex = new HashMap<>();
-
-        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
-        for (int z = 0; z < chromosomes.length; z++) {
-            Chromosome chromosome = chromosomes[z];
-            List<SubcompartmentInterval> intervals = bedFile.get(chromosome.getIndex());
-            int offset = offsets[z];
-            for (SubcompartmentInterval si : intervals) {
-                for (int x = si.getX1() / resolution; x < si.getX2() / resolution; x++) {
-                    int currIndex = offset + x;
-                    int cluster = si.getClusterID();
-                    if (!clusterNumToColIndex.containsKey(cluster)) {
-                        clusterNumToColIndex.put(cluster, numCols);
-                        numCols++;
-                    }
-                    int col = clusterNumToColIndex.get(cluster);
-                    binToColumnNumber.put(currIndex, col);
-                }
-            }
-        }
-        System.out.println("Bed file loaded");
-        return binToColumnNumber;
     }
 }

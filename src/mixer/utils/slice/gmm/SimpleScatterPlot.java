@@ -24,8 +24,8 @@
 
 package mixer.utils.slice.gmm;
 
-import mixer.utils.UmapProjection;
 import mixer.utils.slice.structures.SubcompartmentColors;
+import mixer.utils.umap.UmapProjection;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

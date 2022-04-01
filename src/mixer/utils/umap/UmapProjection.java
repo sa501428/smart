@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils;
+package mixer.utils.umap;
 
 import mixer.utils.drive.DriveMatrix;
 import mixer.utils.slice.gmm.SimpleScatterPlot;

@@ -26,13 +26,13 @@ package mixer.utils.magic;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.utils.UmapProjection;
 import mixer.utils.drive.DriveMatrix;
 import mixer.utils.slice.kmeans.GenomeWideKmeansRunner;
 import mixer.utils.slice.kmeans.KmeansEvaluator;
 import mixer.utils.slice.kmeans.KmeansResult;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.umap.UmapProjection;
 
 import java.io.File;
 import java.util.HashMap;

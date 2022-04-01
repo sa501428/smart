@@ -29,7 +29,6 @@ import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import mixer.algos.Slice;
-import mixer.utils.UmapProjection;
 import mixer.utils.slice.CorrMatrixClusterer;
 import mixer.utils.slice.EncodeExportUtils;
 import mixer.utils.slice.cleaning.BadIndexFinder;
@@ -37,6 +36,7 @@ import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
 import mixer.utils.slice.matrices.SliceMatrix;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.umap.UmapProjection;
 
 import java.io.File;
 import java.util.HashMap;
