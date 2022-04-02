@@ -201,7 +201,9 @@ public class MagicMatrix extends DriveMatrix {
 
     private void normalizeMatrix(float[][] matrix, Map<Integer, int[]> chromIndexToNumTotalLoci, int[] binIndexToChromIndex) {
         for (int i = 0; i < matrix.length; i++) {
-            divide(matrix[i], chromIndexToNumTotalLoci.get(binIndexToChromIndex[i]));
+            if (binIndexToChromIndex[i] > -1) {
+                divide(matrix[i], chromIndexToNumTotalLoci.get(binIndexToChromIndex[i]));
+            }
         }
     }
 

@@ -31,8 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -256,14 +256,7 @@
       <workItem from="1646855017960" duration="408000" />
       <workItem from="1647720922005" duration="5641000" />
       <workItem from="1648043848009" duration="1868000" />
-      <workItem from="1648622555483" duration="18559000" />
-    </task>
-    <task id="LOCAL-00154" summary="parallelize more code">
-      <created>1629236745890</created>
-      <option name="number" value="00154" />
-      <option name="presentableId" value="LOCAL-00154" />
-      <option name="project" value="LOCAL" />
-      <updated>1629236745890</updated>
+      <workItem from="1648622555483" duration="19042000" />
     </task>
     <task id="LOCAL-00155" summary="remove row correlation filtering">
       <created>1629401541881</created>
@@ -601,7 +594,14 @@
       <option name="project" value="LOCAL" />
       <updated>1648931886707</updated>
     </task>
-    <option name="localTasksCounter" value="203" />
+    <task id="LOCAL-00203" summary="avoid divide by 0">
+      <created>1648932440611</created>
+      <option name="number" value="00203" />
+      <option name="presentableId" value="LOCAL-00203" />
+      <option name="project" value="LOCAL" />
+      <updated>1648932440611</updated>
+    </task>
+    <option name="localTasksCounter" value="204" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -625,7 +625,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update bed printing" />
     <MESSAGE value="rename class" />
     <MESSAGE value="update cleaning, bug fix" />
     <MESSAGE value="code cleanup" />
@@ -650,7 +649,8 @@
     <MESSAGE value="fix bed file info extraction, code cleanup, reorganization" />
     <MESSAGE value="options for log vs not, use norm vector filtering, update data structure, normalize magic matrix, row cleanup improved, code cleanup, allow skipping of bad inter regions" />
     <MESSAGE value="update version" />
-    <option name="LAST_COMMIT_MESSAGE" value="update version" />
+    <MESSAGE value="avoid divide by 0" />
+    <option name="LAST_COMMIT_MESSAGE" value="avoid divide by 0" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
