@@ -26,16 +26,19 @@ package mixer.algos;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.norm.NormalizationPicker;
 import javastraw.reader.type.NormalizationHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.InterChromosomeRegion;
 import mixer.utils.bed.BedFileMappings;
 import mixer.utils.magic.ClusteringMagic;
 import mixer.utils.magic.MagicMatrix;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -53,6 +56,8 @@ public class Magic extends MixerCLT {
     private File outputDirectory;
     private String prefix, bedpath;
     private NormalizationType norm = NormalizationHandler.NONE;
+    private boolean clusterOnLog = false;
+    private boolean useZScore = false;
 
     // subcompartment lanscape identification via clustering enrichment
     public Magic(String command) {
@@ -97,6 +102,9 @@ public class Magic extends MixerCLT {
             resolution = possibleResolutions.get(0);
         }
 
+        clusterOnLog = mixerParser.getLogOption();
+        useZScore = mixerParser.getZScoreOption();
+
         long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
         if (possibleSeeds != null && possibleSeeds.length > 0) {
             for (long seed : possibleSeeds) {
@@ -112,9 +120,14 @@ public class Magic extends MixerCLT {
         if (givenChromosomes != null)
             chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
-        BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler, resolution);
+        List<InterChromosomeRegion> regionsToIgnore = new ArrayList<>();
+
+        NormalizationType validNormForFiltering = NormalizationPicker.getFirstValidNormInThisOrder(ds,
+                new String[]{"SCALE", "KR", "VC", "VC_SQRT"});
+
+        BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler, resolution, ds, validNormForFiltering);
         MagicMatrix matrix = new MagicMatrix(ds, chromosomeHandler, resolution, norm,
-                outputDirectory, generator.nextLong(), mappings);
+                outputDirectory, generator.nextLong(), mappings, regionsToIgnore, clusterOnLog, useZScore);
         matrix.export(new File(outputDirectory, "magic.npy").getAbsolutePath());
 
         ClusteringMagic clustering = new ClusteringMagic(matrix, outputDirectory, chromosomeHandler, 10L);

@@ -24,10 +24,15 @@
 
 package mixer.utils.bed;
 
+import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.norm.NormalizationVector;
+import javastraw.reader.type.HiCZoom;
+import javastraw.reader.type.NormalizationType;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,15 +40,23 @@ import java.util.Map;
 public class BedFileMappings {
 
     private final int[] offsets;
-    private final Map<Integer, Integer> binToColumnNumber;
-    private final Map<Integer, Integer> clusterNumToColIndex;
+    private final int[] binIndexToChromIndex;
+    private final int[] indexToClusterID;
+    private final Map<Integer, Integer> clusterNumToColID = new HashMap<>();
+    private final Map<Integer, int[]> chromIndexToNumLoci = new HashMap<>();
     private int numCols = 0;
     private int numRows = 0;
 
 
-    public BedFileMappings(String bedpath, ChromosomeHandler handler, int resolution) {
+    public BedFileMappings(String bedpath, ChromosomeHandler handler, int resolution, Dataset ds,
+                           NormalizationType norm) {
 
         offsets = generateFromChromosomes(handler, resolution);
+        numRows = offsets[offsets.length - 1];
+        binIndexToChromIndex = new int[numRows];
+        indexToClusterID = new int[numRows];
+        Arrays.fill(binIndexToChromIndex, -1);
+        Arrays.fill(indexToClusterID, -1);
 
         SubcompartmentBedFile bedFile = new SubcompartmentBedFile(bedpath, handler);
         if (bedFile.getNumTotalFeatures() < 1) {
@@ -51,40 +64,60 @@ public class BedFileMappings {
             System.exit(3);
         }
 
-        binToColumnNumber = new HashMap<>();
-        clusterNumToColIndex = new HashMap<>();
-
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         for (int z = 0; z < chromosomes.length; z++) {
             Chromosome chromosome = chromosomes[z];
+
+            NormalizationVector nv = ds.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), norm);
+            double[] vec = nv.getData().getValues().get(0);
+
             List<SubcompartmentInterval> intervals = bedFile.get(chromosome.getIndex());
             int offset = offsets[z];
             for (SubcompartmentInterval si : intervals) {
                 for (int x = si.getX1() / resolution; x < si.getX2() / resolution; x++) {
-                    int currIndex = offset + x;
-                    int cluster = si.getClusterID();
-                    if (!clusterNumToColIndex.containsKey(cluster)) {
-                        clusterNumToColIndex.put(cluster, numCols);
-                        numCols++;
+                    if (vec[x] > 0) {
+                        int currIndex = offset + x;
+                        binIndexToChromIndex[currIndex] = chromosome.getIndex();
+                        int cluster = si.getClusterID();
+                        if (!clusterNumToColID.containsKey(cluster)) {
+                            clusterNumToColID.put(cluster, numCols);
+                            numCols++;
+                        }
+                        int colID = clusterNumToColID.get(cluster);
+                        indexToClusterID[currIndex] = colID;
                     }
-                    int col = clusterNumToColIndex.get(cluster);
-                    binToColumnNumber.put(currIndex, col);
                 }
             }
         }
         System.out.println("Bed file loaded");
+
+        for (Chromosome chromosome : chromosomes) {
+            NormalizationVector nv = ds.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), norm);
+            double[] vec = nv.getData().getValues().get(0);
+
+            int[] counts = new int[numCols];
+            for (SubcompartmentInterval si : bedFile.get(chromosome.getIndex())) {
+                int colID = clusterNumToColID.get(si.getClusterID());
+                for (int x = si.getX1() / resolution; x < si.getX2() / resolution; x++) {
+                    if (vec[x] > 0) {
+                        counts[colID]++;
+                    }
+                }
+            }
+            chromIndexToNumLoci.put(chromosome.getIndex(), counts);
+        }
     }
 
     private int[] generateFromChromosomes(ChromosomeHandler handler, int resolution) {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
-        int[] offsets = new int[chromosomes.length];
+        int[] offsets = new int[chromosomes.length + 1];
         int offset = 0;
         for (int z = 0; z < chromosomes.length; z++) {
             Chromosome chromosome = chromosomes[z];
             offsets[z] = offset;
             offset += (int) (chromosome.getLength() / resolution) + 1;
         }
-        numRows = offset;
+        offsets[chromosomes.length] = offset;
         return offsets;
     }
 
@@ -100,7 +133,15 @@ public class BedFileMappings {
         return offsets;
     }
 
-    public Map<Integer, Integer> getBinToClusterID() {
-        return binToColumnNumber;
+    public int[] getIndexToClusterID() {
+        return indexToClusterID;
+    }
+
+    public Map<Integer, int[]> getChromIndexToNumLoci() {
+        return chromIndexToNumLoci;
+    }
+
+    public int[] getBinIndexToChromIndex() {
+        return binIndexToChromIndex;
     }
 }

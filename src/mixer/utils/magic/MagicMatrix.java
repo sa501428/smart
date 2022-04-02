@@ -33,37 +33,38 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
+import mixer.utils.InterChromosomeRegion;
 import mixer.utils.bed.BedFileMappings;
-import mixer.utils.common.ParallelizedStatTools;
+import mixer.utils.common.LogTools;
 import mixer.utils.drive.DriveMatrix;
-import mixer.utils.slice.cleaning.utils.RowCleaner;
+import mixer.utils.slice.cleaning.utils.MatrixRowCleaner;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class MagicMatrix extends DriveMatrix {
 
+    private final int numRows, numCols;
     private final float[][] matrix;
     private final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap;
+    private final List<InterChromosomeRegion> regionsToIgnore;
 
 
     public MagicMatrix(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution,
-                       NormalizationType norm, File outputDirectory, long seed, BedFileMappings mappings) {
-        float[][] data = new float[mappings.getNumRows()][mappings.getNumCols()];
-        rowIndexToIntervalMap = createIndexToIntervalMap(chromosomeHandler, resolution);
-        populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings);
+                       NormalizationType norm, File outputDirectory, long seed, BedFileMappings mappings,
+                       List<InterChromosomeRegion> regionsToIgnore,
+                       boolean clusterOnLog, boolean useZScore) {
+        numRows = mappings.getNumRows();
+        numCols = mappings.getNumCols();
+        float[][] data = new float[numRows][numCols];
+        this.regionsToIgnore = regionsToIgnore;
+        this.rowIndexToIntervalMap = createIndexToIntervalMap(chromosomeHandler, resolution);
+        populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings, clusterOnLog, useZScore);
 
-        ParallelizedStatTools.setZerosToNan(data);
-        matrix = (new RowCleaner(data, rowIndexToIntervalMap, null)).getCleanedData(resolution, outputDirectory).matrix;
-
-
-    }
-
-    private void setZerosToNans(float[][] data) {
-
+        matrix = cleanUpMatrix(data, rowIndexToIntervalMap);
+        data = null;
+        System.out.println("final magic matrix num rows: " + matrix.length);
     }
 
     private Map<Integer, SubcompartmentInterval> createIndexToIntervalMap(ChromosomeHandler handler,
@@ -85,49 +86,128 @@ public class MagicMatrix extends DriveMatrix {
         return map;
     }
 
+    private static float[][] cleanUpMatrix(float[][] data, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
+        Set<Integer> badIndices = getBadIndices(data);
+        System.out.println("initial magic matrix num rows: " + data.length + " badIndices: " + badIndices.size());
+        return MatrixRowCleaner.makeNewMatrixAndUpdateIndices(data, rowIndexToIntervalMap, badIndices);
+    }
+
+    private static Set<Integer> getBadIndices(float[][] matrix) {
+        Set<Integer> badIndices = new HashSet<>();
+        for (int i = 0; i < matrix.length; i++) {
+            if (isBadRow(matrix[i])) {
+                badIndices.add(i);
+            }
+        }
+        return badIndices;
+    }
+
+    private static boolean isBadRow(float[] row) {
+        int numGoodEntries = 0;
+        for (float val : row) {
+            if (val > 0) {
+                numGoodEntries++;
+            }
+        }
+        return numGoodEntries < 2;
+    }
 
     private void populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
-                                NormalizationType norm, BedFileMappings mappings) {
+                                NormalizationType norm, BedFileMappings mappings,
+                                boolean clusterOnLog, boolean useZScore) {
 
         int[] offsets = mappings.getOffsets();
-        Map<Integer, Integer> binToClusterID = mappings.getBinToClusterID();
+        int[] indexToClusterID = mappings.getIndexToClusterID();
+        Map<Integer, int[]> chromIndexToNumTotalLoci = new HashMap<>();
+        int numCols = mappings.getNumCols();
+        Map<Integer, int[]> chromIndexToNumLoci = mappings.getChromIndexToNumLoci();
 
         // incorporate norm
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         for (int i = 0; i < chromosomes.length; i++) {
+            if (!chromIndexToNumTotalLoci.containsKey(chromosomes[i].getIndex())) {
+                chromIndexToNumTotalLoci.put(chromosomes[i].getIndex(), new int[numCols]);
+            }
             for (int j = i + 1; j < chromosomes.length; j++) {
+                if (!chromIndexToNumTotalLoci.containsKey(chromosomes[j].getIndex())) {
+                    chromIndexToNumTotalLoci.put(chromosomes[j].getIndex(), new int[numCols]);
+                }
+
+                if (shouldSkipRegion(chromosomes[i], chromosomes[j])) continue;
+
                 Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
                 if (m1 == null) continue;
+
                 MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
                 if (zd == null) continue;
+
                 if (norm.getLabel().equalsIgnoreCase("none")) {
-                    populateMatrixFromIterator(matrix, zd.getDirectIterator(), offsets[i], offsets[j], binToClusterID);
+                    populateMatrixFromIterator(matrix, zd.getDirectIterator(), offsets[i], offsets[j], indexToClusterID);
                 } else {
-                    populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), offsets[i], offsets[j], binToClusterID);
+                    populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), offsets[i], offsets[j], indexToClusterID);
                 }
+
+                updateNumberOfLoci(chromIndexToNumTotalLoci.get(chromosomes[i].getIndex()),
+                        chromIndexToNumLoci.get(chromosomes[j].getIndex()));
+                updateNumberOfLoci(chromIndexToNumTotalLoci.get(chromosomes[j].getIndex()),
+                        chromIndexToNumLoci.get(chromosomes[i].getIndex()));
+
                 System.out.print(".");
             }
             System.out.println(".");
         }
+
+        LogTools.simpleLogWithCleanup(matrix, Float.NaN);
+        normalizeMatrix(matrix, chromIndexToNumTotalLoci, mappings.getBinIndexToChromIndex());
+        scaleMatrixColumns(matrix, chromIndexToNumLoci);
+
+        if (!clusterOnLog) {
+            LogTools.simpleExpm1(matrix);
+        }
+
+        /*
+        // if you zscore, adjust the matrix cleaning !!!!
+        //ParallelizedStatTools.setZerosToNan(matrix);
+        if(useZScore){
+            ZScoreTools.inPlaceZscoreDownCol(matrix);
+        }
+        */
+
         System.out.println("MAGIC matrix loaded");
     }
 
-    private void populateMatrixFromIterator(float[][] matrix, Iterator<ContactRecord> iterator, int rowOffset, int colOffset,
-                                            Map<Integer, Integer> binToClusterID) {
-        while (iterator.hasNext()) {
-            ContactRecord cr = iterator.next();
+    private void scaleMatrixColumns(float[][] matrix, Map<Integer, int[]> chromIndexToNumLoci) {
+        int[] maxNumLoci = getSumOfAllLoci(chromIndexToNumLoci);
+        for (int i = 0; i < matrix.length; i++) {
+            inPlaceMultiply(matrix[i], maxNumLoci);
+        }
+    }
 
-            if (cr.getCounts() > 0) {
-                int r = cr.getBinX() + rowOffset;
-                int c = cr.getBinY() + colOffset;
-                if (binToClusterID.containsKey(c)) {
-                    matrix[r][binToClusterID.get(c)] += cr.getCounts();
-                }
+    private void inPlaceMultiply(float[] orig, int[] scalar) {
+        for (int z = 0; z < scalar.length; z++) {
+            orig[z] *= scalar[z];
+        }
+    }
 
-                if (binToClusterID.containsKey(r)) {
-                    matrix[c][binToClusterID.get(r)] += cr.getCounts();
-                }
+    private int[] getSumOfAllLoci(Map<Integer, int[]> chromIndexToNumLoci) {
+        int[] totalLoci = new int[numCols];
+        for (int[] row : chromIndexToNumLoci.values()) {
+            for (int z = 0; z < row.length; z++) {
+                totalLoci[z] += row[z];
             }
+        }
+        return totalLoci;
+    }
+
+    private void normalizeMatrix(float[][] matrix, Map<Integer, int[]> chromIndexToNumTotalLoci, int[] binIndexToChromIndex) {
+        for (int i = 0; i < matrix.length; i++) {
+            divide(matrix[i], chromIndexToNumTotalLoci.get(binIndexToChromIndex[i]));
+        }
+    }
+
+    private void divide(float[] row, int[] totalLoci) {
+        for (int k = 0; k < row.length; k++) {
+            row[k] = row[k] / totalLoci[k];
         }
     }
 
@@ -143,5 +223,35 @@ public class MagicMatrix extends DriveMatrix {
     @Override
     public Map<Integer, SubcompartmentInterval> getRowIndexToIntervalMap() {
         return rowIndexToIntervalMap;
+    }
+
+    private void updateNumberOfLoci(int[] totalLoci, int[] lociForRegion) {
+        for (int i = 0; i < totalLoci.length; i++) {
+            totalLoci[i] += lociForRegion[i];
+        }
+    }
+
+    private boolean shouldSkipRegion(Chromosome c1, Chromosome c2) {
+        for (InterChromosomeRegion region : regionsToIgnore) {
+            if (region.is(c1, c2)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void populateMatrixFromIterator(float[][] matrix, Iterator<ContactRecord> iterator, int rowOffset, int colOffset,
+                                            int[] binToClusterID) {
+        while (iterator.hasNext()) {
+            ContactRecord cr = iterator.next();
+            if (cr.getCounts() > 0) {
+                int r = cr.getBinX() + rowOffset;
+                int c = cr.getBinY() + colOffset;
+                if (binToClusterID[c] > -1 && binToClusterID[r] > -1) {
+                    matrix[r][binToClusterID[c]] += cr.getCounts();
+                    matrix[c][binToClusterID[r]] += cr.getCounts();
+                }
+            }
+        }
     }
 }

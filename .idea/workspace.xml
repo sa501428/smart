@@ -31,10 +31,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/BedFileMappings.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/InterChromosomeRegion.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/MatrixRowCleaner.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/RowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/RowCleaner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,11 +103,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.cleaning.utils" />
       <recent name="mixer.utils" />
       <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.rougheval" />
       <recent name="mixer.utils.remedian" />
-      <recent name="mixer.utils.slice.cleaning" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -257,14 +262,7 @@
       <workItem from="1646855017960" duration="408000" />
       <workItem from="1647720922005" duration="5641000" />
       <workItem from="1648043848009" duration="1868000" />
-      <workItem from="1648622555483" duration="9185000" />
-    </task>
-    <task id="LOCAL-00151" summary="set a default, -2&lt;z&lt;2, revert log, no kmedians for now">
-      <created>1628629357451</created>
-      <option name="number" value="00151" />
-      <option name="presentableId" value="LOCAL-00151" />
-      <option name="project" value="LOCAL" />
-      <updated>1628629357451</updated>
+      <workItem from="1648622555483" duration="17859000" />
     </task>
     <task id="LOCAL-00152" summary="set a default, -2&lt;z&lt;2, revert log, no kmedians for now">
       <created>1629003055730</created>
@@ -602,7 +600,14 @@
       <option name="project" value="LOCAL" />
       <updated>1648710684889</updated>
     </task>
-    <option name="localTasksCounter" value="200" />
+    <task id="LOCAL-00200" summary="fix bed file info extraction, code cleanup, reorganization">
+      <created>1648773815766</created>
+      <option name="number" value="00200" />
+      <option name="presentableId" value="LOCAL-00200" />
+      <option name="project" value="LOCAL" />
+      <updated>1648773815766</updated>
+    </task>
+    <option name="localTasksCounter" value="201" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -626,7 +631,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="code cleanup, change defaults, save genome coordinates" />
     <MESSAGE value="upgrade straw jar" />
     <MESSAGE value="random silhouette, encode option" />
     <MESSAGE value="update bed printing" />
@@ -651,7 +655,8 @@
     <MESSAGE value="add magic" />
     <MESSAGE value="fix clustering" />
     <MESSAGE value="bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
+    <MESSAGE value="fix bed file info extraction, code cleanup, reorganization" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix bed file info extraction, code cleanup, reorganization" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
