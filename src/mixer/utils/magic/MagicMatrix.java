@@ -118,19 +118,19 @@ public class MagicMatrix extends DriveMatrix {
 
         int[] offsets = mappings.getOffsets();
         int[] indexToClusterID = mappings.getIndexToClusterID();
-        Map<Integer, int[]> chromIndexToNumTotalLoci = new HashMap<>();
+        Map<Integer, int[]> chromIndexToGWDistrForChrom = new HashMap<>();
         int numCols = mappings.getNumCols();
-        Map<Integer, int[]> chromIndexToNumLoci = mappings.getChromIndexToNumLoci();
+        Map<Integer, int[]> chromIndexToDistrForChrom = mappings.getChromIndexToDistributionForChromosome();
 
         // incorporate norm
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         for (int i = 0; i < chromosomes.length; i++) {
-            if (!chromIndexToNumTotalLoci.containsKey(chromosomes[i].getIndex())) {
-                chromIndexToNumTotalLoci.put(chromosomes[i].getIndex(), new int[numCols]);
+            if (!chromIndexToGWDistrForChrom.containsKey(chromosomes[i].getIndex())) {
+                chromIndexToGWDistrForChrom.put(chromosomes[i].getIndex(), new int[numCols]);
             }
             for (int j = i + 1; j < chromosomes.length; j++) {
-                if (!chromIndexToNumTotalLoci.containsKey(chromosomes[j].getIndex())) {
-                    chromIndexToNumTotalLoci.put(chromosomes[j].getIndex(), new int[numCols]);
+                if (!chromIndexToGWDistrForChrom.containsKey(chromosomes[j].getIndex())) {
+                    chromIndexToGWDistrForChrom.put(chromosomes[j].getIndex(), new int[numCols]);
                 }
 
                 if (shouldSkipRegion(chromosomes[i], chromosomes[j])) continue;
@@ -147,10 +147,10 @@ public class MagicMatrix extends DriveMatrix {
                     populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), offsets[i], offsets[j], indexToClusterID);
                 }
 
-                updateNumberOfLoci(chromIndexToNumTotalLoci.get(chromosomes[i].getIndex()),
-                        chromIndexToNumLoci.get(chromosomes[j].getIndex()));
-                updateNumberOfLoci(chromIndexToNumTotalLoci.get(chromosomes[j].getIndex()),
-                        chromIndexToNumLoci.get(chromosomes[i].getIndex()));
+                updateNumberOfLoci(chromIndexToGWDistrForChrom.get(chromosomes[i].getIndex()),
+                        chromIndexToDistrForChrom.get(chromosomes[j].getIndex()));
+                updateNumberOfLoci(chromIndexToGWDistrForChrom.get(chromosomes[j].getIndex()),
+                        chromIndexToDistrForChrom.get(chromosomes[i].getIndex()));
 
                 System.out.print(".");
             }
@@ -158,8 +158,9 @@ public class MagicMatrix extends DriveMatrix {
         }
 
         LogTools.simpleLogWithCleanup(matrix, Float.NaN);
-        normalizeMatrix(matrix, chromIndexToNumTotalLoci, mappings.getBinIndexToChromIndex());
-        scaleMatrixColumns(matrix, chromIndexToNumLoci);
+        normalizeMatrix(matrix, chromIndexToGWDistrForChrom, mappings.getBinIndexToChromIndex());
+        int[] totalDistribution = getSumOfAllLoci(chromIndexToDistrForChrom);
+        scaleMatrixColumns(matrix, totalDistribution);
 
         if (!clusterOnLog) {
             LogTools.simpleExpm1(matrix);
@@ -176,10 +177,9 @@ public class MagicMatrix extends DriveMatrix {
         System.out.println("MAGIC matrix loaded");
     }
 
-    private void scaleMatrixColumns(float[][] matrix, Map<Integer, int[]> chromIndexToNumLoci) {
-        int[] maxNumLoci = getSumOfAllLoci(chromIndexToNumLoci);
+    private void scaleMatrixColumns(float[][] matrix, int[] totalLoci) {
         for (int i = 0; i < matrix.length; i++) {
-            inPlaceMultiply(matrix[i], maxNumLoci);
+            inPlaceMultiply(matrix[i], totalLoci);
         }
     }
 
@@ -207,7 +207,11 @@ public class MagicMatrix extends DriveMatrix {
 
     private void divide(float[] row, int[] totalLoci) {
         for (int k = 0; k < row.length; k++) {
-            row[k] = row[k] / totalLoci[k];
+            if (totalLoci[k] > 0) {
+                row[k] = row[k] / totalLoci[k];
+            } else if (row[k] > 0) {
+                System.err.println("Impossible situation reached: row val: " + row[k] + " but expect no entries: " + totalLoci[k]);
+            }
         }
     }
 

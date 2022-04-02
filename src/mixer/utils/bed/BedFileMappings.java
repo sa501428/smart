@@ -43,7 +43,7 @@ public class BedFileMappings {
     private final int[] binIndexToChromIndex;
     private final int[] indexToClusterID;
     private final Map<Integer, Integer> clusterNumToColID = new HashMap<>();
-    private final Map<Integer, int[]> chromIndexToNumLoci = new HashMap<>();
+    private final Map<Integer, int[]> chromIndexToDistributionForChromosome = new HashMap<>();
     private int numCols = 0;
     private int numRows = 0;
 
@@ -104,7 +104,7 @@ public class BedFileMappings {
                     }
                 }
             }
-            chromIndexToNumLoci.put(chromosome.getIndex(), counts);
+            chromIndexToDistributionForChromosome.put(chromosome.getIndex(), counts);
         }
     }
 
@@ -137,8 +137,8 @@ public class BedFileMappings {
         return indexToClusterID;
     }
 
-    public Map<Integer, int[]> getChromIndexToNumLoci() {
-        return chromIndexToNumLoci;
+    public Map<Integer, int[]> getChromIndexToDistributionForChromosome() {
+        return chromIndexToDistributionForChromosome;
     }
 
     public int[] getBinIndexToChromIndex() {
