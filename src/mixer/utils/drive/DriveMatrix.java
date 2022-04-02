@@ -78,4 +78,6 @@ public abstract class DriveMatrix {
         newInterv.setClusterID(currentClusterID);
         return newInterv;
     }
+
+    abstract public void inPlaceScaleSqrtWeightCol();
 }

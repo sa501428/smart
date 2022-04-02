@@ -123,6 +123,7 @@ public abstract class CompositeGenomeWideMatrix extends DriveMatrix {
         return coordinates;
     }
 
+    @Override
     public void inPlaceScaleSqrtWeightCol() {
         ZScoreTools.inPlaceScaleSqrtWeightCol(gwCleanMatrix.matrix, gwCleanMatrix.weights);
     }

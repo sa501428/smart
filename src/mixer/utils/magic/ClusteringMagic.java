@@ -65,7 +65,7 @@ public class ClusteringMagic {
         System.out.println("Genomewide clustering");
         processClustering(prefix, false);
 
-        // todo sliceMatrix.inPlaceScaleSqrtWeightCol(); // due to l1 issue
+        matrix.inPlaceScaleSqrtWeightCol();
         processClustering(prefix, true);
     }
 

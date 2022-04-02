@@ -36,6 +36,7 @@ import javastraw.tools.MatrixTools;
 import mixer.utils.InterChromosomeRegion;
 import mixer.utils.bed.BedFileMappings;
 import mixer.utils.common.LogTools;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.DriveMatrix;
 import mixer.utils.slice.cleaning.utils.MatrixRowCleaner;
 import mixer.utils.slice.structures.SubcompartmentInterval;
@@ -47,6 +48,7 @@ public class MagicMatrix extends DriveMatrix {
 
     private final int numRows, numCols;
     private final float[][] matrix;
+    private final int[] weights;
     private final Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap;
     private final List<InterChromosomeRegion> regionsToIgnore;
 
@@ -60,10 +62,13 @@ public class MagicMatrix extends DriveMatrix {
         float[][] data = new float[numRows][numCols];
         this.regionsToIgnore = regionsToIgnore;
         this.rowIndexToIntervalMap = createIndexToIntervalMap(chromosomeHandler, resolution);
-        populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings, clusterOnLog, useZScore);
+        weights = populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings, clusterOnLog, useZScore);
 
         matrix = cleanUpMatrix(data, rowIndexToIntervalMap);
         data = null;
+
+        ZScoreTools.inPlaceZscoreDownCol(matrix);
+
         System.out.println("final magic matrix num rows: " + matrix.length);
     }
 
@@ -112,9 +117,9 @@ public class MagicMatrix extends DriveMatrix {
         return numGoodEntries < 2;
     }
 
-    private void populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
-                                NormalizationType norm, BedFileMappings mappings,
-                                boolean clusterOnLog, boolean useZScore) {
+    private int[] populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
+                                 NormalizationType norm, BedFileMappings mappings,
+                                 boolean clusterOnLog, boolean useZScore) {
 
         int[] offsets = mappings.getOffsets();
         int[] indexToClusterID = mappings.getIndexToClusterID();
@@ -166,15 +171,8 @@ public class MagicMatrix extends DriveMatrix {
             LogTools.simpleExpm1(matrix);
         }
 
-        /*
-        // if you zscore, adjust the matrix cleaning !!!!
-        //ParallelizedStatTools.setZerosToNan(matrix);
-        if(useZScore){
-            ZScoreTools.inPlaceZscoreDownCol(matrix);
-        }
-        */
-
         System.out.println("MAGIC matrix loaded");
+        return totalDistribution;
     }
 
     private void scaleMatrixColumns(float[][] matrix, int[] totalLoci) {
@@ -229,6 +227,11 @@ public class MagicMatrix extends DriveMatrix {
     @Override
     public Map<Integer, SubcompartmentInterval> getRowIndexToIntervalMap() {
         return rowIndexToIntervalMap;
+    }
+
+    @Override
+    public void inPlaceScaleSqrtWeightCol() {
+        ZScoreTools.inPlaceScaleSqrtWeightCol(matrix, weights);
     }
 
     private void updateNumberOfLoci(int[] totalLoci, int[] lociForRegion) {
