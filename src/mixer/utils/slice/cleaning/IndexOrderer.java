@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ public class IndexOrderer {
     private final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
     private final float CORR_MIN = 0.2f;
-    private final Random generator;
+    private final Random generator = new Random(123);
     private final Map<Integer, Integer> indexToRearrangedLength = new HashMap<>();
     private final File problemFile, initFile;
     private final int hires, lowres, resFactor;
@@ -71,7 +71,7 @@ public class IndexOrderer {
 
         problemFile = new File(outputDirectory, "problems.bed");
         initFile = new File(outputDirectory, "initial_split.bed");
-        generator = new Random(seed);
+        generator.setSeed(seed);
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowres);
             try {

@@ -31,9 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/estimate/EstimateTarget.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,11 +87,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.rougheval" />
       <recent name="mixer.utils.remedian" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice" />
-      <recent name="mixer.utils.slice.gmm" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -588,14 +587,49 @@
       <option name="project" value="LOCAL" />
       <updated>1640456038943</updated>
     </task>
-    <task id="LOCAL-00189" summary="update java straw">
-      <created>1641013460760</created>
+    <task id="LOCAL-00189" summary="initial randoms/seeds differently; fix bug for non-humans">
+      <created>1645048750078</created>
       <option name="number" value="00189" />
       <option name="presentableId" value="LOCAL-00189" />
       <option name="project" value="LOCAL" />
-      <updated>1641013460760</updated>
+      <updated>1645048750078</updated>
     </task>
-    <option name="localTasksCounter" value="190" />
+    <task id="LOCAL-00190" summary="fix random seed issue">
+      <created>1645249867029</created>
+      <option name="number" value="00190" />
+      <option name="presentableId" value="LOCAL-00190" />
+      <option name="project" value="LOCAL" />
+      <updated>1645249867030</updated>
+    </task>
+    <task id="LOCAL-00191" summary="fix random seed issues">
+      <created>1645424742631</created>
+      <option name="number" value="00191" />
+      <option name="presentableId" value="LOCAL-00191" />
+      <option name="project" value="LOCAL" />
+      <updated>1645424742632</updated>
+    </task>
+    <task id="LOCAL-00192" summary="update shuffle calculation">
+      <created>1645429220112</created>
+      <option name="number" value="00192" />
+      <option name="presentableId" value="LOCAL-00192" />
+      <option name="project" value="LOCAL" />
+      <updated>1645429220112</updated>
+    </task>
+    <task id="LOCAL-00193" summary="clone list of indices">
+      <created>1645504014662</created>
+      <option name="number" value="00193" />
+      <option name="presentableId" value="LOCAL-00193" />
+      <option name="project" value="LOCAL" />
+      <updated>1645504014662</updated>
+    </task>
+    <task id="LOCAL-00194" summary="remove floating point errors to ensure accurate md5sum reproducibility of chic score">
+      <created>1645507272302</created>
+      <option name="number" value="00194" />
+      <option name="presentableId" value="LOCAL-00194" />
+      <option name="project" value="LOCAL" />
+      <updated>1645507272302</updated>
+    </task>
+    <option name="localTasksCounter" value="195" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -619,12 +653,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="use kmedians, update jar, bug fix" />
-    <MESSAGE value="update centroid calculations, restore single column assignments" />
-    <MESSAGE value="restore kmeans, update shuffling" />
-    <MESSAGE value="update score printing, code cleanup" />
-    <MESSAGE value="remedian implementation" />
-    <MESSAGE value="subsampling methods" />
     <MESSAGE value="Silhouette score" />
     <MESSAGE value="code cleanup, split up postprocessing/scoring" />
     <MESSAGE value="subsampling, query silhouette, bug fixes" />
@@ -644,7 +672,13 @@
     <MESSAGE value="bug fix" />
     <MESSAGE value="update java straw jar new api" />
     <MESSAGE value="update java straw" />
-    <option name="LAST_COMMIT_MESSAGE" value="update java straw" />
+    <MESSAGE value="initial randoms/seeds differently; fix bug for non-humans" />
+    <MESSAGE value="fix random seed issue" />
+    <MESSAGE value="fix random seed issues" />
+    <MESSAGE value="update shuffle calculation" />
+    <MESSAGE value="clone list of indices" />
+    <MESSAGE value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ public class FloatMatrixTools {
                 result[i][j] = (float) matrix[i][j];
             }
         }
-        System.out.println("Converted");
+        //System.out.println("Converted");
         return result;
     }
 
@@ -331,6 +331,14 @@ public class FloatMatrixTools {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] = (float) Math.log(matrix[i][j] + pseudocount);
+            }
+        }
+    }
+
+    public static void log(double[][] matrix, int pseudocount) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = Math.log(matrix[i][j] + pseudocount);
             }
         }
     }

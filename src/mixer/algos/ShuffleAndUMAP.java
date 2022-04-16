@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,8 @@ import java.util.Random;
  */
 public class ShuffleAndUMAP extends MixerCLT {
 
-    private final Random generator = new Random(22871L);
+    //private final Random generator = new Random(22871L);
+    private long randomSeed = 22871L;
     private Dataset ds;
     private int resolution = 100000;
     private int compressionFactor = 8;
@@ -98,12 +99,7 @@ public class ShuffleAndUMAP extends MixerCLT {
         intraType = InterOnlyMatrix.getIntraType(mixerParser.getMapTypeOption());
         metric = SimilarityMetric.getMetric(mixerParser.getCorrelationTypeOption());
 
-        long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
-        if (possibleSeeds != null && possibleSeeds.length > 0) {
-            for (long seed : possibleSeeds) {
-                generator.setSeed(seed);
-            }
-        }
+        randomSeed = mixerParser.getSeedOption();
 
         int minSize = mixerParser.getWindowSizeOption();
         if (minSize > 1) {
@@ -127,15 +123,15 @@ public class ShuffleAndUMAP extends MixerCLT {
                 System.out.println("Processing " + prefix[i]);
                 File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
                 UNIXTools.makeDir(newFolder);
-
+                Random generator = new Random(randomSeed);
                 ShuffleAction matrix;
                 if (useIntraMap) {
                     matrix = new ShuffleAction(ds, norm, resolution, compressionFactor,
                             metric, intraType);
-                    matrix.runIntraAnalysis(subcompartments, newFolder);
+                    matrix.runIntraAnalysis(subcompartments, newFolder, generator);
                 } else {
                     matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, metric);
-                    matrix.runInterAnalysis(subcompartments, newFolder);
+                    matrix.runInterAnalysis(subcompartments, newFolder, generator);
                 }
                 matrix.savePlotsAndResults(newFolder, prefix[i]);
             }
