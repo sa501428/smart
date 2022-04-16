@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="java-straw-1.4.1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/general/java-straw.2.11.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/general/java-straw.2.14.3.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -64,7 +64,7 @@ public class EstimateTarget {
                 long rowEnd = chromosomes[i].getLength() / resolution;
                 long columnEnd = chromosomes[j].getLength() / resolution;
                 List<Block> blocks = zd.getNormalizedBlocksOverlapping(0, 0, rowEnd, columnEnd, norm,
-                        false, false);
+                        false);
 
                 for (Block block : blocks) {
                     for (ContactRecord cr : block.getContactRecords()) {
