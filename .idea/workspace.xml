@@ -32,7 +32,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +42,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -59,6 +60,14 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -87,22 +96,22 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.cleaning.utils" />
+      <recent name="mixer.utils" />
       <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.rougheval" />
       <recent name="mixer.utils.remedian" />
-      <recent name="mixer.utils.slice.cleaning" />
-      <recent name="mixer.utils.slice" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.magic" />
+      <recent name="mixer.algos" />
       <recent name="mixer.utils.rougheval" />
       <recent name="mixer.utils.common" />
       <recent name="mixer.utils.slice.cleaning" />
-      <recent name="mixer.algos" />
-      <recent name="mixer.utils.matrix" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Aggregate">
@@ -629,7 +638,84 @@
       <option name="project" value="LOCAL" />
       <updated>1645507272302</updated>
     </task>
-    <option name="localTasksCounter" value="195" />
+    <task id="LOCAL-00195" summary="switch double array to float array">
+      <created>1645510731888</created>
+      <option name="number" value="00195" />
+      <option name="presentableId" value="LOCAL-00195" />
+      <option name="project" value="LOCAL" />
+      <updated>1645510731888</updated>
+    </task>
+    <task id="LOCAL-00196" summary="update straw">
+      <created>1645828932212</created>
+      <option name="number" value="00196" />
+      <option name="presentableId" value="LOCAL-00196" />
+      <option name="project" value="LOCAL" />
+      <updated>1645828932212</updated>
+    </task>
+    <task id="LOCAL-00197" summary="add magic">
+      <created>1648667394707</created>
+      <option name="number" value="00197" />
+      <option name="presentableId" value="LOCAL-00197" />
+      <option name="project" value="LOCAL" />
+      <updated>1648667394707</updated>
+    </task>
+    <task id="LOCAL-00198" summary="fix clustering">
+      <created>1648667786448</created>
+      <option name="number" value="00198" />
+      <option name="presentableId" value="LOCAL-00198" />
+      <option name="project" value="LOCAL" />
+      <updated>1648667786448</updated>
+    </task>
+    <task id="LOCAL-00199" summary="bug fixes">
+      <created>1648710684889</created>
+      <option name="number" value="00199" />
+      <option name="presentableId" value="LOCAL-00199" />
+      <option name="project" value="LOCAL" />
+      <updated>1648710684889</updated>
+    </task>
+    <task id="LOCAL-00200" summary="fix bed file info extraction, code cleanup, reorganization">
+      <created>1648773815766</created>
+      <option name="number" value="00200" />
+      <option name="presentableId" value="LOCAL-00200" />
+      <option name="project" value="LOCAL" />
+      <updated>1648773815766</updated>
+    </task>
+    <task id="LOCAL-00201" summary="options for log vs not, use norm vector filtering, update data structure, normalize magic matrix, row cleanup improved, code cleanup, allow skipping of bad inter regions">
+      <created>1648931856872</created>
+      <option name="number" value="00201" />
+      <option name="presentableId" value="LOCAL-00201" />
+      <option name="project" value="LOCAL" />
+      <updated>1648931856872</updated>
+    </task>
+    <task id="LOCAL-00202" summary="update version">
+      <created>1648931886707</created>
+      <option name="number" value="00202" />
+      <option name="presentableId" value="LOCAL-00202" />
+      <option name="project" value="LOCAL" />
+      <updated>1648931886707</updated>
+    </task>
+    <task id="LOCAL-00203" summary="avoid divide by 0">
+      <created>1648932440611</created>
+      <option name="number" value="00203" />
+      <option name="presentableId" value="LOCAL-00203" />
+      <option name="project" value="LOCAL" />
+      <updated>1648932440611</updated>
+    </task>
+    <task id="LOCAL-00204" summary="bug fix">
+      <created>1648933556088</created>
+      <option name="number" value="00204" />
+      <option name="presentableId" value="LOCAL-00204" />
+      <option name="project" value="LOCAL" />
+      <updated>1648933556088</updated>
+    </task>
+    <task id="LOCAL-00205" summary="implement zscore scaling">
+      <created>1648940914719</created>
+      <option name="number" value="00205" />
+      <option name="presentableId" value="LOCAL-00205" />
+      <option name="project" value="LOCAL" />
+      <updated>1648940914719</updated>
+    </task>
+    <option name="localTasksCounter" value="206" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -653,23 +739,12 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Silhouette score" />
-    <MESSAGE value="code cleanup, split up postprocessing/scoring" />
-    <MESSAGE value="subsampling, query silhouette, bug fixes" />
-    <MESSAGE value="comment out silhouette" />
-    <MESSAGE value="code cleanup, change defaults, save genome coordinates" />
-    <MESSAGE value="upgrade straw jar" />
-    <MESSAGE value="random silhouette, encode option" />
-    <MESSAGE value="bug fixes" />
-    <MESSAGE value="update bed printing" />
-    <MESSAGE value="rename class" />
     <MESSAGE value="update cleaning, bug fix" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="set seeds" />
     <MESSAGE value="implement correlation check" />
     <MESSAGE value="update encode printing" />
     <MESSAGE value="update encode cluster name printing" />
-    <MESSAGE value="bug fix" />
     <MESSAGE value="update java straw jar new api" />
     <MESSAGE value="update java straw" />
     <MESSAGE value="initial randoms/seeds differently; fix bug for non-humans" />
@@ -678,7 +753,18 @@
     <MESSAGE value="update shuffle calculation" />
     <MESSAGE value="clone list of indices" />
     <MESSAGE value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
+    <MESSAGE value="switch double array to float array" />
+    <MESSAGE value="update straw" />
+    <MESSAGE value="add magic" />
+    <MESSAGE value="fix clustering" />
+    <MESSAGE value="bug fixes" />
+    <MESSAGE value="fix bed file info extraction, code cleanup, reorganization" />
+    <MESSAGE value="options for log vs not, use norm vector filtering, update data structure, normalize magic matrix, row cleanup improved, code cleanup, allow skipping of bad inter regions" />
+    <MESSAGE value="update version" />
+    <MESSAGE value="avoid divide by 0" />
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="implement zscore scaling" />
+    <option name="LAST_COMMIT_MESSAGE" value="implement zscore scaling" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

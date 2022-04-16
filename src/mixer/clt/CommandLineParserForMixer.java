@@ -54,6 +54,8 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option sliceCompareOption = addStringOption("compare");
     private final Option translocationOption = addBooleanOption("has-translocation");
     private final Option encodeOption = addBooleanOption("encode-mode");
+    private final Option logOption = addBooleanOption("log");
+    private final Option zScoreOption = addBooleanOption("zscoreOption");
     private final Option mapTypeOption = addIntegerOption("type");
     private final Option correlationTypeOption = addIntegerOption("corr");
 
@@ -204,5 +206,13 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getENCODEOption() {
         return optionToBoolean(encodeOption);
+    }
+
+    public boolean getLogOption() {
+        return optionToBoolean(logOption);
+    }
+
+    public boolean getZScoreOption() {
+        return optionToBoolean(zScoreOption);
     }
 }
