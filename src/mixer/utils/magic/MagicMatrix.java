@@ -69,6 +69,7 @@ public class MagicMatrix extends DriveMatrix {
 
         ZScoreTools.inPlaceZscoreDownCol(matrix);
 
+        inPlaceScaleSqrtWeightCol();
         System.out.println("final magic matrix num rows: " + matrix.length);
     }
 
