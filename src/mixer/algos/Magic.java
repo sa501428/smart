@@ -42,11 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * experimental code
- * <p>
- * Created by muhammadsaadshamim on 9/14/15.
- */
 public class Magic extends MixerCLT {
 
     public static final boolean PROJECT_TO_UMAP = true;
@@ -79,8 +74,7 @@ public class Magic extends MixerCLT {
         try {
             String[] valString = args[2].split(",");
             ClusteringMagic.startingClusterSizeK = Integer.parseInt(valString[0]);
-            ClusteringMagic.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) -
-                    ClusteringMagic.startingClusterSizeK;
+            ClusteringMagic.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) - ClusteringMagic.startingClusterSizeK;
             ClusteringMagic.numAttemptsForKMeans = Integer.parseInt(valString[2]);
         } catch (Exception e) {
             printUsageAndExit(5);

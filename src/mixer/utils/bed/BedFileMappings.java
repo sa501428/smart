@@ -42,7 +42,7 @@ public class BedFileMappings {
     private final int[] offsets;
     private final int[] binIndexToChromIndex;
     private final int[] indexToClusterID;
-    private final Map<Integer, Integer> clusterNumToColID = new HashMap<>();
+    private final Map<Integer, Integer> bedFileCIDToColumnID = new HashMap<>();
     private final Map<Integer, int[]> chromIndexToDistributionForChromosome = new HashMap<>();
     private int numCols = 0;
     private int numRows = 0;
@@ -78,12 +78,12 @@ public class BedFileMappings {
                     if (vec[x] > 0) {
                         int currIndex = offset + x;
                         binIndexToChromIndex[currIndex] = chromosome.getIndex();
-                        int cluster = si.getClusterID();
-                        if (!clusterNumToColID.containsKey(cluster)) {
-                            clusterNumToColID.put(cluster, numCols);
+                        int tempCID = si.getClusterID();
+                        if (!bedFileCIDToColumnID.containsKey(tempCID)) {
+                            bedFileCIDToColumnID.put(tempCID, numCols);
                             numCols++;
                         }
-                        int colID = clusterNumToColID.get(cluster);
+                        int colID = bedFileCIDToColumnID.get(tempCID);
                         indexToClusterID[currIndex] = colID;
                     }
                 }
@@ -97,7 +97,7 @@ public class BedFileMappings {
 
             int[] counts = new int[numCols];
             for (SubcompartmentInterval si : bedFile.get(chromosome.getIndex())) {
-                int colID = clusterNumToColID.get(si.getClusterID());
+                int colID = bedFileCIDToColumnID.get(si.getClusterID());
                 for (int x = si.getX1() / resolution; x < si.getX2() / resolution; x++) {
                     if (vec[x] > 0) {
                         counts[colID]++;

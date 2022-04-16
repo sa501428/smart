@@ -31,12 +31,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/general/java-straw.2.14.3.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/java_straw_1_4_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/java_straw_1_4_1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/general/java-straw.2.11.1.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/estimate/EstimateTarget.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/estimate/EstimateTarget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -254,14 +252,7 @@
       <workItem from="1643933353685" duration="2459000" />
       <workItem from="1644583652548" duration="607000" />
       <workItem from="1644613192856" duration="387000" />
-      <workItem from="1650144693428" duration="50000" />
-    </task>
-    <task id="LOCAL-00158" summary="use kmedians, update jar, bug fix">
-      <created>1632716404888</created>
-      <option name="number" value="00158" />
-      <option name="presentableId" value="LOCAL-00158" />
-      <option name="project" value="LOCAL" />
-      <updated>1632716404888</updated>
+      <workItem from="1650144693428" duration="2463000" />
     </task>
     <task id="LOCAL-00159" summary="update centroid calculations, restore single column assignments">
       <created>1632722943804</created>
@@ -599,7 +590,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650143508012</updated>
     </task>
-    <option name="localTasksCounter" value="207" />
+    <task id="LOCAL-00207" summary="update straw">
+      <created>1650144895189</created>
+      <option name="number" value="00207" />
+      <option name="presentableId" value="LOCAL-00207" />
+      <option name="project" value="LOCAL" />
+      <updated>1650144895190</updated>
+    </task>
+    <option name="localTasksCounter" value="208" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -638,7 +636,6 @@
     <MESSAGE value="clone list of indices" />
     <MESSAGE value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
     <MESSAGE value="switch double array to float array" />
-    <MESSAGE value="update straw" />
     <MESSAGE value="add magic" />
     <MESSAGE value="fix clustering" />
     <MESSAGE value="bug fixes" />
@@ -648,7 +645,8 @@
     <MESSAGE value="avoid divide by 0" />
     <MESSAGE value="bug fix" />
     <MESSAGE value="implement zscore scaling" />
-    <option name="LAST_COMMIT_MESSAGE" value="implement zscore scaling" />
+    <MESSAGE value="update straw" />
+    <option name="LAST_COMMIT_MESSAGE" value="update straw" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
