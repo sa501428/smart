@@ -118,73 +118,23 @@ public class MagicMatrix extends DriveMatrix {
         return numGoodEntries < 2;
     }
 
-    private int[] populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
-                                 NormalizationType norm, BedFileMappings mappings,
-                                 boolean clusterOnLog, boolean useZScore) {
-
-        int[] offsets = mappings.getOffsets();
-        int[] indexToClusterID = mappings.getIndexToClusterID();
-        Map<Integer, int[]> chromIndexToGWDistrForChrom = new HashMap<>();
-        int numCols = mappings.getNumCols();
-        Map<Integer, int[]> chromIndexToDistrForChrom = mappings.getChromIndexToDistributionForChromosome();
-
-        // incorporate norm
-        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
-        for (int i = 0; i < chromosomes.length; i++) {
-            if (!chromIndexToGWDistrForChrom.containsKey(chromosomes[i].getIndex())) {
-                chromIndexToGWDistrForChrom.put(chromosomes[i].getIndex(), new int[numCols]);
-            }
-            for (int j = i + 1; j < chromosomes.length; j++) {
-                if (!chromIndexToGWDistrForChrom.containsKey(chromosomes[j].getIndex())) {
-                    chromIndexToGWDistrForChrom.put(chromosomes[j].getIndex(), new int[numCols]);
-                }
-
-                if (shouldSkipRegion(chromosomes[i], chromosomes[j])) continue;
-
-                Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
-                if (m1 == null) continue;
-
-                MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
-                if (zd == null) continue;
-
-                if (norm.getLabel().equalsIgnoreCase("none")) {
-                    populateMatrixFromIterator(matrix, zd.getDirectIterator(), offsets[i], offsets[j], indexToClusterID);
-                } else {
-                    populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), offsets[i], offsets[j], indexToClusterID);
-                }
-
-                updateNumberOfLoci(chromIndexToGWDistrForChrom.get(chromosomes[i].getIndex()),
-                        chromIndexToDistrForChrom.get(chromosomes[j].getIndex()));
-                updateNumberOfLoci(chromIndexToGWDistrForChrom.get(chromosomes[j].getIndex()),
-                        chromIndexToDistrForChrom.get(chromosomes[i].getIndex()));
-
-                System.out.print(".");
-            }
-            System.out.println(".");
-        }
-
-        LogTools.simpleLogWithCleanup(matrix, Float.NaN);
-        normalizeMatrix(matrix, chromIndexToGWDistrForChrom, mappings.getBinIndexToChromIndex());
-        int[] totalDistribution = getSumOfAllLoci(chromIndexToDistrForChrom);
-        scaleMatrixColumns(matrix, totalDistribution);
-
-        if (!clusterOnLog) {
-            LogTools.simpleExpm1(matrix);
-        }
-
-        System.out.println("MAGIC matrix loaded");
-        return totalDistribution;
-    }
-
-    private void scaleMatrixColumns(float[][] matrix, int[] totalLoci) {
+    private static void scaleMatrixColumns(float[][] matrix, int[] totalLoci) {
         for (int i = 0; i < matrix.length; i++) {
             inPlaceMultiply(matrix[i], totalLoci);
         }
     }
 
-    private void inPlaceMultiply(float[] orig, int[] scalar) {
+    private static void inPlaceMultiply(float[] orig, int[] scalar) {
         for (int z = 0; z < scalar.length; z++) {
             orig[z] *= scalar[z];
+        }
+    }
+
+    private static void normalizeMatrix(float[][] matrix, Map<Integer, int[]> chromIndexToNumTotalLoci, int[] binIndexToChromIndex) {
+        for (int i = 0; i < matrix.length; i++) {
+            if (binIndexToChromIndex[i] > -1) {
+                divide(matrix[i], chromIndexToNumTotalLoci.get(binIndexToChromIndex[i]));
+            }
         }
     }
 
@@ -198,21 +148,19 @@ public class MagicMatrix extends DriveMatrix {
         return totalLoci;
     }
 
-    private void normalizeMatrix(float[][] matrix, Map<Integer, int[]> chromIndexToNumTotalLoci, int[] binIndexToChromIndex) {
-        for (int i = 0; i < matrix.length; i++) {
-            if (binIndexToChromIndex[i] > -1) {
-                divide(matrix[i], chromIndexToNumTotalLoci.get(binIndexToChromIndex[i]));
-            }
-        }
-    }
-
-    private void divide(float[] row, int[] totalLoci) {
+    private static void divide(float[] row, int[] totalLoci) {
         for (int k = 0; k < row.length; k++) {
             if (totalLoci[k] > 0) {
                 row[k] = row[k] / totalLoci[k];
             } else if (row[k] > 0) {
                 System.err.println("Impossible situation reached: row val: " + row[k] + " but expect no entries: " + totalLoci[k]);
             }
+        }
+    }
+
+    private static void updateNumberOfLoci(int[] totalLoci, int[] lociForRegion) {
+        for (int i = 0; i < totalLoci.length; i++) {
+            totalLoci[i] += lociForRegion[i];
         }
     }
 
@@ -235,9 +183,18 @@ public class MagicMatrix extends DriveMatrix {
         ZScoreTools.inPlaceScaleSqrtWeightCol(matrix, weights);
     }
 
-    private void updateNumberOfLoci(int[] totalLoci, int[] lociForRegion) {
-        for (int i = 0; i < totalLoci.length; i++) {
-            totalLoci[i] += lociForRegion[i];
+    private static void populateMatrixFromIterator(float[][] matrix, Iterator<ContactRecord> iterator, int rowOffset, int colOffset,
+                                                   int[] binToClusterID) {
+        while (iterator.hasNext()) {
+            ContactRecord cr = iterator.next();
+            if (cr.getCounts() > 0) {
+                int r = cr.getBinX() + rowOffset;
+                int c = cr.getBinY() + colOffset;
+                if (binToClusterID[c] > -1 && binToClusterID[r] > -1) {
+                    matrix[r][binToClusterID[c]] += cr.getCounts();
+                    matrix[c][binToClusterID[r]] += cr.getCounts();
+                }
+            }
         }
     }
 
@@ -250,18 +207,63 @@ public class MagicMatrix extends DriveMatrix {
         return false;
     }
 
-    private void populateMatrixFromIterator(float[][] matrix, Iterator<ContactRecord> iterator, int rowOffset, int colOffset,
-                                            int[] binToClusterID) {
-        while (iterator.hasNext()) {
-            ContactRecord cr = iterator.next();
-            if (cr.getCounts() > 0) {
-                int r = cr.getBinX() + rowOffset;
-                int c = cr.getBinY() + colOffset;
-                if (binToClusterID[c] > -1 && binToClusterID[r] > -1) {
-                    matrix[r][binToClusterID[c]] += cr.getCounts();
-                    matrix[c][binToClusterID[r]] += cr.getCounts();
-                }
-            }
+    private int[] populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
+                                 NormalizationType norm, BedFileMappings mappings,
+                                 boolean clusterOnLog, boolean useZScore) {
+
+        int[] offsets = mappings.getOffsets();
+        int[] indexToClusterID = mappings.getIndexToClusterID();
+        int numCols = mappings.getNumCols();
+        Map<Integer, int[]> distributionForChrom = mappings.getChromIndexToDistributionForChromosome();
+
+        // incorporate norm
+        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
+        Map<Integer, int[]> genomewideDistributionForChrom = new HashMap<>();
+        for (Chromosome chromosome : chromosomes) {
+            genomewideDistributionForChrom.put(chromosome.getIndex(), new int[numCols]);
         }
+
+        for (int i = 0; i < chromosomes.length; i++) {
+            for (int j = i + 1; j < chromosomes.length; j++) {
+                if (shouldSkipRegion(chromosomes[i], chromosomes[j])) continue;
+
+                Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
+                if (m1 == null) continue;
+                MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
+                if (zd == null) continue;
+
+                if (norm.getLabel().equalsIgnoreCase("none")) {
+                    populateMatrixFromIterator(matrix, zd.getDirectIterator(), offsets[i], offsets[j], indexToClusterID);
+                } else {
+                    populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), offsets[i], offsets[j], indexToClusterID);
+                }
+
+                updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[i].getIndex()),
+                        distributionForChrom.get(chromosomes[j].getIndex()));
+                updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[j].getIndex()),
+                        distributionForChrom.get(chromosomes[i].getIndex()));
+
+                System.out.print(".");
+            }
+            System.out.println(".");
+        }
+
+        LogTools.simpleLogWithCleanup(matrix, Float.NaN);
+        normalizeMatrix(matrix, genomewideDistributionForChrom, mappings.getBinIndexToChromIndex());
+
+        // TODO remove sparse rows at this stage
+        // use rowsums??
+
+        int[] totalDistribution = getSumOfAllLoci(distributionForChrom);
+        scaleMatrixColumns(matrix, totalDistribution);
+
+        // TODO balance matrix with SCALE
+
+        if (!clusterOnLog) {
+            LogTools.simpleExpm1(matrix);
+        }
+
+        System.out.println("MAGIC matrix loaded");
+        return totalDistribution;
     }
 }

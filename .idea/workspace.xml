@@ -30,11 +30,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update straw">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,6 +252,7 @@
       <workItem from="1644583652548" duration="607000" />
       <workItem from="1644613192856" duration="387000" />
       <workItem from="1650144693428" duration="2463000" />
+      <workItem from="1652890680654" duration="1464000" />
     </task>
     <task id="LOCAL-00159" summary="update centroid calculations, restore single column assignments">
       <created>1632722943804</created>
