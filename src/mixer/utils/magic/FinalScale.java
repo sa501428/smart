@@ -24,11 +24,9 @@
 
 package mixer.utils.magic;
 
-import javastraw.reader.block.ContactRecord;
 import mixer.MixerGlobals;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class FinalScale {
 
@@ -43,7 +41,7 @@ public class FinalScale {
     private final static float minErrorThreshold = .02f;
     private static final float OFFSET = .5f;
 
-    public static float[] scaleToTargetVector(List<ContactRecord> ic, float[] targetVectorInitial) {
+    public static float[] scaleToTargetVector(SymmLLInterMatrix ic, float[] targetVectorInitial) {
 
         double low, zHigh, zLow;
         int rLowIndex, zLowIndex, zHighIndex;
@@ -64,7 +62,7 @@ public class FinalScale {
         float[] calculatedVectorB = new float[k];
         float[] one = new float[k];
         Arrays.fill(one, 1);
-        int[] numNonZero = new int[k];
+
 
         double[] reportErrorForIteration = new double[totalIterations + 3];
         int[] numRoundsForAllIterations = new int[totalIterations + 3];
@@ -99,9 +97,7 @@ public class FinalScale {
             }
         }
 
-        //	find rows sums
-        setRowSums(numNonZero, ic);
-
+        int[] numNonZero = ic.getNumNonZerosInRow();
 
         //	find relevant percentiles
         int n0 = 0;
@@ -304,7 +300,7 @@ public class FinalScale {
         return calculatedVectorB;
     }
 
-    private static float[] scaleUpdateSums(List<ContactRecord> ic, int[] bad1, float[] zTargetVector,
+    private static float[] scaleUpdateSums(SymmLLInterMatrix ic, int[] bad1, float[] zTargetVector,
                                            float[] s, float[] dim, float[] dDim, float[] dnDim) {
         int k = zTargetVector.length;
         for (int p = 0; p < k; p++) if (bad1[p] == 1) dim[p] = 1.0f;
@@ -321,16 +317,6 @@ public class FinalScale {
         return copy;
     }
 
-    private static void setRowSums(int[] numNonZero, List<ContactRecord> ic) {
-        for (ContactRecord cr : ic) {
-            int x = cr.getBinX();
-            int y = cr.getBinY();
-            numNonZero[x]++;
-            if (x != y) {
-                numNonZero[y]++;
-            }
-        }
-    }
 
     private static double[] dealWithSorting(double[] vector, int length) {
         double[] realVector = new double[length];
@@ -339,20 +325,9 @@ public class FinalScale {
         return realVector;
     }
 
-    private static float[] sparseMultiplyGetRowSums(List<ContactRecord> ic,
+    private static float[] sparseMultiplyGetRowSums(SymmLLInterMatrix ic,
                                                     float[] vector, int vectorLength) {
-        double[] sumVector = new double[vectorLength];
-        for (ContactRecord cr : ic) {
-            int x = cr.getBinX();
-            int y = cr.getBinY();
-            double counts = cr.getCounts();
-            if (x == y) {
-                counts *= .5;
-            }
-
-            sumVector[x] += counts * vector[y];
-            sumVector[y] += counts * vector[x];
-        }
+        double[] sumVector = ic.sparseMultiply(vector);
         return convertToFloats(sumVector);
     }
 
