@@ -99,15 +99,11 @@ public class MagicMatrix extends DriveMatrix {
         return map;
     }
 
-    private static void scaleMatrixColumns(float[][] matrix, int[] totalLoci) {
+    private static void scaleMatrixColumns(float[][] matrix, int[] scalars) {
         for (int i = 0; i < matrix.length; i++) {
-            inPlaceMultiply(matrix[i], totalLoci);
-        }
-    }
-
-    private static void inPlaceMultiply(float[] orig, int[] scalar) {
-        for (int z = 0; z < scalar.length; z++) {
-            orig[z] *= scalar[z];
+            for (int z = 0; z < matrix[i].length; z++) {
+                matrix[i][z] *= scalars[z];
+            }
         }
     }
 
@@ -233,7 +229,7 @@ public class MagicMatrix extends DriveMatrix {
 
 
         normalizeMatrix(matrix, genomewideDistributionForChrom, mappings.getBinIndexToChromIndex());
-        
+
         updateCoverage(matrix, coverage);
         scaleCoverage(coverage);
 
