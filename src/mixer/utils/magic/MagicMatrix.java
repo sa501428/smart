@@ -35,6 +35,7 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
 import mixer.utils.InterChromosomeRegion;
 import mixer.utils.bed.BedFileMappings;
+import mixer.utils.common.ArrayTools;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.DriveMatrix;
@@ -232,10 +233,9 @@ public class MagicMatrix extends DriveMatrix {
 
 
         normalizeMatrix(matrix, genomewideDistributionForChrom, mappings.getBinIndexToChromIndex());
-
-        // TODO remove sparse rows at this stage
-        // use rowsums??
+        
         updateCoverage(matrix, coverage);
+        scaleCoverage(coverage);
 
         int[] totalDistribution = getSumOfAllLoci(distributionForChrom);
         scaleMatrixColumns(matrix, totalDistribution);
@@ -244,6 +244,13 @@ public class MagicMatrix extends DriveMatrix {
 
         System.out.println("MAGIC matrix loaded");
         return totalDistribution;
+    }
+
+    private void scaleCoverage(float[] coverage) {
+        float mean = ArrayTools.getNonZeroMean(coverage);
+        for (int k = 0; k < coverage.length; k++) {
+            coverage[k] /= mean;
+        }
     }
 
     private void updateCoverage(float[][] matrix, float[] coverage) {
