@@ -38,11 +38,14 @@ import mixer.utils.bed.BedFileMappings;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.DriveMatrix;
-import mixer.utils.slice.cleaning.utils.MatrixRowCleaner;
+import mixer.utils.magic.clean.EmptyRowCleaner;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class MagicMatrix extends DriveMatrix {
 
@@ -60,11 +63,14 @@ public class MagicMatrix extends DriveMatrix {
         numRows = mappings.getNumRows();
         numCols = mappings.getNumCols();
         float[][] data = new float[numRows][numCols];
+        int[] nonZeros = new int[numRows];
+        float[] coverage = new float[numRows];
         this.regionsToIgnore = regionsToIgnore;
         this.rowIndexToIntervalMap = createIndexToIntervalMap(chromosomeHandler, resolution);
-        weights = populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings, clusterOnLog, useZScore);
+        weights = populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings, coverage);
+        // clusterOnLog,useZScore, nonZeros,
 
-        matrix = cleanUpMatrix(data, rowIndexToIntervalMap);
+        matrix = EmptyRowCleaner.cleanUpMatrix(data, rowIndexToIntervalMap, coverage);
         data = null;
 
         ZScoreTools.inPlaceZscoreDownCol(matrix);
@@ -90,32 +96,6 @@ public class MagicMatrix extends DriveMatrix {
             }
         }
         return map;
-    }
-
-    private static float[][] cleanUpMatrix(float[][] data, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap) {
-        Set<Integer> badIndices = getBadIndices(data);
-        System.out.println("initial magic matrix num rows: " + data.length + " badIndices: " + badIndices.size());
-        return MatrixRowCleaner.makeNewMatrixAndUpdateIndices(data, rowIndexToIntervalMap, badIndices);
-    }
-
-    private static Set<Integer> getBadIndices(float[][] matrix) {
-        Set<Integer> badIndices = new HashSet<>();
-        for (int i = 0; i < matrix.length; i++) {
-            if (isBadRow(matrix[i])) {
-                badIndices.add(i);
-            }
-        }
-        return badIndices;
-    }
-
-    private static boolean isBadRow(float[] row) {
-        int numGoodEntries = 0;
-        for (float val : row) {
-            if (val > 0) {
-                numGoodEntries++;
-            }
-        }
-        return numGoodEntries < 2;
     }
 
     private static void scaleMatrixColumns(float[][] matrix, int[] totalLoci) {
@@ -209,7 +189,7 @@ public class MagicMatrix extends DriveMatrix {
 
     private int[] populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
                                  NormalizationType norm, BedFileMappings mappings,
-                                 boolean clusterOnLog, boolean useZScore) {
+                                 float[] coverage) {
 
         int[] offsets = mappings.getOffsets();
         int[] indexToClusterID = mappings.getIndexToClusterID();
@@ -249,21 +229,28 @@ public class MagicMatrix extends DriveMatrix {
         }
 
         LogTools.simpleLogWithCleanup(matrix, Float.NaN);
+
+
         normalizeMatrix(matrix, genomewideDistributionForChrom, mappings.getBinIndexToChromIndex());
 
         // TODO remove sparse rows at this stage
         // use rowsums??
+        updateCoverage(matrix, coverage);
 
         int[] totalDistribution = getSumOfAllLoci(distributionForChrom);
         scaleMatrixColumns(matrix, totalDistribution);
 
-        // TODO balance matrix with SCALE
-
-        if (!clusterOnLog) {
-            LogTools.simpleExpm1(matrix);
-        }
+        LogTools.simpleExpm1(matrix);
 
         System.out.println("MAGIC matrix loaded");
         return totalDistribution;
+    }
+
+    private void updateCoverage(float[][] matrix, float[] coverage) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                coverage[i] += matrix[i][j];
+            }
+        }
     }
 }
