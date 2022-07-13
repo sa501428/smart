@@ -30,10 +30,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/magic/clean/EmptyRowCleaner.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/magic/FinalScale.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +56,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="chic-updates" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -255,14 +254,7 @@
       <workItem from="1652890680654" duration="3691000" />
       <workItem from="1656619105665" duration="567000" />
       <workItem from="1656631142546" duration="16000" />
-      <workItem from="1657715097940" duration="2731000" />
-    </task>
-    <task id="LOCAL-00160" summary="restore kmeans, update shuffling">
-      <created>1632727716153</created>
-      <option name="number" value="00160" />
-      <option name="presentableId" value="LOCAL-00160" />
-      <option name="project" value="LOCAL" />
-      <updated>1632727716153</updated>
+      <workItem from="1657715097940" duration="5632000" />
     </task>
     <task id="LOCAL-00161" summary="update score printing, code cleanup">
       <created>1633034648537</created>
@@ -600,7 +592,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652896234264</updated>
     </task>
-    <option name="localTasksCounter" value="209" />
+    <task id="LOCAL-00209" summary="code cleanup">
+      <created>1657723564839</created>
+      <option name="number" value="00209" />
+      <option name="presentableId" value="LOCAL-00209" />
+      <option name="project" value="LOCAL" />
+      <updated>1657723564839</updated>
+    </task>
+    <option name="localTasksCounter" value="210" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
