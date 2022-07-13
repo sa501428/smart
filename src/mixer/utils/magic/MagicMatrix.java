@@ -43,10 +43,7 @@ import mixer.utils.magic.clean.EmptyRowCleaner;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MagicMatrix extends DriveMatrix {
 
@@ -59,22 +56,21 @@ public class MagicMatrix extends DriveMatrix {
 
     public MagicMatrix(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution,
                        NormalizationType norm, File outputDirectory, long seed, BedFileMappings mappings,
-                       List<InterChromosomeRegion> regionsToIgnore,
-                       boolean clusterOnLog, boolean useZScore) {
+                       List<InterChromosomeRegion> regionsToIgnore, boolean doScale, boolean useZscore) {
         numRows = mappings.getNumRows();
         numCols = mappings.getNumCols();
-        float[][] data = new float[numRows][numCols];
-        int[] nonZeros = new int[numRows];
-        float[] coverage = new float[numRows];
+
+        weights = new int[numCols];
         this.regionsToIgnore = regionsToIgnore;
         this.rowIndexToIntervalMap = createIndexToIntervalMap(chromosomeHandler, resolution);
-        weights = populateMatrix(data, ds, chromosomeHandler, resolution, norm, mappings, coverage);
-        // clusterOnLog,useZScore, nonZeros,
+        matrix = populateMatrix(ds, chromosomeHandler, resolution,
+                norm, mappings, doScale);
+        System.out.println("MAGIC matrix loaded");
 
-        matrix = EmptyRowCleaner.cleanUpMatrix(data, rowIndexToIntervalMap, coverage);
-        data = null;
-
-        ZScoreTools.inPlaceZscoreDownCol(matrix);
+        if (useZscore) {
+            ZScoreTools.inPlaceZscoreDownCol(matrix);
+            System.out.println("MAGIC matrix zScored");
+        }
 
         inPlaceScaleSqrtWeightCol();
         System.out.println("final magic matrix num rows: " + matrix.length);
@@ -184,13 +180,12 @@ public class MagicMatrix extends DriveMatrix {
         return false;
     }
 
-    private int[] populateMatrix(float[][] matrix, Dataset ds, ChromosomeHandler handler, int resolution,
-                                 NormalizationType norm, BedFileMappings mappings,
-                                 float[] coverage) {
-
+    private float[][] populateMatrix(Dataset ds, ChromosomeHandler handler, int resolution,
+                                     NormalizationType norm, BedFileMappings mappings,
+                                     boolean doScale) {
+        float[][] matrix = new float[numRows][numCols];
         int[] offsets = mappings.getOffsets();
         int[] indexToClusterID = mappings.getIndexToClusterID();
-        int numCols = mappings.getNumCols();
         Map<Integer, int[]> distributionForChrom = mappings.getChromIndexToDistributionForChromosome();
 
         // incorporate norm
@@ -230,16 +225,32 @@ public class MagicMatrix extends DriveMatrix {
 
         normalizeMatrix(matrix, genomewideDistributionForChrom, mappings.getBinIndexToChromIndex());
 
+        float[] coverage = new float[numRows];
         updateCoverage(matrix, coverage);
         scaleCoverage(coverage);
 
         int[] totalDistribution = getSumOfAllLoci(distributionForChrom);
+        System.arraycopy(totalDistribution, 0, weights, 0, Math.max(weights.length, totalDistribution.length));
         scaleMatrixColumns(matrix, totalDistribution);
+
+        matrix = EmptyRowCleaner.cleanUpMatrix(matrix, rowIndexToIntervalMap, coverage);
 
         LogTools.simpleExpm1(matrix);
 
-        System.out.println("MAGIC matrix loaded");
-        return totalDistribution;
+        if (doScale) {
+            return FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix), createTargetVector(totalDistribution));
+        } else {
+            return matrix;
+        }
+    }
+
+    private int[] createTargetVector(int[] colSums) {
+        int[] target = new int[numRows + numCols];
+        Arrays.fill(target, 1);
+        for (int i = 0; i < numCols; i++) {
+            target[i] = colSums[i];
+        }
+        return target;
     }
 
     private void scaleCoverage(float[] coverage) {

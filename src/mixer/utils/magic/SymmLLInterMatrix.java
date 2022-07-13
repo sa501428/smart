@@ -69,4 +69,19 @@ public class SymmLLInterMatrix {
     }
 
 
+    public float[][] scaleBalance(float[] vector) {
+        float[][] newMatrix = new float[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            int r = i + offsetR;
+            if (vector[r] > 0) {
+                for (int j = 0; j < matrix[0].length; j++) {
+                    int c = j;
+                    if (matrix[i][j] > 0 && vector[c] > 0) {
+                        newMatrix[i][j] = matrix[i][j] * vector[r] * vector[c];
+                    }
+                }
+            }
+        }
+        return newMatrix;
+    }
 }

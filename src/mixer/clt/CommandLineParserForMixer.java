@@ -56,6 +56,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option encodeOption = addBooleanOption("encode-mode");
     private final Option logOption = addBooleanOption("log");
     private final Option zScoreOption = addBooleanOption("zscore");
+    private final Option scaleOption = addBooleanOption("scale");
     private final Option mapTypeOption = addIntegerOption("type");
     private final Option correlationTypeOption = addIntegerOption("corr");
 
@@ -214,5 +215,9 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getZScoreOption() {
         return optionToBoolean(zScoreOption);
+    }
+
+    public boolean getScaleOption() {
+        return optionToBoolean(scaleOption);
     }
 }

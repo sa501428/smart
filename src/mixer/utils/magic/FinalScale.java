@@ -41,7 +41,7 @@ public class FinalScale {
     private final static float minErrorThreshold = .02f;
     private static final float OFFSET = .5f;
 
-    public static float[] scaleToTargetVector(SymmLLInterMatrix ic, float[] targetVectorInitial) {
+    public static float[][] scaleMatrix(SymmLLInterMatrix ic, int[] targetVectorInitial) {
 
         double low, zHigh, zLow;
         int rLowIndex, zLowIndex, zHighIndex;
@@ -58,7 +58,7 @@ public class FinalScale {
         double[] zz = new double[(int) Math.min(k, Integer.MAX_VALUE - 1)];
         double[] r0 = new double[(int) Math.min(k, Integer.MAX_VALUE - 1)];
 
-        float[] zTargetVector = copy(targetVectorInitial);
+        int[] zTargetVector = copy(targetVectorInitial);
         float[] calculatedVectorB = new float[k];
         float[] one = new float[k];
         Arrays.fill(one, 1);
@@ -69,7 +69,6 @@ public class FinalScale {
 
         int l = 0;
         for (int p = 0; p < k; p++) {
-            if (Float.isNaN(zTargetVector[p])) continue;
             if (zTargetVector[p] > 0) {
                 zz[l++] = zTargetVector[p];
             }
@@ -86,7 +85,7 @@ public class FinalScale {
         for (int p = 0; p < k; p++) {
             double valZ = zTargetVector[p];
             if (valZ > 0 && (valZ < zLow || valZ > zHigh)) {
-                zTargetVector[p] = Float.NaN;
+                zTargetVector[p] = 0;
             }
         }
 
@@ -115,13 +114,13 @@ public class FinalScale {
 
         //	find the "bad" rows and exclude them
         for (int p = 0; p < k; p++) {
-            if ((numNonZero[p] < low && zTargetVector[p] > 0) || Float.isNaN(zTargetVector[p])) {
+            if ((numNonZero[p] < low && zTargetVector[p] > 0)) {
                 bad[p] = 1;
-                zTargetVector[p] = 1.0f;
+                zTargetVector[p] = 0;
             }
         }
 
-        row = sparseMultiplyGetRowSums(ic, one, k);
+        row = sparseMultiplyGetRowSums(ic, one);
         rowBackup = copy(row);
 
         for (int p = 0; p < k; p++) {
@@ -183,7 +182,7 @@ public class FinalScale {
             //	since calculating the error in row sums requires matrix-vector multiplication we are doing this every 10
             //	iterations
             if (iter % 10 == 0) {
-                col = sparseMultiplyGetRowSums(ic, calculatedVectorB, k);
+                col = sparseMultiplyGetRowSums(ic, calculatedVectorB);
                 err = 0;
                 for (int p = 0; p < k; p++) {
                     if (bad1[p] == 1) continue;
@@ -230,15 +229,15 @@ public class FinalScale {
                     zHigh = zz[zHighIndex];
                     for (int p = 0; p < k; p++) {
                         if (zTargetVector[p] > 0 && (zTargetVector[p] < zLow || zTargetVector[p] > zHigh)) {
-                            zTargetVector[p] = Float.NaN;
+                            zTargetVector[p] = 0;
                         }
                     }
                     for (int p = 0; p < k; p++) {
-                        if ((numNonZero[p] < low && zTargetVector[p] > 0) || Float.isNaN(zTargetVector[p])) {
+                        if ((numNonZero[p] < low && zTargetVector[p] > 0)) {
                             bad[p] = 1;
                             bad1[p] = 1;
                             one[p] = 0;
-                            zTargetVector[p] = 1.0f;
+                            zTargetVector[p] = 0;
                         }
                     }
 
@@ -271,7 +270,7 @@ public class FinalScale {
 
         //	find the final error in row sums
         if (iter % 10 == 0) {
-            col = sparseMultiplyGetRowSums(ic, calculatedVectorB, k);
+            col = sparseMultiplyGetRowSums(ic, calculatedVectorB);
             err = 0;
             for (int p = 0; p < k; p++) {
                 if (bad1[p] == 1) continue;
@@ -297,22 +296,28 @@ public class FinalScale {
             System.out.println(Arrays.toString(reportErrorForIteration));
         }
 
-        return calculatedVectorB;
+        return ic.scaleBalance(calculatedVectorB);
     }
 
-    private static float[] scaleUpdateSums(SymmLLInterMatrix ic, int[] bad1, float[] zTargetVector,
+    private static float[] scaleUpdateSums(SymmLLInterMatrix ic, int[] bad1, int[] zTargetVector,
                                            float[] s, float[] dim, float[] dDim, float[] dnDim) {
         int k = zTargetVector.length;
         for (int p = 0; p < k; p++) if (bad1[p] == 1) dim[p] = 1.0f;
         for (int p = 0; p < k; p++) s[p] = zTargetVector[p] / dim[p];
         for (int p = 0; p < k; p++) dDim[p] *= s[p];
-        float[] newDim = sparseMultiplyGetRowSums(ic, dDim, k);
+        float[] newDim = sparseMultiplyGetRowSums(ic, dDim);
         for (int p = 0; p < k; p++) newDim[p] *= dnDim[p];
         return newDim;
     }
 
     private static float[] copy(float[] original) {
         float[] copy = new float[original.length];
+        System.arraycopy(original, 0, copy, 0, copy.length);
+        return copy;
+    }
+
+    private static int[] copy(int[] original) {
+        int[] copy = new int[original.length];
         System.arraycopy(original, 0, copy, 0, copy.length);
         return copy;
     }
@@ -326,7 +331,7 @@ public class FinalScale {
     }
 
     private static float[] sparseMultiplyGetRowSums(SymmLLInterMatrix ic,
-                                                    float[] vector, int vectorLength) {
+                                                    float[] vector) {
         double[] sumVector = ic.sparseMultiply(vector);
         return convertToFloats(sumVector);
     }

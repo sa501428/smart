@@ -51,7 +51,7 @@ public class Magic extends MixerCLT {
     private File outputDirectory;
     private String prefix, bedpath;
     private NormalizationType norm = NormalizationHandler.NONE;
-    private boolean clusterOnLog = false;
+    private boolean doScale = false;
     private boolean useZScore = false;
 
     // subcompartment lanscape identification via clustering enrichment
@@ -96,7 +96,7 @@ public class Magic extends MixerCLT {
             resolution = possibleResolutions.get(0);
         }
 
-        clusterOnLog = mixerParser.getLogOption();
+        doScale = mixerParser.getScaleOption();
         useZScore = mixerParser.getZScoreOption();
 
         long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
@@ -121,7 +121,7 @@ public class Magic extends MixerCLT {
 
         BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler, resolution, ds, validNormForFiltering);
         MagicMatrix matrix = new MagicMatrix(ds, chromosomeHandler, resolution, norm,
-                outputDirectory, generator.nextLong(), mappings, regionsToIgnore, clusterOnLog, useZScore);
+                outputDirectory, generator.nextLong(), mappings, regionsToIgnore, doScale, useZScore);
         matrix.export(new File(outputDirectory, "magic.npy").getAbsolutePath());
 
         ClusteringMagic clustering = new ClusteringMagic(matrix, outputDirectory, chromosomeHandler, 10L);
