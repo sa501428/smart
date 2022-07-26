@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,9 @@
 package mixer.utils.custom;
 
 import mixer.MixerGlobals;
-import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
-import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
+import robust.concurrent.kmeans.clustering.Cluster;
+import robust.concurrent.kmeans.clustering.KMeansListener;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -39,7 +39,7 @@ public class QuickClustering {
     private final int maxIters;
     private final float[][] matrix;
     private final int numClusters;
-    private final Random generator = new Random(0);
+    private final Random generator = new Random(128736);
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private int[] assignments = null;
 
@@ -55,9 +55,7 @@ public class QuickClustering {
     }
 
     public int[] cluster() {
-        ConcurrentKMeans.useNonNanVersion = true;
-
-        ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
+        RobustConcurrentKMeans kMeans = new RobustConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
@@ -68,7 +66,7 @@ public class QuickClustering {
             }
 
             @Override
-            public void kmeansComplete(Cluster[] clusters, long l) {
+            public void kmeansComplete(Cluster[] clusters) {
                 setAssignments(clusters);
                 System.out.print(".");
                 numActualClusters.set(clusters.length);
@@ -85,7 +83,6 @@ public class QuickClustering {
         kMeans.run();
 
         waitUntilDone();
-        ConcurrentKMeans.useNonNanVersion = false;
         return assignments;
     }
 

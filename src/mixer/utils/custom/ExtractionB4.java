@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,13 @@
 
 package mixer.utils.custom;
 
-import javastraw.featurelist.GenomeWideList;
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
-import javastraw.reader.ExtractingOEDataUtils;
-import javastraw.reader.HiCFileTools;
-import javastraw.reader.MatrixZoomData;
 import javastraw.reader.basics.Chromosome;
-import javastraw.type.NormalizationType;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.ExtractingOEDataUtils;
+import javastraw.tools.HiCFileTools;
 import mixer.utils.slice.cleaning.NearDiagonalTrim;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -57,9 +57,9 @@ public class ExtractionB4 {
                     type, 10f,
                     ExtractingOEDataUtils.ThresholdType.TRUE_OE_LOG,
                     //ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                    true, 1, 0);
+                    true, true, 1, 0, true);
             removeEmptyValues(matrix);
-            NearDiagonalTrim.trim(chrom19, matrix, RESOLUTION);
+            NearDiagonalTrim.nanFill(chrom19, matrix, RESOLUTION);
             float[] sums = getAbsRowSums(matrix);
             fillEmptyRows(matrix, sums);
 
@@ -73,7 +73,7 @@ public class ExtractionB4 {
                             i * RESOLUTION, (i + 1) * RESOLUTION, result[i]);
                     intervalList.add(interval);
                 }
-                GenomeWideList<SubcompartmentInterval> finalCompartments = new GenomeWideList<>(ds.getChromosomeHandler());
+                GenomeWide1DList<SubcompartmentInterval> finalCompartments = new GenomeWide1DList<>(ds.getChromosomeHandler());
                 finalCompartments.addAll(intervalList);
 
                 File outBedFile = new File("/Users/mshamim/Desktop/B4_Gold",

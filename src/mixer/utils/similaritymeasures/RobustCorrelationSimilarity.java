@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
  */
 package mixer.utils.similaritymeasures;
 
+import java.util.BitSet;
+
 /**
  * Correlation distance.
  */
@@ -32,6 +34,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
      * Correlation distance.
      */
     public static final RobustCorrelationSimilarity SINGLETON = new RobustCorrelationSimilarity();
+    public static boolean USE_ARC = false;
 
     private RobustCorrelationSimilarity() {
         super(true);
@@ -39,17 +42,18 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
 
     @Override
     public float distance(final float[] x, final float[] y) {
-        int counter = 0;
         double sumX = 0;
         double sumY = 0;
+        BitSet useIndex = new BitSet(x.length);
         for (int i = 0; i < x.length; i++) {
-            boolean entryIsBad = Float.isNaN(x[i] + y[i]);
-            if (!entryIsBad) {
+            if (!Float.isNaN(x[i] + y[i])) {
                 sumX += x[i];
                 sumY += y[i];
-                counter++;
+                useIndex.set(i);
             }
         }
+
+        int counter = useIndex.cardinality();
         double muX = sumX / counter;
         double muY = sumY / counter;
 
@@ -57,8 +61,7 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
         double normX = 0.0;
         double normY = 0.0;
         for (int i = 0; i < x.length; i++) {
-            boolean entryIsBad = Float.isNaN(x[i] + y[i]);
-            if (!entryIsBad) {
+            if (useIndex.get(i)) {
                 double nX = x[i] - muX;
                 double nY = y[i] - muY;
 
@@ -68,6 +71,10 @@ public final class RobustCorrelationSimilarity extends SimilarityMetric {
             }
         }
 
-        return (float) (dotProduct / Math.sqrt(normX * normY));
+        double answer = dotProduct / Math.sqrt(normX * normY);
+        if (USE_ARC) {
+            return arctanh(answer);
+        }
+        return (float) answer;
     }
 }

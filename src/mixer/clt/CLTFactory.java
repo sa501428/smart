@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,7 @@
 package mixer.clt;
 
 import mixer.MixerGlobals;
-import mixer.algos.ChromosomeWalker;
-import mixer.algos.Shuffle;
-import mixer.algos.Slice;
+import mixer.algos.*;
 
 
 /**
@@ -53,10 +51,20 @@ public class CLTFactory {
         cmd = cmd.toLowerCase();
         if (cmd.startsWith("slice") || cmd.startsWith("dice")) {
             return new Slice(cmd);
+        } else if (cmd.equals("magic")) {
+            return new Magic(cmd);
         } else if (cmd.equals("walk")) {
             return new ChromosomeWalker();
-        } else if (cmd.equals("shuffle")) {
-            return new Shuffle();
+        } else if (cmd.contains("shuffle") || cmd.contains("umap")) {
+            return new ShuffleAndUMAP(cmd);
+        } else if (cmd.contains("rename")) {
+            return new Rename(cmd);
+        } else if (cmd.equals("network")) {
+            return new Network();
+        } else if (cmd.equals("aba")) {
+            return new ABA();
+        } else if (cmd.equals("finetune")) {
+            return new FineTune();
         }
 
         return null;

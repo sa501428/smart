@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ public final class RobustEuclideanDistance extends SimilarityMetric {
     return (float) Math.sqrt(getNonNanMeanSquaredError(x, y));
   }
 
-  private double getNonNanMeanSquaredError(float[] x, float[] y) {
+  public static double getNonNanMeanSquaredError(float[] x, float[] y) {
     double sumOfSquares = 0;
     int numVals = 0;
     for (int i = 0; i < x.length; i++) {
@@ -54,7 +54,7 @@ public final class RobustEuclideanDistance extends SimilarityMetric {
       }
     }
     if (numVals < 1) {
-      System.err.println("Vector too sparse");
+      //System.err.println("Vector too sparse");
       return Float.MAX_VALUE;
     }
     return x.length * sumOfSquares / numVals;

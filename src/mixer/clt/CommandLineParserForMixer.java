@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,21 +25,15 @@
 package mixer.clt;
 
 import jargs.gnu.CmdLineParser;
-import javastraw.reader.Dataset;
-import javastraw.type.NormalizationHandler;
-import javastraw.type.NormalizationType;
-import mixer.utils.similaritymeasures.RobustCosineSimilarity;
-import mixer.utils.similaritymeasures.RobustJensenShannonDivergence;
-import mixer.utils.similaritymeasures.RobustKullbackLeiblerDivergence;
-import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
+import javastraw.reader.type.NormalizationHandler;
+import javastraw.reader.type.NormalizationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Command Line Parser for Mixer commands (hiccups, arrowhead, apa)
+ * Command Line Parser for Mixer commands
  *
  * @author Muhammad Shamim
  */
@@ -56,9 +50,15 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option subsampleNumOption = addIntegerOption("subsample");
     private final Option randomSeedsOption = addStringOption("random-seeds");
     private final Option sliceWindowOption = addIntegerOption('w', "window");
+    private final Option seedOption = addIntegerOption("seed");
     private final Option sliceCompareOption = addStringOption("compare");
-    private final Option sliceMetricTypeOption = addStringOption("type");
     private final Option translocationOption = addBooleanOption("has-translocation");
+    private final Option encodeOption = addBooleanOption("encode-mode");
+    private final Option logOption = addBooleanOption("log");
+    private final Option zScoreOption = addBooleanOption("zscore");
+    private final Option scaleOption = addBooleanOption("scale");
+    private final Option mapTypeOption = addIntegerOption("type");
+    private final Option correlationTypeOption = addIntegerOption("corr");
 
     public CommandLineParserForMixer() {
     }
@@ -70,10 +70,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
     }
 
-    public NormalizationType[] getNormalizationTypeOption(List<Dataset> dsList) {
-        return retrieveNormalizationArray(optionToString(normalizationTypeOption), dsList);
-    }
-
     public String getCompareReferenceOption() {
         return optionToString(sliceCompareOption);
     }
@@ -81,8 +77,12 @@ public class CommandLineParserForMixer extends CmdLineParser {
     /**
      * int flags
      */
-    public int getAPAWindowSizeOption() {
+    public int getWindowSizeOption() {
         return optionToInt(sliceWindowOption);
+    }
+
+    public int getSeedOption() {
+        return optionToInt(seedOption);
     }
 
     public int getMatrixSizeOption() {
@@ -95,6 +95,14 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public int getSubsamplingOption() {
         return optionToInt(subsampleNumOption);
+    }
+
+    public int getMapTypeOption() {
+        return optionToInt(mapTypeOption);
+    }
+
+    public int getCorrelationTypeOption() {
+        return optionToInt(correlationTypeOption);
     }
 
     /**
@@ -193,48 +201,23 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return null;
     }
 
-    private NormalizationType[] retrieveNormalizationArray(String norm, List<Dataset> dsList) {
-        if (norm == null || norm.length() < 1)
-            return null;
-
-        try {
-            String[] strArray = norm.split(",");
-            NormalizationType[] norms = new NormalizationType[strArray.length];
-            for (int i = 0; i < strArray.length; i++) {
-                norms[i] = dsList.get(i).getNormalizationHandler().getNormTypeFromString(strArray[i]);
-            }
-            return norms;
-        } catch (IllegalArgumentException error) {
-            System.err.println("Normalization must be one of \"NONE\", \"VC\", \"VC_SQRT\", \"KR\", \"GW_KR\", \"GW_VC\", \"INTER_KR\", or \"INTER_VC\".");
-            System.exit(7);
-        }
-        return null;
-    }
-
-    public SimilarityMetric getMetricTypeOption() {
-        return getMetricType(optionToString(sliceMetricTypeOption));
-    }
-
-    private SimilarityMetric getMetricType(String potentialType) {
-        if (potentialType != null) {
-            String name = potentialType.toLowerCase();
-            if (name.contains("zscore")) {
-                MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
-            }
-            if (name.contains("cosine")) {
-                return RobustCosineSimilarity.SINGLETON;
-            } else if (name.contains("js")) {
-                return RobustJensenShannonDivergence.SINGLETON;
-            } else if (name.contains("kl")) {
-                return RobustKullbackLeiblerDivergence.SINGLETON;
-            }
-        }
-        System.out.println("Using zscore-cosine similarity by default: " + potentialType);
-        MatrixCleanupAndSimilarityMetric.USE_ZSCORE = true;
-        return RobustCosineSimilarity.SINGLETON;
-    }
-
     public boolean getHasTranslocation() {
         return optionToBoolean(translocationOption);
+    }
+
+    public boolean getENCODEOption() {
+        return optionToBoolean(encodeOption);
+    }
+
+    public boolean getLogOption() {
+        return optionToBoolean(logOption);
+    }
+
+    public boolean getZScoreOption() {
+        return optionToBoolean(zScoreOption);
+    }
+
+    public boolean getScaleOption() {
+        return optionToBoolean(scaleOption);
     }
 }

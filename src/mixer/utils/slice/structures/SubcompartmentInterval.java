@@ -24,60 +24,33 @@
 
 package mixer.utils.slice.structures;
 
-import javastraw.featurelist.Feature;
+import javastraw.feature1D.Feature1D;
 import javastraw.reader.basics.Chromosome;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SubcompartmentInterval extends SimpleInterval {
 
-    private static final Color[] colors = new Color[]{
-            new Color(0, 0, 0),
-
-            new Color(34, 139, 34),
-            new Color(152, 251, 152),
-            new Color(220, 20, 60),
-            new Color(255, 255, 0),
-            new Color(112, 128, 144),
-            new Color(75, 0, 130),
-
-            new Color(255, 255, 0),
-            new Color(255, 0, 0),
-            new Color(0, 234, 255),
-            new Color(170, 0, 255),
-            new Color(255, 127, 0),
-            new Color(191, 255, 0),
-            new Color(0, 149, 255),
-            new Color(255, 0, 170),
-            new Color(255, 212, 0),
-            new Color(106, 255, 0),
-            new Color(0, 64, 255),
-            new Color(237, 185, 185),
-            new Color(185, 215, 237),
-            new Color(231, 233, 185),
-            new Color(220, 185, 237),
-            new Color(185, 237, 224),
-            new Color(143, 35, 35),
-            new Color(35, 98, 143),
-            new Color(143, 106, 35),
-            new Color(107, 35, 143),
-            new Color(79, 143, 35),
-
-            new Color(115, 115, 115),
-            new Color(204, 204, 204)
-    };
     private Integer clusterID;
-    private double differenceFromControl = 0;
+    private String clusterName;
 
-    public SubcompartmentInterval(int chrIndex, String chrName, int x1, int x2, Integer clusterID) {
+    public SubcompartmentInterval(int chrIndex, String chrName, int x1, int x2, Integer clusterID, String clusterName) {
         super(chrIndex, chrName, x1, x2);
+        this.clusterName = clusterName;
         this.clusterID = clusterID;
     }
 
+    public SubcompartmentInterval(int chrIndex, String chrName, int x1, int x2, Integer clusterID) {
+        this(chrIndex, chrName, x1, x2, clusterID, "" + clusterID);
+    }
+
     public SubcompartmentInterval(Chromosome chromosome, int x1, int x2, Integer clusterID) {
-        this(chromosome.getIndex(), chromosome.getName(), x1, x2, clusterID);
+        this(chromosome.getIndex(), chromosome.getName(), x1, x2, clusterID, "" + clusterID);
+    }
+
+    public SubcompartmentInterval(Chromosome chromosome, int x1, int x2, Integer clusterID, String clusterName) {
+        this(chromosome.getIndex(), chromosome.getName(), x1, x2, clusterID, clusterName);
     }
 
     public Integer getClusterID() {
@@ -86,18 +59,16 @@ public class SubcompartmentInterval extends SimpleInterval {
 
     public void setClusterID(Integer clusterID) {
         this.clusterID = clusterID;
+        this.clusterName = "" + clusterID;
     }
 
-    public double getDifferenceFromControl() {
-        return differenceFromControl;
-    }
-
-    public void setDifferenceFromControl(double differenceFromControl) {
-        this.differenceFromControl = differenceFromControl;
+    public void setClusterID(Integer clusterID, String clusterName) {
+        this.clusterID = clusterID;
+        this.clusterName = clusterName;
     }
 
     public SubcompartmentInterval absorbAndReturnNewInterval(SubcompartmentInterval interval) {
-        return new SubcompartmentInterval(getChrIndex(), getChrName(), getX1(), interval.getX2(), clusterID);
+        return new SubcompartmentInterval(getChrIndex(), getChrName(), getX1(), interval.getX2(), clusterID, clusterName);
     }
 
     public boolean overlapsWith(SubcompartmentInterval o) {
@@ -106,22 +77,20 @@ public class SubcompartmentInterval extends SimpleInterval {
 
     @Override
     public String toString() {
-        Color color = colors[clusterID % colors.length];
-        String colorString = color.getRed() + "," + color.getGreen() + "," + color.getBlue();
-        return "chr" + getChrName() + "\t" + getX1() + "\t" + getX2() + "\t" + clusterID + "\t" + clusterID
-                + "\t.\t" + getX1() + "\t" + getX2() + "\t" + colorString;
+        return "chr" + getChrName() + "\t" + getX1() + "\t" + getX2() + "\t" + clusterName + "\t" + clusterID
+                + "\t.\t" + getX1() + "\t" + getX2() + "\t" + SubcompartmentColors.getColorString(clusterID);
     }
 
     @Override
-    public Feature deepClone() {
-        return new SubcompartmentInterval(getChrIndex(), getChrName(), getX1(), getX2(), clusterID);
+    public Feature1D deepClone() {
+        return new SubcompartmentInterval(getChrIndex(), getChrName(), getX1(), getX2(), clusterID, clusterName);
     }
 
     public List<SubcompartmentInterval> splitByWidth(int width) {
         List<SubcompartmentInterval> splitList = new ArrayList<>();
 
         for (int i = getX1(); i < getX2(); i += width) {
-            splitList.add(new SubcompartmentInterval(getChrIndex(), getChrName(), i, i + width, clusterID));
+            splitList.add(new SubcompartmentInterval(getChrIndex(), getChrName(), i, i + width, clusterID, clusterName));
         }
 
         return splitList;

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,18 @@
 
 package mixer.algos;
 
-import javastraw.reader.ChromosomeHandler;
 import javastraw.reader.Dataset;
-import javastraw.reader.HiCFileTools;
-import javastraw.type.NormalizationType;
+import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.norm.NormalizationPicker;
+import javastraw.reader.type.NormalizationType;
+import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.similaritymeasures.RobustCosineSimilarity;
-import mixer.utils.similaritymeasures.SimilarityMetric;
-import mixer.utils.slice.cleaning.MatrixCleanupAndSimilarityMetric;
+import mixer.utils.slice.cleaning.SliceMatrixCleaner;
 import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
-import mixer.utils.slice.matrices.SliceMatrix;
-import mixer.utils.slice.structures.HiCInterTools;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -50,24 +46,32 @@ import java.util.Random;
  */
 public class Slice extends MixerCLT {
 
+    public static final int INTRA_SCALE_INDEX = 0;
+    public static final int INTER_SCALE_INDEX = 1;
+    public static final int GW_SCALE_INDEX = 2;
+    public static final boolean USE_INTER_CORR_CLUSTERING = false;
+    public static final boolean PROJECT_TO_UMAP = true;
+    public static final boolean USE_WEIGHTED_MEAN = false;
+    public static boolean FILTER_OUTLIERS = true;
     private final List<Dataset> datasetList = new ArrayList<>();
     private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    private NormalizationType[] normArray;
-    public static SimilarityMetric metric = RobustCosineSimilarity.SINGLETON;
+    private List<NormalizationType[]> normsList;
     private String prefix = "";
-    private String[] referenceBedFiles;
-    private final boolean compareMaps;
+    public static boolean USE_KMEANS = false, USE_KMEDIANS = true;
+    public static boolean USE_ENCODE_MODE = false;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
-        super("slice [-r resolution] <-k NONE/VC/VC_SQRT/KR/SCALE>  [-w window] " +
-                "[--compare reference.bed] [--corr] [--verbose] " + //"[--has-translocation] " +
-                "<input1.hic+input2.hic...> <K0,KF,nK> <outfolder> <prefix_>");
-        compareMaps = command.contains("dice");
+        super("slice [-r resolution] [--verbose] " +
+                //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
+                "<file.hic> <K0,KF,nK> <outfolder> <prefix_>\n" +
+                "   K0 - minimum number of clusters\n" +
+                "   KF - maximum number of clusters\n" +
+                "   nK - number of times to rerun kmeans");
     }
 
     @Override
@@ -95,20 +99,7 @@ public class Slice extends MixerCLT {
         ds = datasetList.get(0);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
-
-        normArray = new NormalizationType[datasetList.size()];
-        NormalizationType[] preferredNorm = mixerParser.getNormalizationTypeOption(datasetList);
-        if (preferredNorm != null && preferredNorm.length > 0) {
-            if (preferredNorm.length == normArray.length) {
-                normArray = preferredNorm;
-            } else {
-                Arrays.fill(normArray, preferredNorm[0]);
-            }
-        } else {
-            System.err.println("Normalization must be specified");
-            System.exit(9);
-        }
-
+        normsList = populateNormalizations(datasetList);
 
         List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
         if (possibleResolutions != null) {
@@ -124,33 +115,25 @@ public class Slice extends MixerCLT {
             }
         }
 
-        int minSize = mixerParser.getAPAWindowSizeOption();
-        if (minSize > 0) {
-            SliceMatrix.numColumnsToPutTogether = minSize;
-        } else {
-            int numColumns = HiCInterTools.calculateIdealWidth(ds, resolution);
-            for (int i = 1; i < datasetList.size(); i++) {
-                int numColumns2 = HiCInterTools.calculateIdealWidth(datasetList.get(i), resolution);
-                if (numColumns2 > numColumns) {
-                    numColumns = numColumns2;
-                }
-            }
-            SliceMatrix.numColumnsToPutTogether = numColumns;
-            System.out.println("Using compression width: " + numColumns);
-        }
-
         int subsampling = mixerParser.getSubsamplingOption();
-        if (subsampling > 1) {
-            MatrixCleanupAndSimilarityMetric.NUM_PER_CENTROID = subsampling;
+        if (subsampling > 0) {
+            SliceMatrixCleaner.NUM_PER_CENTROID = subsampling;
         }
 
-        String bedFiles = mixerParser.getCompareReferenceOption();
-        if (bedFiles != null && bedFiles.length() > 1) {
-            referenceBedFiles = bedFiles.split(",");
-        }
+        USE_ENCODE_MODE = mixerParser.getENCODEOption();
+    }
 
-        metric = mixerParser.getMetricTypeOption();
-        //todo BadIndexFinder.CHECK_FOR_TRANSLOCATION = mixerParser.getHasTranslocation();
+
+    private List<NormalizationType[]> populateNormalizations(List<Dataset> datasetList) {
+        List<NormalizationType[]> normsList = new ArrayList<>();
+        for (Dataset ds : datasetList) {
+            NormalizationType[] norms = new NormalizationType[3];
+            norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
+            norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR"});
+            norms[GW_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"GW_SCALE", "GW_KR"});
+            normsList.add(norms);
+        }
+        return normsList;
     }
 
     @Override
@@ -163,8 +146,8 @@ public class Slice extends MixerCLT {
         if (datasetList.size() < 1) return;
 
         FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, normArray, outputDirectory, generator.nextLong(), referenceBedFiles, metric);
-        withinClusters.extractFinalGWSubcompartments(inputHicFilePaths, prefix, 0, compareMaps);
+                chromosomeHandler, resolution, normsList, outputDirectory, generator.nextLong());
+        withinClusters.extractFinalGWSubcompartments(prefix);
 
         System.out.println("\nClustering complete");
     }

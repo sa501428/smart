@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2020 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,13 @@
 package mixer.utils.slice.cleaning;
 
 import mixer.MixerGlobals;
-import mixer.utils.slice.kmeans.kmeansfloat.Cluster;
-import mixer.utils.slice.kmeans.kmeansfloat.ConcurrentKMeans;
-import mixer.utils.slice.kmeans.kmeansfloat.KMeansListener;
+import robust.concurrent.kmeans.clustering.Cluster;
+import robust.concurrent.kmeans.clustering.KMeansListener;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
+import robust.concurrent.kmeans.clustering.RobustConcurrentKMedians;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,27 +40,37 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class QuickCentroids {
 
-    private final int maxIters = 5;
+    private int maxIters = 20;
     private final float[][] matrix;
-    private final int numClusters;
-    private final Random generator = new Random(0);
+    private final int initialNumClusters;
+    private final Random generator = new Random(93824);
     private final AtomicInteger numActualClusters = new AtomicInteger(0);
     private float[][] centroids = null;
+    private int[] weights = null;
 
     public QuickCentroids(float[][] matrix, int numCentroids, long seed) {
         this.matrix = matrix;
-        this.numClusters = numCentroids;
+        this.initialNumClusters = numCentroids;
         generator.setSeed(seed);
         if (matrix.length == 0 || matrix[0].length == 0) {
             System.err.println("Empty matrix provided for quick centroids");
-            System.exit(5);
+            throw new RuntimeException("EMPTY MATRIX!");
+            //System.exit(5);
         }
     }
 
-    public float[][] generateCentroids() {
-        ConcurrentKMeans.useNonNanVersion = true;
+    public QuickCentroids(float[][] matrix, int numCentroids, long seed, int numIters) {
+        this(matrix, numCentroids, seed);
+        this.maxIters = numIters;
+    }
 
-        ConcurrentKMeans kMeans = new ConcurrentKMeans(matrix, numClusters, maxIters, generator.nextLong());
+    public float[][] generateCentroids(int minSizeNeeded, boolean useKmedians) {
+        RobustConcurrentKMeans kMeans;
+        if (useKmedians) {
+            kMeans = new RobustConcurrentKMedians(matrix, initialNumClusters, maxIters, generator.nextLong());
+        } else {
+            kMeans = new RobustConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
+        }
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
@@ -68,10 +81,9 @@ public class QuickCentroids {
             }
 
             @Override
-            public void kmeansComplete(Cluster[] clusters, long l) {
-                convertClustersToFloatMatrix(clusters);
+            public void kmeansComplete(Cluster[] clusters) {
+                convertClustersToFloatMatrix(clusters, minSizeNeeded);
                 System.out.print(".");
-                numActualClusters.set(clusters.length);
             }
 
             @Override
@@ -85,7 +97,6 @@ public class QuickCentroids {
         kMeans.run();
 
         waitUntilDone();
-        ConcurrentKMeans.useNonNanVersion = false;
         return centroids;
     }
 
@@ -100,17 +111,27 @@ public class QuickCentroids {
         }
     }
 
-    private void convertClustersToFloatMatrix(Cluster[] clusters) {
+    private void convertClustersToFloatMatrix(Cluster[] initialClusters, int minSizeNeeded) {
+        List<Cluster> actualClusters = new ArrayList<>();
+        for (Cluster c : initialClusters) {
+            if (c.getMemberIndexes().length > minSizeNeeded) {
+                actualClusters.add(c);
+            }
+        }
+
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
-        System.out.println("Using " + numCPUThreads + " threads");
+        if (MixerGlobals.printVerboseComments) {
+            System.out.println("Using " + numCPUThreads + " threads");
+        }
         AtomicInteger currRowIndex = new AtomicInteger(0);
-        centroids = new float[clusters.length][matrix[0].length];
+        centroids = new float[actualClusters.size()][matrix[0].length];
+        weights = new int[actualClusters.size()];
         ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
         for (int l = 0; l < numCPUThreads; l++) {
             executor.execute(() -> {
                 int c = currRowIndex.getAndIncrement();
-                while (c < clusters.length) {
-                    processCluster(clusters[c], c);
+                while (c < actualClusters.size()) {
+                    processCluster(actualClusters.get(c), c);
                     c = currRowIndex.getAndIncrement();
                 }
             });
@@ -120,9 +141,18 @@ public class QuickCentroids {
         //noinspection StatementWithEmptyBody
         while (!executor.isTerminated()) {
         }
+
+        numActualClusters.set(actualClusters.size());
     }
 
-    void processCluster(Cluster cluster, int cIndex) {
+    private boolean processCluster(Cluster cluster, int cIndex) {
+        if (cluster.getMemberIndexes().length < 3) {
+            // likely an outlier / too small a cluster
+            return false;
+        }
+
+        weights[cIndex] = cluster.getMemberIndexes().length;
+
         int[] counts = new int[matrix[0].length];
         for (int i : cluster.getMemberIndexes()) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -140,5 +170,10 @@ public class QuickCentroids {
                 centroids[cIndex][j] = Float.NaN;
             }
         }
+        return true;
+    }
+
+    public int[] getWeights() {
+        return weights;
     }
 }
