@@ -24,7 +24,7 @@
 
 package mixer.utils.magic;
 
-import mixer.MixerGlobals;
+import mixer.MixerTools;
 
 import java.util.Arrays;
 
@@ -55,8 +55,8 @@ public class FinalScale {
         int[] bad = new int[k];
         int[] bad1 = new int[k];
         float[] s = new float[k];
-        double[] zz = new double[(int) Math.min(k, Integer.MAX_VALUE - 1)];
-        double[] r0 = new double[(int) Math.min(k, Integer.MAX_VALUE - 1)];
+        double[] zz = new double[Math.min(k, Integer.MAX_VALUE - 1)];
+        double[] r0 = new double[Math.min(k, Integer.MAX_VALUE - 1)];
 
         int[] zTargetVector = copy(targetVectorInitial);
         float[] calculatedVectorB = new float[k];
@@ -289,7 +289,7 @@ public class FinalScale {
             }
         }
 
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println(allIterationsI);
             System.out.println(localPercentLowRowSumExcluded);
             System.out.println(localPercentZValuesToIgnore);

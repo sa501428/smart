@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,20 +26,20 @@ package mixer.utils.slice.gmm;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.utils.slice.matrices.CompositeGenomeWideMatrix;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.List;
 import java.util.Map;
 
 public class GenomeWideGMMRunner {
-    private final CompositeGenomeWideMatrix interMatrix;
+    private final MatrixAndWeight interMatrix;
     private final float[][] data;
     private final ChromosomeHandler chromosomeHandler;
 
-    public GenomeWideGMMRunner(ChromosomeHandler chromosomeHandler, CompositeGenomeWideMatrix interMatrix) {
+    public GenomeWideGMMRunner(ChromosomeHandler chromosomeHandler, MatrixAndWeight interMatrix) {
         this.interMatrix = interMatrix;
-        data = interMatrix.getData(true);
+        data = interMatrix.matrix;
         this.chromosomeHandler = chromosomeHandler;
     }
 
@@ -62,7 +62,7 @@ public class GenomeWideGMMRunner {
     private void populateMap(int[] result, Map<Integer, GenomeWide1DList<SubcompartmentInterval>> results, int numClusters) {
         GenomeWide1DList<SubcompartmentInterval> finalCompartments = new GenomeWide1DList<>(chromosomeHandler);
         getCounts(result, numClusters);
-        interMatrix.processGMMClusteringResult(result, finalCompartments);
+        //interMatrix.processGMMClusteringResult(result, finalCompartments);
         results.put(numClusters, finalCompartments);
     }
 

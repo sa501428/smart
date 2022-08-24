@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,18 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.cleaning;
+package mixer.utils.slice.drive;
 
-import java.util.HashSet;
-import java.util.Set;
+import javastraw.reader.basics.Chromosome;
 
-public class DistanceOutlierFinder {
-    public static Set<Integer> getOutliers(float[][] matrix, Set<Integer> badIndices) {
-        Set<Integer> outliers = new HashSet<>();
-        QuickCentroids centroidMaker = new QuickCentroids(matrix, 200, 0L, 100);
-        float[][] centroids = centroidMaker.generateCentroids(5, true);
-        return outliers;
-    }
+public interface Mappings {
+    int getNumRows();
+
+    int getNumCols();
+
+    int[] getDistributionForChrom(Chromosome chromosome);
+
+    int[] getProtocluster(Chromosome c1);
+
+    int[] getGlobalIndex(Chromosome c1);
 }

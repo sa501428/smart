@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +27,16 @@ package mixer.utils.slice.structures;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
-import javastraw.reader.block.Block;
 import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class HiCInterTools {
-
-    private static int getIdealCompression(double genomelength, double resolution, double counts) {
-        double x = genomelength / resolution;
-        return (int) Math.ceil(20 * x * x / counts);
-    }
 
     public static int calculateIdealWidth(Dataset ds, int resolution) {
 
@@ -57,27 +52,25 @@ public class HiCInterTools {
         NormalizationType normNone = ds.getNormalizationHandler().getNormTypeFromString("NONE");
 
         for (int i = 0; i < chroms.length; i++) {
-            Chromosome chr1 = chroms[i];
             for (int j = i + 1; j < chroms.length; j++) {
-                Chromosome chr2 = chroms[j];
-                final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, lowestResZoom);
-                int lengthChr1 = (int) (chr1.getLength() / resolution + 1);
-                int lengthChr2 = (int) (chr2.getLength() / resolution + 1);
-
-                try {
-                    List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0,
-                            lengthChr2, normNone, false);
-                    totalCounts += getTotalCounts(blocks);
-                } catch (Exception e) {
-                    System.err.println(chr1.getName() + " - " + chr2.getName());
-                    e.printStackTrace();
+                final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chroms[i], chroms[j], lowestResZoom);
+                Iterator<ContactRecord> iterator = zd.getDirectIterator();
+                while (iterator.hasNext()) {
+                    ContactRecord cr = iterator.next();
+                    if (cr.getCounts() > 0) {
+                        totalCounts += cr.getCounts();
+                    }
                 }
             }
         }
-
         System.out.println("Total counts: " + totalCounts);
 
         return getIdealCompression(genomelength, resolution, totalCounts);
+    }
+
+    private static int getIdealCompression(double genomelength, double resolution, double counts) {
+        double x = genomelength / resolution;
+        return (int) Math.ceil(20 * x * x / counts);
     }
 
     public static int getLowestResolution(Dataset ds) {
@@ -89,19 +82,5 @@ public class HiCInterTools {
             }
         }
         return maxResolution;
-    }
-
-    private static long getTotalCounts(List<Block> blocks) {
-        double total = 0;
-
-        for (Block b : blocks) {
-            if (b != null) {
-                for (ContactRecord cr : b.getContactRecords()) {
-                    total += cr.getCounts();
-                }
-            }
-        }
-
-        return (long) total;
     }
 }

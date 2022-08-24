@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.gmm;
 
-import mixer.utils.slice.structures.SubcompartmentColors;
+import mixer.utils.slice.structures.ColorMap;
 import mixer.utils.umap.UmapProjection;
 
 import javax.imageio.ImageIO;
@@ -107,7 +107,7 @@ public class SimpleScatterPlot {
     }
 
     private void drawCircle(Graphics g, float[] point, int id) {
-        Color color = SubcompartmentColors.getColorWithAlpha(id + 1, 128);
+        Color color = ColorMap.getColorWithAlpha(id + 1, 128);
         g.setColor(color);
         int newX = (int) ((point[0] - circleOffset - minX) * width / widthX);
         int newY = (int) ((point[1] - circleOffset - minY) * height / heightY);

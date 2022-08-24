@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,7 @@
 
 package mixer.utils.common;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class ArrayTools {
 
@@ -128,42 +126,10 @@ public class ArrayTools {
         return sum / array.length;
     }
 
-    public static double mean(double[] array) {
-        double sum = 0;
-        for (double val : array) {
-            sum += val;
-        }
-        return sum / array.length;
-    }
-
-    public static double nanMean(float[] array) {
-        double sum = 0;
-        int numEntries = 0;
-        for (float val : array) {
-            if (!Float.isNaN(val)) {
-                sum += val;
-                numEntries++;
-            }
-        }
-        if (numEntries > 0) {
-            return sum / numEntries;
-        }
-        return Float.NaN;
-    }
-
     public static int[] concatenate(int[] arr1, int[] arr2) {
         int[] output = new int[arr1.length + arr2.length];
         System.arraycopy(arr1, 0, output, 0, arr1.length);
         System.arraycopy(arr2, 0, output, arr1.length, arr2.length);
         return output;
-    }
-
-    public static float[] toArray(Collection<Float> initialVals) {
-        List<Float> vals = new ArrayList<>(initialVals);
-        float[] values = new float[vals.size()];
-        for (int z = 0; z < vals.size(); z++) {
-            values[z] = vals.get(z).floatValue();
-        }
-        return values;
     }
 }

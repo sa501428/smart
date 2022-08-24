@@ -300,7 +300,7 @@ public class AggregateProcessing {
 
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
         for (int res : new int[]{100000}) { //100000
-            String folder = "GM12878_DualNorm2_ZscoreNoWidth_" + res + "v" + MixerGlobals.versionNum;
+            String folder = "GM12878_DualNorm2_ZscoreNoWidth_" + res + "v" + MixerTools.versionNum;
             String[] strings = new String[]{"slice", "-r", res + "",
                     "-k", "KR:INTER_KR", //"--verbose",
                     file14, "2,13,10",
@@ -347,7 +347,7 @@ public class AggregateProcessing {
         String file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
 
         for (String norm : new String[]{"KR:INTER_KR"}) { //"GW_KR",
-            String folder = "SHUFFLE_again6_DualNorm_W16_GM12878_" + norm + "_100K_v" + MixerGlobals.versionNum;
+            String folder = "SHUFFLE_again6_DualNorm_W16_GM12878_" + norm + "_100K_v" + MixerTools.versionNum;
             String[] strings = new String[]{"shuffle-umap", //umap
                     "-r", 100000 + "",
                     "-k", norm, "-w", "" + 16,
@@ -369,7 +369,7 @@ public class AggregateProcessing {
         }
 
         for (int res : new int[]{100000}) { //100000
-            String folder = "INTER-KR_GM_res_" + res + "v" + MixerGlobals.versionNum;
+            String folder = "INTER-KR_GM_res_" + res + "v" + MixerTools.versionNum;
             String[] strings = new String[]{"slice", "-r", res + "",
                     "-k", "INTER_KR", //"--verbose",
                     file14, "2,8,10",
@@ -382,7 +382,7 @@ public class AggregateProcessing {
 
         file14 = "/Users/mshamim/Desktop/hicfiles/gm12878_rh14_30.hic";
         for (int res : new int[]{100000, 50000}) { //100000
-            String folder = "GM12878_DualNorm2_" + res + "v" + MixerGlobals.versionNum;
+            String folder = "GM12878_DualNorm2_" + res + "v" + MixerTools.versionNum;
             String[] strings = new String[]{"slice", "-r", res + "",
                     "-k", "KR:INTER_KR", //"--verbose",
                     file14, "2,20,10",
@@ -396,7 +396,7 @@ public class AggregateProcessing {
                     //refs + "," +
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
                             "/" + folder + "__5_clusters_K562_2014_SCALE_30.subcompartment.bed",
-                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerGlobals.versionNum,
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerTools.versionNum,
                     "SLICE3"
             };
             System.out.println("-----------------------------------------------------");
@@ -417,7 +417,7 @@ public class AggregateProcessing {
 
         for (int res : new int[]{50000}) { //100000
             for (int q = 0; q < files.length; q++) {
-                String folder = prefixes[q] + "_" + res + "v" + MixerGlobals.versionNum;
+                String folder = prefixes[q] + "_" + res + "v" + MixerTools.versionNum;
                 String[] strings = new String[]{"slice", "-r", res + "",
                         "-k", "SCALE:INTER_SCALE", //"--verbose",
                         files[q], "2,11,10",
@@ -430,7 +430,7 @@ public class AggregateProcessing {
         }
 
         for (int res : new int[]{50000}) { //100000
-            String folder = "GM12878_" + res + "v" + MixerGlobals.versionNum;
+            String folder = "GM12878_" + res + "v" + MixerTools.versionNum;
             String[] strings = new String[]{"slice", "-r", res + "",
                     "-k", "KR:INTER_KR", //"--verbose",
                     file14, "2,16,10",
@@ -446,7 +446,7 @@ public class AggregateProcessing {
         String file14 = "/Users/mshamim/Desktop/hicfiles/K562_2014_SCALE_30.hic";
 
         for (int res : new int[]{50000}) { //100000
-            String folder = "K562_res_" + res + "v" + MixerGlobals.versionNum;
+            String folder = "K562_res_" + res + "v" + MixerTools.versionNum;
             String[] strings = new String[]{"slice", "-r", res + "", "-k", "SCALE", //"--verbose",
                     file14, "2,8,10",
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
@@ -459,7 +459,7 @@ public class AggregateProcessing {
                     //refs + "," +
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
                             "/" + folder + "__5_clusters_K562_2014_SCALE_30.subcompartment.bed",
-                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerGlobals.versionNum,
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_K562_Final_res_" + res + "v" + MixerTools.versionNum,
                     "SLICE3"
             };
             System.out.println("-----------------------------------------------------");
@@ -545,7 +545,7 @@ public class AggregateProcessing {
         };
 
         for(int q = 5; q < fileNames.length; q++) {
-            String folder = fileNames[q] + "_50K_v" + MixerGlobals.versionNum;
+            String folder = fileNames[q] + "_50K_v" + MixerTools.versionNum;
             strings = new String[]{"slice", "-r", "50000", "-k", norms[q],
                     bigFiles[q], "2,13,4",
                     "/Users/mshamim/Desktop/SLICE.Reboot/ULTRAS/" + folder, fileNames[q]
@@ -630,7 +630,7 @@ public class AggregateProcessing {
         strings = new String[]{"shuffle", "-r", 100000 + "", "-k", "KR", "-w", "" + 16,
                 file14,
                 "/Users/mshamim/Desktop/SLICE.Reboot/existing/SLICE_PRIMARY_100K.bed",
-                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/PRIMARY_BED_Mega14_HIC_" + 100 + "K_v" + MixerGlobals.versionNum,
+                "/Users/mshamim/Desktop/SLICE.Reboot/shuffles/PRIMARY_BED_Mega14_HIC_" + 100 + "K_v" + MixerTools.versionNum,
                 "SLICE_PRIMARY"
         };
         System.out.println("-----------------------------------------------------");
@@ -644,7 +644,7 @@ public class AggregateProcessing {
         String primary = "/Users/mshamim/Desktop/hicfiles/GM12878_primary14_30.hic";
 
         for (int res : new int[]{100000,50000}) { //
-            String folder = "GMPrimary_Final_" + res + "_v" + MixerGlobals.versionNum;
+            String folder = "GMPrimary_Final_" + res + "_v" + MixerTools.versionNum;
             strings = new String[]{"slice", "-r", res + "", "-k", "KR", //"--verbose",
                     primary, "2,8,10",
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
@@ -658,7 +658,7 @@ public class AggregateProcessing {
                     //refs + "," +
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
                             "/" + folder + "_5_clusters_GM12878_primary14_30.subcompartment.bed",
-                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_Primary_" + res + "v" + MixerGlobals.versionNum,
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_Primary_" + res + "v" + MixerTools.versionNum,
                     "SLICE3"
             };
             System.out.println("-----------------------------------------------------");
@@ -790,7 +790,7 @@ public class AggregateProcessing {
         //file14 = "/Users/mshamim/Desktop/hicfiles/hap1_30.hic";
 
         for (int res : new int[]{50000}) { //
-            String folder = "GM_Final_res_" + res + "v" + MixerGlobals.versionNum;
+            String folder = "GM_Final_res_" + res + "v" + MixerTools.versionNum;
             strings = new String[]{"slice", "-r", res + "", "-k", "KR", //"--verbose",
                     file14, "2,8,10",
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder, folder + "_"
@@ -803,7 +803,7 @@ public class AggregateProcessing {
                     //refs + "," +
                     "/Users/mshamim/Desktop/SLICE.Reboot/" + folder +
                             "/" + folder + "_5_clusters_gm12878_rh14_30.subcompartment.bed",
-                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_Final_res_" + res + "v" + MixerGlobals.versionNum,
+                    "/Users/mshamim/Desktop/SLICE.Reboot/shuffle_GM_Final_res_" + res + "v" + MixerTools.versionNum,
                     "SLICE3"
             };
             System.out.println("-----------------------------------------------------");

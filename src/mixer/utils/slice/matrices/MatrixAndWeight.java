@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,11 @@
 
 package mixer.utils.slice.matrices;
 
+import javastraw.tools.MatrixTools;
+import mixer.utils.common.ZScoreTools;
+
+import java.io.File;
+
 public class MatrixAndWeight {
     public float[][] matrix;
     public int[] weights;
@@ -31,5 +36,17 @@ public class MatrixAndWeight {
     public MatrixAndWeight(float[][] interMatrix, int[] weights) {
         this.matrix = interMatrix;
         this.weights = weights;
+    }
+
+    public void inPlaceScaleSqrtWeightCol() {
+        ZScoreTools.inPlaceScaleSqrtWeightCol(matrix, weights);
+    }
+
+    public void export(File outputDirectory, String stem) {
+        String path1 = new File(outputDirectory, stem + ".matrix.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path1, matrix);
+
+        String path2 = new File(outputDirectory, stem + ".weights.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path2, weights);
     }
 }

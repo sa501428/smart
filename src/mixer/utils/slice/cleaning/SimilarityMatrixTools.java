@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.MixerGlobals;
+import mixer.MixerTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustCosineSimilarity;
@@ -76,7 +76,7 @@ public class SimilarityMatrixTools {
         }
 
         int numCentroids = centroids.length;
-        if (MixerGlobals.printVerboseComments || centroids.length != numInitCentroids) {
+        if (MixerTools.printVerboseComments || centroids.length != numInitCentroids) {
             System.out.println("AsymMatrix: Was initially " + numInitCentroids + " centroids, but using " + numCentroids);
         }
 
@@ -195,7 +195,7 @@ public class SimilarityMatrixTools {
         int[] weights = centroidMaker.getWeights();
 
         int numCentroids = centroids.length;
-        if (MixerGlobals.printVerboseComments || centroids.length != numInitCentroids) {
+        if (MixerTools.printVerboseComments || centroids.length != numInitCentroids) {
             System.out.println("AsymMatrix: Was initially " + numInitCentroids + " centroids, but using " + numCentroids);
         }
 

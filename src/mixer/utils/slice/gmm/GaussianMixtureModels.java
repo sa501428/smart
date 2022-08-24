@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.gmm;
 
-import mixer.MixerGlobals;
+import mixer.MixerTools;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.slice.cleaning.QuickClusters;
 import mixer.utils.slice.gmm.robust.RobustGMMCovTools;
@@ -82,7 +82,7 @@ public class GaussianMixtureModels {
             updateMeanCovsPriors(determineInitialProbabilities());
             startingIndices.clear();
             startingFromScratch = false;
-            if (MixerGlobals.printVerboseComments) {
+            if (MixerTools.printVerboseComments) {
                 System.out.println("GMM initialization done");
             }
         }

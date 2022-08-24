@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.MixerGlobals;
+import mixer.MixerTools;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
@@ -75,7 +75,7 @@ public class QuickCentroids {
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
             public void kmeansMessage(String s) {
-                if (MixerGlobals.printVerboseComments) {
+                if (MixerTools.printVerboseComments) {
                     System.out.println(s);
                 }
             }
@@ -120,7 +120,7 @@ public class QuickCentroids {
         }
 
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("Using " + numCPUThreads + " threads");
         }
         AtomicInteger currRowIndex = new AtomicInteger(0);

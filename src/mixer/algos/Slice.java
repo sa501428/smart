@@ -31,13 +31,18 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.slice.cleaning.BadIndexFinder;
+import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
-import mixer.utils.slice.kmeans.FullGenomeOEWithinClusters;
+import mixer.utils.slice.drive.BinMappings;
+import mixer.utils.slice.drive.MatrixBuilder;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * experimental code
@@ -45,21 +50,22 @@ import java.util.Random;
  * Created by muhammadsaadshamim on 9/14/15.
  */
 public class Slice extends MixerCLT {
+    public static int startingClusterSizeK = 2;
+    public static int numClusterSizeKValsUsed = 10;
+    public static int numAttemptsForKMeans = 3;
+    private final int maxIters = 200;
 
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
     public static final int GW_SCALE_INDEX = 2;
-    public static final boolean USE_INTER_CORR_CLUSTERING = false;
     public static final boolean PROJECT_TO_UMAP = true;
     public static final boolean USE_WEIGHTED_MEAN = false;
     public static boolean FILTER_OUTLIERS = true;
-    private final List<Dataset> datasetList = new ArrayList<>();
-    private final List<String> inputHicFilePaths = new ArrayList<>();
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
-    private List<NormalizationType[]> normsList;
+    private NormalizationType[] norms;
     private String prefix = "";
     public static boolean USE_KMEANS = false, USE_KMEDIANS = true;
     public static boolean USE_ENCODE_MODE = false;
@@ -80,26 +86,20 @@ public class Slice extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        for (String path : args[1].split(",")) {
-            System.out.println("Extracting " + path);
-            inputHicFilePaths.add(path);
-            datasetList.add(HiCFileTools.extractDatasetForCLT(path, true, false));
-        }
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
 
         try {
             String[] valString = args[2].split(",");
-            FullGenomeOEWithinClusters.startingClusterSizeK = Integer.parseInt(valString[0]);
-            FullGenomeOEWithinClusters.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) -
-                    FullGenomeOEWithinClusters.startingClusterSizeK;
-            FullGenomeOEWithinClusters.numAttemptsForKMeans = Integer.parseInt(valString[2]);
+            startingClusterSizeK = Integer.parseInt(valString[0]);
+            numClusterSizeKValsUsed = Integer.parseInt(valString[1]) - startingClusterSizeK;
+            numAttemptsForKMeans = Integer.parseInt(valString[2]);
         } catch (Exception e) {
             printUsageAndExit(5);
         }
 
-        ds = datasetList.get(0);
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
-        normsList = populateNormalizations(datasetList);
+        norms = populateNormalizations(ds);
 
         List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
         if (possibleResolutions != null) {
@@ -124,31 +124,49 @@ public class Slice extends MixerCLT {
     }
 
 
-    private List<NormalizationType[]> populateNormalizations(List<Dataset> datasetList) {
-        List<NormalizationType[]> normsList = new ArrayList<>();
-        for (Dataset ds : datasetList) {
-            NormalizationType[] norms = new NormalizationType[3];
-            norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
-            norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR"});
-            norms[GW_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"GW_SCALE", "GW_KR"});
-            normsList.add(norms);
-        }
-        return normsList;
+    private NormalizationType[] populateNormalizations(Dataset ds) {
+        NormalizationType[] norms = new NormalizationType[3];
+        norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
+        norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR"});
+        norms[GW_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"GW_SCALE", "GW_KR"});
+        return norms;
     }
 
     @Override
     public void run() {
 
-        ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
+        ChromosomeHandler handler = ds.getChromosomeHandler();
         if (givenChromosomes != null)
-            chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
+            handler = HiCFileTools.stringToChromosomes(givenChromosomes, handler);
 
-        if (datasetList.size() < 1) return;
+        // filter intervals as needed
+        Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(dataset, handler, resolution);
+
+        BinMappings mappings = IndexOrderer.getInitialMappings(dataset, handler, resolution,
+                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
+
+        MatrixAndWeight slice = MatrixBuilder.populateMatrix(dataset, handler, resolution,
+                norms[INTER_SCALE_INDEX], mappings, false);
+
+        slice.export(outputDirectory, "magic");
+
+
+        // build compressed slice matrix
+        SliceMatrix sliceMatrix = new SliceMatrix(handler, ds, norms, resolution, outputDirectory,
+                generator.nextLong(), badIndices);
+        sliceMatrix.cleanUpMatricesBySparsity();
+
+
+        // save SLICE matrix
+
+        // run clustering
+
+        // save bed file output
 
         FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                chromosomeHandler, resolution, normsList, outputDirectory, generator.nextLong());
+                handler, resolution, normsList, outputDirectory, generator.nextLong());
         withinClusters.extractFinalGWSubcompartments(prefix);
 
-        System.out.println("\nClustering complete");
+        System.out.println("\nSLICE complete");
     }
 }

@@ -31,12 +31,111 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/drive/BinMappings.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/drive/Mappings.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/drive/MatrixBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerGlobals.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/MixerTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/MixerTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ABA.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ChainBreaker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ChromosomeWalker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/FineTune.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Network.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Rename.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ShuffleAndUMAP.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/aba/ABADataStack.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/SubcompartmentBedFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/SubcompartmentBedFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/InterMatrixBalancer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/Unused.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/custom/ExtractionB4.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/custom/QuickClustering.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/DriveMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/DriveMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/estimate/EstimateTarget.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/FinalScale.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/FinalScale.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/SymmLLInterMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/SymmLLInterMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/GWInterOnlyMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/IntraOnlyMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ShuffledIndices.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/network/ConnectedComponentBFS.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/network/LoopAnchor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/network/MapQFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/remedian/Remedian.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/EfficientSubsampling.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/MatrixSamplingContainer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/Silhouette.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/rougheval/SubsamplingManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/CHICTools.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/EntropyCalculations.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/GenomeWideStatistics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustJensenShannonDivergence.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustKullbackLeiblerDivergence.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/SimilarityMetric.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/TheilSenMetric.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/CorrMatrixClusterer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/EncodeExportUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/Connected2DComponent.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/DistanceOutlierFinder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/GWRegionStatistics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixImputer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/MatrixImputerOriginal.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimpleTranslocationFinder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/VectorOrganizer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/archive/BadIndexFinder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/archive/LeftOverClusterIdentifier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/archive/RegionStatistics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/ColumnCleaner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/Correlator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/OutlierCleaner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/RowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/RowCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/VectorGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GenomeWideGMMRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GenomeWideGMMRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/MatrixMult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/FullGenomeOEWithinClusters.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/CompositeGenomeWideMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/SliceMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/obsoletefiles.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ENCODESubcompartmentInterval.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/HiCInterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/HiCInterTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentColors.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ColorMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentInterval.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/UnusedTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UMAPAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UmapProjection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/umap/UmapProjection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/ZeroRowRemover.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/walker/LocalGenomeRegion.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,11 +190,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.drive" />
+      <recent name="mixer.utils.slice" />
       <recent name="mixer.utils.magic" />
       <recent name="mixer.utils.slice.cleaning.utils" />
       <recent name="mixer.utils" />
-      <recent name="mixer.utils.shuffle" />
-      <recent name="mixer.utils.rougheval" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -259,6 +358,11 @@
       <workItem from="1656619105665" duration="567000" />
       <workItem from="1656631142546" duration="16000" />
       <workItem from="1657715097940" duration="10610000" />
+      <workItem from="1658846968380" duration="133000" />
+      <workItem from="1659443035448" duration="14338000" />
+      <workItem from="1660148421721" duration="870000" />
+      <workItem from="1660250949554" duration="260000" />
+      <workItem from="1660650578971" duration="218000" />
     </task>
     <task id="LOCAL-00165" summary="code cleanup, split up postprocessing/scoring">
       <created>1634279167304</created>

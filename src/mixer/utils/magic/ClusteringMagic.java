@@ -26,10 +26,10 @@ package mixer.utils.magic;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.utils.drive.DriveMatrix;
 import mixer.utils.slice.kmeans.GenomeWideKmeansRunner;
 import mixer.utils.slice.kmeans.KmeansEvaluator;
 import mixer.utils.slice.kmeans.KmeansResult;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import mixer.utils.umap.UmapProjection;
@@ -47,12 +47,12 @@ public class ClusteringMagic {
     private final File outputDirectory;
     private final int maxIters = 200;
     private final Random generator = new Random(2352);
-    private final DriveMatrix matrix;
+    private final MatrixAndWeight matrix;
     private final ChromosomeHandler handler;
     private final UmapProjection projection;
 
-    public ClusteringMagic(DriveMatrix matrix, File outputDirectory, ChromosomeHandler handler,
-                           long seed) {
+    public ClusteringMagic(MatrixAndWeight matrix, File outputDirectory,
+                           ChromosomeHandler handler, long seed) {
         this.matrix = matrix;
         this.handler = handler;
         this.outputDirectory = outputDirectory;

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 package mixer.utils.umap;
 
-import mixer.utils.slice.structures.SubcompartmentColors;
+import mixer.utils.slice.structures.ColorMap;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -89,7 +89,7 @@ public class ScatterPlot {
     }
 
     private void drawCircle(Graphics g, float[] point, int id) {
-        Color color = SubcompartmentColors.getColorWithAlpha(id, 128);
+        Color color = ColorMap.getColorWithAlpha(id, 128);
         g.setColor(color);
         g.fillOval((int) (point[0] - circleOffset), (int) (point[1] - circleOffset), circleWidth, circleWidth);
     }

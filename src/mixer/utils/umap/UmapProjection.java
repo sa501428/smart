@@ -24,7 +24,7 @@
 
 package mixer.utils.umap;
 
-import mixer.utils.drive.DriveMatrix;
+import mixer.utils.magic.DriveMatrix;
 import mixer.utils.slice.gmm.SimpleScatterPlot;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import tagbio.umap.Umap;

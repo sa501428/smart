@@ -119,7 +119,9 @@ public class Magic extends MixerCLT {
         NormalizationType validNormForFiltering = NormalizationPicker.getFirstValidNormInThisOrder(ds,
                 new String[]{"SCALE", "KR", "VC", "VC_SQRT"});
 
-        BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler, resolution, ds, validNormForFiltering);
+        BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler,
+                resolution, ds, validNormForFiltering);
+
         MagicMatrix matrix = new MagicMatrix(ds, chromosomeHandler, resolution, norm,
                 outputDirectory, generator.nextLong(), mappings, regionsToIgnore, doScale, useZScore);
         matrix.export(new File(outputDirectory, "magic.npy").getAbsolutePath());

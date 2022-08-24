@@ -25,8 +25,8 @@
 package mixer.utils.slice.kmeans;
 
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.MixerGlobals;
-import mixer.utils.drive.DriveMatrix;
+import mixer.MixerTools;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
@@ -39,7 +39,7 @@ public class GenomeWideKmeansRunner {
 
     private final float[][] matrix;
     private final ChromosomeHandler chromosomeHandler;
-    private final DriveMatrix interMatrix;
+    private final MatrixAndWeight interMatrix;
     private final AtomicBoolean thisRunIsNotDone = new AtomicBoolean(true);
     private KmeansResult result = null;
 
@@ -47,11 +47,11 @@ public class GenomeWideKmeansRunner {
     private final boolean useKMedians;
 
     public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler,
-                                  DriveMatrix interMatrix,
+                                  MatrixAndWeight interMatrix,
                                   boolean useCorrMatrix, boolean useKmedians) {
         this.useCorrMatrix = useCorrMatrix;
         this.interMatrix = interMatrix;
-        matrix = interMatrix.getData(useCorrMatrix);
+        matrix = interMatrix.matrix;
         this.chromosomeHandler = chromosomeHandler;
         this.useKMedians = useKmedians;
     }
@@ -64,7 +64,7 @@ public class GenomeWideKmeansRunner {
     public void launchKmeansGWMatrix(long seed, int maxIters) {
 
         if (matrix.length > 0 && matrix[0].length > 0) {
-            if (MixerGlobals.printVerboseComments) {
+            if (MixerTools.printVerboseComments) {
                 System.out.println("Using seed " + seed);
             }
 
@@ -81,7 +81,7 @@ public class GenomeWideKmeansRunner {
             KMeansListener kMeansListener = new KMeansListener() {
                 @Override
                 public void kmeansMessage(String s) {
-                    if (MixerGlobals.printVerboseComments) {
+                    if (MixerTools.printVerboseComments) {
                         System.out.println(s);
                     }
                 }
@@ -91,7 +91,7 @@ public class GenomeWideKmeansRunner {
                     Cluster[] clusters = ClusterTools.getSortedClusters(preSortedClusters);
                     System.out.print(".");
                     result.processResultAndUpdateScoringMetrics(clusters, interMatrix, useKMedians,
-                            useCorrMatrix, 2 * seed);
+                            useCorrMatrix);
                     thisRunIsNotDone.set(false);
                 }
 

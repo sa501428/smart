@@ -26,12 +26,11 @@ package mixer.utils.slice.kmeans;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.MixerGlobals;
-import mixer.utils.drive.DriveMatrix;
-import mixer.utils.rougheval.SubsamplingManager;
+import mixer.MixerTools;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import robust.concurrent.kmeans.clustering.Cluster;
 
@@ -40,7 +39,6 @@ import java.util.List;
 
 public class KmeansResult {
 
-    private final static boolean SHOULD_CALC_SILHOUETTE = false;
     private static final int MIN_EXPECTED_CLUSTER_SIZE = 5;
     private static final double NUM_ITERS = 5;
     private final int numClustersDesired;
@@ -48,7 +46,7 @@ public class KmeansResult {
     private final List<List<Integer>> indicesMap = new ArrayList<>();
     private int numActualClusters = 0;
     private double wcss = 0;
-    private float silhouette = 0;
+    private final float silhouette = 0;
     private float worstCorr = 0;
     private float[][] clusterCorrMatrix;
 
@@ -97,14 +95,11 @@ public class KmeansResult {
         return output;
     }
 
-    public void processResultAndUpdateScoringMetrics(Cluster[] clusters, DriveMatrix matrix,
-                                                     boolean useKMedians, boolean useCorrMatrix, long seed) {
+    public void processResultAndUpdateScoringMetrics(Cluster[] clusters, MatrixAndWeight matrix,
+                                                     boolean useKMedians, boolean useCorrMatrix) {
         populateIndicesMap(clusters);
         matrix.processKMeansClusteringResult(clusters, finalCompartments);
         wcss = getWCSS(clusters, matrix, useCorrMatrix, useKMedians);
-        if (SHOULD_CALC_SILHOUETTE) {
-            silhouette = getSilhouette(clusters, matrix, useCorrMatrix, useKMedians, seed);
-        }
         clusterCorrMatrix = calculateCorrelations(clusters);
         worstCorr = getMaxOffDiag(clusterCorrMatrix);
         numActualClusters = clusters.length;
@@ -121,7 +116,7 @@ public class KmeansResult {
         return maxVal;
     }
 
-    public double getWCSS(Cluster[] clusters, DriveMatrix matrix,
+    public double getWCSS(Cluster[] clusters, MatrixAndWeight matrix,
                           boolean useCorr, boolean useKMedians) {
         double withinClusterSumOfSquares = 0;
 
@@ -132,30 +127,18 @@ public class KmeansResult {
                 withinClusterSumOfSquares += Float.MAX_VALUE;
             }
 
-            float[][] vectors = matrix.getData(useCorr);
+            float[][] vectors = matrix.matrix;
             for (int i : cluster.getMemberIndexes()) {
                 withinClusterSumOfSquares += getDistance(cluster.getCenter(), vectors[i], useKMedians);
             }
         }
 
         withinClusterSumOfSquares = withinClusterSumOfSquares / clusters.length;
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("Final WCSS " + withinClusterSumOfSquares);
         }
 
         return withinClusterSumOfSquares;
-    }
-
-    private float getSilhouette(Cluster[] clusters, DriveMatrix matrix, boolean useCorr,
-                                boolean useKMedians, long seed) {
-        double score = 0;
-        SubsamplingManager manager = new SubsamplingManager(clusters, matrix.getData(useCorr), useKMedians, seed);
-        for (int iter = 0; iter < NUM_ITERS; iter++) {
-            score += manager.getScore();
-        }
-        score = score / NUM_ITERS;
-        //System.out.println("Silhouette: " + score);
-        return (float) score;
     }
 
     private double getDistance(float[] center, float[] vector, boolean useKMedians) {

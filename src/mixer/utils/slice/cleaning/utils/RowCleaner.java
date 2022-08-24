@@ -25,7 +25,7 @@
 package mixer.utils.slice.cleaning.utils;
 
 import javastraw.tools.ParallelizationTools;
-import mixer.MixerGlobals;
+import mixer.MixerTools;
 import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 
@@ -45,7 +45,7 @@ public class RowCleaner extends DimensionCleaner {
     @Override
     protected MatrixAndWeight filterOutBadIndices(Set<Integer> badIndices, float[][] matrix, int[] weights) {
         Map<Integer, SubcompartmentInterval> original = rowIndexToIntervalMap;
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("interMatrix.length " + matrix.length + " badIndices.size() " + badIndices.size());
         }
 

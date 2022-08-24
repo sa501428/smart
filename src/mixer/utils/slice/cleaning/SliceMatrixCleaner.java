@@ -24,7 +24,7 @@
 
 package mixer.utils.slice.cleaning;
 
-import mixer.MixerGlobals;
+import mixer.MixerTools;
 import mixer.algos.Slice;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.LogTools;
@@ -53,12 +53,6 @@ public class SliceMatrixCleaner {
         this.data = data;
     }
 
-    /*
-    public float[][] justRemoveBadRows(Set<Integer> badIndices, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap, int[] weights) {
-        return filterOutColumnsAndRowsGivenBadIndices(badIndices, data, rowIndexToIntervalMap);
-    }
-    */
-
     public MatrixAndWeight getCleanFilteredZscoredMatrix(Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
                                                          int[] weights) {
         if (Slice.FILTER_OUTLIERS) {
@@ -70,7 +64,7 @@ public class SliceMatrixCleaner {
             LogTools.simpleExpm1(data);
         }
 
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("Initial matrix size " + data.length + " x " + data[0].length);
         }
         //MatrixAndWeight mw = (new ColumnCleaner(data, weights)).getCleanedData();
@@ -78,11 +72,11 @@ public class SliceMatrixCleaner {
         //weights = mw.weights;
         //System.out.println("Matrix size after column cleanup " + mw.matrix.length + " x " + mw.matrix[0].length);
 
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("Matrix size before row cleanup " + data.length + " x " + data[0].length);
         }
         data = (new RowCleaner(data, rowIndexToIntervalMap, weights)).getCleanedData(resolution, outputDirectory).matrix;
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
         }
 
@@ -93,7 +87,7 @@ public class SliceMatrixCleaner {
 
     private void renormalize(float[][] data, int[] weights, int lowCutOff, int highCutOff, boolean useWeights) {
         double[] muAndStd = ParallelizedStatTools.getMeanAndStandardDev(data, weights, useWeights);
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("mu " + muAndStd[0] + " std" + muAndStd[1]);
         }
         fixToNormalRange(data, muAndStd[0], muAndStd[1], lowCutOff, highCutOff);
@@ -120,14 +114,14 @@ public class SliceMatrixCleaner {
             totalNumFixed.addAndGet(numFixed);
         });
 
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("Num fixed part 2: z < -2 : " + totalNumFixed.get());
         }
     }
 
     private void removeHighGlobalThresh(float[][] data, int[] weights, int cutoff, boolean useWeights) {
         double[] muAndStd = ParallelizedStatTools.getMeanAndStandardDev(data, weights, useWeights);
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("mu " + muAndStd[0] + " std" + muAndStd[1]);
         }
         thresholdByMax(data, muAndStd[0], muAndStd[1], cutoff);
@@ -154,7 +148,7 @@ public class SliceMatrixCleaner {
             totalNumFixed.addAndGet(numFixed);
         });
 
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println("Num fixed z > " + maxZscore + " : " + totalNumFixed.get());
         }
     }

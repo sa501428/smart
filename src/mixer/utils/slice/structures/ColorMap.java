@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package mixer.utils.slice.structures;
 
 import java.awt.*;
 
-public class SubcompartmentColors {
+public class ColorMap {
     private static final Color[] colors = new Color[]{
             new Color(0, 0, 0),
             new Color(34, 139, 34),

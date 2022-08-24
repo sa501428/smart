@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,10 @@ import mixer.clt.MixerCLT;
  */
 public class MixerTools {
 
+    public static final String versionNum = "5.01.03";
+    public static final int bufferSize = 2097152;
+    public static boolean printVerboseComments = false;
+
     public static void main(String[] argv) throws CmdLineParser.UnknownOptionException, CmdLineParser.IllegalOptionValueException {
 
         if (argv.length == 0 || argv[0].equals("-h") || argv[0].equals("--help") || argv[0].equals("-V") || argv[0].equals("--version")) {
@@ -51,7 +55,7 @@ public class MixerTools {
 
         help = parser.getHelpOption();
         version = parser.getVersionOption();
-        MixerGlobals.printVerboseComments = MixerGlobals.printVerboseComments || parser.getVerboseOption();
+        printVerboseComments = printVerboseComments || parser.getVerboseOption();
 
         String[] args = parser.getRemainingArgs();
 
@@ -65,7 +69,7 @@ public class MixerTools {
         }
         if (instanceOfCLT != null) {
             if (version) {
-                System.out.println("Mixer tools version " + MixerGlobals.versionNum);
+                System.out.println("Mixer tools version " + versionNum);
             }
             if (args.length == 1 || help) {
                 instanceOfCLT.printUsageAndExit(1);
