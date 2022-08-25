@@ -111,8 +111,6 @@ public class Magic extends MixerCLT {
     public void run() {
 
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
-        if (givenChromosomes != null)
-            chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
         List<InterChromosomeRegion> regionsToIgnore = new ArrayList<>();
 

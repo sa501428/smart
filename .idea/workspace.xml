@@ -30,41 +30,15 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="get to compilation pass">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/InterChromosomeRegion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/InterChromosomeRegion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/QuickMedian.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/RobustZscoreTools.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/DriveMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/DriveMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustImprovedCosineSimilarity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/similaritymeasures/RobustMedianAbsoluteError.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/CRecordUtils.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/drive/BinMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/drive/BinMappings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/CovarianceMatrixInverseAndDeterminant.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GMMClusterCaster.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GaussianMixtureModels.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/GenomeWideGMMRunner.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/SimpleScatterPlot.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/Test.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMCovTools.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/robust/RobustGMMTools.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGMMCovTools.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/gmm/simple/SimpleGMMTools.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ColorMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ColorMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/HiCInterTools.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SimpleInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SimpleInterval.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/DataCleaner.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/ScatterPlot.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/umap/UmapProjection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/MixerCLT.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/MixerCLT.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/TranslocationSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/TranslocationSet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/InterChromosomeRegion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/InterChromosomeRegion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -296,14 +270,7 @@
       <workItem from="1660250949554" duration="260000" />
       <workItem from="1660650578971" duration="218000" />
       <workItem from="1661319791510" duration="635000" />
-      <workItem from="1661321023085" duration="4216000" />
-    </task>
-    <task id="LOCAL-00166" summary="subsampling, query silhouette, bug fixes">
-      <created>1634320411057</created>
-      <option name="number" value="00166" />
-      <option name="presentableId" value="LOCAL-00166" />
-      <option name="project" value="LOCAL" />
-      <updated>1634320411057</updated>
+      <workItem from="1661321023085" duration="9994000" />
     </task>
     <task id="LOCAL-00167" summary="bug fixes">
       <created>1634331472729</created>
@@ -641,7 +608,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661319826442</updated>
     </task>
-    <option name="localTasksCounter" value="215" />
+    <task id="LOCAL-00215" summary="get to compilation pass">
+      <created>1661401847817</created>
+      <option name="number" value="00215" />
+      <option name="presentableId" value="LOCAL-00215" />
+      <option name="project" value="LOCAL" />
+      <updated>1661401847817</updated>
+    </task>
+    <option name="localTasksCounter" value="216" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -665,7 +639,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update encode cluster name printing" />
     <MESSAGE value="update java straw jar new api" />
     <MESSAGE value="update java straw" />
     <MESSAGE value="initial randoms/seeds differently; fix bug for non-humans" />
@@ -690,7 +663,8 @@
     <MESSAGE value="code cleanup" />
     <MESSAGE value="implement LL inter only matrix" />
     <MESSAGE value="mid implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="mid implementation" />
+    <MESSAGE value="get to compilation pass" />
+    <option name="LAST_COMMIT_MESSAGE" value="get to compilation pass" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

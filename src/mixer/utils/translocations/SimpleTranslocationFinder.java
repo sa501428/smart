@@ -24,156 +24,96 @@
 
 package mixer.utils.translocations;
 
-import javastraw.feature2D.Feature2DList;
 import javastraw.reader.Dataset;
+import javastraw.reader.Matrix;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.block.Block;
 import javastraw.reader.block.ContactRecord;
+import javastraw.reader.expected.ExpectedValueFunction;
 import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
-import javastraw.tools.HiCFileTools;
-import mixer.MixerTools;
 import mixer.algos.Slice;
-import mixer.utils.slice.cleaning.BadIndexFinder;
-import mixer.utils.slice.cleaning.TranslocationSet;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SimpleTranslocationFinder {
 
-    private final List<TranslocationSet> translocations = new ArrayList<>();
+    private final static int minToBeTranslocation = 3;
     private final File outputDirectory;
-    private final int MAX_CUTOFF = 6;
+    private static final int distance = 1000000;
+    private final TranslocationSet translocations = new TranslocationSet();
 
-    public SimpleTranslocationFinder(List<Dataset> datasets,
-                                     Chromosome[] chroms,
-                                     List<NormalizationType[]> normalizationTypes,
-                                     BadIndexFinder badIndexFinder, File outputDirectory) {
+    public SimpleTranslocationFinder(Dataset ds, NormalizationType[] norms, File outputDirectory,
+                                     int resolution, Map<Integer, Set<Integer>> badIndices) {
         this.outputDirectory = outputDirectory;
 
-        for (int z = 0; z < datasets.size(); z++) {
+        Chromosome[] chroms = ds.getChromosomeHandler().getAutosomalChromosomesArray();
+        //int res = getLowestResolution(ds, 1000000);
+        NormalizationType norm = norms[Slice.INTRA_SCALE_INDEX];
 
-            Dataset ds = datasets.get(z);
-            int lowestResZoom = 1000000;// HiCInterTools.getLowestResolution(ds);
-            NormalizationType normGW = normalizationTypes.get(z)[Slice.GW_SCALE_INDEX];
-            NormalizationType normNone = ds.getNormalizationHandler().getNormTypeFromString("NONE");
-            NormalizationType normIntra = normalizationTypes.get(z)[Slice.INTRA_SCALE_INDEX];
-
-
-            //TranslocationSet translocationSet = new TranslocationSet();
-            DescriptiveStatistics gwStats = initialPass(chroms, ds, lowestResZoom, normGW, badIndexFinder);
-            double mean = gwStats.getMean();
-            double std = gwStats.getStandardDeviation();
-            System.out.println("mu " + mean + " sigma " + std);
-            TranslocationSet ts = secondPass(chroms, ds, lowestResZoom, normGW, badIndexFinder,
-                    mean, std);
-
-            translocations.add(ts);
-            //translocationSet.determineTranslocations();
+        for (int i = 0; i < chroms.length; i++) {
+            for (int j = i + 1; j < chroms.length; j++) {
+                if (hasTranslocation(chroms[i], chroms[j], ds, resolution, norm, badIndices)) {
+                    translocations.add(chroms[i], chroms[j]);
+                    System.out.println("Translocation at " + chroms[i].getName() + " - " + chroms[j].getName());
+                }
+                System.out.print(".");
+            }
+            System.out.println(".");
         }
     }
 
-    private static void updateStatsFirstPass(DescriptiveStatistics stats, List<Block> blocks, Set<Integer> badIndices1, Set<Integer> badIndices2) {
-        for (Block b : blocks) {
-            if (b != null) {
-                for (ContactRecord cr : b.getContactRecords()) {
-                    if (isValidEntry(cr, badIndices1, badIndices2)) {
-                        //max = Math.max(max, cr.getCounts());
-                        stats.addValue(Math.log(1 + cr.getCounts()));
+    /**
+     * @return preferred resolution if available, otherwise the lowest resolution present
+     */
+    public static int getLowestResolution(Dataset ds, int preferredResolution) {
+        List<HiCZoom> zooms = ds.getBpZooms();
+        int maxResolution = zooms.get(0).getBinSize();
+        for (HiCZoom zoom : zooms) {
+            if (zoom.getBinSize() > maxResolution) {
+                maxResolution = zoom.getBinSize();
+            }
+            if (zoom.getBinSize() == preferredResolution) return preferredResolution;
+        }
+        return maxResolution;
+    }
+
+    private boolean hasTranslocation(Chromosome chrom1, Chromosome chrom2, Dataset ds, int res, NormalizationType norm,
+                                     Map<Integer, Set<Integer>> badIndices) {
+
+        Matrix matrix = ds.getMatrix(chrom1, chrom2);
+        if (matrix != null) {
+            MatrixZoomData zd = matrix.getZoomData(new HiCZoom(res));
+            double minCutoff = getCutoff(ds.getExpectedValues(new HiCZoom(res), norm, false),
+                    chrom1, chrom2, distance / res);
+            int count = 0;
+
+            Set<Integer> badSet1 = badIndices.get(chrom1.getIndex());
+            Set<Integer> badSet2 = badIndices.get(chrom2.getIndex());
+
+            Iterator<ContactRecord> iterator = zd.getNormalizedIterator(norm);
+            while (iterator.hasNext()) {
+                ContactRecord record = iterator.next();
+                if (record.getCounts() > minCutoff) {
+                    if (!badSet1.contains(record.getBinX()) && !badSet2.contains(record.getBinY())) {
+                        count++;
+                        if (count > minToBeTranslocation) {
+                            return true;
+                        }
                     }
                 }
             }
         }
+        return false;
     }
 
-    private static boolean isValidEntry(ContactRecord cr, Set<Integer> badIndices1, Set<Integer> badIndices2) {
-        if (Float.isNaN(cr.getCounts())) return false;
-        if (badIndices1.contains(cr.getBinX())) return false;
-        return !badIndices2.contains(cr.getBinY());
-        //return true;
-    }
-
-    private DescriptiveStatistics initialPass(Chromosome[] chroms, Dataset ds, int lowestResZoom,
-                                              NormalizationType normGW, BadIndexFinder badIndexFinder) {
-        DescriptiveStatistics gwStats = new DescriptiveStatistics();
-        for (int i = 0; i < chroms.length; i++) {
-            Chromosome chr1 = chroms[i];
-            for (int j = i + 1; j < chroms.length; j++) {
-                Chromosome chr2 = chroms[j];
-                final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, lowestResZoom);
-                int lengthChr1 = (int) (chr1.getLength() / lowestResZoom + 1);
-                int lengthChr2 = (int) (chr2.getLength() / lowestResZoom + 1);
-
-                Set<Integer> badIndices1 = new HashSet<>(); // todo  badIndexFinder.getBadGenomePositionsAtResolution(chr1, lowestResZoom);
-                Set<Integer> badIndices2 = new HashSet<>(); // todo badIndexFinder.getBadGenomePositionsAtResolution(chr2, lowestResZoom);
-
-                try {
-                    List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0,
-                            lengthChr2, normGW, false);
-                    updateStatsFirstPass(gwStats, blocks, badIndices1, badIndices2);
-                    //translocationSet.put(chr1, chr2, getMean(blocks, badIndices1, badIndices2));
-                } catch (Exception e) {
-                    System.err.println(chr1.getName() + " - " + chr2.getName());
-                    e.printStackTrace();
-                }
-            }
-        }
-        return gwStats;
-    }
-
-    private TranslocationSet secondPass(Chromosome[] chroms, Dataset ds, int lowestResZoom,
-                                        NormalizationType normGW, BadIndexFinder badIndexFinder,
-                                        double mean, double stdDev) {
-        TranslocationSet translocationSet = new TranslocationSet();
-        Feature2DList feature2DList = new Feature2DList();
-        Feature2DList allFeature2DList = new Feature2DList();
-        for (int i = 0; i < chroms.length; i++) {
-            Chromosome chr1 = chroms[i];
-            for (int j = i + 1; j < chroms.length; j++) {
-                Chromosome chr2 = chroms[j];
-                final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chr1, chr2, lowestResZoom);
-                int lengthChr1 = (int) (chr1.getLength() / lowestResZoom + 1);
-                int lengthChr2 = (int) (chr2.getLength() / lowestResZoom + 1);
-
-                Set<Integer> badIndices1 = new HashSet<>(); // todo  badIndexFinder.getBadGenomePositionsAtResolution(chr1, lowestResZoom);
-                Set<Integer> badIndices2 = new HashSet<>(); // todo  badIndexFinder.getBadGenomePositionsAtResolution(chr2, lowestResZoom);
-
-                try {
-                    List<Block> blocks = HiCFileTools.getAllRegionBlocks(zd, 0, lengthChr1, 0,
-                            lengthChr2, normGW, false);
-                    List<Rectangle> bounds = new ArrayList<>();
-
-                    /*
-                    Feature2DList feature2DListTemp = findTranslocations(mean, stdDev, blocks, badIndices1, badIndices2, chr1, chr2,
-                            lowestResZoom, allFeature2DList, bounds);
-                    feature2DList.add(feature2DListTemp);
-                    if (bounds.size() > 0) {
-                        translocationSet.put(chr1, chr2, bounds);
-                    }
-                    */
-                } catch (Exception e) {
-                    System.err.println(chr1.getName() + " - " + chr2.getName());
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        if (true || MixerTools.printVerboseComments) {
-            File outfile = new File(outputDirectory, "suspected_translocations_" + lowestResZoom + ".bedpe");
-            feature2DList.exportFeatureList(outfile, false, Feature2DList.ListFormat.NA);
-            outfile = new File(outputDirectory, "all_suspected_translocations_" + lowestResZoom + ".bedpe");
-            allFeature2DList.exportFeatureList(outfile, false, Feature2DList.ListFormat.NA);
-        }
-        return translocationSet;
-    }
-
-    public TranslocationSet getSet(int index) {
-        return translocations.get(index);
+    private double getCutoff(ExpectedValueFunction expectedValues, Chromosome chrom1, Chromosome chrom2, int dIndex) {
+        double val1 = expectedValues.getExpectedValuesWithNormalization(chrom1.getIndex()).getValues().get(0)[dIndex];
+        double val2 = expectedValues.getExpectedValuesWithNormalization(chrom2.getIndex()).getValues().get(0)[dIndex];
+        return Math.min(val1, val2);
     }
 }

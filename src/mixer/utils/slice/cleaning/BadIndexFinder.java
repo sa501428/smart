@@ -39,18 +39,18 @@ import java.util.Map;
 import java.util.Set;
 
 public class BadIndexFinder {
-    protected static final float ZSCORE_MIN_NONZERO_COVERAGE = -2;
-    protected static final NormalizationType norm = NormalizationHandler.VC;
-    private static final float MIN_NORM_VAL = 0.1f;
+    protected static final NormalizationType VC = NormalizationHandler.VC;
+    private static final int ZSCORE_MIN_NONZERO_COVERAGE = -2;
+    private static final int ZSCORE_MAX_NONZERO_COVERAGE = 3;
+    private static final float MIN_NORM_VAL = 0.01f;
 
-    public static Map<Integer, Set<Integer>> getBadIndices(Dataset dataset,
-                                                           ChromosomeHandler handler, int resolution) {
+    public static Map<Integer, Set<Integer>> getBadIndices(Dataset dataset, ChromosomeHandler handler,
+                                                           int resolution) {
         Map<Integer, Set<Integer>> badIndices = new HashMap<>();
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         for (Chromosome chromosome : chromosomes) {
-            badIndices.put(chromosome.getIndex(),
-                    updateCoverageStats(dataset.getNormalizationVector(chromosome.getIndex(),
-                            new HiCZoom(resolution), NormalizationHandler.VC)));
+            NormalizationVector nv = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), VC);
+            badIndices.put(chromosome.getIndex(), updateCoverageStats(nv));
         }
         return badIndices;
     }
@@ -64,7 +64,7 @@ public class BadIndexFinder {
             if (vector[i] > MIN_NORM_VAL) {
                 double val = Math.log(vector[i]);
                 double z = (val - muAndStd[0]) / muAndStd[1];
-                if (z < ZSCORE_MIN_NONZERO_COVERAGE) {
+                if (z < ZSCORE_MIN_NONZERO_COVERAGE || z > ZSCORE_MAX_NONZERO_COVERAGE) {
                     values.add(i);
                 }
             } else {

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,21 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.cleaning;
+package mixer.utils.translocations;
 
 import javastraw.reader.basics.Chromosome;
 
-import java.awt.*;
-import java.util.List;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TranslocationSet {
-    private final Set<String> translocations = new HashSet<>();
-    Map<String, List<Rectangle>> maxInRegion = new HashMap<>();
+    private final Set<InterChromosomeRegion> translocations = new HashSet<>();
 
-    public void put(Chromosome chr1, Chromosome chr2, List<Rectangle> vals) {
-        maxInRegion.put(key(chr1, chr2), vals);
-        translocations.add(key(chr1, chr2));
-    }
-
-    public String key(Chromosome chr1, Chromosome chr2) {
-        if (chr1.getIndex() < chr2.getIndex()) {
-            return chr1.getIndex() + "-" + chr2.getIndex();
-        } else {
-            return chr2.getIndex() + "-" + chr1.getIndex();
-        }
+    public void add(Chromosome chr1, Chromosome chr2) {
+        translocations.add(new InterChromosomeRegion(chr1, chr2));
     }
 
     public boolean getHasTranslocation(Chromosome chr1, Chromosome chr2) {
-        return translocations.contains(key(chr1, chr2));
+        return translocations.contains(new InterChromosomeRegion(chr1, chr2));
     }
 }
