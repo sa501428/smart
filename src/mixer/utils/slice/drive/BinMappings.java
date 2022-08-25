@@ -25,7 +25,6 @@
 package mixer.utils.slice.drive;
 
 import javastraw.reader.basics.Chromosome;
-import mixer.utils.slice.structures.SubcompartmentInterval;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,6 +38,12 @@ public class BinMappings implements Mappings {
     private final Map<Integer, int[]> chromToDistributionForChromosome = new HashMap<>();
     private int numRows = 0;
     private int numCols = 0;
+    private static final int IGNORE = -1;
+    private final int resolution;
+
+    public BinMappings(int resolution) {
+        this.resolution = resolution;
+    }
 
     public void putBinToProtoCluster(Chromosome chrom, int[] binToProtocluster) {
         chromToBinToProtocluster.put(chrom.getIndex(), binToProtocluster);
@@ -50,10 +55,10 @@ public class BinMappings implements Mappings {
         for (Chromosome chromosome : chromosomes) {
             int[] protoCluster = chromToBinToProtocluster.get(chromosome.getIndex());
             int[] globalIndex = new int[protoCluster.length];
-            Arrays.fill(globalIndex, -1);
+            Arrays.fill(globalIndex, IGNORE);
             for (int i = 0; i < protoCluster.length; i++) {
                 int val = protoCluster[i];
-                if (val > -1) {
+                if (val > IGNORE) {
                     globalIndex[i] = counter;
                     counter++;
                     maxCol = Math.max(maxCol, val);
@@ -105,14 +110,18 @@ public class BinMappings implements Mappings {
         return chromToBinToGlobalIndex.get(c1);
     }
 
-    @Override
     protected int[][] getGenomeIndices() {
         int[][] coordinates = new int[numRows][3];
-        for (int i = 0; i < n; i++) {
-            SubcompartmentInterval interval = rowIndexToIntervalMap.get(i);
-            coordinates[i][0] = interval.getChrIndex();
-            coordinates[i][1] = interval.getX1();
-            coordinates[i][2] = interval.getX2();
+        for (Integer chrIndex : chromToBinToGlobalIndex.keySet()) {
+            int[] globalIndices = chromToBinToGlobalIndex.get(chrIndex);
+            for (int i = 0; i < globalIndices.length; i++) {
+                if (globalIndices[i] > IGNORE) {
+                    int coord = globalIndices[i];
+                    coordinates[coord][0] = chrIndex;
+                    coordinates[coord][1] = i * resolution;
+                    coordinates[coord][2] = coordinates[coord][1] + resolution;
+                }
+            }
         }
         return coordinates;
     }

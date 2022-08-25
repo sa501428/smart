@@ -29,10 +29,11 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
-import mixer.utils.InterChromosomeRegion;
+import mixer.utils.bed.BedFileMappings;
 import mixer.utils.common.ZScoreTools;
-import mixer.utils.slice.drive.Mappings;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.translocations.InterChromosomeRegion;
 
 import java.io.File;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class MagicMatrix extends DriveMatrix {
 
 
     public MagicMatrix(Dataset ds, ChromosomeHandler chromosomeHandler, int resolution,
-                       NormalizationType norm, File outputDirectory, long seed, Mappings mappings,
+                       NormalizationType norm, File outputDirectory, long seed, BedFileMappings mappings,
                        List<InterChromosomeRegion> regionsToIgnore, boolean doScale, boolean useZscore) {
 
 
@@ -94,8 +95,8 @@ public class MagicMatrix extends DriveMatrix {
     }
 
     @Override
-    public float[][] getData(boolean getCorrelationMatrix) {
-        return matrix;
+    public MatrixAndWeight getData() {
+        return new MatrixAndWeight(matrix, weights);
     }
 
     @Override

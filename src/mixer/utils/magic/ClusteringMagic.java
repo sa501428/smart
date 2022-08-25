@@ -32,7 +32,6 @@ import mixer.utils.slice.kmeans.KmeansResult;
 import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
-import mixer.utils.umap.UmapProjection;
 
 import java.io.File;
 import java.util.HashMap;
@@ -49,7 +48,6 @@ public class ClusteringMagic {
     private final Random generator = new Random(2352);
     private final MatrixAndWeight matrix;
     private final ChromosomeHandler handler;
-    private final UmapProjection projection;
 
     public ClusteringMagic(MatrixAndWeight matrix, File outputDirectory,
                            ChromosomeHandler handler, long seed) {
@@ -57,8 +55,6 @@ public class ClusteringMagic {
         this.handler = handler;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
-        projection = new UmapProjection(matrix, false);
-        // sliceMatrix.cleanUpMatricesBySparsity();
     }
 
     public void extractFinalGWSubcompartments(String prefix) {
@@ -101,8 +97,6 @@ public class ClusteringMagic {
         SliceUtils.collapseGWList(gwList);
         File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
         gwList.simpleExport(outBedFile);
-        projection.plotProjection(outputDirectory, kmeansIndicesMap.get(z),
-                prefix + "_" + k + "_" + kstem + "_clusters");
     }
 
     public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,

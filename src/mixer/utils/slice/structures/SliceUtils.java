@@ -27,11 +27,8 @@ package mixer.utils.slice.structures;
 import javastraw.feature1D.GenomeWide1DList;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class SliceUtils {
-
-    private static final AtomicInteger idCounter = new AtomicInteger(0);
 
     public static void reSort(GenomeWide1DList<SubcompartmentInterval> subcompartments) {
         subcompartments.filterLists((chr, featureList) -> {
@@ -60,28 +57,6 @@ public class SliceUtils {
                 }
             }
             newIntervals.add(collapsedInterval);
-
-            List<SubcompartmentInterval> newIntervalsSorted = new ArrayList<>(newIntervals);
-            Collections.sort(newIntervalsSorted);
-
-            return newIntervalsSorted;
-        }
-        return intervals;
-    }
-
-    public static void splitGWList(GenomeWide1DList<SubcompartmentInterval> intraSubcompartments, int width) {
-        intraSubcompartments.filterLists((chr, featureList) -> splitSubcompartmentIntervals(featureList, width));
-    }
-
-    private static List<SubcompartmentInterval> splitSubcompartmentIntervals(List<SubcompartmentInterval> intervals, int width) {
-        if (intervals.size() > 0) {
-
-            Collections.sort(intervals);
-
-            Set<SubcompartmentInterval> newIntervals = new HashSet<>();
-            for (SubcompartmentInterval currInterval : intervals) {
-                newIntervals.addAll(currInterval.splitByWidth(width));
-            }
 
             List<SubcompartmentInterval> newIntervalsSorted = new ArrayList<>(newIntervals);
             Collections.sort(newIntervalsSorted);

@@ -60,11 +60,6 @@ public class ColorMap {
             new Color(204, 204, 204)
     };
 
-    public static Color getColorWithAlpha(int id, int alpha) {
-        Color color = colors[id % colors.length];
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
-    }
-
     public static String getColorString(Integer clusterID) {
         Color color = colors[clusterID % colors.length];
         return color.getRed() + "," + color.getGreen() + "," + color.getBlue();

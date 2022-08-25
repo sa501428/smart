@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,20 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.slice.cleaning;
+package mixer.utils.translocations;
 
-import javastraw.reader.block.ContactRecord;
+import javastraw.reader.basics.Chromosome;
 
-public class CRecordUtils {
-    public static void add(ContactRecord cr, float[] rowSums, float[] colSums, float[] rowNonZeros, float[] colNonZeros) {
-        float val = (float) Math.log(cr.getCounts() + 1);
-        if (Float.isNaN(val) || val < 1e-10 || Float.isInfinite(val)) {
-            return;
-        }
-        int x = cr.getBinX();
-        int y = cr.getBinY();
-        rowSums[x] += val;
-        colSums[y] += val;
-        rowNonZeros[x]++;
-        colNonZeros[y]++;
+public class InterChromosomeRegion {
+    Chromosome c1, c2;
+
+    public InterChromosomeRegion(Chromosome c1, Chromosome c2) {
+        this.c1 = c1;
+        this.c2 = c2;
+    }
+
+    public boolean is(Chromosome a, Chromosome b) {
+        if (c1.getIndex() == a.getIndex() && c2.getIndex() == b.getIndex()) return true;
+        return c2.getIndex() == a.getIndex() && c1.getIndex() == b.getIndex();
     }
 }

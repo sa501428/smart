@@ -129,21 +129,6 @@ public class BedFileMappings {
         return numCols;
     }
 
-    @Override
-    public int[] getDistributionForChrom(Chromosome chromosome) {
-
-    }
-
-    @Override
-    public int[] getProtocluster(Chromosome c1) {
-
-    }
-
-    @Override
-    public int[] getGlobalIndex(Chromosome c1) {
-
-    }
-
     public int[] getOffsets() {
         return offsets;
     }

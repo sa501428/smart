@@ -26,6 +26,7 @@ package mixer.utils.magic;
 
 import javastraw.feature1D.GenomeWide1DList;
 import mixer.MixerTools;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.slice.structures.SliceUtils;
 import mixer.utils.slice.structures.SubcompartmentInterval;
 import robust.concurrent.kmeans.clustering.Cluster;
@@ -36,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class DriveMatrix {
-    abstract public float[][] getData(boolean getCorrelationMatrix);
+    abstract public MatrixAndWeight getData();
 
     abstract public Map<Integer, SubcompartmentInterval> getRowIndexToIntervalMap();
 

@@ -152,9 +152,9 @@ public class Slice extends MixerCLT {
 
 
         // build compressed slice matrix
-        SliceMatrix sliceMatrix = new SliceMatrix(handler, ds, norms, resolution, outputDirectory,
-                generator.nextLong(), badIndices);
-        sliceMatrix.cleanUpMatricesBySparsity();
+        //SliceMatrix sliceMatrix = new SliceMatrix(handler, ds, norms, resolution, outputDirectory,
+        //        generator.nextLong(), badIndices);
+        //sliceMatrix.cleanUpMatricesBySparsity();
 
 
         // save SLICE matrix
@@ -163,9 +163,9 @@ public class Slice extends MixerCLT {
 
         // save bed file output
 
-        FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
-                handler, resolution, normsList, outputDirectory, generator.nextLong());
-        withinClusters.extractFinalGWSubcompartments(prefix);
+        //FullGenomeOEWithinClusters withinClusters = new FullGenomeOEWithinClusters(datasetList,
+        //        handler, resolution, normsList, outputDirectory, generator.nextLong());
+        //withinClusters.extractFinalGWSubcompartments(prefix);
 
         System.out.println("\nSLICE complete");
     }

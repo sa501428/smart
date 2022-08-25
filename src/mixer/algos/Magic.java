@@ -32,10 +32,10 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.InterChromosomeRegion;
 import mixer.utils.bed.BedFileMappings;
 import mixer.utils.magic.ClusteringMagic;
 import mixer.utils.magic.MagicMatrix;
+import mixer.utils.translocations.InterChromosomeRegion;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -126,7 +126,8 @@ public class Magic extends MixerCLT {
                 outputDirectory, generator.nextLong(), mappings, regionsToIgnore, doScale, useZScore);
         matrix.export(new File(outputDirectory, "magic.npy").getAbsolutePath());
 
-        ClusteringMagic clustering = new ClusteringMagic(matrix, outputDirectory, chromosomeHandler, 10L);
+
+        ClusteringMagic clustering = new ClusteringMagic(matrix.getData(), outputDirectory, chromosomeHandler, 10L);
         clustering.extractFinalGWSubcompartments(prefix);
         System.out.println("\nClustering complete");
     }
