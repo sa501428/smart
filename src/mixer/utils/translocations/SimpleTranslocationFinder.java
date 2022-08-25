@@ -42,7 +42,7 @@ import java.util.Set;
 
 public class SimpleTranslocationFinder {
 
-    private final static int minToBeTranslocation = 3;
+    private final static int minToBeTranslocation = 10;
     private final File outputDirectory;
     private static final int distance = 1000000;
     private final TranslocationSet translocations = new TranslocationSet();

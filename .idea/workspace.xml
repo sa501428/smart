@@ -30,14 +30,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="get to compilation pass">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Magic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/MixerCLT.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/MixerCLT.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/TranslocationSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/TranslocationSet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/InterChromosomeRegion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/InterChromosomeRegion.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -270,14 +264,7 @@
       <workItem from="1660250949554" duration="260000" />
       <workItem from="1660650578971" duration="218000" />
       <workItem from="1661319791510" duration="635000" />
-      <workItem from="1661321023085" duration="9994000" />
-    </task>
-    <task id="LOCAL-00167" summary="bug fixes">
-      <created>1634331472729</created>
-      <option name="number" value="00167" />
-      <option name="presentableId" value="LOCAL-00167" />
-      <option name="project" value="LOCAL" />
-      <updated>1634331472729</updated>
+      <workItem from="1661321023085" duration="10316000" />
     </task>
     <task id="LOCAL-00168" summary="comment out silhouette">
       <created>1635964205662</created>
@@ -615,7 +602,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661401847817</updated>
     </task>
-    <option name="localTasksCounter" value="216" />
+    <task id="LOCAL-00216" summary="update translocation check">
+      <created>1661412949649</created>
+      <option name="number" value="00216" />
+      <option name="presentableId" value="LOCAL-00216" />
+      <option name="project" value="LOCAL" />
+      <updated>1661412949649</updated>
+    </task>
+    <option name="localTasksCounter" value="217" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -639,7 +633,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update java straw jar new api" />
     <MESSAGE value="update java straw" />
     <MESSAGE value="initial randoms/seeds differently; fix bug for non-humans" />
     <MESSAGE value="fix random seed issue" />
@@ -664,7 +657,8 @@
     <MESSAGE value="implement LL inter only matrix" />
     <MESSAGE value="mid implementation" />
     <MESSAGE value="get to compilation pass" />
-    <option name="LAST_COMMIT_MESSAGE" value="get to compilation pass" />
+    <MESSAGE value="update translocation check" />
+    <option name="LAST_COMMIT_MESSAGE" value="update translocation check" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
