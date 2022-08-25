@@ -22,21 +22,31 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.translocations;
+package mixer.utils.slice.cleaning;
 
+import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
+import javastraw.reader.block.ContactRecord;
+import javastraw.reader.mzd.MatrixZoomData;
+import javastraw.reader.type.HiCZoom;
+import javastraw.reader.type.NormalizationType;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
 
-public class TranslocationSet {
-    private final Set<InterChromosomeRegion> regions = new HashSet<>();
-
-    public void add(Chromosome chr1, Chromosome chr2) {
-        regions.add(new InterChromosomeRegion(chr1, chr2));
-    }
-
-    public boolean hasTranslocation(Chromosome chr1, Chromosome chr2) {
-        return regions.contains(new InterChromosomeRegion(chr1, chr2));
+public class OETools {
+    public static float[][] getOEMatrix(Dataset ds, MatrixZoomData zd, Chromosome chrom, int resolution, NormalizationType norm) {
+        int length = (int) (chrom.getLength() / resolution + 1);
+        float[][] matrix = new float[length][length];
+        double[] ev = ds.getExpectedValues(new HiCZoom(resolution), norm,
+                false).getExpectedValuesWithNormalization(chrom.getIndex()).getValues().get(0);
+        Iterator<ContactRecord> recordIterator = zd.getNormalizedIterator(norm);
+        while (recordIterator.hasNext()) {
+            ContactRecord record = recordIterator.next();
+            int dist = Math.abs(record.getBinX() - record.getBinY());
+            float oe = (float) ((record.getCounts() + 1) / (ev[dist] + 1));
+            matrix[record.getBinX()][record.getBinY()] = oe;
+            matrix[record.getBinY()][record.getBinX()] = oe;
+        }
+        return matrix;
     }
 }

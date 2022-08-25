@@ -32,7 +32,11 @@ import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.slice.cleaning.BadIndexFinder;
+import mixer.utils.slice.cleaning.IndexOrderer;
 import mixer.utils.slice.cleaning.SliceMatrixCleaner;
+import mixer.utils.slice.drive.BinMappings;
+import mixer.utils.slice.drive.MatrixBuilder;
+import mixer.utils.slice.matrices.MatrixAndWeight;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
@@ -137,15 +141,13 @@ public class Slice extends MixerCLT {
         // filter intervals as needed
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, handler, resolution);
 
-        SimpleTranslocationFinder finder = new SimpleTranslocationFinder(ds, norms, outputDirectory, resolution, badIndices);
+        SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory, resolution, badIndices);
 
-        /*
-
-        BinMappings mappings = IndexOrderer.getInitialMappings(dataset, handler, resolution,
+        BinMappings mappings = IndexOrderer.getInitialMappings(ds, handler, resolution,
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
-        MatrixAndWeight slice = MatrixBuilder.populateMatrix(dataset, handler, resolution,
-                norms[INTER_SCALE_INDEX], mappings, false);
+        MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, handler, resolution,
+                norms[INTER_SCALE_INDEX], mappings, false, translocations);
 
         slice.export(outputDirectory, "magic");
 
@@ -167,7 +169,6 @@ public class Slice extends MixerCLT {
         //withinClusters.extractFinalGWSubcompartments(prefix);
 
 
-         */
         System.out.println("\nSLICE complete");
     }
 }

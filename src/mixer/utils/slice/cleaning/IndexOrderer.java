@@ -29,7 +29,6 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
-import javastraw.tools.ExtractingOEDataUtils;
 import javastraw.tools.HiCFileTools;
 import mixer.MixerTools;
 import mixer.clt.ParallelizedMixerTools;
@@ -55,33 +54,33 @@ public class IndexOrderer {
     private static final float CORR_MIN = 0.2f;
 
     public static BinMappings getInitialMappings(Dataset ds, ChromosomeHandler handler,
-                                                 int hires,
+                                                 int resolution,
                                                  Map<Integer, Set<Integer>> badIndices, NormalizationType norm,
                                                  long seed, File outputDirectory) {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         Random generator = new Random(seed);
         int[] offset = new int[]{0};
-        BinMappings mappings = new BinMappings(hires);
+        BinMappings mappings = new BinMappings(resolution);
 
         for (Chromosome chrom : chromosomes) {
-            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, hires);
-            try {
-                float[][] matrix = HiCFileTools.getOEMatrixForChromosome(ds, zd, chrom, hires,
-                        norm, 100f, ExtractingOEDataUtils.ThresholdType.TRUE_OE,
-                        true, true, 1, 0, true);
-                int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
-                        offset, hires, generator.nextLong());
+            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
+            if (zd != null) {
+                try {
+                    float[][] matrix = OETools.getOEMatrix(ds, zd, chrom, resolution, norm);
+                    int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
+                            offset, resolution, generator.nextLong());
 
-                mappings.putBinToProtoCluster(chrom, newOrderIndexes);
-            } catch (Exception e) {
-                e.printStackTrace();
+                    mappings.putBinToProtoCluster(chrom, newOrderIndexes);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             System.out.print(".");
         }
 
         mappings.calculateGlobalIndices(chromosomes);
 
-        writeOutInitialResults(outputDirectory, hires, chromosomes, mappings);
+        writeOutInitialResults(outputDirectory, resolution, chromosomes, mappings);
 
         return mappings;
     }
@@ -106,20 +105,6 @@ public class IndexOrderer {
 
     public int[] get(Chromosome chrom) {
         return chromToReorderedIndices.get(chrom);
-    }
-
-    private static int[] convertToHigherRes(int[] lowResOrderIndexes, Chromosome chrom, int hires, int resFactor) {
-        int hiResLength = (int) (chrom.getLength() / hires) + 1;
-        int[] hiResOrderAssignments = new int[hiResLength];
-        if ((hiResLength - 1) / resFactor >= lowResOrderIndexes.length) {
-            System.err.println("chromosome lengths are off");
-            System.exit(32);
-        }
-
-        for (int i = 0; i < hiResOrderAssignments.length; i++) {
-            hiResOrderAssignments[i] = lowResOrderIndexes[i / resFactor];
-        }
-        return hiResOrderAssignments;
     }
 
     private static int[] getNewOrderOfIndices(Chromosome chromosome, float[][] oeMatrix1,

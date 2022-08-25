@@ -45,7 +45,7 @@ public class SimpleTranslocationFinder {
     private final static int minToBeTranslocation = 10;
     private final File outputDirectory;
     private static final int distance = 1000000;
-    private final TranslocationSet translocations = new TranslocationSet();
+    private final TranslocationSet tSet = new TranslocationSet();
 
     public SimpleTranslocationFinder(Dataset ds, NormalizationType[] norms, File outputDirectory,
                                      int resolution, Map<Integer, Set<Integer>> badIndices) {
@@ -58,7 +58,7 @@ public class SimpleTranslocationFinder {
         for (int i = 0; i < chroms.length; i++) {
             for (int j = i + 1; j < chroms.length; j++) {
                 if (hasTranslocation(chroms[i], chroms[j], ds, resolution, norm, badIndices)) {
-                    translocations.add(chroms[i], chroms[j]);
+                    tSet.add(chroms[i], chroms[j]);
                     System.out.println("Translocation at " + chroms[i].getName() + " - " + chroms[j].getName());
                 }
                 System.out.print(".");
@@ -115,5 +115,9 @@ public class SimpleTranslocationFinder {
         double val1 = expectedValues.getExpectedValuesWithNormalization(chrom1.getIndex()).getValues().get(0)[dIndex];
         double val2 = expectedValues.getExpectedValuesWithNormalization(chrom2.getIndex()).getValues().get(0)[dIndex];
         return Math.min(val1, val2);
+    }
+
+    public boolean contains(Chromosome c1, Chromosome c2) {
+        return tSet.hasTranslocation(c1, c2);
     }
 }

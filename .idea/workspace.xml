@@ -31,8 +31,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/OETools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/slice/drive/MatrixBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/TranslocationSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/TranslocationSet.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,11 +95,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice.drive" />
       <recent name="mixer.utils.slice" />
       <recent name="mixer.utils.magic" />
       <recent name="mixer.utils.slice.cleaning.utils" />
-      <recent name="mixer.utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -264,14 +269,7 @@
       <workItem from="1660250949554" duration="260000" />
       <workItem from="1660650578971" duration="218000" />
       <workItem from="1661319791510" duration="635000" />
-      <workItem from="1661321023085" duration="10316000" />
-    </task>
-    <task id="LOCAL-00168" summary="comment out silhouette">
-      <created>1635964205662</created>
-      <option name="number" value="00168" />
-      <option name="presentableId" value="LOCAL-00168" />
-      <option name="project" value="LOCAL" />
-      <updated>1635964205662</updated>
+      <workItem from="1661321023085" duration="12618000" />
     </task>
     <task id="LOCAL-00169" summary="code cleanup, change defaults, save genome coordinates">
       <created>1635965724346</created>
@@ -609,7 +607,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661412949649</updated>
     </task>
-    <option name="localTasksCounter" value="217" />
+    <task id="LOCAL-00217" summary="update translocation check">
+      <created>1661413279148</created>
+      <option name="number" value="00217" />
+      <option name="presentableId" value="LOCAL-00217" />
+      <option name="project" value="LOCAL" />
+      <updated>1661413279148</updated>
+    </task>
+    <option name="localTasksCounter" value="218" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

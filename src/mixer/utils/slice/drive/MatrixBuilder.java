@@ -37,6 +37,7 @@ import mixer.utils.common.LogTools;
 import mixer.utils.magic.FinalScale;
 import mixer.utils.magic.SymmLLInterMatrix;
 import mixer.utils.slice.matrices.MatrixAndWeight;
+import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ import java.util.Map;
 public class MatrixBuilder {
     public static MatrixAndWeight populateMatrix(Dataset ds, ChromosomeHandler handler, int resolution,
                                                  NormalizationType norm, Mappings mappings,
-                                                 boolean doScale) {
+                                                 boolean doScale, SimpleTranslocationFinder translocations) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
@@ -60,7 +61,7 @@ public class MatrixBuilder {
 
         for (int i = 0; i < chromosomes.length; i++) {
             for (int j = i + 1; j < chromosomes.length; j++) {
-                //if (shouldSkipRegion(chromosomes[i], chromosomes[j])) continue;
+                if (translocations.contains(chromosomes[i], chromosomes[j])) continue;
 
                 Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
                 if (m1 == null) continue;
