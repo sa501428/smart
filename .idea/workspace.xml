@@ -31,8 +31,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/common/LogExpectedSpline.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/SubcompartmentBedFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/bed/SubcompartmentBedFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/DriveMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/DriveMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/clean/EmptyRowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/clean/EmptyRowCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/nv/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IntraMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/NearDiagonalTrim.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/NearDiagonalTrim.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/clustering/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/QuickClusters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/clustering/QuickClusters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/SliceMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SliceMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/DimensionCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/DimensionCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/MatrixRowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixRowCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/cleaning/utils/RowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/RowCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/drive/BinMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/dmatrix/BinMappings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/drive/Mappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/dmatrix/Mappings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/dmatrix/MatrixBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/ClusterTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusterTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansEvaluator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/KmeansEvaluator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/kmeans/KmeansResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/KmeansResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/Dimension.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/dmatrix/Dimension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/matrices/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/dmatrix/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/ColorMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/ColorMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SimpleInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/SimpleInterval.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/SliceUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/slice/structures/SubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/SubcompartmentInterval.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,8 +114,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "/Volumes/AidenLabWD6/Github/IdeaProjects/mixer-tools",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
   }
 }]]></component>
@@ -264,14 +295,7 @@
       <workItem from="1660250949554" duration="260000" />
       <workItem from="1660650578971" duration="218000" />
       <workItem from="1661319791510" duration="635000" />
-      <workItem from="1661321023085" duration="14145000" />
-    </task>
-    <task id="LOCAL-00170" summary="upgrade straw jar">
-      <created>1637388602880</created>
-      <option name="number" value="00170" />
-      <option name="presentableId" value="LOCAL-00170" />
-      <option name="project" value="LOCAL" />
-      <updated>1637388602880</updated>
+      <workItem from="1661321023085" duration="15322000" />
     </task>
     <task id="LOCAL-00171" summary="upgrade straw jar">
       <created>1637487758999</created>
@@ -609,7 +633,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661417673518</updated>
     </task>
-    <option name="localTasksCounter" value="219" />
+    <task id="LOCAL-00219" summary="updated expected model">
+      <created>1661517506556</created>
+      <option name="number" value="00219" />
+      <option name="presentableId" value="LOCAL-00219" />
+      <option name="project" value="LOCAL" />
+      <updated>1661517506556</updated>
+    </task>
+    <option name="localTasksCounter" value="220" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -633,7 +664,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="initial randoms/seeds differently; fix bug for non-humans" />
     <MESSAGE value="fix random seed issue" />
     <MESSAGE value="fix random seed issues" />
     <MESSAGE value="update shuffle calculation" />
@@ -658,7 +688,8 @@
     <MESSAGE value="get to compilation pass" />
     <MESSAGE value="update translocation check" />
     <MESSAGE value="update iteration, bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="update iteration, bug fixes" />
+    <MESSAGE value="updated expected model" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated expected model" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -667,7 +698,7 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/mixer/utils/slice/cleaning/IndexOrderer.java</url>
+          <url>file://$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java</url>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">

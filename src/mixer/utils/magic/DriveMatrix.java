@@ -26,9 +26,9 @@ package mixer.utils.magic;
 
 import javastraw.feature1D.GenomeWide1DList;
 import mixer.MixerTools;
-import mixer.utils.slice.matrices.MatrixAndWeight;
-import mixer.utils.slice.structures.SliceUtils;
-import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.drive.MatrixAndWeight;
+import mixer.utils.tracks.SliceUtils;
+import mixer.utils.tracks.SubcompartmentInterval;
 import robust.concurrent.kmeans.clustering.Cluster;
 
 import java.util.ArrayList;

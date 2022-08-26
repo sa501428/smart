@@ -31,8 +31,8 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
 import mixer.utils.bed.BedFileMappings;
 import mixer.utils.common.ZScoreTools;
-import mixer.utils.slice.matrices.MatrixAndWeight;
-import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.drive.MatrixAndWeight;
+import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.InterChromosomeRegion;
 
 import java.io.File;

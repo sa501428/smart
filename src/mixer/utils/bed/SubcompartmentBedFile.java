@@ -28,7 +28,7 @@ import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.MixerTools;
-import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

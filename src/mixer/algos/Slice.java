@@ -31,12 +31,12 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.slice.cleaning.BadIndexFinder;
-import mixer.utils.slice.cleaning.IndexOrderer;
-import mixer.utils.slice.cleaning.SliceMatrixCleaner;
-import mixer.utils.slice.drive.BinMappings;
-import mixer.utils.slice.drive.MatrixBuilder;
-import mixer.utils.slice.matrices.MatrixAndWeight;
+import mixer.utils.cleaning.SliceMatrixCleaner;
+import mixer.utils.drive.BinMappings;
+import mixer.utils.drive.MatrixAndWeight;
+import mixer.utils.drive.MatrixBuilder;
+import mixer.utils.intra.IndexOrderer;
+import mixer.utils.nv.BadIndexFinder;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;

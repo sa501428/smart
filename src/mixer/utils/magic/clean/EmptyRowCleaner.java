@@ -24,9 +24,9 @@
 
 package mixer.utils.magic.clean;
 
+import mixer.utils.cleaning.MatrixRowCleaner;
 import mixer.utils.common.ArrayTools;
-import mixer.utils.slice.cleaning.utils.MatrixRowCleaner;
-import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.util.HashSet;
 import java.util.Map;
