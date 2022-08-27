@@ -25,10 +25,10 @@
 package mixer.utils.drive;
 
 import javastraw.reader.Dataset;
-import javastraw.reader.Matrix;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.block.ContactRecord;
+import javastraw.reader.mzd.Matrix;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
@@ -163,9 +163,7 @@ public class MatrixBuilder {
     private static int[] createTargetVector(int[] colSums, int numRows, int numCols) {
         int[] target = new int[numRows + numCols];
         Arrays.fill(target, 1);
-        for (int i = 0; i < numCols; i++) {
-            target[i] = colSums[i];
-        }
+        if (numCols >= 0) System.arraycopy(colSums, 0, target, 0, numCols);
         return target;
     }
 

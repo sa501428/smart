@@ -70,7 +70,9 @@ public class Magic extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
+        resolution = updateResolution(mixerParser, resolution);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false, resolution > 100);
+
         try {
             String[] valString = args[2].split(",");
             ClusteringMagic.startingClusterSizeK = Integer.parseInt(valString[0]);
@@ -89,22 +91,10 @@ public class Magic extends MixerCLT {
             norm = potentialNorm;
         }
 
-        List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
-        if (possibleResolutions != null) {
-            if (possibleResolutions.size() > 1)
-                System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
-            resolution = possibleResolutions.get(0);
-        }
-
         doScale = mixerParser.getScaleOption();
         useZScore = mixerParser.getZScoreOption();
 
-        long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
-        if (possibleSeeds != null && possibleSeeds.length > 0) {
-            for (long seed : possibleSeeds) {
-                generator.setSeed(seed);
-            }
-        }
+        updateGeneratorSeed(mixerParser, generator);
     }
 
     @Override

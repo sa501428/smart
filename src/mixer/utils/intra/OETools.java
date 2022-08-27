@@ -30,6 +30,7 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import mixer.utils.common.LogExpectedSpline;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -46,16 +47,18 @@ public class OETools {
         int minDist = FIVE_MB / resolution;
 
         float[][] matrix = new float[length][length];
+        for (float[] row : matrix) {
+            Arrays.fill(row, Float.NaN);
+        }
         Iterator<ContactRecord> recordIterator = zd.getNormalizedIterator(norm);
         while (recordIterator.hasNext()) {
             ContactRecord record = recordIterator.next();
             int dist = Math.abs(record.getBinX() - record.getBinY());
-            float oe = Float.NaN;
             if (dist > minDist) {
-                oe = (float) (record.getCounts() / spline.getExpectedFromUncompressedBin(dist));
+                float oe = (float) Math.log(record.getCounts() / spline.getExpectedFromUncompressedBin(dist));
+                matrix[record.getBinX()][record.getBinY()] = oe;
+                matrix[record.getBinY()][record.getBinX()] = oe;
             }
-            matrix[record.getBinX()][record.getBinY()] = oe;
-            matrix[record.getBinY()][record.getBinX()] = oe;
         }
 
         IntraMatrixCleaner.nanFillNearDiagonal(matrix, FIVE_MB / resolution);

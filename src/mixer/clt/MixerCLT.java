@@ -24,11 +24,15 @@
 
 package mixer.clt;
 
+import java.util.List;
+import java.util.Random;
+
 /**
  * Created by muhammadsaadshamim on 9/21/15.
  */
 public abstract class MixerCLT {
     private static String usage;
+
     protected MixerCLT(String usage) {
         setUsage(usage);
     }
@@ -39,7 +43,6 @@ public abstract class MixerCLT {
 
     protected abstract void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser);
 
-
     public abstract void run();
 
     private void setUsage(String newUsage) {
@@ -49,5 +52,24 @@ public abstract class MixerCLT {
     public void printUsageAndExit(int exitcode) {
         System.out.println("Usage:   mixer_tools " + usage);
         System.exit(exitcode);
+    }
+
+    protected int updateResolution(CommandLineParserForMixer mixerParser, int r0) {
+        List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
+        if (possibleResolutions != null) {
+            if (possibleResolutions.size() > 1)
+                System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
+            return possibleResolutions.get(0);
+        }
+        return r0;
+    }
+
+    protected void updateGeneratorSeed(CommandLineParserForMixer mixerParser, Random generator) {
+        long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
+        if (possibleSeeds != null && possibleSeeds.length > 0) {
+            for (long seed : possibleSeeds) {
+                generator.setSeed(seed);
+            }
+        }
     }
 }

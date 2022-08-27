@@ -39,7 +39,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SliceMatrixCleaner {
-    public static int NUM_PER_CENTROID = 100;
     protected final File outputDirectory;
     protected float[][] data;
     protected final Random generator = new Random(2352);

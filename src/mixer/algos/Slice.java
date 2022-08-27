@@ -31,16 +31,15 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.cleaning.SliceMatrixCleaner;
 import mixer.utils.drive.BinMappings;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
 import mixer.utils.intra.IndexOrderer;
+import mixer.utils.magic.ClusteringMagic;
 import mixer.utils.nv.BadIndexFinder;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -51,9 +50,6 @@ import java.util.Set;
  * Created by muhammadsaadshamim on 9/14/15.
  */
 public class Slice extends MixerCLT {
-    public static int startingClusterSizeK = 2;
-    public static int numClusterSizeKValsUsed = 10;
-    public static int numAttemptsForKMeans = 3;
     private final int maxIters = 200;
 
     public static final int INTRA_SCALE_INDEX = 0;
@@ -87,13 +83,14 @@ public class Slice extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
+        resolution = updateResolution(mixerParser, resolution);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false, resolution > 100);
 
         try {
             String[] valString = args[2].split(",");
-            startingClusterSizeK = Integer.parseInt(valString[0]);
-            numClusterSizeKValsUsed = Integer.parseInt(valString[1]) - startingClusterSizeK;
-            numAttemptsForKMeans = Integer.parseInt(valString[2]);
+            ClusteringMagic.startingClusterSizeK = Integer.parseInt(valString[0]);
+            ClusteringMagic.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) - ClusteringMagic.startingClusterSizeK;
+            ClusteringMagic.numAttemptsForKMeans = Integer.parseInt(valString[2]);
         } catch (Exception e) {
             printUsageAndExit(5);
         }
@@ -102,26 +99,7 @@ public class Slice extends MixerCLT {
         prefix = args[4];
         norms = populateNormalizations(ds);
 
-        List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
-        if (possibleResolutions != null) {
-            if (possibleResolutions.size() > 1)
-                System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
-            resolution = possibleResolutions.get(0);
-        }
-
-        long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
-        if (possibleSeeds != null && possibleSeeds.length > 0) {
-            for (long seed : possibleSeeds) {
-                generator.setSeed(seed);
-            }
-        }
-
-        int subsampling = mixerParser.getSubsamplingOption();
-        if (subsampling > 0) {
-            SliceMatrixCleaner.NUM_PER_CENTROID = subsampling;
-        }
-
-        USE_ENCODE_MODE = mixerParser.getENCODEOption();
+        updateGeneratorSeed(mixerParser, generator);
     }
 
 
