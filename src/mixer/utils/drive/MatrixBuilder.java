@@ -58,25 +58,28 @@ public class MatrixBuilder {
             genomewideDistributionForChrom.put(chromosome.getIndex(), new int[numCols]);
         }
 
+        mappings.printStatus();
+
         for (int i = 0; i < chromosomes.length; i++) {
             for (int j = i + 1; j < chromosomes.length; j++) {
                 if (translocations.contains(chromosomes[i], chromosomes[j])) continue;
 
                 Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
-                if (m1 == null) continue;
-                MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
-                if (zd == null) continue;
+                if (m1 != null) {
+                    MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
+                    if (zd != null) {
+                        if (norm.getLabel().equalsIgnoreCase("none")) {
+                            populateMatrixFromIterator(matrix, zd.getDirectIterator(), mappings, chromosomes[i], chromosomes[j]);
+                        } else {
+                            populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), mappings, chromosomes[i], chromosomes[j]);
+                        }
 
-                if (norm.getLabel().equalsIgnoreCase("none")) {
-                    populateMatrixFromIterator(matrix, zd.getDirectIterator(), mappings, chromosomes[i], chromosomes[j]);
-                } else {
-                    populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), mappings, chromosomes[i], chromosomes[j]);
+                        updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[i].getIndex()),
+                                mappings.getDistributionForChrom(chromosomes[j]));
+                        updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[j].getIndex()),
+                                mappings.getDistributionForChrom(chromosomes[i]));
+                    }
                 }
-
-                updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[i].getIndex()),
-                        mappings.getDistributionForChrom(chromosomes[j]));
-                updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[j].getIndex()),
-                        mappings.getDistributionForChrom(chromosomes[i]));
 
                 System.out.print(".");
             }
@@ -119,21 +122,25 @@ public class MatrixBuilder {
     private static void populateMatrixFromIterator(float[][] matrix, Iterator<ContactRecord> iterator,
                                                    Mappings mappings, Chromosome c1, Chromosome c2) {
 
-        int[] binToClusterID1 = mappings.getProtocluster(c1);
-        int[] binToClusterID2 = mappings.getProtocluster(c2);
-        int[] binToGlobalIndex1 = mappings.getGlobalIndex(c1);
-        int[] binToGlobalIndex2 = mappings.getGlobalIndex(c2);
+        if (mappings.contains(c1) && mappings.contains(c2)) {
+            int[] binToClusterID1 = mappings.getProtocluster(c1);
+            int[] binToClusterID2 = mappings.getProtocluster(c2);
+            int[] binToGlobalIndex1 = mappings.getGlobalIndex(c1);
+            int[] binToGlobalIndex2 = mappings.getGlobalIndex(c2);
 
-        while (iterator.hasNext()) {
-            ContactRecord cr = iterator.next();
-            if (cr.getCounts() > 0) {
-                int r = cr.getBinX();
-                int c = cr.getBinY();
-                if (binToClusterID1[r] > -1 && binToClusterID2[c] > -1) {
-                    matrix[binToGlobalIndex1[r]][binToClusterID2[c]] += cr.getCounts();
-                    matrix[binToGlobalIndex2[c]][binToClusterID1[r]] += cr.getCounts();
+            while (iterator.hasNext()) {
+                ContactRecord cr = iterator.next();
+                if (cr.getCounts() > 0) {
+                    int r = cr.getBinX();
+                    int c = cr.getBinY();
+                    if (binToClusterID1[r] > -1 && binToClusterID2[c] > -1) {
+                        matrix[binToGlobalIndex1[r]][binToClusterID2[c]] += cr.getCounts();
+                        matrix[binToGlobalIndex2[c]][binToClusterID1[r]] += cr.getCounts();
+                    }
                 }
             }
+        } else {
+            System.err.println("Error with reading from " + c1.getName() + " " + c2.getName());
         }
     }
 

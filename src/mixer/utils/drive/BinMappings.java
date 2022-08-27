@@ -110,6 +110,21 @@ public class BinMappings implements Mappings {
         return chromToBinToGlobalIndex.get(c1);
     }
 
+    @Override
+    public boolean contains(Chromosome c1) {
+        return chromToBinToProtocluster.containsKey(c1) && chromToBinToGlobalIndex.containsKey(c1);
+    }
+
+    @Override
+    public void printStatus() {
+        for (Integer i : chromToBinToProtocluster.keySet()) {
+            System.out.println("key1 " + i + " " + chromToBinToProtocluster.get(i));
+        }
+        for (Integer i : chromToBinToGlobalIndex.keySet()) {
+            System.out.println("key2 " + i + " " + chromToBinToGlobalIndex.get(i));
+        }
+    }
+
     protected int[][] getGenomeIndices() {
         int[][] coordinates = new int[numRows][3];
         for (Integer chrIndex : chromToBinToGlobalIndex.keySet()) {

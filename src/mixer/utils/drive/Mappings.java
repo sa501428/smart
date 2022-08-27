@@ -36,4 +36,8 @@ public interface Mappings {
     int[] getProtocluster(Chromosome c1);
 
     int[] getGlobalIndex(Chromosome c1);
+
+    boolean contains(Chromosome c1);
+
+    void printStatus();
 }

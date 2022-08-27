@@ -50,17 +50,19 @@ public class BadIndexFinder {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         for (Chromosome chromosome : chromosomes) {
             NormalizationVector nv = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), VC);
-            badIndices.put(chromosome.getIndex(), updateCoverageStats(nv));
+            badIndices.put(chromosome.getIndex(), updateCoverageStats(nv, chromosome, resolution));
         }
         return badIndices;
     }
 
-    private static Set<Integer> updateCoverageStats(NormalizationVector normalizationVector) {
+    private static Set<Integer> updateCoverageStats(NormalizationVector normalizationVector, Chromosome chromosome,
+                                                    int resolution) {
         double[] vector = normalizationVector.getData().getValues().get(0);
         double[] muAndStd = getMuAndStd(vector);
+        int realLength = (int) (1 + (chromosome.getLength() / resolution));
 
         Set<Integer> values = new HashSet<>();
-        for (int i = 0; i < vector.length; i++) {
+        for (int i = 0; i < realLength; i++) {
             if (vector[i] > MIN_NORM_VAL) {
                 double val = Math.log(vector[i]);
                 double z = (val - muAndStd[0]) / muAndStd[1];
