@@ -116,7 +116,6 @@ public class Slice extends MixerCLT {
 
         ChromosomeHandler handler = ds.getChromosomeHandler();
 
-        // filter intervals as needed
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, handler, resolution);
 
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory, resolution, badIndices);

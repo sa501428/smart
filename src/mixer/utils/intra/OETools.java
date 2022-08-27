@@ -24,11 +24,11 @@
 
 package mixer.utils.intra;
 
+import javastraw.expected.LogExpectedSpline;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
-import mixer.utils.common.LogExpectedSpline;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -41,7 +41,7 @@ public class OETools {
     public static float[][] getCleanOEMatrix(MatrixZoomData zd, Chromosome chrom, int resolution,
                                              NormalizationType norm, Set<Integer> badIndices) {
 
-        LogExpectedSpline spline = new LogExpectedSpline(zd, norm, (int) (chrom.getLength() / resolution) + 1);
+        LogExpectedSpline spline = new LogExpectedSpline(zd, norm, chrom, resolution);
 
         int length = (int) (chrom.getLength() / resolution + 1);
         int minDist = FIVE_MB / resolution;
