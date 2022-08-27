@@ -37,6 +37,7 @@ import mixer.utils.clustering.QuickCentroids;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.drive.BinMappings;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
+import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.tracks.ColorMap;
 
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IndexOrderer {
 
     private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
-    private static final int DISTANCE = 5000000, FIVE_MB = 5000000, FIFTY_MB = 50000000;
+    private static final int FIVE_MB = 5000000, FIFTY_MB = 50000000;
     private static final int IGNORE = -1;
     private static final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
@@ -68,7 +69,7 @@ public class IndexOrderer {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
             if (zd != null) {
                 try {
-                    float[][] matrix = OETools.getOEMatrix(ds, zd, chrom, resolution, norm);
+                    float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, resolution, norm, badIndices.get(chrom.getIndex()));
                     int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
                             offset, resolution, generator.nextLong());
 
@@ -110,16 +111,16 @@ public class IndexOrderer {
     }
 
     private static int[] getNewOrderOfIndices(Chromosome chromosome, float[][] oeMatrix1,
-                                              Set<Integer> badIndices, int[] offset, int lowres,
+                                              Set<Integer> badIndices, int[] offset, int res,
                                               long seed) {
 
-        IntraMatrixCleaner.oeClean(oeMatrix1, badIndices);
         int[] newIndexOrderAssignments = generateNewAssignments(oeMatrix1.length, badIndices);
         int numPotentialClusters = (int) (chromosome.getLength() / FIFTY_MB) + 7;
 
         float[][] matrixCorr1 = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(oeMatrix1,
-                RobustCorrelationSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
-        IntraMatrixCleaner.basicClean(matrixCorr1, badIndices, FIVE_MB / lowres);
+                RobustCosineSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
+        IntraMatrixCleaner.nanFillBadRowsColumns(badIndices, matrixCorr1);
+        IntraMatrixCleaner.nanFillNearDiagonal(matrixCorr1, FIVE_MB / res);
 
         try {
             offset[0] = doAssignmentsByCorrWithCentroids(matrixCorr1, newIndexOrderAssignments, chromosome.getName(),

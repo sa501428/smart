@@ -29,13 +29,7 @@ import java.util.Set;
 
 public class IntraMatrixCleaner {
 
-    public static float[][] basicClean(float[][] matrix, Set<Integer> badIndices, int pixelDist) {
-        nanFillTheRowsColumnsWeDontWant(badIndices, matrix);
-        NearDiagonalTrim.trimDiagonalWithinPixelDist(matrix, pixelDist);
-        return matrix;
-    }
-
-    private static void nanFillTheRowsColumnsWeDontWant(Set<Integer> badIndices, float[][] matrix) {
+    public static void nanFillBadRowsColumns(Set<Integer> badIndices, float[][] matrix) {
         if (badIndices.size() < 1) return;
 
         for (int i = 0; i < matrix.length; i++) {
@@ -49,19 +43,23 @@ public class IntraMatrixCleaner {
         }
     }
 
-    public static float[][] oeClean(float[][] matrix, Set<Integer> badIndices) {
-        basicClean(matrix, badIndices, 3);
-        nanFillZeroEntries(matrix);
-        //nanFillExtremeOEValues(matrix); todo
-        return matrix;
-    }
 
-    private static void nanFillZeroEntries(float[][] matrix) {
+    public static void nanFillZeros(float[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 if (Math.abs(matrix[i][j]) < 1e-10) {
                     matrix[i][j] = Float.NaN;
                 }
+            }
+        }
+    }
+
+    public static void nanFillNearDiagonal(float[][] data, int pixelDistance) {
+        for (int i = 0; i < data.length; i++) {
+            int limit = Math.min(data[i].length, i + pixelDistance);
+            for (int j = i; j < limit; j++) {
+                data[i][j] = Float.NaN;
+                data[j][i] = Float.NaN;
             }
         }
     }

@@ -24,29 +24,43 @@
 
 package mixer.utils.intra;
 
-import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
-import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
+import mixer.utils.common.LogExpectedSpline;
 
 import java.util.Iterator;
+import java.util.Set;
 
 public class OETools {
-    public static float[][] getOEMatrix(Dataset ds, MatrixZoomData zd, Chromosome chrom, int resolution, NormalizationType norm) {
+
+    private static final int FIVE_MB = 5000000, FIFTY_MB = 50000000;
+
+    public static float[][] getCleanOEMatrix(MatrixZoomData zd, Chromosome chrom, int resolution,
+                                             NormalizationType norm, Set<Integer> badIndices) {
+
+        LogExpectedSpline spline = new LogExpectedSpline(zd, norm, (int) (chrom.getLength() / resolution) + 1);
+
         int length = (int) (chrom.getLength() / resolution + 1);
+        int minDist = FIVE_MB / resolution;
+
         float[][] matrix = new float[length][length];
-        double[] ev = ds.getExpectedValues(new HiCZoom(resolution), norm,
-                false).getExpectedValuesWithNormalization(chrom.getIndex()).getValues().get(0);
         Iterator<ContactRecord> recordIterator = zd.getNormalizedIterator(norm);
         while (recordIterator.hasNext()) {
             ContactRecord record = recordIterator.next();
             int dist = Math.abs(record.getBinX() - record.getBinY());
-            float oe = (float) ((record.getCounts() + 1) / (ev[dist] + 1));
+            float oe = Float.NaN;
+            if (dist > minDist) {
+                oe = (float) (record.getCounts() / spline.getExpectedFromUncompressedBin(dist));
+            }
             matrix[record.getBinX()][record.getBinY()] = oe;
             matrix[record.getBinY()][record.getBinX()] = oe;
         }
+
+        IntraMatrixCleaner.nanFillNearDiagonal(matrix, FIVE_MB / resolution);
+        IntraMatrixCleaner.nanFillBadRowsColumns(badIndices, matrix);
+        //IntraMatrixCleaner.nanFillZeroEntries(matrix);
         return matrix;
     }
 }
