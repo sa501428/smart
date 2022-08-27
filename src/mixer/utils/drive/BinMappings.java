@@ -102,26 +102,26 @@ public class BinMappings implements Mappings {
 
     @Override
     public int[] getProtocluster(Chromosome c1) {
-        return chromToBinToProtocluster.get(c1);
+        return chromToBinToProtocluster.get(c1.getIndex());
     }
 
     @Override
     public int[] getGlobalIndex(Chromosome c1) {
-        return chromToBinToGlobalIndex.get(c1);
+        return chromToBinToGlobalIndex.get(c1.getIndex());
     }
 
     @Override
     public boolean contains(Chromosome c1) {
-        return chromToBinToProtocluster.containsKey(c1) && chromToBinToGlobalIndex.containsKey(c1);
+        return chromToBinToProtocluster.containsKey(c1.getIndex()) && chromToBinToGlobalIndex.containsKey(c1.getIndex());
     }
 
     @Override
     public void printStatus() {
         for (Integer i : chromToBinToProtocluster.keySet()) {
-            System.out.println("key1 " + i + " " + chromToBinToProtocluster.get(i));
+            System.out.println("key1 " + i + " " + Arrays.toString(chromToBinToProtocluster.get(i)));
         }
         for (Integer i : chromToBinToGlobalIndex.keySet()) {
-            System.out.println("key2 " + i + " " + chromToBinToGlobalIndex.get(i));
+            System.out.println("key2 " + i + " " + Arrays.toString(chromToBinToGlobalIndex.get(i)));
         }
     }
 

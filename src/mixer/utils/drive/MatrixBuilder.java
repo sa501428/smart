@@ -32,6 +32,7 @@ import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
+import mixer.MixerTools;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.common.LogTools;
 import mixer.utils.magic.FinalScale;
@@ -58,7 +59,10 @@ public class MatrixBuilder {
             genomewideDistributionForChrom.put(chromosome.getIndex(), new int[numCols]);
         }
 
-        mappings.printStatus();
+        System.out.println(".");
+        if (MixerTools.printVerboseComments) {
+            mappings.printStatus();
+        }
 
         for (int i = 0; i < chromosomes.length; i++) {
             for (int j = i + 1; j < chromosomes.length; j++) {
