@@ -26,7 +26,6 @@ package mixer.utils.nv;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.norm.NormalizationVector;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationHandler;
@@ -44,10 +43,10 @@ public class BadIndexFinder {
     private static final int ZSCORE_MAX_NONZERO_COVERAGE = 3;
     private static final float MIN_NORM_VAL = 0.01f;
 
-    public static Map<Integer, Set<Integer>> getBadIndices(Dataset dataset, ChromosomeHandler handler,
+    public static Map<Integer, Set<Integer>> getBadIndices(Dataset dataset, Chromosome[] chromosomes,
                                                            int resolution) {
         Map<Integer, Set<Integer>> badIndices = new HashMap<>();
-        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
+
         for (Chromosome chromosome : chromosomes) {
             NormalizationVector nv = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), VC);
             badIndices.put(chromosome.getIndex(), updateCoverageStats(nv, chromosome, resolution));

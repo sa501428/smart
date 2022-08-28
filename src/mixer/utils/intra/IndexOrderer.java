@@ -26,7 +26,6 @@ package mixer.utils.intra;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
@@ -56,11 +55,11 @@ public class IndexOrderer {
     private static final int CHECK_VAL = -2;
     private static final float CORR_MIN = 0.2f;
 
-    public static BinMappings getInitialMappings(Dataset ds, ChromosomeHandler handler,
+    public static BinMappings getInitialMappings(Dataset ds, Chromosome[] chromosomes,
                                                  int resolution,
                                                  Map<Integer, Set<Integer>> badIndices, NormalizationType norm,
                                                  long seed, File outputDirectory) {
-        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
+
         Random generator = new Random(seed);
         int[] offset = new int[]{0};
         BinMappings mappings = new BinMappings(resolution, chromosomes);

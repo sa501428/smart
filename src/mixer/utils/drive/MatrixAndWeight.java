@@ -38,12 +38,13 @@ import java.util.*;
 public class MatrixAndWeight {
     public float[][] matrix;
     public int[] weights;
-    private final Map<Integer, SubcompartmentInterval> map;
+    private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
+
 
     public MatrixAndWeight(float[][] interMatrix, int[] weights, Mappings mappings) {
         this.matrix = interMatrix;
         this.weights = weights;
-        this.map = getRowIndexToIntervalMap(mappings);
+        if (mappings != null) populateRowIndexToIntervalMap(mappings);
     }
 
     public void inPlaceScaleSqrtWeightCol() {
@@ -85,10 +86,9 @@ public class MatrixAndWeight {
         return newInterv;
     }
 
-    private Map<Integer, SubcompartmentInterval> getRowIndexToIntervalMap(Mappings mappings) {
+    private void populateRowIndexToIntervalMap(Mappings mappings) {
         int resolution = mappings.getResolution();
         Chromosome[] chromosomes = mappings.getChromosomes();
-        Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
         for (Chromosome chromosome : chromosomes) {
             int maxGenomeLen = (int) chromosome.getLength();
             int[] globalIndices = mappings.getGlobalIndex(chromosome);
@@ -98,10 +98,9 @@ public class MatrixAndWeight {
                     int x1 = i * resolution;
                     int x2 = Math.min(x1 + resolution, maxGenomeLen);
                     SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, -1);
-                    rowIndexToIntervalMap.put(coord, newRInterval);
+                    map.put(coord, newRInterval);
                 }
             }
         }
-        return rowIndexToIntervalMap;
     }
 }

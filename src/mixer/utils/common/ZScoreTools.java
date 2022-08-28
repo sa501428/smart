@@ -76,7 +76,7 @@ public class ZScoreTools {
         });
     }
 
-    private static ZScoreArray getZscores(float[][] matrix) {
+    public static ZScoreArray getZscores(float[][] matrix) {
         WelfordArray welfords = new WelfordArray(matrix[0].length);
 
         for (int i = 0; i < matrix.length; i++) {

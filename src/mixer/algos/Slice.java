@@ -25,12 +25,14 @@
 package mixer.algos;
 
 import javastraw.reader.Dataset;
+import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.norm.NormalizationPicker;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.cleaning.MatrixPreprocessor;
 import mixer.utils.drive.BinMappings;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
@@ -113,19 +115,21 @@ public class Slice extends MixerCLT {
     public void run() {
 
         ChromosomeHandler handler = ds.getChromosomeHandler();
+        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
 
-        Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, handler, resolution);
+        Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution);
 
         // todo should be at lower res
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory, resolution, badIndices);
 
         // todo should be at lower res
-        BinMappings mappings = IndexOrderer.getInitialMappings(ds, handler, resolution,
+        BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
-        MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, handler, resolution,
-                norms[INTER_SCALE_INDEX], mappings, false, translocations, outputDirectory,
-                true);
+        MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
+                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory);
+
+        MatrixPreprocessor.clean(slice, mappings, chromosomes, false, true);
 
         slice.export(outputDirectory, "magic");
 

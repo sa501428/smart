@@ -26,36 +26,29 @@ package mixer.utils.drive;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.Matrix;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
 import mixer.MixerTools;
-import mixer.utils.common.ArrayTools;
-import mixer.utils.common.ZScoreTools;
-import mixer.utils.magic.FinalScale;
-import mixer.utils.magic.SymmLLInterMatrix;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class MatrixBuilder {
-    public static MatrixAndWeight populateMatrix(Dataset ds, ChromosomeHandler handler, int resolution,
+    public static MatrixAndWeight populateMatrix(Dataset ds, Chromosome[] chromosomes, int resolution,
                                                  NormalizationType norm, Mappings mappings,
-                                                 boolean doScale, SimpleTranslocationFinder translocations,
-                                                 File outputDirectory, boolean doZscore) {
+                                                 SimpleTranslocationFinder translocations,
+                                                 File outputDirectory) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
         float[][] matrix = new float[numRows][numCols];
 
-        Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         Map<Integer, int[]> genomewideDistributionForChrom = new HashMap<>();
         for (Chromosome chromosome : chromosomes) {
             genomewideDistributionForChrom.put(chromosome.getIndex(), new int[numCols]);
@@ -92,48 +85,6 @@ public class MatrixBuilder {
             System.out.println(".");
         }
 
-        int[] totalDistribution = getSumOfAllLoci(mappings, numCols, chromosomes);
-        System.arraycopy(totalDistribution, 0, weights, 0, numCols);
-
-        if (doScale) {
-            scaleMatrixColumns(matrix, totalDistribution);
-            matrix = FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix),
-                    createTargetVector(totalDistribution, numRows, numCols));
-        }
-
-        //ParallelizedStatTools.setZerosToNan(data);
-        //ParallelizedStatTools.scaleDown(data, weights);
-        //LogTools.simpleLogWithCleanup(matrix, Float.NaN);
-        //removeHighGlobalThresh(data, weights, 5, Slice.USE_WEIGHTED_MEAN);
-        //renormalize(data, weights, -2, 2, Slice.USE_WEIGHTED_MEAN);
-        //LogTools.simpleExpm1(data);
-
-        // todo normalizeMatrix(matrix, mappings, chromosomes);
-
-        //float[] coverage = new float[numRows];
-        //updateCoverage(matrix, coverage);
-        //scaleCoverage(coverage);
-
-
-        //todo matrix = EmptyRowCleaner.cleanUpMatrix(matrix, rowIndexToIntervalMap, coverage);
-
-        //LogTools.simpleExpm1(matrix);
-
-        /*
-        if (Slice.FILTER_OUTLIERS) {
-            ParallelizedStatTools.setZerosToNan(data);
-            ParallelizedStatTools.scaleDown(data, weights);
-            LogTools.simpleLogWithCleanup(data, Float.NaN);
-            removeHighGlobalThresh(data, weights, 5, Slice.USE_WEIGHTED_MEAN);
-            renormalize(data, weights, -2, 2, Slice.USE_WEIGHTED_MEAN);
-            LogTools.simpleExpm1(data);
-        }
-        */
-
-        if (doZscore) {
-            ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix);
-        }
-
         return new MatrixAndWeight(matrix, weights, mappings);
     }
 
@@ -164,86 +115,10 @@ public class MatrixBuilder {
         }
     }
 
-    /*
-    private static boolean shouldSkipRegion(Chromosome c1, Chromosome c2) {
-        for (InterChromosomeRegion region : regionsToIgnore) {
-            if (region.is(c1, c2)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    */
-
-
-    private static int[] createTargetVector(int[] colSums, int numRows, int numCols) {
-        int[] target = new int[numRows + numCols];
-        Arrays.fill(target, 1);
-        if (numCols >= 0) System.arraycopy(colSums, 0, target, 0, numCols);
-        return target;
-    }
-
-    private static void scaleCoverage(float[] coverage) {
-        float mean = ArrayTools.getNonZeroMean(coverage);
-        for (int k = 0; k < coverage.length; k++) {
-            coverage[k] /= mean;
-        }
-    }
-
-    private static void updateCoverage(float[][] matrix, float[] coverage) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                coverage[i] += matrix[i][j];
-            }
-        }
-    }
-
-
     private static void updateNumberOfLoci(int[] totalLoci, int[] lociForRegion) {
         for (int i = 0; i < totalLoci.length; i++) {
             totalLoci[i] += lociForRegion[i];
         }
     }
 
-    private static int[] getSumOfAllLoci(Mappings mappings, int numCols, Chromosome[] chromosomes) {
-        int[] totalLoci = new int[numCols];
-        for (Chromosome chromosome : chromosomes) {
-            int[] row = mappings.getDistributionForChrom(chromosome);
-            for (int z = 0; z < row.length; z++) {
-                totalLoci[z] += row[z];
-            }
-        }
-        return totalLoci;
-    }
-
-    private static void normalizeMatrix(float[][] matrix, Mappings mappings, Chromosome[] chromosomes) {
-
-        for (Chromosome chromosome : chromosomes) {
-            int[] globalIndices = mappings.getGlobalIndex(chromosome);
-            int[] divisor = mappings.getDistributionForChrom(chromosome);
-            for (int i : globalIndices) {
-                if (i > -1) {
-                    divide(matrix[i], divisor);
-                }
-            }
-        }
-    }
-
-    private static void divide(float[] row, int[] totalLoci) {
-        for (int k = 0; k < row.length; k++) {
-            if (totalLoci[k] > 0) {
-                row[k] = row[k] / totalLoci[k];
-            } else if (row[k] > 0) {
-                System.err.println("Impossible situation reached: row val: " + row[k] + " but expect no entries: " + totalLoci[k]);
-            }
-        }
-    }
-
-    private static void scaleMatrixColumns(float[][] matrix, int[] scalars) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int z = 0; z < matrix[i].length; z++) {
-                matrix[i][z] *= scalars[z];
-            }
-        }
-    }
 }
