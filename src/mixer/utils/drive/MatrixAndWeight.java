@@ -63,10 +63,8 @@ public class MatrixAndWeight {
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
 
         int genomewideCompartmentID = 0;
-        for (int z = 0; z < clusters.length; z++) {
-            Cluster cluster = clusters[z];
+        for (Cluster cluster : clusters) {
             int currentClusterID = ++genomewideCompartmentID;
-
             for (int i : cluster.getMemberIndexes()) {
                 if (map.containsKey(i)) {
                     SubcompartmentInterval interv = map.get(i);
