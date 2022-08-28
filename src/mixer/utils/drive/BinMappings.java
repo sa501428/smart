@@ -40,9 +40,11 @@ public class BinMappings implements Mappings {
     private int numCols = 0;
     private static final int IGNORE = -1;
     private final int resolution;
+    private final Chromosome[] chromosomes;
 
-    public BinMappings(int resolution) {
+    public BinMappings(int resolution, Chromosome[] chromosomes) {
         this.resolution = resolution;
+        this.chromosomes = chromosomes;
     }
 
     public void putBinToProtoCluster(Chromosome chrom, int[] binToProtocluster) {
@@ -96,6 +98,11 @@ public class BinMappings implements Mappings {
     }
 
     @Override
+    public int getResolution() {
+        return resolution;
+    }
+
+    @Override
     public int[] getDistributionForChrom(Chromosome chromosome) {
         return chromToDistributionForChromosome.get(chromosome.getIndex());
     }
@@ -123,6 +130,11 @@ public class BinMappings implements Mappings {
         for (Integer i : chromToBinToGlobalIndex.keySet()) {
             System.out.println("key2 " + i + " " + Arrays.toString(chromToBinToGlobalIndex.get(i)));
         }
+    }
+
+    @Override
+    public Chromosome[] getChromosomes() {
+        return chromosomes;
     }
 
     protected int[][] getGenomeIndices() {

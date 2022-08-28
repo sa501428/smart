@@ -31,6 +31,8 @@ public interface Mappings {
 
     int getNumCols();
 
+    int getResolution();
+
     int[] getDistributionForChrom(Chromosome chromosome);
 
     int[] getProtocluster(Chromosome c1);
@@ -40,4 +42,6 @@ public interface Mappings {
     boolean contains(Chromosome c1);
 
     void printStatus();
+
+    Chromosome[] getChromosomes();
 }

@@ -79,7 +79,7 @@ public class SliceMatrixCleaner {
 
         //ZScoreTools.inPlaceZscoreDownCol(data);
 
-        return new MatrixAndWeight(data, weights);
+        return new MatrixAndWeight(data, weights, null);
     }
 
     private void renormalize(float[][] data, int[] weights, int lowCutOff, int highCutOff, boolean useWeights) {

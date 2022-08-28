@@ -52,7 +52,7 @@ public abstract class DimensionCleaner {
         //badIndices.addAll(outlierIndices);
 
         if (badIndices.size() == 0) {
-            return new MatrixAndWeight(matrix, weights);
+            return new MatrixAndWeight(matrix, weights, null);
         }
 
         return filterOutBadIndices(badIndices, matrix, weights);

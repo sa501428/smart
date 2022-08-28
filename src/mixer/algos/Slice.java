@@ -132,12 +132,6 @@ public class Slice extends MixerCLT {
         ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
         clustering.extractFinalGWSubcompartments(prefix);
 
-        //sliceMatrix.cleanUpMatricesBySparsity();
-
-        // run clustering
-
-        // save bed file output
-
         System.out.println("\nSLICE complete");
     }
 }

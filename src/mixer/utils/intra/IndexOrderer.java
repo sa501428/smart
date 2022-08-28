@@ -63,7 +63,7 @@ public class IndexOrderer {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
         Random generator = new Random(seed);
         int[] offset = new int[]{0};
-        BinMappings mappings = new BinMappings(resolution);
+        BinMappings mappings = new BinMappings(resolution, chromosomes);
 
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);

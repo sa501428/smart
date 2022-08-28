@@ -52,7 +52,7 @@ public class RowCleaner extends DimensionCleaner {
         float[][] newMatrix = MatrixRowCleaner.makeNewMatrixAndUpdateIndices(matrix, original, badIndices);
 
 
-        return new MatrixAndWeight(newMatrix, weights);
+        return new MatrixAndWeight(newMatrix, weights, null);
     }
 
     @Override

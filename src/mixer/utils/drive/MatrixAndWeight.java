@@ -24,18 +24,26 @@
 
 package mixer.utils.drive;
 
+import javastraw.feature1D.GenomeWide1DList;
+import javastraw.reader.basics.Chromosome;
 import javastraw.tools.MatrixTools;
 import mixer.utils.common.ZScoreTools;
+import mixer.utils.tracks.SliceUtils;
+import mixer.utils.tracks.SubcompartmentInterval;
+import robust.concurrent.kmeans.clustering.Cluster;
 
 import java.io.File;
+import java.util.*;
 
 public class MatrixAndWeight {
     public float[][] matrix;
     public int[] weights;
+    private final Map<Integer, SubcompartmentInterval> map;
 
-    public MatrixAndWeight(float[][] interMatrix, int[] weights) {
+    public MatrixAndWeight(float[][] interMatrix, int[] weights, Mappings mappings) {
         this.matrix = interMatrix;
         this.weights = weights;
+        this.map = getRowIndexToIntervalMap(mappings);
     }
 
     public void inPlaceScaleSqrtWeightCol() {
@@ -48,5 +56,54 @@ public class MatrixAndWeight {
 
         String path2 = new File(outputDirectory, stem + ".weights.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(path2, weights);
+    }
+
+    public void processKMeansClusteringResult(Cluster[] clusters, GenomeWide1DList<SubcompartmentInterval> subcompartments) {
+
+        Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
+
+        int genomewideCompartmentID = 0;
+        for (int z = 0; z < clusters.length; z++) {
+            Cluster cluster = clusters[z];
+            int currentClusterID = ++genomewideCompartmentID;
+
+            for (int i : cluster.getMemberIndexes()) {
+                if (map.containsKey(i)) {
+                    SubcompartmentInterval interv = map.get(i);
+                    if (interv != null) {
+                        subcompartmentIntervals.add(generateNewSubcompartment(interv, currentClusterID));
+                    }
+                }
+            }
+        }
+
+        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
+        SliceUtils.reSort(subcompartments);
+    }
+
+    protected SubcompartmentInterval generateNewSubcompartment(SubcompartmentInterval interv, int currentClusterID) {
+        SubcompartmentInterval newInterv = (SubcompartmentInterval) interv.deepClone();
+        newInterv.setClusterID(currentClusterID);
+        return newInterv;
+    }
+
+    private Map<Integer, SubcompartmentInterval> getRowIndexToIntervalMap(Mappings mappings) {
+        int resolution = mappings.getResolution();
+        Chromosome[] chromosomes = mappings.getChromosomes();
+        Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap = new HashMap<>();
+        for (Chromosome chromosome : chromosomes) {
+            int maxGenomeLen = (int) chromosome.getLength();
+            int[] globalIndices = mappings.getGlobalIndex(chromosome);
+            for (int i = 0; i < globalIndices.length; i++) {
+                if (globalIndices[i] > -1) {
+                    int coord = globalIndices[i];
+                    int x1 = i * resolution;
+                    int x2 = Math.min(x1 + resolution, maxGenomeLen);
+                    SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, -1);
+                    rowIndexToIntervalMap.put(coord, newRInterval);
+                }
+            }
+        }
+        return rowIndexToIntervalMap;
     }
 }

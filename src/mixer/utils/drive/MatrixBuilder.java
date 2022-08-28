@@ -32,7 +32,6 @@ import javastraw.reader.mzd.Matrix;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
-import javastraw.tools.MatrixTools;
 import mixer.MixerTools;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.common.ZScoreTools;
@@ -93,9 +92,10 @@ public class MatrixBuilder {
             System.out.println(".");
         }
 
+        int[] totalDistribution = getSumOfAllLoci(mappings, numCols, chromosomes);
+        System.arraycopy(totalDistribution, 0, weights, 0, numCols);
+
         if (doScale) {
-            int[] totalDistribution = getSumOfAllLoci(mappings, numCols, chromosomes);
-            System.arraycopy(totalDistribution, 0, weights, 0, Math.max(weights.length, totalDistribution.length));
             scaleMatrixColumns(matrix, totalDistribution);
             matrix = FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix),
                     createTargetVector(totalDistribution, numRows, numCols));
@@ -107,11 +107,6 @@ public class MatrixBuilder {
         //removeHighGlobalThresh(data, weights, 5, Slice.USE_WEIGHTED_MEAN);
         //renormalize(data, weights, -2, 2, Slice.USE_WEIGHTED_MEAN);
         //LogTools.simpleExpm1(data);
-
-        if (MixerTools.printVerboseComments) {
-            String path1 = new File(outputDirectory, "initial.matrix.npy").getAbsolutePath();
-            MatrixTools.saveMatrixTextNumpy(path1, matrix);
-        }
 
         // todo normalizeMatrix(matrix, mappings, chromosomes);
 
@@ -139,7 +134,7 @@ public class MatrixBuilder {
             ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix);
         }
 
-        return new MatrixAndWeight(matrix, weights);
+        return new MatrixAndWeight(matrix, weights, mappings);
     }
 
 
@@ -211,8 +206,6 @@ public class MatrixBuilder {
     }
 
     private static int[] getSumOfAllLoci(Mappings mappings, int numCols, Chromosome[] chromosomes) {
-
-
         int[] totalLoci = new int[numCols];
         for (Chromosome chromosome : chromosomes) {
             int[] row = mappings.getDistributionForChrom(chromosome);

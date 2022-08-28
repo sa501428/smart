@@ -98,7 +98,7 @@ public class KmeansResult {
     public void processResultAndUpdateScoringMetrics(Cluster[] clusters, MatrixAndWeight matrix,
                                                      boolean useKMedians, boolean useCorrMatrix) {
         populateIndicesMap(clusters);
-        // todo matrix.processKMeansClusteringResult(clusters, finalCompartments);
+        matrix.processKMeansClusteringResult(clusters, finalCompartments);
         wcss = getWCSS(clusters, matrix, useCorrMatrix, useKMedians);
         clusterCorrMatrix = calculateCorrelations(clusters);
         worstCorr = getMaxOffDiag(clusterCorrMatrix);

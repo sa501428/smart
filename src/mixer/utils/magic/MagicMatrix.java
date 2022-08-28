@@ -96,7 +96,7 @@ public class MagicMatrix extends DriveMatrix {
 
     @Override
     public MatrixAndWeight getData() {
-        return new MatrixAndWeight(matrix, weights);
+        return new MatrixAndWeight(matrix, weights, null);
     }
 
     @Override
