@@ -43,22 +43,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option helpOption = addBooleanOption('h', "help");
     private final Option versionOption = addBooleanOption('V', "version");
     private final Option normalizationTypeOption = addStringOption('k', "normalization");
-    private final Option matrixSizeOption = addIntegerOption('m', "matrix-window-width");
-    private final Option multipleChromosomesOption = addStringOption('c', "chromosomes");
     private final Option multipleResolutionsOption = addStringOption('r', "resolutions");
-    private final Option threadNumOption = addIntegerOption('z', "threads");
-    private final Option subsampleNumOption = addIntegerOption("subsample");
-    private final Option randomSeedsOption = addStringOption("random-seeds");
-    private final Option sliceWindowOption = addIntegerOption('w', "window");
-    private final Option seedOption = addIntegerOption("seed");
-    private final Option sliceCompareOption = addStringOption("compare");
-    private final Option translocationOption = addBooleanOption("has-translocation");
-    private final Option encodeOption = addBooleanOption("encode-mode");
-    private final Option logOption = addBooleanOption("log");
+    private final Option randomSeedsOption = addStringOption("seed");
     private final Option zScoreOption = addBooleanOption("zscore");
     private final Option scaleOption = addBooleanOption("scale");
-    private final Option mapTypeOption = addIntegerOption("type");
-    private final Option correlationTypeOption = addIntegerOption("corr");
 
     public CommandLineParserForMixer() {
     }
@@ -68,48 +56,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
      */
     public NormalizationType getNormalizationTypeOption(NormalizationHandler normalizationHandler) {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
-    }
-
-    public String getCompareReferenceOption() {
-        return optionToString(sliceCompareOption);
-    }
-
-    /**
-     * int flags
-     */
-    public int getWindowSizeOption() {
-        return optionToInt(sliceWindowOption);
-    }
-
-    public int getSeedOption() {
-        return optionToInt(seedOption);
-    }
-
-    public int getMatrixSizeOption() {
-        return optionToInt(matrixSizeOption);
-    }
-
-    public int getNumThreads() {
-        return optionToInt(threadNumOption);
-    }
-
-    public int getSubsamplingOption() {
-        return optionToInt(subsampleNumOption);
-    }
-
-    public int getMapTypeOption() {
-        return optionToInt(mapTypeOption);
-    }
-
-    public int getCorrelationTypeOption() {
-        return optionToInt(correlationTypeOption);
-    }
-
-    /**
-     * String Set flags
-     */
-    List<String> getChromosomeListOption() {
-        return optionToStringList(multipleChromosomesOption);
     }
 
     public List<Integer> getMultipleResolutionOptions() {
@@ -156,22 +102,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return opt == null ? null : opt.toString();
     }
 
-    /**
-     * int flags
-     */
-    private int optionToInt(Option option) {
-        Object opt = getOptionValue(option);
-        return opt == null ? 0 : ((Number) opt).intValue();
-    }
-
-    /**
-     * double flags
-     */
-    private double optionToDouble(Option option) {
-        Object opt = getOptionValue(option);
-        return opt == null ? 0 : ((Number) opt).doubleValue();
-    }
-
     private List<String> optionToStringList(Option option) {
         Object opt = getOptionValue(option);
         return opt == null ? null : new ArrayList<>(Arrays.asList(opt.toString().split(",")));
@@ -199,18 +129,6 @@ public class CommandLineParserForMixer extends CmdLineParser {
             System.exit(7);
         }
         return null;
-    }
-
-    public boolean getHasTranslocation() {
-        return optionToBoolean(translocationOption);
-    }
-
-    public boolean getENCODEOption() {
-        return optionToBoolean(encodeOption);
-    }
-
-    public boolean getLogOption() {
-        return optionToBoolean(logOption);
     }
 
     public boolean getZScoreOption() {

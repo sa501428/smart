@@ -51,7 +51,6 @@ import java.util.Set;
  */
 public class Slice extends MixerCLT {
     private final int maxIters = 200;
-
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
     public static final int GW_SCALE_INDEX = 2;
@@ -102,7 +101,6 @@ public class Slice extends MixerCLT {
         updateGeneratorSeed(mixerParser, generator);
     }
 
-
     private NormalizationType[] populateNormalizations(Dataset ds) {
         NormalizationType[] norms = new NormalizationType[3];
         norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
@@ -118,8 +116,10 @@ public class Slice extends MixerCLT {
 
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, handler, resolution);
 
+        // todo should be at lower res
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory, resolution, badIndices);
 
+        // todo should be at lower res
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, handler, resolution,
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
@@ -128,6 +128,9 @@ public class Slice extends MixerCLT {
                 true);
 
         slice.export(outputDirectory, "magic");
+
+        ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+        clustering.extractFinalGWSubcompartments(prefix);
 
         //sliceMatrix.cleanUpMatricesBySparsity();
 

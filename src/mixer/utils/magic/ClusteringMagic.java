@@ -28,15 +28,11 @@ import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.kmeans.GenomeWideKmeansRunner;
-import mixer.utils.kmeans.KmeansEvaluator;
 import mixer.utils.kmeans.KmeansResult;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class ClusteringMagic {
@@ -44,7 +40,7 @@ public class ClusteringMagic {
     public static int numClusterSizeKValsUsed = 10;
     public static int numAttemptsForKMeans = 3;
     private final File outputDirectory;
-    private final int maxIters = 200;
+    private static final int maxIters = 200;
     private final Random generator = new Random(2352);
     private final MatrixAndWeight matrix;
     private final ChromosomeHandler handler;
@@ -59,69 +55,47 @@ public class ClusteringMagic {
 
     public void extractFinalGWSubcompartments(String prefix) {
         System.out.println("Genomewide clustering");
-        processClustering(prefix, false);
+        matrix.inPlaceScaleSqrtWeightCol();
+        runClusteringOnMatrix(prefix, false);
 
         matrix.inPlaceScaleSqrtWeightCol();
-        processClustering(prefix, true);
+        runClusteringOnMatrix(prefix, true);
     }
 
-    private void processClustering(String prefix, boolean useKMedians) {
-        runClusteringOnMatrix(prefix, useKMedians);
-        // todo CorrMatrixClusterer.runClusteringOnCorrMatrix(this, prefix + "_corr", useKMedians);
-    }
-
-    public void runClusteringOnMatrix(String prefix, boolean useKMedians) {
-        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> kmeansClustersToResults = new HashMap<>();
-        Map<Integer, List<List<Integer>>> kmeansIndicesMap = new HashMap<>();
-
+    private void runClusteringOnMatrix(String prefix, boolean useKMedians) {
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(handler, matrix,
                 false, useKMedians);
-        KmeansEvaluator evaluator = new KmeansEvaluator(numClusterSizeKValsUsed);
-
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-            runRepeatedKMeansClusteringLoop(numAttemptsForKMeans, kmeansRunner, evaluator, z,
-                    maxIters, kmeansClustersToResults, kmeansIndicesMap);
-            exportKMeansClusteringResults(z, kmeansClustersToResults, prefix, kmeansIndicesMap, useKMedians);
+            runKMeansMultipleTimes(numAttemptsForKMeans, kmeansRunner, z, maxIters, useKMedians, prefix);
         }
         System.out.println(".");
     }
 
-    public void exportKMeansClusteringResults(int z,
-                                              Map<Integer, GenomeWide1DList<SubcompartmentInterval>> numClustersToResults,
-                                              String prefix, Map<Integer, List<List<Integer>>> kmeansIndicesMap,
-                                              boolean useKMedians) {
-        int k = z + startingClusterSizeK;
-        String kstem = "kmeans";
-        if (useKMedians) kstem = "kmedians";
-        GenomeWide1DList<SubcompartmentInterval> gwList = numClustersToResults.get(k);
-        SliceUtils.collapseGWList(gwList);
-        File outBedFile = new File(outputDirectory, prefix + "_" + k + "_" + kstem + "_clusters.bed");
-        gwList.simpleExport(outBedFile);
-    }
-
-    public void runRepeatedKMeansClusteringLoop(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
-                                                KmeansEvaluator evaluator, int z, int maxIters,
-                                                Map<Integer, GenomeWide1DList<SubcompartmentInterval>> numClustersToResults,
-                                                Map<Integer, List<List<Integer>>> indicesMap) {
+    private void runKMeansMultipleTimes(int attemptsForKMeans, GenomeWideKmeansRunner kmeansRunner,
+                                        int z, int maxIters, boolean useKMedians, String prefix) {
         int numClusters = z + startingClusterSizeK;
-        int numColumns = kmeansRunner.getNumColumns();
-        int numRows = kmeansRunner.getNumRows();
         for (int p = 0; p < attemptsForKMeans; p++) {
-            boolean noClusteringFound = true;
-            while (noClusteringFound) {
+            for (int attempts = 0; attempts < 5; attempts++) {
+                System.out.print(".");
                 kmeansRunner.prepareForNewRun(numClusters);
                 kmeansRunner.launchKmeansGWMatrix(generator.nextLong(), maxIters);
                 KmeansResult currResult = kmeansRunner.getResult();
                 if (currResult.getNumActualClusters() == numClusters) {
-                    noClusteringFound = false;
-                    if (currResult.getWithinClusterSumOfSquares() < evaluator.getWCSS(z)) {
-                        evaluator.setMseAicBicValues(z, numRows, numColumns, currResult);
-                        indicesMap.put(z, currResult.getIndicesMapClone());
-                        numClustersToResults.put(numClusters, currResult.getFinalCompartmentsClone());
-                    }
+                    exportKMeansClusteringResults(z, prefix, useKMedians, p,
+                            currResult.getWithinClusterSumOfSquares(), currResult.getFinalCompartmentsClone());
+                    break;
                 }
-                System.out.print(".");
             }
         }
+    }
+
+    private void exportKMeansClusteringResults(int z, String prefix, boolean useKMedians, int iter, double wcss,
+                                               GenomeWide1DList<SubcompartmentInterval> finalCompartments) {
+        int k = z + startingClusterSizeK;
+        String kstem = "kmeans";
+        if (useKMedians) kstem = "kmedians";
+        SliceUtils.collapseGWList(finalCompartments);
+        File outBedFile = new File(outputDirectory, prefix + "_" + kstem + "_k" + k + "_iter" + iter + "_wcss" + wcss + "_clusters.bed");
+        finalCompartments.simpleExport(outBedFile);
     }
 }
