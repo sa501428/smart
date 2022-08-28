@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IndexOrderer {
 
     private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
-    private static final int FIVE_MB = 5000000, FIFTY_MB = 50000000;
+    private static final int FIVE_MB = 5000000, FIFTY_MB = 50000000, HUNDRED_MB = 100000000;
     private static final int IGNORE = -1;
     private static final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
@@ -115,7 +115,7 @@ public class IndexOrderer {
                                               long seed) {
 
         int[] newIndexOrderAssignments = generateNewAssignments(oeMatrix1.length, badIndices);
-        int numPotentialClusters = (int) (chromosome.getLength() / FIFTY_MB) + 7;
+        int numPotentialClusters = (int) (chromosome.getLength() / HUNDRED_MB) + 5;
 
         float[][] matrixCorr1 = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(oeMatrix1,
                 RobustCosineSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);

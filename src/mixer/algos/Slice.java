@@ -124,7 +124,7 @@ public class Slice extends MixerCLT {
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
         MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, handler, resolution,
-                norms[INTER_SCALE_INDEX], mappings, false, translocations);
+                norms[INTER_SCALE_INDEX], mappings, false, translocations, outputDirectory);
 
         slice.export(outputDirectory, "magic");
 

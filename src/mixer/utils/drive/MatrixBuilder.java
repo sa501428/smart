@@ -32,6 +32,7 @@ import javastraw.reader.mzd.Matrix;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
+import javastraw.tools.MatrixTools;
 import mixer.MixerTools;
 import mixer.utils.common.ArrayTools;
 import mixer.utils.common.LogTools;
@@ -39,6 +40,7 @@ import mixer.utils.magic.FinalScale;
 import mixer.utils.magic.SymmLLInterMatrix;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,7 +49,8 @@ import java.util.Map;
 public class MatrixBuilder {
     public static MatrixAndWeight populateMatrix(Dataset ds, ChromosomeHandler handler, int resolution,
                                                  NormalizationType norm, Mappings mappings,
-                                                 boolean doScale, SimpleTranslocationFinder translocations) {
+                                                 boolean doScale, SimpleTranslocationFinder translocations,
+                                                 File outputDirectory) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
@@ -96,6 +99,11 @@ public class MatrixBuilder {
         //removeHighGlobalThresh(data, weights, 5, Slice.USE_WEIGHTED_MEAN);
         //renormalize(data, weights, -2, 2, Slice.USE_WEIGHTED_MEAN);
         //LogTools.simpleExpm1(data);
+
+        if (MixerTools.printVerboseComments) {
+            String path1 = new File(outputDirectory, "initial.matrix.npy").getAbsolutePath();
+            MatrixTools.saveMatrixTextNumpy(path1, matrix);
+        }
 
         normalizeMatrix(matrix, mappings, chromosomes);
 
