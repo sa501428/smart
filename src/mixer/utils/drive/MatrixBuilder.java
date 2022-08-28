@@ -35,7 +35,7 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.MatrixTools;
 import mixer.MixerTools;
 import mixer.utils.common.ArrayTools;
-import mixer.utils.common.LogTools;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.magic.FinalScale;
 import mixer.utils.magic.SymmLLInterMatrix;
 import mixer.utils.translocations.SimpleTranslocationFinder;
@@ -50,7 +50,7 @@ public class MatrixBuilder {
     public static MatrixAndWeight populateMatrix(Dataset ds, ChromosomeHandler handler, int resolution,
                                                  NormalizationType norm, Mappings mappings,
                                                  boolean doScale, SimpleTranslocationFinder translocations,
-                                                 File outputDirectory) {
+                                                 File outputDirectory, boolean doZscore) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
@@ -93,9 +93,17 @@ public class MatrixBuilder {
             System.out.println(".");
         }
 
+        if (doScale) {
+            int[] totalDistribution = getSumOfAllLoci(mappings, numCols, chromosomes);
+            System.arraycopy(totalDistribution, 0, weights, 0, Math.max(weights.length, totalDistribution.length));
+            scaleMatrixColumns(matrix, totalDistribution);
+            matrix = FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix),
+                    createTargetVector(totalDistribution, numRows, numCols));
+        }
+
         //ParallelizedStatTools.setZerosToNan(data);
         //ParallelizedStatTools.scaleDown(data, weights);
-        LogTools.simpleLogWithCleanup(matrix, Float.NaN);
+        //LogTools.simpleLogWithCleanup(matrix, Float.NaN);
         //removeHighGlobalThresh(data, weights, 5, Slice.USE_WEIGHTED_MEAN);
         //renormalize(data, weights, -2, 2, Slice.USE_WEIGHTED_MEAN);
         //LogTools.simpleExpm1(data);
@@ -105,28 +113,33 @@ public class MatrixBuilder {
             MatrixTools.saveMatrixTextNumpy(path1, matrix);
         }
 
-        normalizeMatrix(matrix, mappings, chromosomes);
+        // todo normalizeMatrix(matrix, mappings, chromosomes);
 
-        float[] coverage = new float[numRows];
-        updateCoverage(matrix, coverage);
-        scaleCoverage(coverage);
+        //float[] coverage = new float[numRows];
+        //updateCoverage(matrix, coverage);
+        //scaleCoverage(coverage);
 
-        int[] totalDistribution = getSumOfAllLoci(mappings, numCols, chromosomes);
-        System.arraycopy(totalDistribution, 0, weights, 0, Math.max(weights.length, totalDistribution.length));
-        scaleMatrixColumns(matrix, totalDistribution);
 
         //todo matrix = EmptyRowCleaner.cleanUpMatrix(matrix, rowIndexToIntervalMap, coverage);
 
-        LogTools.simpleExpm1(matrix);
+        //LogTools.simpleExpm1(matrix);
 
-        if (doScale) {
-            return new MatrixAndWeight(
-                    FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix),
-                            createTargetVector(totalDistribution, numRows, numCols)),
-                    weights);
-        } else {
-            return new MatrixAndWeight(matrix, weights);
+        /*
+        if (Slice.FILTER_OUTLIERS) {
+            ParallelizedStatTools.setZerosToNan(data);
+            ParallelizedStatTools.scaleDown(data, weights);
+            LogTools.simpleLogWithCleanup(data, Float.NaN);
+            removeHighGlobalThresh(data, weights, 5, Slice.USE_WEIGHTED_MEAN);
+            renormalize(data, weights, -2, 2, Slice.USE_WEIGHTED_MEAN);
+            LogTools.simpleExpm1(data);
         }
+        */
+
+        if (doZscore) {
+            ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix);
+        }
+
+        return new MatrixAndWeight(matrix, weights);
     }
 
 

@@ -29,7 +29,6 @@ import mixer.algos.Slice;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.common.LogTools;
 import mixer.utils.common.ParallelizedStatTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.tracks.SubcompartmentInterval;
 
@@ -78,7 +77,7 @@ public class SliceMatrixCleaner {
             System.out.println("Matrix size after row cleanup " + data.length + " x " + data[0].length);
         }
 
-        ZScoreTools.inPlaceZscoreDownCol(data);
+        //ZScoreTools.inPlaceZscoreDownCol(data);
 
         return new MatrixAndWeight(data, weights);
     }

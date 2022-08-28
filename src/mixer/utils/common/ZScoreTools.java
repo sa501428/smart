@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ public class ZScoreTools {
         });
     }
 
-    public static void inPlaceZscoreDownCol(float[][] matrix) {
+    public static void inPlaceZscorePositivesDownColAndSetZeroToNan(float[][] matrix) {
         float[] colMeans = getColMean(matrix);
         float[] colStdDevs = getColStdDev(matrix, colMeans);
 
@@ -64,8 +64,10 @@ public class ZScoreTools {
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
                     float val = matrix[i][j];
-                    if (!Float.isNaN(val)) {
+                    if (val > 0) {
                         matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+                    } else {
+                        matrix[i][j] = Float.NaN;
                     }
                 }
                 i = index.getAndIncrement();
@@ -85,9 +87,8 @@ public class ZScoreTools {
             int[] colSize = new int[totalColSums.length];
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
-                    float val = matrix[i][j];
-                    if (isValid(val)) {
-                        colSums[j] += val;
+                    if (matrix[i][j] > 0) {
+                        colSums[j] += matrix[i][j];
                         colSize[j] += 1;
                     }
                 }
@@ -120,9 +121,8 @@ public class ZScoreTools {
             int[] colSize = new int[squares.length];
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
-                    float val = matrix[i][j];
-                    if (isValid(val)) {
-                        float diff = val - means[j];
+                    if (matrix[i][j] > 0) {
+                        float diff = matrix[i][j] - means[j];
                         squares[j] += diff * diff;
                         colSize[j] += 1;
                     }
@@ -142,9 +142,5 @@ public class ZScoreTools {
             stdDev[k] = (float) Math.sqrt(totalSquares[k] / Math.max(totalColSize[k], 1));
         }
         return stdDev;
-    }
-
-    private static boolean isValid(float val) {
-        return !Float.isNaN(val) && val > ZERO; //
     }
 }

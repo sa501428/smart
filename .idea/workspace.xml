@@ -30,11 +30,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="use straw expected">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/SliceMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SliceMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -275,14 +277,7 @@
       <workItem from="1661574660831" duration="4519000" />
       <workItem from="1661636090149" duration="755000" />
       <workItem from="1661637938151" duration="348000" />
-      <workItem from="1661638963332" duration="2780000" />
-    </task>
-    <task id="LOCAL-00178" summary="rename class">
-      <created>1638248826381</created>
-      <option name="number" value="00178" />
-      <option name="presentableId" value="LOCAL-00178" />
-      <option name="project" value="LOCAL" />
-      <updated>1638248826381</updated>
+      <workItem from="1661638963332" duration="4159000" />
     </task>
     <task id="LOCAL-00179" summary="update cleaning, bug fix">
       <created>1638299729895</created>
@@ -620,7 +615,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661638180875</updated>
     </task>
-    <option name="localTasksCounter" value="227" />
+    <task id="LOCAL-00227" summary="update parameters">
+      <created>1661660981761</created>
+      <option name="number" value="00227" />
+      <option name="presentableId" value="LOCAL-00227" />
+      <option name="project" value="LOCAL" />
+      <updated>1661660981761</updated>
+    </task>
+    <option name="localTasksCounter" value="228" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -644,7 +646,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="remove floating point errors to ensure accurate md5sum reproducibility of chic score" />
     <MESSAGE value="switch double array to float array" />
     <MESSAGE value="add magic" />
     <MESSAGE value="fix clustering" />
@@ -669,7 +670,8 @@
     <MESSAGE value="code cleanup, update straw" />
     <MESSAGE value="minor edit" />
     <MESSAGE value="use straw expected" />
-    <option name="LAST_COMMIT_MESSAGE" value="use straw expected" />
+    <MESSAGE value="update parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="update parameters" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

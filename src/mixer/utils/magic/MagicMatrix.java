@@ -60,7 +60,7 @@ public class MagicMatrix extends DriveMatrix {
         System.out.println("MAGIC matrix loaded");
 
         if (useZscore) {
-            ZScoreTools.inPlaceZscoreDownCol(matrix);
+            ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix);
             System.out.println("MAGIC matrix zScored");
         }
 
