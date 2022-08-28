@@ -58,7 +58,7 @@ public class MatrixPreprocessor {
         //ParallelizedStatTools.scaleDown(matrix.matrix, matrix.weights);
         LogTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
         removeHighGlobalThresh(matrix.matrix, 5);
-        normalize(matrix.matrix, -2, 2);
+        normalize(matrix.matrix, -3, 3);
         LogTools.simpleExpm1(matrix.matrix);
 
         // todo normalizeMatrix(matrix, mappings, chromosomes);
