@@ -41,7 +41,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MatrixPreprocessor {
 
     public static void clean(MatrixAndWeight matrix, Mappings mappings, Chromosome[] chromosomes,
-                             boolean doScale, boolean doZscore) {
+                             boolean doScale, boolean doZscore, boolean doSecondaryCompression,
+                             long seed) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
 
@@ -71,6 +72,10 @@ public class MatrixPreprocessor {
 
         if (doZscore) {
             ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix.matrix);
+        }
+
+        if (doSecondaryCompression) {
+            ClusteringCompressor.process(matrix, seed);
         }
     }
 
