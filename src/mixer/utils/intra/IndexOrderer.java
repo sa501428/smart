@@ -54,23 +54,31 @@ public class IndexOrderer {
     private static final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
     private static final float CORR_MIN = 0.2f;
+    public static final boolean SHOULD_FILTER_SINGLE_COLUMNS = false;
 
     public static BinMappings getInitialMappings(Dataset ds, Chromosome[] chromosomes,
-                                                 int resolution,
-                                                 Map<Integer, Set<Integer>> badIndices, NormalizationType norm,
+                                                 int hires, Map<Integer, Set<Integer>> badIndices, NormalizationType norm,
                                                  long seed, File outputDirectory) {
 
         Random generator = new Random(seed);
         int[] offset = new int[]{0};
-        BinMappings mappings = new BinMappings(resolution, chromosomes);
+        BinMappings mappings = new BinMappings(hires, chromosomes);
 
+        int lowRes = Math.max(hires, 100000);
+        int resFactor = lowRes / hires;
+        if (lowRes % hires != 0) {
+            System.err.println(hires + "is not a factor of " + lowRes + ". Invalid resolutions.");
+            System.exit(23);
+        }
         for (Chromosome chrom : chromosomes) {
-            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, resolution);
+            final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowRes);
             if (zd != null) {
                 try {
-                    float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, resolution, norm, badIndices.get(chrom.getIndex()));
-                    int[] newOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
-                            offset, resolution, generator.nextLong());
+                    float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, lowRes, norm,
+                            badIndices.get(chrom.getIndex()), resFactor);
+                    int[] lowResNewOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
+                            offset, lowRes, generator.nextLong(), resFactor);
+                    int[] newOrderIndexes = convertToHigherRes(lowResNewOrderIndexes, chrom, hires, resFactor);
 
                     mappings.putBinToProtoCluster(chrom, newOrderIndexes);
                 } catch (Exception e) {
@@ -82,7 +90,7 @@ public class IndexOrderer {
 
         mappings.calculateGlobalIndices(chromosomes);
 
-        writeOutInitialResults(outputDirectory, resolution, chromosomes, mappings);
+        writeOutInitialResults(outputDirectory, hires, chromosomes, mappings);
 
         return mappings;
     }
@@ -109,17 +117,31 @@ public class IndexOrderer {
         return chromToReorderedIndices.get(chrom);
     }
 
-    private static int[] getNewOrderOfIndices(Chromosome chromosome, float[][] oeMatrix1,
-                                              Set<Integer> badIndices, int[] offset, int res,
-                                              long seed) {
+    private static int[] convertToHigherRes(int[] lowResOrderIndexes, Chromosome chrom, int hires, int resFactor) {
+        int hiResLength = (int) (chrom.getLength() / hires) + 1;
+        int[] hiResOrderAssignments = new int[hiResLength];
+        if ((hiResLength - 1) / resFactor >= lowResOrderIndexes.length) {
+            System.err.println("chromosome lengths are off");
+            System.exit(32);
+        }
 
-        int[] newIndexOrderAssignments = generateNewAssignments(oeMatrix1.length, badIndices);
+        for (int i = 0; i < hiResOrderAssignments.length; i++) {
+            hiResOrderAssignments[i] = lowResOrderIndexes[i / resFactor];
+        }
+        return hiResOrderAssignments;
+    }
+
+    private static int[] getNewOrderOfIndices(Chromosome chromosome, float[][] oeMatrix1,
+                                              Set<Integer> badIndices, int[] offset, int lowRes,
+                                              long seed, int resFactor) {
+
+        int[] newIndexOrderAssignments = generateNewAssignments(oeMatrix1.length, badIndices, resFactor);
         int numPotentialClusters = (int) (chromosome.getLength() / HUNDRED_MB) + 5;
 
         float[][] matrixCorr1 = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(oeMatrix1,
                 RobustCosineSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
-        IntraMatrixCleaner.nanFillBadRowsColumns(badIndices, matrixCorr1);
-        IntraMatrixCleaner.nanFillNearDiagonal(matrixCorr1, FIVE_MB / res);
+        IntraMatrixCleaner.nanFillBadRowsColumns(badIndices, matrixCorr1, resFactor);
+        IntraMatrixCleaner.nanFillNearDiagonal(matrixCorr1, FIVE_MB / lowRes);
 
         try {
             offset[0] = doAssignmentsByCorrWithCentroids(matrixCorr1, newIndexOrderAssignments, chromosome.getName(),
@@ -174,6 +196,22 @@ public class IndexOrderer {
             }
         }
 
+        if (SHOULD_FILTER_SINGLE_COLUMNS) {
+            int filtered = 0;
+            for (int z = 0; z < clusterAssignment.length; z++) {
+                int zMinus1 = Math.max(0, z - 1);
+                int zPlus1 = Math.min(z + 1, clusterAssignment.length - 1);
+                if (clusterAssignment[z] != clusterAssignment[zMinus1]
+                        && clusterAssignment[z] != clusterAssignment[zPlus1]) {
+                    clusterAssignment[z] = IGNORE;
+                    filtered++;
+                }
+            }
+            if (MixerTools.printVerboseComments) {
+                System.out.println("Post filtered: " + filtered);
+            }
+        }
+
         for (int i = 0; i < clusterAssignment.length; i++) {
             if (newIndexOrderAssignments[i] < CHECK_VAL) {
                 newIndexOrderAssignments[i] = clusterAssignment[i];
@@ -183,16 +221,17 @@ public class IndexOrderer {
         return offset + centroids.length;
     }
 
-    private static int[] generateNewAssignments(int length, Set<Integer> badIndices) {
+    private static int[] generateNewAssignments(int length, Set<Integer> badIndices, int resFactor) {
         int[] newIndexOrderAssignments = new int[length];
         Arrays.fill(newIndexOrderAssignments, DEFAULT);
         for (int k : badIndices) {
-            newIndexOrderAssignments[k] = IGNORE;
+            newIndexOrderAssignments[k / resFactor] = IGNORE;
         }
         return newIndexOrderAssignments;
     }
 
-    private static void writeOutInitialResults(File outputDirectory, int hires, Chromosome[] chromosomes, BinMappings mappings) {
+    private static void writeOutInitialResults(File outputDirectory, int hires, Chromosome[] chromosomes,
+                                               BinMappings mappings) {
         File problemFile = new File(outputDirectory, "problems.bed");
         File initFile = new File(outputDirectory, "initial_split.bed");
 

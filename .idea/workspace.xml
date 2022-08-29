@@ -30,10 +30,12 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="code cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IntraMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/ColorMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/ColorMap.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -274,14 +276,7 @@
       <workItem from="1661574660831" duration="4519000" />
       <workItem from="1661636090149" duration="755000" />
       <workItem from="1661637938151" duration="348000" />
-      <workItem from="1661638963332" duration="21194000" />
-    </task>
-    <task id="LOCAL-00187" summary="update java straw jar new api">
-      <created>1640154678470</created>
-      <option name="number" value="00187" />
-      <option name="presentableId" value="LOCAL-00187" />
-      <option name="project" value="LOCAL" />
-      <updated>1640154678471</updated>
+      <workItem from="1661638963332" duration="24232000" />
     </task>
     <task id="LOCAL-00188" summary="update java straw">
       <created>1640456038943</created>
@@ -619,7 +614,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661746021212</updated>
     </task>
-    <option name="localTasksCounter" value="236" />
+    <task id="LOCAL-00236" summary="code cleanup">
+      <created>1661751335769</created>
+      <option name="number" value="00236" />
+      <option name="presentableId" value="LOCAL-00236" />
+      <option name="project" value="LOCAL" />
+      <updated>1661751335769</updated>
+    </task>
+    <option name="localTasksCounter" value="237" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -663,12 +665,12 @@
     <MESSAGE value="update parameters" />
     <MESSAGE value="update usage, connect clustering, code cleanup" />
     <MESSAGE value="bug fix for export options, optimize zscore calculation, code cleanup" />
-    <MESSAGE value="code cleanup" />
     <MESSAGE value="preprocessing for matrix" />
     <MESSAGE value="update bounds" />
     <MESSAGE value="compressive clustering" />
     <MESSAGE value="update defaults" />
-    <option name="LAST_COMMIT_MESSAGE" value="update defaults" />
+    <MESSAGE value="code cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="code cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

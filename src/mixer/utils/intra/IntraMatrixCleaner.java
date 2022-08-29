@@ -29,17 +29,17 @@ import java.util.Set;
 
 public class IntraMatrixCleaner {
 
-    public static void nanFillBadRowsColumns(Set<Integer> badIndices, float[][] matrix) {
+    public static void nanFillBadRowsColumns(Set<Integer> badIndices, float[][] matrix, int resFactor) {
         if (badIndices.size() < 1) return;
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j : badIndices) {
-                matrix[i][j] = Float.NaN;
+                matrix[i][j / resFactor] = Float.NaN;
             }
         }
 
         for (int i : badIndices) {
-            Arrays.fill(matrix[i], Float.NaN);
+            Arrays.fill(matrix[i / resFactor], Float.NaN);
         }
     }
 
