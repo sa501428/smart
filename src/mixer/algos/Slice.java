@@ -120,7 +120,8 @@ public class Slice extends MixerCLT {
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution);
 
         // todo should be at lower res
-        SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory, resolution, badIndices);
+        SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory,
+                badIndices, resolution);
 
         // todo should be at lower res
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,

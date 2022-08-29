@@ -49,16 +49,17 @@ public class SimpleTranslocationFinder {
     private final TranslocationSet tSet = new TranslocationSet();
 
     public SimpleTranslocationFinder(Dataset ds, NormalizationType[] norms, File outputDirectory,
-                                     int resolution, Map<Integer, Set<Integer>> badIndices) {
+                                     Map<Integer, Set<Integer>> badIndices, int hiRes) {
         this.outputDirectory = outputDirectory;
 
         Chromosome[] chroms = ds.getChromosomeHandler().getAutosomalChromosomesArray();
-        //int res = getLowestResolution(ds, 1000000);
+        int lowRes = Math.max(getLowestResolution(ds, 1000000), hiRes);
         NormalizationType norm = norms[Slice.INTRA_SCALE_INDEX];
+        int factor = lowRes / hiRes;
 
         for (int i = 0; i < chroms.length; i++) {
             for (int j = i + 1; j < chroms.length; j++) {
-                if (hasTranslocation(chroms[i], chroms[j], ds, resolution, norm, badIndices)) {
+                if (hasTranslocation(chroms[i], chroms[j], ds, norm, badIndices, factor, lowRes)) {
                     tSet.add(chroms[i], chroms[j]);
                     if (MixerTools.printVerboseComments) {
                         System.out.println("Translocation at " + chroms[i].getName() + " - " + chroms[j].getName());
@@ -85,33 +86,42 @@ public class SimpleTranslocationFinder {
         return maxResolution;
     }
 
-    private boolean hasTranslocation(Chromosome chrom1, Chromosome chrom2, Dataset ds, int res, NormalizationType norm,
-                                     Map<Integer, Set<Integer>> badIndices) {
-
+    private boolean hasTranslocation(Chromosome chrom1, Chromosome chrom2, Dataset ds, NormalizationType norm,
+                                     Map<Integer, Set<Integer>> badIndices, int factor, int lowRes) {
         Matrix matrix = ds.getMatrix(chrom1, chrom2);
         if (matrix != null) {
-            MatrixZoomData zd = matrix.getZoomData(new HiCZoom(res));
-            double minCutoff = getCutoff(ds.getExpectedValues(new HiCZoom(res), norm, false),
-                    chrom1, chrom2, distance / res);
-            int count = 0;
+            MatrixZoomData zd = matrix.getZoomData(new HiCZoom(lowRes));
+            if (zd != null) {
+                double minCutoff = getCutoff(ds.getExpectedValues(new HiCZoom(lowRes), norm, false),
+                        chrom1, chrom2, distance / lowRes);
 
-            Set<Integer> badSet1 = badIndices.get(chrom1.getIndex());
-            Set<Integer> badSet2 = badIndices.get(chrom2.getIndex());
+                Set<Integer> badSet1 = badIndices.get(chrom1.getIndex());
+                Set<Integer> badSet2 = badIndices.get(chrom2.getIndex());
 
-            Iterator<ContactRecord> iterator = zd.getNormalizedIterator(norm);
-            while (iterator.hasNext()) {
-                ContactRecord record = iterator.next();
-                if (record.getCounts() > minCutoff) {
-                    if (!badSet1.contains(record.getBinX()) && !badSet2.contains(record.getBinY())) {
-                        count++;
-                        if (count > minToBeTranslocation) {
-                            return true;
+                int count = 0;
+                Iterator<ContactRecord> iterator = zd.getNormalizedIterator(norm);
+                while (iterator.hasNext()) {
+                    ContactRecord record = iterator.next();
+                    if (record.getCounts() > minCutoff) {
+                        if (isGoodRow(record.getBinX(), badSet1, factor)
+                                && isGoodRow(record.getBinY(), badSet2, factor)) {
+                            if (count++ > minToBeTranslocation) {
+                                return true;
+                            }
                         }
                     }
                 }
             }
         }
         return false;
+    }
+
+    private boolean isGoodRow(int bin, Set<Integer> badSet, int factor) {
+        int binH = bin * factor;
+        for (int i = 0; i < factor; i++) {
+            if (badSet.contains(binH + i)) return false;
+        }
+        return true;
     }
 
     private double getCutoff(ExpectedValueFunction expectedValues, Chromosome chrom1, Chromosome chrom2, int dIndex) {
