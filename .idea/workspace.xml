@@ -31,10 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/ClusteringCompressor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -275,14 +273,7 @@
       <workItem from="1661574660831" duration="4519000" />
       <workItem from="1661636090149" duration="755000" />
       <workItem from="1661637938151" duration="348000" />
-      <workItem from="1661638963332" duration="17880000" />
-    </task>
-    <task id="LOCAL-00185" summary="update encode cluster name printing">
-      <created>1638429014069</created>
-      <option name="number" value="00185" />
-      <option name="presentableId" value="LOCAL-00185" />
-      <option name="project" value="LOCAL" />
-      <updated>1638429014069</updated>
+      <workItem from="1661638963332" duration="18886000" />
     </task>
     <task id="LOCAL-00186" summary="bug fix">
       <created>1639636104085</created>
@@ -620,7 +611,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661730404554</updated>
     </task>
-    <option name="localTasksCounter" value="234" />
+    <task id="LOCAL-00234" summary="compressive clustering">
+      <created>1661744611159</created>
+      <option name="number" value="00234" />
+      <option name="presentableId" value="LOCAL-00234" />
+      <option name="project" value="LOCAL" />
+      <updated>1661744611159</updated>
+    </task>
+    <option name="localTasksCounter" value="235" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -644,7 +642,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="options for log vs not, use norm vector filtering, update data structure, normalize magic matrix, row cleanup improved, code cleanup, allow skipping of bad inter regions" />
     <MESSAGE value="update version" />
     <MESSAGE value="avoid divide by 0" />
     <MESSAGE value="bug fix" />
@@ -669,7 +666,8 @@
     <MESSAGE value="code cleanup" />
     <MESSAGE value="preprocessing for matrix" />
     <MESSAGE value="update bounds" />
-    <option name="LAST_COMMIT_MESSAGE" value="update bounds" />
+    <MESSAGE value="compressive clustering" />
+    <option name="LAST_COMMIT_MESSAGE" value="compressive clustering" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

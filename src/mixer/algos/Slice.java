@@ -130,7 +130,7 @@ public class Slice extends MixerCLT {
                 norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory);
 
         MatrixPreprocessor.clean(slice, mappings, chromosomes, false, true,
-                true, generator.nextLong());
+                false, generator.nextLong());
 
         slice.export(outputDirectory, "magic");
 
