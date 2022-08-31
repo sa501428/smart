@@ -127,8 +127,10 @@ public class Slice extends MixerCLT {
         MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
 
+        slice.export(outputDirectory, "pre-clean");
+
         MatrixPreprocessor.clean(slice, mappings, chromosomes, useScale, true,
-                false, generator.nextLong());
+                false, generator.nextLong(), outputDirectory);
 
         slice.export(outputDirectory, "slice");
 

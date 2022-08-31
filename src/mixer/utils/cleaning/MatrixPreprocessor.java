@@ -35,13 +35,14 @@ import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.magic.FinalScale;
 import mixer.utils.magic.SymmLLInterMatrix;
 
+import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatrixPreprocessor {
 
     public static void clean(MatrixAndWeight matrix, Mappings mappings, Chromosome[] chromosomes,
                              boolean doScale, boolean doZscore, boolean doSecondaryCompression,
-                             long seed) {
+                             long seed, File outputDirectory) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
 
@@ -50,8 +51,11 @@ public class MatrixPreprocessor {
 
         if (doScale) {
             //scaleMatrixColumns(matrix.matrix, totalDistribution);
+            System.out.println("Scaling matrix");
             matrix.matrix = FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix.matrix),
                     createTargetVector(totalDistribution, numRows, numCols, matrix.matrix));
+            matrix.export(outputDirectory, "post-scale");
+            System.out.println("\nScaling complete");
         }
 
         ParallelizedStatTools.setZerosToNan(matrix.matrix);

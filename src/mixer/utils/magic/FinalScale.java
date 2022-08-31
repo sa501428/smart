@@ -153,6 +153,7 @@ public class FinalScale {
         // if perc or perc1 reached upper bound or the total number of iteration is too high, exit
         while ((ber > tolerance || err > 5.0 * tolerance) && iter < maxIter && allIterationsI < totalIterations
                 && localPercentLowRowSumExcluded <= 0.2 && localPercentZValuesToIgnore <= 0.1) {
+            System.out.print(".");
 
             iter++;
             allIterationsI++;
@@ -218,6 +219,7 @@ public class FinalScale {
                 }
 
                 if (fail == 1) {
+                    System.out.println("*");
                     localPercentLowRowSumExcluded += dp;
                     localPercentZValuesToIgnore += dp1;
                     nErr = 0;

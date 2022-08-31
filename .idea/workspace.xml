@@ -31,10 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/FinalScale.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/magic/FinalScale.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -277,14 +275,7 @@
       <workItem from="1661636090149" duration="755000" />
       <workItem from="1661637938151" duration="348000" />
       <workItem from="1661638963332" duration="24988000" />
-      <workItem from="1661930436046" duration="1577000" />
-    </task>
-    <task id="LOCAL-00189" summary="initial randoms/seeds differently; fix bug for non-humans">
-      <created>1645048750078</created>
-      <option name="number" value="00189" />
-      <option name="presentableId" value="LOCAL-00189" />
-      <option name="project" value="LOCAL" />
-      <updated>1645048750078</updated>
+      <workItem from="1661930436046" duration="1893000" />
     </task>
     <task id="LOCAL-00190" summary="fix random seed issue">
       <created>1645249867029</created>
@@ -622,7 +613,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661755543397</updated>
     </task>
-    <option name="localTasksCounter" value="238" />
+    <task id="LOCAL-00238" summary="implement real-time scaling">
+      <created>1661932116484</created>
+      <option name="number" value="00238" />
+      <option name="presentableId" value="LOCAL-00238" />
+      <option name="project" value="LOCAL" />
+      <updated>1661932116484</updated>
+    </task>
+    <option name="localTasksCounter" value="239" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -646,7 +644,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fix" />
     <MESSAGE value="implement zscore scaling" />
     <MESSAGE value="update straw" />
     <MESSAGE value="initial scaling port" />
@@ -671,7 +668,8 @@
     <MESSAGE value="update defaults" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="use low res ordering, bug fixes, color updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="use low res ordering, bug fixes, color updates" />
+    <MESSAGE value="implement real-time scaling" />
+    <option name="LAST_COMMIT_MESSAGE" value="implement real-time scaling" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
