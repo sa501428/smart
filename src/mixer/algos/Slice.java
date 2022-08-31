@@ -56,21 +56,17 @@ public class Slice extends MixerCLT {
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
     public static final int GW_SCALE_INDEX = 2;
-    public static final boolean PROJECT_TO_UMAP = true;
-    public static final boolean USE_WEIGHTED_MEAN = false;
-    public static boolean FILTER_OUTLIERS = true;
+    private boolean useScale = false;
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
     private Dataset ds;
     private File outputDirectory;
     private NormalizationType[] norms;
     private String prefix = "";
-    public static boolean USE_KMEANS = false, USE_KMEDIANS = true;
-    public static boolean USE_ENCODE_MODE = false;
 
     // subcompartment lanscape identification via clustering enrichment
     public Slice(String command) {
-        super("slice [-r resolution] [--verbose] " +
+        super("slice [-r resolution] [--verbose] [--scale]" +
                 //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
                 "<file.hic> <K0,KF,nK> <outfolder> <prefix_>\n" +
                 "   K0 - minimum number of clusters\n" +
@@ -96,6 +92,7 @@ public class Slice extends MixerCLT {
             printUsageAndExit(5);
         }
 
+        useScale = mixerParser.getScaleOption();
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
         norms = populateNormalizations(ds);
@@ -128,12 +125,12 @@ public class Slice extends MixerCLT {
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
         MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory);
+                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
 
-        MatrixPreprocessor.clean(slice, mappings, chromosomes, false, true,
+        MatrixPreprocessor.clean(slice, mappings, chromosomes, useScale, true,
                 false, generator.nextLong());
 
-        slice.export(outputDirectory, "magic");
+        slice.export(outputDirectory, "slice");
 
         ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
         clustering.extractFinalGWSubcompartments(prefix);

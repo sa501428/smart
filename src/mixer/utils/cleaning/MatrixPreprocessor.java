@@ -35,7 +35,6 @@ import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.magic.FinalScale;
 import mixer.utils.magic.SymmLLInterMatrix;
 
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatrixPreprocessor {
@@ -50,9 +49,9 @@ public class MatrixPreprocessor {
         System.arraycopy(totalDistribution, 0, matrix.weights, 0, numCols);
 
         if (doScale) {
-            scaleMatrixColumns(matrix.matrix, totalDistribution);
+            //scaleMatrixColumns(matrix.matrix, totalDistribution);
             matrix.matrix = FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix.matrix),
-                    createTargetVector(totalDistribution, numRows, numCols));
+                    createTargetVector(totalDistribution, numRows, numCols, matrix.matrix));
         }
 
         ParallelizedStatTools.setZerosToNan(matrix.matrix);
@@ -79,11 +78,38 @@ public class MatrixPreprocessor {
         }
     }
 
-    private static int[] createTargetVector(int[] colSums, int numRows, int numCols) {
-        int[] target = new int[numRows + numCols];
-        Arrays.fill(target, 1);
-        if (numCols >= 0) System.arraycopy(colSums, 0, target, 0, numCols);
+    private static long[] createTargetVector(int[] weights, int numRows, int numCols, float[][] matrix) {
+        long[] colTarget = getSummedWeightsColumns(weights, matrix, numCols);
+        long[] rowTarget = getSummedWeightsRows(weights, matrix, numRows);
+
+        long[] target = new long[numCols + numRows];
+        System.arraycopy(colTarget, 0, target, 0, numCols);
+        System.arraycopy(rowTarget, 0, target, numCols, numRows);
         return target;
+    }
+
+    private static long[] getSummedWeightsColumns(int[] weights, float[][] matrix, int numCols) {
+        long[] colSums = new long[numCols];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > -1) {
+                    colSums[j] += weights[j];
+                }
+            }
+        }
+        return colSums;
+    }
+
+    private static long[] getSummedWeightsRows(int[] weights, float[][] matrix, int numRows) {
+        long[] rowSums = new long[numRows];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > -1) {
+                    rowSums[i] += weights[j];
+                }
+            }
+        }
+        return rowSums;
     }
 
     private static int[] getSumOfAllLoci(Mappings mappings, int numCols, Chromosome[] chromosomes) {

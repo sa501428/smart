@@ -43,7 +43,7 @@ public class MatrixBuilder {
     public static MatrixAndWeight populateMatrix(Dataset ds, Chromosome[] chromosomes, int resolution,
                                                  NormalizationType norm, Mappings mappings,
                                                  SimpleTranslocationFinder translocations,
-                                                 File outputDirectory) {
+                                                 File outputDirectory, boolean useNone) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
@@ -60,14 +60,19 @@ public class MatrixBuilder {
         }
 
         for (int i = 0; i < chromosomes.length; i++) {
+            fillInNans(matrix, mappings, chromosomes[i], chromosomes[i]);
+
             for (int j = i + 1; j < chromosomes.length; j++) {
-                if (translocations.contains(chromosomes[i], chromosomes[j])) continue;
+                if (translocations.contains(chromosomes[i], chromosomes[j])) {
+                    fillInNans(matrix, mappings, chromosomes[i], chromosomes[j]);
+                    continue;
+                }
 
                 Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
                 if (m1 != null) {
                     MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
                     if (zd != null) {
-                        if (norm.getLabel().equalsIgnoreCase("none")) {
+                        if (useNone || norm.getLabel().equalsIgnoreCase("none")) {
                             populateMatrixFromIterator(matrix, zd.getDirectIterator(), mappings, chromosomes[i], chromosomes[j]);
                         } else {
                             populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), mappings, chromosomes[i], chromosomes[j]);
@@ -86,6 +91,26 @@ public class MatrixBuilder {
         }
 
         return new MatrixAndWeight(matrix, weights, mappings);
+    }
+
+    private static void fillInNans(float[][] matrix, Mappings mappings, Chromosome c1, Chromosome c2) {
+        if (mappings.contains(c1) && mappings.contains(c2)) {
+            int[] binToClusterID1 = mappings.getProtocluster(c1);
+            int[] binToClusterID2 = mappings.getProtocluster(c2);
+            int[] binToGlobalIndex1 = mappings.getGlobalIndex(c1);
+            int[] binToGlobalIndex2 = mappings.getGlobalIndex(c2);
+
+            for (int r = 0; r < binToClusterID1.length; r++) {
+                for (int c = 0; c < binToClusterID2.length; c++) {
+                    if (binToClusterID1[r] > -1 && binToClusterID2[c] > -1) {
+                        matrix[binToGlobalIndex1[r]][binToClusterID2[c]] = Float.NaN;
+                        matrix[binToGlobalIndex2[c]][binToClusterID1[r]] = Float.NaN;
+                    }
+                }
+            }
+        } else {
+            System.err.println("Error with reading from " + c1.getName() + " " + c2.getName());
+        }
     }
 
 
