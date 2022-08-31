@@ -26,6 +26,8 @@ package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
 
+import java.util.Set;
+
 public interface Mappings {
     int getNumRows();
 
@@ -44,4 +46,7 @@ public interface Mappings {
     void printStatus();
 
     Chromosome[] getChromosomes();
+
+    void updateInternalDataStructures(Set<Integer> badIndices);
+
 }

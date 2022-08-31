@@ -22,33 +22,40 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.cleaning;
+package mixer.utils.drive;
 
-import mixer.utils.drive.Mappings;
+public class ScaleTargetVector {
+    public static long[] create(int[] weights, int numRows, int numCols, float[][] matrix) {
+        long[] colTarget = getSummedWeightsColumns(weights, matrix, numCols);
+        long[] rowTarget = getSummedWeightsRows(weights, matrix, numRows);
 
-import java.util.Set;
+        long[] target = new long[numCols + numRows];
+        System.arraycopy(colTarget, 0, target, 0, numCols);
+        System.arraycopy(rowTarget, 0, target, numCols, numRows);
+        return target;
+    }
 
-public class MatrixRowCleaner {
-    public static float[][] makeNewMatrixAndUpdateIndices(float[][] matrix, Mappings mappings, Set<Integer> badIndices) {
-
-
-        int counter = 0;
-        int[] newIndexToOrigIndex = new int[matrix.length - badIndices.size()];
+    public static long[] getSummedWeightsColumns(int[] weights, float[][] matrix, int numCols) {
+        long[] colSums = new long[numCols];
         for (int i = 0; i < matrix.length; i++) {
-            if (!badIndices.contains(i)) {
-                newIndexToOrigIndex[counter++] = i;
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > -1) {
+                    colSums[j] += weights[j];
+                }
             }
         }
+        return colSums;
+    }
 
-        float[][] newMatrix = new float[newIndexToOrigIndex.length][matrix[0].length];
-        for (int i = 0; i < newMatrix.length; i++) {
-            int tempI = newIndexToOrigIndex[i];
-            System.arraycopy(matrix[tempI], 0, newMatrix[i], 0, newMatrix[0].length);
-            //newRowIndexToIntervalMap.put(i, (SubcompartmentInterval) original.get(newIndexToOrigIndex[i]).deepClone());
+    public static long[] getSummedWeightsRows(int[] weights, float[][] matrix, int numRows) {
+        long[] rowSums = new long[numRows];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > -1) {
+                    rowSums[i] += weights[j];
+                }
+            }
         }
-
-        mappings.updateInternalDataStructures(badIndices);
-
-        return newMatrix;
+        return rowSums;
     }
 }

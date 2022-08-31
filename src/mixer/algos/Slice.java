@@ -129,7 +129,7 @@ public class Slice extends MixerCLT {
 
         slice.export(outputDirectory, "pre-clean");
 
-        MatrixPreprocessor.clean(slice, mappings, chromosomes, useScale, true,
+        MatrixPreprocessor.clean(slice, chromosomes, useScale, true,
                 false, generator.nextLong(), outputDirectory);
 
         slice.export(outputDirectory, "slice");

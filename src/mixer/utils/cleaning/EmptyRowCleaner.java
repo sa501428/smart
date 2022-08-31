@@ -22,39 +22,24 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.magic.clean;
+package mixer.utils.cleaning;
 
-import mixer.utils.cleaning.MatrixRowCleaner;
-import mixer.utils.common.ArrayTools;
-import mixer.utils.tracks.SubcompartmentInterval;
+import mixer.utils.drive.Mappings;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class EmptyRowCleaner {
 
-    private static final int MIN_ZSCORE_CUTOFF = -2;
-
-    public static float[][] cleanUpMatrix(float[][] data, Map<Integer, SubcompartmentInterval> rowIndexToIntervalMap,
-                                          float[] coverage) {
+    public static float[][] cleanUpMatrix(float[][] data, Mappings mappings) {
         Set<Integer> badIndices = getBadIndices(data);
         System.out.println("initial magic matrix num rows: " + data.length + " badIndices: " + badIndices.size());
 
-        addRowsWithBadCoverage(badIndices, coverage);
-        System.out.println("initial magic matrix num rows: " + data.length + " badIndices+badCoverage: " + badIndices.size());
-
-        return MatrixRowCleaner.makeNewMatrixAndUpdateIndices(data, rowIndexToIntervalMap, badIndices);
-    }
-
-    private static void addRowsWithBadCoverage(Set<Integer> badIndices, float[] coverage) {
-        float mean = ArrayTools.getNonZeroMean(coverage);
-        float stdDev = ArrayTools.getNonZeroStd(coverage, mean);
-        addRowsWithBadCoverage(coverage, mean, stdDev, badIndices);
+        return MatrixRowCleaner.makeNewMatrixAndUpdateIndices(data, mappings, badIndices);
     }
 
     private static Set<Integer> getBadIndices(float[][] matrix) {
-        int minGoodColsRequired = Math.max(1, matrix[0].length / 2);
+        int minGoodColsRequired = 2;
         Set<Integer> badIndices = new HashSet<>();
         for (int i = 0; i < matrix.length; i++) {
             if (isBadRow(matrix[i], minGoodColsRequired)) {
@@ -72,23 +57,5 @@ public class EmptyRowCleaner {
             }
         }
         return numGoodEntries < limit;
-    }
-
-    private static void addRowsWithBadCoverage(float[] coverage, double mean, double stdDev,
-                                               Set<Integer> badIndices) {
-        for (int k = 0; k < coverage.length; k++) {
-            if (coverage[k] > 0) {
-                double zval = (coverage[k] - mean) / stdDev;
-                if (zval < MIN_ZSCORE_CUTOFF) {
-                    badIndices.add(k);
-                }
-            } else {
-                badIndices.add(k);
-            }
-        }
-    }
-
-    private void removeExtremeCoverages(float[] coverage) {
-
     }
 }

@@ -27,6 +27,7 @@ package mixer.utils.drive;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
 import javastraw.tools.MatrixTools;
+import mixer.utils.cleaning.EmptyRowCleaner;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
@@ -39,11 +40,13 @@ public class MatrixAndWeight {
     public float[][] matrix;
     public int[] weights;
     private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
+    private final Mappings mappings;
 
 
     public MatrixAndWeight(float[][] interMatrix, int[] weights, Mappings mappings) {
         this.matrix = interMatrix;
         this.weights = weights;
+        this.mappings = mappings;
         if (mappings != null) populateRowIndexToIntervalMap(mappings);
     }
 
@@ -103,4 +106,31 @@ public class MatrixAndWeight {
             }
         }
     }
+
+    public void removeAllZeroRows() {
+        matrix = EmptyRowCleaner.cleanUpMatrix(matrix, mappings);
+    }
+
+    public int[] getSumOfAllLoci(Chromosome[] chromosomes) {
+        int[] totalLoci = new int[mappings.getNumCols()];
+        for (Chromosome chromosome : chromosomes) {
+            int[] row = mappings.getDistributionForChrom(chromosome);
+            for (int z = 0; z < row.length; z++) {
+                totalLoci[z] += row[z];
+            }
+        }
+        return totalLoci;
+    }
+
+    public void updateWeights(Chromosome[] chromosomes) {
+        int[] totalDistribution = getSumOfAllLoci(chromosomes);
+        System.arraycopy(totalDistribution, 0, weights, 0, mappings.getNumCols());
+    }
+
+    public long[] createTargetVector(Chromosome[] chromosomes) {
+        int[] totalDistribution = getSumOfAllLoci(chromosomes);
+        return ScaleTargetVector.create(totalDistribution, mappings.getNumRows(),
+                mappings.getNumCols(), matrix);
+    }
 }
+

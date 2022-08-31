@@ -26,9 +26,7 @@ package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BinMappings implements Mappings {
     // chromosome to (bin to proto-cluster index)
@@ -135,6 +133,30 @@ public class BinMappings implements Mappings {
     @Override
     public Chromosome[] getChromosomes() {
         return chromosomes;
+    }
+
+    @Override
+    public void updateInternalDataStructures(Set<Integer> badIndices) {
+
+        List<Integer> badIndx = new ArrayList<>(badIndices);
+        Collections.sort(badIndx);
+        Collections.reverse(badIndx);
+
+        for (int bi : badIndx) {
+            for (int[] array : chromToBinToGlobalIndex.values()) {
+                for (int i = 0; i < array.length; i++) {
+
+                    if (array[i] > bi) {
+                        array[i]--;
+                    } else if (array[i] == bi) {
+                        array[i] = IGNORE;
+                    }
+                    // else is < bi, and isn't affected
+                }
+            }
+        }
+
+        numRows -= badIndices.size();
     }
 
     protected int[][] getGenomeIndices() {
