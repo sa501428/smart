@@ -26,6 +26,7 @@ package mixer.utils.drive;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
+import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.MatrixTools;
 import mixer.utils.cleaning.EmptyRowCleaner;
 import mixer.utils.common.ZScoreTools;
@@ -41,7 +42,6 @@ public class MatrixAndWeight {
     public int[] weights;
     private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
-
 
     public MatrixAndWeight(float[][] interMatrix, int[] weights, Mappings mappings) {
         this.matrix = interMatrix;
@@ -81,6 +81,27 @@ public class MatrixAndWeight {
 
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
+    }
+
+    public GenomeWide1DList<SubcompartmentInterval> getClusteringResult(int[] assignments, ChromosomeHandler handler) {
+        GenomeWide1DList<SubcompartmentInterval> subcompartments = new GenomeWide1DList<>(handler);
+
+        Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
+        for (int i = 0; i < assignments.length; i++) {
+            if (assignments[i] > -1) {
+                int currentClusterID = assignments[i];
+                if (map.containsKey(i)) {
+                    SubcompartmentInterval interv = map.get(i);
+                    if (interv != null) {
+                        subcompartmentIntervals.add(generateNewSubcompartment(interv, currentClusterID));
+                    }
+                }
+            }
+        }
+
+        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
+        SliceUtils.reSort(subcompartments);
+        return subcompartments;
     }
 
     protected SubcompartmentInterval generateNewSubcompartment(SubcompartmentInterval interv, int currentClusterID) {
@@ -125,6 +146,10 @@ public class MatrixAndWeight {
     public void updateWeights(Chromosome[] chromosomes) {
         int[] totalDistribution = getSumOfAllLoci(chromosomes);
         System.arraycopy(totalDistribution, 0, weights, 0, mappings.getNumCols());
+    }
+
+    public int getNumRows() {
+        return matrix.length;
     }
 }
 

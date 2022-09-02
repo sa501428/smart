@@ -67,10 +67,9 @@ public class Slice extends MixerCLT {
     public Slice(String command) {
         super("slice [-r resolution] [--verbose] [--scale]" +
                 //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
-                "<file.hic> <K0,KF,nK> <outfolder> <prefix_>\n" +
+                "<file.hic> <K0,KF> <outfolder> <prefix_>\n" +
                 "   K0 - minimum number of clusters\n" +
-                "   KF - maximum number of clusters\n" +
-                "   nK - number of times to rerun kmeans");
+                "   KF - maximum number of clusters");
     }
 
     @Override
@@ -86,7 +85,6 @@ public class Slice extends MixerCLT {
             String[] valString = args[2].split(",");
             ClusteringMagic.startingClusterSizeK = Integer.parseInt(valString[0]);
             ClusteringMagic.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) - ClusteringMagic.startingClusterSizeK;
-            ClusteringMagic.numAttemptsForKMeans = Integer.parseInt(valString[2]);
         } catch (Exception e) {
             printUsageAndExit(5);
         }

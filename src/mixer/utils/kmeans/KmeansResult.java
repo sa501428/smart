@@ -35,6 +35,7 @@ import mixer.utils.tracks.SubcompartmentInterval;
 import robust.concurrent.kmeans.clustering.Cluster;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class KmeansResult {
@@ -45,9 +46,6 @@ public class KmeansResult {
     private final List<List<Integer>> indicesMap = new ArrayList<>();
     private int numActualClusters = 0;
     private double wcss = 0;
-    private final float silhouette = 0;
-    private float worstCorr = 0;
-    private float[][] clusterCorrMatrix;
 
     public KmeansResult(int numClusters, ChromosomeHandler chromosomeHandler) {
         numClustersDesired = numClusters;
@@ -66,32 +64,8 @@ public class KmeansResult {
         return wcss;
     }
 
-    public float getSilhouette() {
-        return silhouette;
-    }
-
-    public float getWorstCorr() {
-        return worstCorr;
-    }
-
     public GenomeWide1DList<SubcompartmentInterval> getFinalCompartmentsClone() {
         return finalCompartments.deepClone();
-    }
-
-    public List<List<Integer>> getIndicesMapClone() {
-        List<List<Integer>> output = new ArrayList<>();
-        for (List<Integer> group : indicesMap) {
-            output.add(getDeepCopy(group));
-        }
-        return output;
-    }
-
-    private List<Integer> getDeepCopy(List<Integer> listA) {
-        List<Integer> output = new ArrayList<>();
-        for (int a : listA) {
-            output.add(a);
-        }
-        return output;
     }
 
     public void processResultAndUpdateScoringMetrics(Cluster[] clusters, MatrixAndWeight matrix,
@@ -99,8 +73,8 @@ public class KmeansResult {
         populateIndicesMap(clusters);
         matrix.processKMeansClusteringResult(clusters, finalCompartments);
         wcss = getWCSS(clusters, matrix, useCorrMatrix, useKMedians);
-        clusterCorrMatrix = calculateCorrelations(clusters);
-        worstCorr = getMaxOffDiag(clusterCorrMatrix);
+        //clusterCorrMatrix = calculateCorrelations(clusters);
+        //worstCorr = getMaxOffDiag(clusterCorrMatrix);
         numActualClusters = clusters.length;
     }
 
@@ -170,5 +144,18 @@ public class KmeansResult {
             }
         }
         return matrix;
+    }
+
+    public int[] getAssignments(int numRows) {
+        int[] result = new int[numRows];
+        Arrays.fill(result, -1);
+
+        for (int c = 0; c < indicesMap.size(); c++) {
+            for (int i : indicesMap.get(c)) {
+                result[i] = c;
+            }
+        }
+
+        return result;
     }
 }
