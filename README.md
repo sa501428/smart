@@ -1,21 +1,10 @@
-# MIXER Tools
+# SMART
 
-Machine Intelligence for Xtracting Essential Regions
-
-Machine Intelligence for Xtracting Enriched Relationships
+Subcompartment Mapping, Analysis, and Research Tools
 
 ## SLICE
 
-Subcompartment Landscape Identification via Clustering Enrichments
 Subcompartment Landscape Identification by Compressing Enrichments
-
-## DICE
-
-Differentiating Inter-Chromosomal Enrichments
-
-## SHUFFLE
-
-Scoring Heuristics Used For Finding Long-range Enrichments
 
 ## CHIC
 

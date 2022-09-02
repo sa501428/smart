@@ -29,12 +29,7 @@ import mixer.clt.CLTFactory;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 
-/**
- * Command line tool handling through factory model
- *
- * @author Muhammad Shamim
- * @since 1/20/2015
- */
+
 public class SmartTools {
 
     public static final String versionNum = "0.3.2";
@@ -69,7 +64,7 @@ public class SmartTools {
         }
         if (instanceOfCLT != null) {
             if (version) {
-                System.out.println("Mixer tools version " + versionNum);
+                System.out.println("Smart tools version " + versionNum);
             }
             if (args.length == 1 || help) {
                 instanceOfCLT.printUsageAndExit(1);
