@@ -55,7 +55,6 @@ public class Slice extends MixerCLT {
 
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
-    public static final int GW_SCALE_INDEX = 2;
     private boolean useScale = false;
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
@@ -101,10 +100,9 @@ public class Slice extends MixerCLT {
     }
 
     private NormalizationType[] populateNormalizations(Dataset ds) {
-        NormalizationType[] norms = new NormalizationType[3];
+        NormalizationType[] norms = new NormalizationType[2];
         norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
         norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR"});
-        norms[GW_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"GW_SCALE", "GW_KR"});
         return norms;
     }
 
