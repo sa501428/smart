@@ -24,7 +24,7 @@
 
 package mixer.utils.magic;
 
-import mixer.MixerGlobals;
+import mixer.MixerTools;
 
 import java.util.Arrays;
 
@@ -41,7 +41,7 @@ public class FinalScale {
     private final static float minErrorThreshold = .02f;
     private static final float OFFSET = .5f;
 
-    public static float[][] scaleMatrix(SymmLLInterMatrix ic, int[] targetVectorInitial) {
+    public static float[][] scaleMatrix(SymmLLInterMatrix ic, long[] targetVectorInitial) {
 
         double low, zHigh, zLow;
         int rLowIndex, zLowIndex, zHighIndex;
@@ -55,10 +55,10 @@ public class FinalScale {
         int[] bad = new int[k];
         int[] bad1 = new int[k];
         float[] s = new float[k];
-        double[] zz = new double[(int) Math.min(k, Integer.MAX_VALUE - 1)];
-        double[] r0 = new double[(int) Math.min(k, Integer.MAX_VALUE - 1)];
+        double[] zz = new double[Math.min(k, Integer.MAX_VALUE - 1)];
+        double[] r0 = new double[Math.min(k, Integer.MAX_VALUE - 1)];
 
-        int[] zTargetVector = copy(targetVectorInitial);
+        long[] zTargetVector = copy(targetVectorInitial);
         float[] calculatedVectorB = new float[k];
         float[] one = new float[k];
         Arrays.fill(one, 1);
@@ -153,6 +153,7 @@ public class FinalScale {
         // if perc or perc1 reached upper bound or the total number of iteration is too high, exit
         while ((ber > tolerance || err > 5.0 * tolerance) && iter < maxIter && allIterationsI < totalIterations
                 && localPercentLowRowSumExcluded <= 0.2 && localPercentZValuesToIgnore <= 0.1) {
+            System.out.print(".");
 
             iter++;
             allIterationsI++;
@@ -218,6 +219,7 @@ public class FinalScale {
                 }
 
                 if (fail == 1) {
+                    System.out.println("*");
                     localPercentLowRowSumExcluded += dp;
                     localPercentZValuesToIgnore += dp1;
                     nErr = 0;
@@ -289,7 +291,7 @@ public class FinalScale {
             }
         }
 
-        if (MixerGlobals.printVerboseComments) {
+        if (MixerTools.printVerboseComments) {
             System.out.println(allIterationsI);
             System.out.println(localPercentLowRowSumExcluded);
             System.out.println(localPercentZValuesToIgnore);
@@ -299,7 +301,7 @@ public class FinalScale {
         return ic.scaleBalance(calculatedVectorB);
     }
 
-    private static float[] scaleUpdateSums(SymmLLInterMatrix ic, int[] bad1, int[] zTargetVector,
+    private static float[] scaleUpdateSums(SymmLLInterMatrix ic, int[] bad1, long[] zTargetVector,
                                            float[] s, float[] dim, float[] dDim, float[] dnDim) {
         int k = zTargetVector.length;
         for (int p = 0; p < k; p++) if (bad1[p] == 1) dim[p] = 1.0f;
@@ -318,6 +320,12 @@ public class FinalScale {
 
     private static int[] copy(int[] original) {
         int[] copy = new int[original.length];
+        System.arraycopy(original, 0, copy, 0, copy.length);
+        return copy;
+    }
+
+    private static long[] copy(long[] original) {
+        long[] copy = new long[original.length];
         System.arraycopy(original, 0, copy, 0, copy.length);
         return copy;
     }

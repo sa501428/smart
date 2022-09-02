@@ -24,8 +24,9 @@
 
 package mixer.clt;
 
-import mixer.MixerGlobals;
-import mixer.algos.*;
+import mixer.MixerTools;
+import mixer.algos.Magic;
+import mixer.algos.Slice;
 
 
 /**
@@ -37,7 +38,7 @@ import mixer.algos.*;
 public class CLTFactory {
 
     public static void generalUsage() {
-        System.out.println("Mixer Tools Version " + MixerGlobals.versionNum);
+        System.out.println("Mixer Tools Version " + MixerTools.versionNum);
         System.out.println("Usage:");
         System.out.println("\t" + "-h, --help print help");
         System.out.println("\t" + "-v, --verbose verbose mode");
@@ -49,24 +50,11 @@ public class CLTFactory {
     public static MixerCLT getCLTCommand(String cmd) {
 
         cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice") || cmd.startsWith("dice")) {
+        if (cmd.startsWith("slice")) {
             return new Slice(cmd);
         } else if (cmd.equals("magic")) {
             return new Magic(cmd);
-        } else if (cmd.equals("walk")) {
-            return new ChromosomeWalker();
-        } else if (cmd.contains("shuffle") || cmd.contains("umap")) {
-            return new ShuffleAndUMAP(cmd);
-        } else if (cmd.contains("rename")) {
-            return new Rename(cmd);
-        } else if (cmd.equals("network")) {
-            return new Network();
-        } else if (cmd.equals("aba")) {
-            return new ABA();
-        } else if (cmd.equals("finetune")) {
-            return new FineTune();
         }
-
         return null;
     }
 }

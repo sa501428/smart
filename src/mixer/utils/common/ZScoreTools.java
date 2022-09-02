@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,8 @@
 
 package mixer.utils.common;
 
+import javastraw.expected.WelfordArray;
+import javastraw.expected.ZScoreArray;
 import javastraw.tools.ParallelizationTools;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,9 +56,8 @@ public class ZScoreTools {
         });
     }
 
-    public static void inPlaceZscoreDownCol(float[][] matrix) {
-        float[] colMeans = getColMean(matrix);
-        float[] colStdDevs = getColStdDev(matrix, colMeans);
+    public static void inPlaceZscorePositivesDownColAndSetZeroToNan(float[][] matrix) {
+        ZScoreArray zscores = getZscores(matrix);
 
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
@@ -64,8 +65,10 @@ public class ZScoreTools {
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
                     float val = matrix[i][j];
-                    if (!Float.isNaN(val)) {
-                        matrix[i][j] = (val - colMeans[j]) / colStdDevs[j];
+                    if (val > 0) {
+                        matrix[i][j] = zscores.getZscore(j, val);
+                    } else {
+                        matrix[i][j] = Float.NaN;
                     }
                 }
                 i = index.getAndIncrement();
@@ -73,78 +76,17 @@ public class ZScoreTools {
         });
     }
 
+    public static ZScoreArray getZscores(float[][] matrix) {
+        WelfordArray welfords = new WelfordArray(matrix[0].length);
 
-    public static float[] getColMean(float[][] matrix) {
-        final double[] totalColSums = new double[matrix[0].length];
-        final int[] totalColSize = new int[totalColSums.length];
-
-        AtomicInteger index = new AtomicInteger(0);
-        ParallelizationTools.launchParallelizedCode(() -> {
-            int i = index.getAndIncrement();
-            double[] colSums = new double[matrix[0].length];
-            int[] colSize = new int[totalColSums.length];
-            while (i < matrix.length) {
-                for (int j = 0; j < matrix[i].length; j++) {
-                    float val = matrix[i][j];
-                    if (isValid(val)) {
-                        colSums[j] += val;
-                        colSize[j] += 1;
-                    }
-                }
-                i = index.getAndIncrement();
-            }
-            synchronized (totalColSize) {
-                for (int k = 0; k < totalColSize.length; k++) {
-                    totalColSums[k] += colSums[k];
-                    totalColSize[k] += colSize[k];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > 0) {
+                    welfords.addValue(j, matrix[i][j]);
                 }
             }
-        });
-
-        float[] colMeans = new float[totalColSums.length];
-        for (int k = 0; k < totalColSums.length; k++) {
-            colMeans[k] = (float) (totalColSums[k] / Math.max(totalColSize[k], 1));
         }
-        return colMeans;
-    }
 
-    public static float[] getColStdDev(float[][] matrix, float[] means) {
-
-        double[] totalSquares = new double[means.length];
-        int[] totalColSize = new int[means.length];
-
-        AtomicInteger index = new AtomicInteger(0);
-        ParallelizationTools.launchParallelizedCode(() -> {
-            int i = index.getAndIncrement();
-            double[] squares = new double[matrix[0].length];
-            int[] colSize = new int[squares.length];
-            while (i < matrix.length) {
-                for (int j = 0; j < matrix[i].length; j++) {
-                    float val = matrix[i][j];
-                    if (isValid(val)) {
-                        float diff = val - means[j];
-                        squares[j] += diff * diff;
-                        colSize[j] += 1;
-                    }
-                }
-                i = index.getAndIncrement();
-            }
-            synchronized (totalColSize) {
-                for (int k = 0; k < totalColSize.length; k++) {
-                    totalSquares[k] += squares[k];
-                    totalColSize[k] += colSize[k];
-                }
-            }
-        });
-
-        float[] stdDev = new float[means.length];
-        for (int k = 0; k < totalSquares.length; k++) {
-            stdDev[k] = (float) Math.sqrt(totalSquares[k] / Math.max(totalColSize[k], 1));
-        }
-        return stdDev;
-    }
-
-    private static boolean isValid(float val) {
-        return !Float.isNaN(val) && val > ZERO; //
+        return welfords.getZscores();
     }
 }

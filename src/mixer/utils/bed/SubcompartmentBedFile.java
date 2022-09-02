@@ -27,8 +27,8 @@ package mixer.utils.bed;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.MixerGlobals;
-import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.MixerTools;
+import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -60,7 +60,7 @@ public class SubcompartmentBedFile {
     }
 
     private static List<SubcompartmentInterval> parseBEDFile(String bedFilePath, ChromosomeHandler handler) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(bedFilePath), MixerGlobals.bufferSize);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(bedFilePath), MixerTools.bufferSize);
 
         Set<SubcompartmentInterval> positions = new HashSet<>();
         String nextLine;

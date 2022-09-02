@@ -7,6 +7,7 @@ Machine Intelligence for Xtracting Enriched Relationships
 ## SLICE
 
 Subcompartment Landscape Identification via Clustering Enrichments
+Subcompartment Landscape Identification by Compressing Enrichments
 
 ## DICE
 

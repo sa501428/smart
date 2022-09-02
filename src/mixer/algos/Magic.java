@@ -32,10 +32,10 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
-import mixer.utils.InterChromosomeRegion;
 import mixer.utils.bed.BedFileMappings;
 import mixer.utils.magic.ClusteringMagic;
 import mixer.utils.magic.MagicMatrix;
+import mixer.utils.translocations.InterChromosomeRegion;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +70,9 @@ public class Magic extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false);
+        resolution = updateResolution(mixerParser, resolution);
+        ds = HiCFileTools.extractDatasetForCLT(args[1], true, false, resolution > 100);
+
         try {
             String[] valString = args[2].split(",");
             ClusteringMagic.startingClusterSizeK = Integer.parseInt(valString[0]);
@@ -89,42 +91,31 @@ public class Magic extends MixerCLT {
             norm = potentialNorm;
         }
 
-        List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
-        if (possibleResolutions != null) {
-            if (possibleResolutions.size() > 1)
-                System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
-            resolution = possibleResolutions.get(0);
-        }
-
         doScale = mixerParser.getScaleOption();
         useZScore = mixerParser.getZScoreOption();
 
-        long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
-        if (possibleSeeds != null && possibleSeeds.length > 0) {
-            for (long seed : possibleSeeds) {
-                generator.setSeed(seed);
-            }
-        }
+        updateGeneratorSeed(mixerParser, generator);
     }
 
     @Override
     public void run() {
 
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
-        if (givenChromosomes != null)
-            chromosomeHandler = HiCFileTools.stringToChromosomes(givenChromosomes, chromosomeHandler);
 
         List<InterChromosomeRegion> regionsToIgnore = new ArrayList<>();
 
         NormalizationType validNormForFiltering = NormalizationPicker.getFirstValidNormInThisOrder(ds,
                 new String[]{"SCALE", "KR", "VC", "VC_SQRT"});
 
-        BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler, resolution, ds, validNormForFiltering);
+        BedFileMappings mappings = new BedFileMappings(bedpath, chromosomeHandler,
+                resolution, ds, validNormForFiltering);
+
         MagicMatrix matrix = new MagicMatrix(ds, chromosomeHandler, resolution, norm,
                 outputDirectory, generator.nextLong(), mappings, regionsToIgnore, doScale, useZScore);
         matrix.export(new File(outputDirectory, "magic.npy").getAbsolutePath());
 
-        ClusteringMagic clustering = new ClusteringMagic(matrix, outputDirectory, chromosomeHandler, 10L);
+
+        ClusteringMagic clustering = new ClusteringMagic(matrix.getData(), outputDirectory, chromosomeHandler, 10L);
         clustering.extractFinalGWSubcompartments(prefix);
         System.out.println("\nClustering complete");
     }

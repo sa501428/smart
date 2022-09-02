@@ -30,7 +30,7 @@ import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.norm.NormalizationVector;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
-import mixer.utils.slice.structures.SubcompartmentInterval;
+import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.util.Arrays;
 import java.util.HashMap;

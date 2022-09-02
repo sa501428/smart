@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2021 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,53 +24,24 @@
 
 package mixer.clt;
 
-import javastraw.reader.Dataset;
-import javastraw.reader.type.NormalizationHandler;
-import javastraw.reader.type.NormalizationType;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by muhammadsaadshamim on 9/21/15.
  */
 public abstract class MixerCLT {
-
-    protected static int numCPUThreads = 1;
     private static String usage;
-    protected NormalizationType norm = NormalizationHandler.KR;
-    protected List<String> givenChromosomes = null;
-    protected Dataset dataset = null;
 
     protected MixerCLT(String usage) {
         setUsage(usage);
     }
 
     public void readArguments(String[] args, CommandLineParserForMixer parser) {
-        assessIfChromosomesHaveBeenSpecified(parser);
         readMixerArguments(args, parser);
     }
 
-    protected void updateNumberOfCPUThreads(CommandLineParserForMixer mixerParser) {
-        int numThreads = mixerParser.getNumThreads();
-        if (numThreads > 0) {
-            numCPUThreads = numThreads;
-        } else if (numThreads < 0) {
-            numCPUThreads = Runtime.getRuntime().availableProcessors();
-        } else {
-            numCPUThreads = 1;
-        }
-        System.out.println("Using " + numCPUThreads + " CPU thread(s)");
-    }
-
     protected abstract void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser);
-
-    private void assessIfChromosomesHaveBeenSpecified(CommandLineParserForMixer mixerParser) {
-        List<String> possibleChromosomes = mixerParser.getChromosomeListOption();
-        if (possibleChromosomes != null && possibleChromosomes.size() > 0) {
-            givenChromosomes = new ArrayList<>(possibleChromosomes);
-        }
-    }
 
     public abstract void run();
 
@@ -81,5 +52,24 @@ public abstract class MixerCLT {
     public void printUsageAndExit(int exitcode) {
         System.out.println("Usage:   mixer_tools " + usage);
         System.exit(exitcode);
+    }
+
+    protected int updateResolution(CommandLineParserForMixer mixerParser, int r0) {
+        List<Integer> possibleResolutions = mixerParser.getMultipleResolutionOptions();
+        if (possibleResolutions != null) {
+            if (possibleResolutions.size() > 1)
+                System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
+            return possibleResolutions.get(0);
+        }
+        return r0;
+    }
+
+    protected void updateGeneratorSeed(CommandLineParserForMixer mixerParser, Random generator) {
+        long[] possibleSeeds = mixerParser.getMultipleSeedsOption();
+        if (possibleSeeds != null && possibleSeeds.length > 0) {
+            for (long seed : possibleSeeds) {
+                generator.setSeed(seed);
+            }
+        }
     }
 }

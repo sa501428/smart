@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="java-straw">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/general/java-straw.2.19.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -30,7 +30,7 @@ public class SymmLLInterMatrix {
     private final int offsetR, n;
 
     // assume we are given lower left
-    SymmLLInterMatrix(float[][] matrix) {
+    public SymmLLInterMatrix(float[][] matrix) {
         this.matrix = matrix;
         this.offsetR = matrix[0].length;
         n = matrix.length + matrix[0].length;
