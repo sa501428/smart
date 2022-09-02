@@ -43,17 +43,6 @@ public class IntraMatrixCleaner {
         }
     }
 
-
-    public static void nanFillZeros(float[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (Math.abs(matrix[i][j]) < 1e-10) {
-                    matrix[i][j] = Float.NaN;
-                }
-            }
-        }
-    }
-
     public static void nanFillNearDiagonal(float[][] data, int pixelDistance) {
         for (int i = 0; i < data.length; i++) {
             int limit = Math.min(data[i].length, i + pixelDistance);

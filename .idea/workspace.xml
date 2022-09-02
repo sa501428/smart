@@ -30,8 +30,41 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="remove null rows">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Mixer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Smart.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/MixerTools_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Magic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/ParallelizedMixerTools.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/BedFileMappings.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/bed/SubcompartmentBedFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/ClusteringCompressor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/DimensionCleaner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/clustering/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/clustering/QuickClusters.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ArrayTools.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/LogTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/SimpleArray2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ParallelizedStatTools.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/Dimension.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/ScaleTargetVector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IntraMatrixCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IntraMatrixCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/KmeansResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/KmeansResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/DriveMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/FinalScale.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/MagicMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/magic/SymmLLInterMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/nv/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +116,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/muhammad/IdeaProjects/smart/lib/general&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
@@ -114,7 +147,7 @@
   <component name="RunManager" selected="Application.Aggregate">
     <configuration name="Aggregate" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.clt.AggregateProcessing" />
-      <module name="Mixer" />
+      <module name="Smart" />
       <option name="VM_PARAMETERS" value="-Xms25G -Xmx25G" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -122,7 +155,20 @@
     </configuration>
     <configuration name="GMM" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.utils.slice.gmm.Test" />
-      <module name="Mixer" />
+      <module name="Smart" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="Smart" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="Smart" />
+      <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -276,14 +322,8 @@
       <workItem from="1661930436046" duration="2159000" />
       <workItem from="1661932986639" duration="2754000" />
       <workItem from="1661958152293" duration="2764000" />
-      <workItem from="1662088911320" duration="637000" />
-    </task>
-    <task id="LOCAL-00192" summary="update shuffle calculation">
-      <created>1645429220112</created>
-      <option name="number" value="00192" />
-      <option name="presentableId" value="LOCAL-00192" />
-      <option name="project" value="LOCAL" />
-      <updated>1645429220112</updated>
+      <workItem from="1662088911320" duration="1117000" />
+      <workItem from="1662091964538" duration="1276000" />
     </task>
     <task id="LOCAL-00193" summary="clone list of indices">
       <created>1645504014662</created>
@@ -621,7 +661,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661937463049</updated>
     </task>
-    <option name="localTasksCounter" value="241" />
+    <task id="LOCAL-00241" summary="redo versioning">
+      <created>1662091710390</created>
+      <option name="number" value="00241" />
+      <option name="presentableId" value="LOCAL-00241" />
+      <option name="project" value="LOCAL" />
+      <updated>1662091710390</updated>
+    </task>
+    <option name="localTasksCounter" value="242" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -645,7 +692,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="initial scaling port" />
     <MESSAGE value="update coverage handling" />
     <MESSAGE value="implement LL inter only matrix" />
     <MESSAGE value="mid implementation" />
@@ -670,7 +716,8 @@
     <MESSAGE value="implement real-time scaling" />
     <MESSAGE value="add verbose printing" />
     <MESSAGE value="remove null rows" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove null rows" />
+    <MESSAGE value="redo versioning" />
+    <option name="LAST_COMMIT_MESSAGE" value="redo versioning" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

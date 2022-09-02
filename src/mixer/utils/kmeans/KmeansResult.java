@@ -40,7 +40,6 @@ import java.util.List;
 public class KmeansResult {
 
     private static final int MIN_EXPECTED_CLUSTER_SIZE = 5;
-    private static final double NUM_ITERS = 5;
     private final int numClustersDesired;
     private final GenomeWide1DList<SubcompartmentInterval> finalCompartments;
     private final List<List<Integer>> indicesMap = new ArrayList<>();

@@ -26,53 +26,29 @@ package mixer.utils.cleaning;
 
 import javastraw.expected.ZScoreArray;
 import javastraw.reader.basics.Chromosome;
-import mixer.clt.ParallelizedMixerTools;
-import mixer.utils.common.LogTools;
-import mixer.utils.common.ParallelizedStatTools;
+import javastraw.tools.ParallelizationTools;
+import mixer.utils.common.SimpleArray2DTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.MatrixAndWeight;
-import mixer.utils.magic.FinalScale;
-import mixer.utils.magic.SymmLLInterMatrix;
 
-import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatrixPreprocessor {
 
-    public static void clean(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                             boolean doScale, boolean doZscore, boolean doSecondaryCompression,
-                             long seed, File outputDirectory) {
+    public static void clean(MatrixAndWeight matrix, Chromosome[] chromosomes) {
 
-
-        if (doScale) {
-            //scaleMatrixColumns(matrix.matrix, totalDistribution);
-            System.out.println("Scaling matrix");
-
-
-            matrix.matrix = FinalScale.scaleMatrix(new SymmLLInterMatrix(matrix.matrix),
-                    matrix.createTargetVector(chromosomes));
-            matrix.export(outputDirectory, "post-scale");
-            System.out.println("\nScaling complete");
-        }
-
-        ParallelizedStatTools.setZerosToNan(matrix.matrix);
+        SimpleArray2DTools.setZerosToNan(matrix.matrix);
 
         matrix.removeAllZeroRows();
 
         matrix.updateWeights(chromosomes);
 
-        LogTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
+        SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
         removeHighGlobalThresh(matrix.matrix, 5);
         normalize(matrix.matrix, -3, 3);
-        LogTools.simpleExpm1(matrix.matrix);
+        SimpleArray2DTools.simpleExpm1(matrix.matrix);
 
-        if (doZscore) {
-            ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix.matrix);
-        }
-
-        if (doSecondaryCompression) {
-            ClusteringCompressor.process(matrix, seed);
-        }
+        ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix.matrix);
     }
 
     private static void removeHighGlobalThresh(float[][] data, int cutoff) {
@@ -80,7 +56,7 @@ public class MatrixPreprocessor {
 
         AtomicInteger totalNumFixed = new AtomicInteger();
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedMixerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             int numFixed = 0;
             while (i < data.length) {
@@ -106,7 +82,7 @@ public class MatrixPreprocessor {
     private static void fixToNormalRange(float[][] data, ZScoreArray zscores, int lowCutOff, int highCutOff) {
         AtomicInteger totalNumFixed = new AtomicInteger();
         AtomicInteger index = new AtomicInteger(0);
-        ParallelizedMixerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             int numFixed = 0;
             while (i < data.length) {

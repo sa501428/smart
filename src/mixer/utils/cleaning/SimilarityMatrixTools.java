@@ -25,9 +25,9 @@
 package mixer.utils.cleaning;
 
 import mixer.SmartTools;
-import mixer.utils.clustering.QuickCentroids;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.intra.IndexOrderer;
+import mixer.utils.kmeans.QuickCentroids;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;

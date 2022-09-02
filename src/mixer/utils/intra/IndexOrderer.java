@@ -29,12 +29,11 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
+import javastraw.tools.ParallelizationTools;
 import mixer.SmartTools;
-import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.cleaning.SimilarityMatrixTools;
-import mixer.utils.clustering.QuickCentroids;
-import mixer.utils.common.ArrayTools;
 import mixer.utils.drive.BinMappings;
+import mixer.utils.kmeans.QuickCentroids;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
@@ -48,7 +47,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IndexOrderer {
 
-    private final Map<Chromosome, int[]> chromToReorderedIndices = new HashMap<>();
     private static final int FIVE_MB = 5000000, FIFTY_MB = 50000000, HUNDRED_MB = 100000000;
     private static final int IGNORE = -1;
     private static final int DEFAULT = -5;
@@ -98,7 +96,7 @@ public class IndexOrderer {
     public static float[][] quickCleanMatrix(float[][] matrix, int[] newIndexOrderAssignments) {
         List<Integer> actualIndices = new ArrayList<>();
         for (int z = 0; z < newIndexOrderAssignments.length; z++) {
-            if (newIndexOrderAssignments[z] < CHECK_VAL && ArrayTools.percentNaN(matrix[z]) < .7) {
+            if (newIndexOrderAssignments[z] < CHECK_VAL && percentNaN(matrix[z]) < .7) {
                 actualIndices.add(z);
             }
         }
@@ -111,10 +109,6 @@ public class IndexOrderer {
             System.out.println("New clean matrix: " + tempCleanMatrix.length + " rows kept from " + matrix.length);
         }
         return tempCleanMatrix;
-    }
-
-    public int[] get(Chromosome chrom) {
-        return chromToReorderedIndices.get(chrom);
     }
 
     private static int[] convertToHigherRes(int[] lowResOrderIndexes, Chromosome chrom, int hires, int resFactor) {
@@ -163,7 +157,7 @@ public class IndexOrderer {
         Arrays.fill(clusterAssignment, IGNORE);
 
         AtomicInteger currDataIndex = new AtomicInteger(0);
-        ParallelizedMixerTools.launchParallelizedCode(() -> {
+        ParallelizationTools.launchParallelizedCode(() -> {
             SimilarityMetric corrMetric = RobustCorrelationSimilarity.SINGLETON;
             int i = currDataIndex.getAndIncrement();
             while (i < (matrix).length) {
@@ -267,5 +261,15 @@ public class IndexOrderer {
         String bedLine = "chr" + chrom.getName() + "\t" + x1 + "\t" + x2 + "\t" + val + "\t" + val
                 + "\t.\t" + x1 + "\t" + x2 + "\t" + ColorMap.getColorString(Math.abs(val));
         fw.write(bedLine + "\n");
+    }
+
+    public static float percentNaN(float[] array) {
+        float counter = 0;
+        for (float val : array) {
+            if (Float.isNaN(val)) {
+                counter++;
+            }
+        }
+        return counter / array.length;
     }
 }

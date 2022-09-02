@@ -22,7 +22,7 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.clustering;
+package mixer.utils.kmeans;
 
 import mixer.SmartTools;
 import robust.concurrent.kmeans.clustering.Cluster;

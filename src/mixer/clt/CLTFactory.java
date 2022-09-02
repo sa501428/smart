@@ -25,7 +25,6 @@
 package mixer.clt;
 
 import mixer.SmartTools;
-import mixer.algos.Magic;
 import mixer.algos.Slice;
 
 
@@ -52,8 +51,6 @@ public class CLTFactory {
         cmd = cmd.toLowerCase();
         if (cmd.startsWith("slice")) {
             return new Slice(cmd);
-        } else if (cmd.equals("magic")) {
-            return new Magic(cmd);
         }
         return null;
     }

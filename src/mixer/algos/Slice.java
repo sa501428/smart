@@ -32,13 +32,13 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
+import mixer.utils.cleaning.BadIndexFinder;
 import mixer.utils.cleaning.MatrixPreprocessor;
 import mixer.utils.drive.BinMappings;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
 import mixer.utils.intra.IndexOrderer;
-import mixer.utils.magic.ClusteringMagic;
-import mixer.utils.nv.BadIndexFinder;
+import mixer.utils.kmeans.ClusteringMagic;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
@@ -52,7 +52,7 @@ import java.util.Set;
  * Created by muhammadsaadshamim on 9/14/15.
  */
 public class Slice extends MixerCLT {
-    private final int maxIters = 200;
+
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
     public static final int GW_SCALE_INDEX = 2;
@@ -64,7 +64,7 @@ public class Slice extends MixerCLT {
     private NormalizationType[] norms;
     private String prefix = "";
 
-    // subcompartment lanscape identification via clustering enrichment
+    // subcompartment landscape identification via compressing enrichments
     public Slice(String command) {
         super("slice [-r resolution] [--verbose] [--scale]" +
                 //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
@@ -129,8 +129,7 @@ public class Slice extends MixerCLT {
 
         slice.export(outputDirectory, "pre-clean");
 
-        MatrixPreprocessor.clean(slice, chromosomes, useScale, true,
-                false, generator.nextLong(), outputDirectory);
+        MatrixPreprocessor.clean(slice, chromosomes);
 
         slice.export(outputDirectory, "slice");
 

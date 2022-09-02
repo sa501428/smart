@@ -116,14 +116,6 @@ public class GenomeWideKmeansRunner {
         }
     }
 
-    public int getNumColumns() {
-        return matrix[0].length;
-    }
-
-    public int getNumRows() {
-        return matrix.length;
-    }
-
     public KmeansResult getResult() {
         return result;
     }

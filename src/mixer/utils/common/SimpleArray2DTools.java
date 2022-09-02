@@ -24,22 +24,12 @@
 
 package mixer.utils.common;
 
-import javastraw.expected.WelfordArray;
-import javastraw.expected.ZScoreArray;
 import javastraw.tools.ParallelizationTools;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@SuppressWarnings("ForLoopReplaceableByForEach")
-public class ZScoreTools {
-
-
-    public static void inPlaceScaleSqrtWeightCol(float[][] matrix, int[] weights) {
-        if (weights.length != matrix[0].length) {
-            System.err.println("Weights mismatch error " + weights.length + " vs " + matrix[0].length);
-            System.exit(54);
-        }
-
+public class SimpleArray2DTools {
+    public static void simpleLogWithCleanup(float[][] matrix, float badVal) {
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
@@ -47,7 +37,12 @@ public class ZScoreTools {
                 for (int j = 0; j < matrix[i].length; j++) {
                     float val = matrix[i][j];
                     if (!Float.isNaN(val)) {
-                        matrix[i][j] = (float) (Math.sqrt(weights[j]) * val);
+                        val = (float) Math.log(val + 1);
+                        if (Float.isInfinite(val)) {
+                            matrix[i][j] = badVal;
+                        } else {
+                            matrix[i][j] = val;
+                        }
                     }
                 }
                 i = index.getAndIncrement();
@@ -55,19 +50,15 @@ public class ZScoreTools {
         });
     }
 
-    public static void inPlaceZscorePositivesDownColAndSetZeroToNan(float[][] matrix) {
-        ZScoreArray zscores = getZscores(matrix);
-
+    public static void simpleExpm1(float[][] matrix) {
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
                     float val = matrix[i][j];
-                    if (val > 0) {
-                        matrix[i][j] = zscores.getZscore(j, val);
-                    } else {
-                        matrix[i][j] = Float.NaN;
+                    if (!Float.isNaN(val)) {
+                        matrix[i][j] = (float) Math.expm1(val);
                     }
                 }
                 i = index.getAndIncrement();
@@ -75,17 +66,18 @@ public class ZScoreTools {
         });
     }
 
-    public static ZScoreArray getZscores(float[][] matrix) {
-        WelfordArray welfords = new WelfordArray(matrix[0].length);
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] > 0) {
-                    welfords.addValue(j, matrix[i][j]);
+    public static void setZerosToNan(float[][] matrix) {
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizationTools.launchParallelizedCode(() -> {
+            int i = index.getAndIncrement();
+            while (i < matrix.length) {
+                for (int j = 0; j < matrix[i].length; j++) {
+                    if (matrix[i][j] < 1e-20) {
+                        matrix[i][j] = Float.NaN;
+                    }
                 }
+                i = index.getAndIncrement();
             }
-        }
-
-        return welfords.getZscores();
+        });
     }
 }

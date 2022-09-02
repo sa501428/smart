@@ -126,11 +126,5 @@ public class MatrixAndWeight {
         int[] totalDistribution = getSumOfAllLoci(chromosomes);
         System.arraycopy(totalDistribution, 0, weights, 0, mappings.getNumCols());
     }
-
-    public long[] createTargetVector(Chromosome[] chromosomes) {
-        int[] totalDistribution = getSumOfAllLoci(chromosomes);
-        return ScaleTargetVector.create(totalDistribution, mappings.getNumRows(),
-                mappings.getNumCols(), matrix);
-    }
 }
 

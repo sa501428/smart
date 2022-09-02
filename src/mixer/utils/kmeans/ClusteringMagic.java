@@ -22,13 +22,11 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.magic;
+package mixer.utils.kmeans;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.drive.MatrixAndWeight;
-import mixer.utils.kmeans.GenomeWideKmeansRunner;
-import mixer.utils.kmeans.KmeansResult;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
