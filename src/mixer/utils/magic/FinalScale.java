@@ -24,7 +24,7 @@
 
 package mixer.utils.magic;
 
-import mixer.MixerTools;
+import mixer.SmartTools;
 
 import java.util.Arrays;
 
@@ -291,7 +291,7 @@ public class FinalScale {
             }
         }
 
-        if (MixerTools.printVerboseComments) {
+        if (SmartTools.printVerboseComments) {
             System.out.println(allIterationsI);
             System.out.println(localPercentLowRowSumExcluded);
             System.out.println(localPercentZValuesToIgnore);

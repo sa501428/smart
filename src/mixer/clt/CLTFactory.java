@@ -24,7 +24,7 @@
 
 package mixer.clt;
 
-import mixer.MixerTools;
+import mixer.SmartTools;
 import mixer.algos.Magic;
 import mixer.algos.Slice;
 
@@ -38,7 +38,7 @@ import mixer.algos.Slice;
 public class CLTFactory {
 
     public static void generalUsage() {
-        System.out.println("Mixer Tools Version " + MixerTools.versionNum);
+        System.out.println("SMART Version " + SmartTools.versionNum);
         System.out.println("Usage:");
         System.out.println("\t" + "-h, --help print help");
         System.out.println("\t" + "-v, --verbose verbose mode");

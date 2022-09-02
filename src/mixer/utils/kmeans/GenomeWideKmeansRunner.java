@@ -25,7 +25,7 @@
 package mixer.utils.kmeans;
 
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.MixerTools;
+import mixer.SmartTools;
 import mixer.utils.drive.MatrixAndWeight;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
@@ -64,7 +64,7 @@ public class GenomeWideKmeansRunner {
     public void launchKmeansGWMatrix(long seed, int maxIters) {
 
         if (matrix.length > 0 && matrix[0].length > 0) {
-            if (MixerTools.printVerboseComments) {
+            if (SmartTools.printVerboseComments) {
                 System.out.println("Using seed " + seed);
             }
 
@@ -79,7 +79,7 @@ public class GenomeWideKmeansRunner {
             KMeansListener kMeansListener = new KMeansListener() {
                 @Override
                 public void kmeansMessage(String s) {
-                    if (MixerTools.printVerboseComments) {
+                    if (SmartTools.printVerboseComments) {
                         System.out.println(s);
                     }
                 }

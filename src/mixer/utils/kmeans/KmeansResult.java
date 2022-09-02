@@ -26,7 +26,7 @@ package mixer.utils.kmeans;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.MixerTools;
+import mixer.SmartTools;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
@@ -134,7 +134,7 @@ public class KmeansResult {
         }
 
         withinClusterSumOfSquares = withinClusterSumOfSquares / clusters.length;
-        if (MixerTools.printVerboseComments) {
+        if (SmartTools.printVerboseComments) {
             System.out.println("Final WCSS " + withinClusterSumOfSquares);
         }
 

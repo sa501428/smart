@@ -31,7 +31,7 @@ import javastraw.reader.mzd.Matrix;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
-import mixer.MixerTools;
+import mixer.SmartTools;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
@@ -55,7 +55,7 @@ public class MatrixBuilder {
         }
 
         System.out.println(".");
-        if (MixerTools.printVerboseComments) {
+        if (SmartTools.printVerboseComments) {
             mappings.printStatus();
         }
 

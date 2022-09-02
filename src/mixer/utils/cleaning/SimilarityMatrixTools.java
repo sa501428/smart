@@ -24,7 +24,7 @@
 
 package mixer.utils.cleaning;
 
-import mixer.MixerTools;
+import mixer.SmartTools;
 import mixer.utils.clustering.QuickCentroids;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.intra.IndexOrderer;
@@ -78,7 +78,7 @@ public class SimilarityMatrixTools {
         }
 
         int numCentroids = centroids.length;
-        if (MixerTools.printVerboseComments || centroids.length != numInitCentroids) {
+        if (SmartTools.printVerboseComments || centroids.length != numInitCentroids) {
             System.out.println("AsymMatrix: Was initially " + numInitCentroids + " centroids, but using " + numCentroids);
         }
 
@@ -197,7 +197,7 @@ public class SimilarityMatrixTools {
         int[] weights = centroidMaker.getWeights();
 
         int numCentroids = centroids.length;
-        if (MixerTools.printVerboseComments || centroids.length != numInitCentroids) {
+        if (SmartTools.printVerboseComments || centroids.length != numInitCentroids) {
             System.out.println("AsymMatrix: Was initially " + numInitCentroids + " centroids, but using " + numCentroids);
         }
 

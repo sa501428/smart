@@ -25,7 +25,7 @@
 package mixer.utils.magic;
 
 import javastraw.feature1D.GenomeWide1DList;
-import mixer.MixerTools;
+import mixer.SmartTools;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
@@ -45,7 +45,7 @@ public abstract class DriveMatrix {
                                               GenomeWide1DList<SubcompartmentInterval> subcompartments) {
 
         Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
-        if (MixerTools.printVerboseComments) {
+        if (SmartTools.printVerboseComments) {
             System.out.println("GW Composite data vs clustered into " + clusters.length + " clusters");
         }
 
@@ -56,7 +56,7 @@ public abstract class DriveMatrix {
             Cluster cluster = clusters[z];
             int currentClusterID = ++genomewideCompartmentID;
 
-            if (MixerTools.printVerboseComments) {
+            if (SmartTools.printVerboseComments) {
                 System.out.println("Size of cluster " + currentClusterID + " - " + cluster.getMemberIndexes().length);
             }
 

@@ -25,7 +25,7 @@
 package mixer.clt;
 
 
-import mixer.MixerTools;
+import mixer.SmartTools;
 
 /**
  * Created for testing multiple CLTs at once
@@ -63,7 +63,7 @@ public class AggregateProcessing {
                             labels
                     };
                     System.out.println("-----------------------------------------------------");
-                    MixerTools.main(strings);
+                    SmartTools.main(strings);
                     System.gc();
                 }
             }

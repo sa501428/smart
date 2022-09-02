@@ -29,7 +29,7 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
-import mixer.MixerTools;
+import mixer.SmartTools;
 import mixer.clt.ParallelizedMixerTools;
 import mixer.utils.cleaning.SimilarityMatrixTools;
 import mixer.utils.clustering.QuickCentroids;
@@ -107,7 +107,7 @@ public class IndexOrderer {
         for (int i = 0; i < actualIndices.size(); i++) {
             System.arraycopy(matrix[actualIndices.get(i)], 0, tempCleanMatrix[i], 0, tempCleanMatrix[i].length);
         }
-        if (MixerTools.printVerboseComments) {
+        if (SmartTools.printVerboseComments) {
             System.out.println("New clean matrix: " + tempCleanMatrix.length + " rows kept from " + matrix.length);
         }
         return tempCleanMatrix;
@@ -189,7 +189,7 @@ public class IndexOrderer {
             }
         });
 
-        if (MixerTools.printVerboseComments) {
+        if (SmartTools.printVerboseComments) {
             synchronized (problemIndices) {
                 double percentProblem = 100 * (problemIndices.size() + 0.0) / (matrix.length + 0.0);
                 System.out.println("IndexOrderer problems: " + problemIndices.size() + " (" + percentProblem + " %)");
@@ -207,7 +207,7 @@ public class IndexOrderer {
                     filtered++;
                 }
             }
-            if (MixerTools.printVerboseComments) {
+            if (SmartTools.printVerboseComments) {
                 System.out.println("Post filtered: " + filtered);
             }
         }

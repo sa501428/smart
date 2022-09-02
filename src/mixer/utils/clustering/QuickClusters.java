@@ -24,7 +24,7 @@
 
 package mixer.utils.clustering;
 
-import mixer.MixerTools;
+import mixer.SmartTools;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
@@ -65,7 +65,7 @@ public class QuickClusters {
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
             public void kmeansMessage(String s) {
-                if (MixerTools.printVerboseComments) {
+                if (SmartTools.printVerboseComments) {
                     System.out.println(s);
                 }
             }
