@@ -37,7 +37,7 @@ import mixer.clt.MixerCLT;
  */
 public class SmartTools {
 
-    public static final String versionNum = "0.3.0";
+    public static final String versionNum = "0.3.2";
     public static final int bufferSize = 2097152;
     public static boolean printVerboseComments = false;
 
