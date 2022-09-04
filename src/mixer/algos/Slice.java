@@ -64,7 +64,7 @@ public class Slice extends MixerCLT {
     private String prefix = "";
 
     // subcompartment landscape identification via compressing enrichments
-    public Slice(String command) {
+    public Slice() {
         super("slice [-r resolution] [--verbose] [--scale]" +
                 //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
                 "<file.hic> <K0,KF> <outfolder> <prefix_>\n" +

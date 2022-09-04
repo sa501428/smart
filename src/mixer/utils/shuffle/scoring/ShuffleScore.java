@@ -22,39 +22,30 @@
  *  THE SOFTWARE.
  */
 
-package mixer.clt;
+package mixer.utils.shuffle.scoring;
 
-import mixer.SmartTools;
-import mixer.algos.Chic;
-import mixer.algos.Slice;
+public abstract class ShuffleScore {
+    protected final float[][] matrix;
+    protected final Integer[] rBounds;
+    protected final Integer[] cBounds;
 
-
-/**
- * Factory for command line tools to call different functions
- *
- * @author Muhammad Shamim
- * @since 1/30/2015
- */
-public class CLTFactory {
-
-    public static void generalUsage() {
-        System.out.println("SMART Version " + SmartTools.versionNum);
-        System.out.println("Usage:");
-        System.out.println("\t" + "-h, --help print help");
-        System.out.println("\t" + "-v, --verbose verbose mode");
-        System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
-        System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
+    public ShuffleScore(float[][] matrix, Integer[] rBounds, Integer[] cBounds) {
+        this.matrix = matrix;
+        this.rBounds = rBounds;
+        this.cBounds = cBounds;
     }
 
-    public static MixerCLT getCLTCommand(String cmd) {
-
-        cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice")) {
-            return new Slice();
-        } else if (cmd.startsWith("chic") || cmd.startsWith("shuffle")) {
-            return new Chic();
+    public float score(boolean isBaseline) {
+        if (isBaseline) {
+            return baselineScore();
         }
-        return null;
+        return score(rBounds, cBounds);
     }
+
+    private float baselineScore() {
+        return score(new Integer[]{0, matrix.length},
+                new Integer[]{0, matrix[0].length});
+    }
+
+    protected abstract float score(Integer[] rBounds, Integer[] cBounds);
 }

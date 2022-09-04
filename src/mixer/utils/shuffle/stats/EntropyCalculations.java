@@ -22,39 +22,35 @@
  *  THE SOFTWARE.
  */
 
-package mixer.clt;
+package mixer.utils.shuffle.stats;
 
-import mixer.SmartTools;
-import mixer.algos.Chic;
-import mixer.algos.Slice;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
+@SuppressWarnings("unused")
+public class EntropyCalculations {
 
-/**
- * Factory for command line tools to call different functions
- *
- * @author Muhammad Shamim
- * @since 1/30/2015
- */
-public class CLTFactory {
+    double entropyRatios;
+    double entropyLogRatios;
+    double entropyPerPixel;
+    double entropyLogPerPixel;
 
-    public static void generalUsage() {
-        System.out.println("SMART Version " + SmartTools.versionNum);
-        System.out.println("Usage:");
-        System.out.println("\t" + "-h, --help print help");
-        System.out.println("\t" + "-v, --verbose verbose mode");
-        System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
-        System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
+    public EntropyCalculations(File shuffleFile, File baselineFile, File shuffleLogFile, File baselineLogFile,
+                               float[][] shuffleM) {
+
+        try {
+            entropyRatios = getFileSize(shuffleFile) / getFileSize(baselineFile);
+            entropyLogRatios = getFileSize(shuffleLogFile) / getFileSize(baselineLogFile);
+            entropyPerPixel = getFileSize(shuffleFile) / (shuffleM.length * shuffleM[0].length);
+            entropyLogPerPixel = getFileSize(shuffleLogFile) / (shuffleM.length * shuffleM[0].length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static MixerCLT getCLTCommand(String cmd) {
-
-        cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice")) {
-            return new Slice();
-        } else if (cmd.startsWith("chic") || cmd.startsWith("shuffle")) {
-            return new Chic();
-        }
-        return null;
+    private double getFileSize(File fileName) throws IOException {
+        return (double) Files.size(Paths.get(fileName.getAbsolutePath()));
     }
 }
