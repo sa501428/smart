@@ -30,7 +30,6 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 
 abstract public class HiCMatrix {
 
@@ -40,28 +39,19 @@ abstract public class HiCMatrix {
     protected final Chromosome[] rowsChromosomes;
     protected final Chromosome[] colsChromosomes;
     protected final Dimension rowsDimension, colsDimension;
-    protected final SimilarityMetric metric;
-    protected final boolean isIntra;
-    protected final INTRA_TYPE intraType;
 
     public HiCMatrix(Dataset ds, NormalizationType norm, int resolution,
-                     Chromosome[] rowsChromosomes, Chromosome[] colsChromosomes,
-                     SimilarityMetric metric, boolean isIntra, INTRA_TYPE intraType,
-                     boolean shouldZeroOutNans, int compressionFactor) {
+                     Chromosome[] rowsChromosomes, Chromosome[] colsChromosomes) {
         this.norm = norm;
         this.resolution = resolution;
-        this.metric = metric;
         this.rowsChromosomes = rowsChromosomes;
         this.colsChromosomes = colsChromosomes;
-        this.isIntra = isIntra;
-        this.intraType = intraType;
         rowsDimension = new Dimension(rowsChromosomes, resolution);
         colsDimension = new Dimension(colsChromosomes, resolution);
-        interMatrix = makeCleanScaledInterMatrix(ds, shouldZeroOutNans, compressionFactor);
+        interMatrix = makeCleanScaledInterMatrix(ds);
     }
 
-    private float[][] makeCleanScaledInterMatrix(Dataset ds, boolean shouldZeroOutNans,
-                                                 int compressionFactor) {
+    private float[][] makeCleanScaledInterMatrix(Dataset ds) {
 
         float[][] interMatrix = new float[rowsDimension.length][colsDimension.length];
         for (int i = 0; i < rowsChromosomes.length; i++) {
@@ -80,7 +70,7 @@ abstract public class HiCMatrix {
         }
         System.out.println(".");
 
-        FloatMatrixTools.cleanUpMatrix(interMatrix, shouldZeroOutNans);
+        FloatMatrixTools.cleanUpMatrix(interMatrix, true);
 
         return interMatrix;
     }
@@ -108,6 +98,4 @@ abstract public class HiCMatrix {
     public int[] getColOffsets() {
         return colsDimension.offset;
     }
-
-    public enum INTRA_TYPE {DEFAULT, JUST_LOG, TRUE_OE, LOG_BASE_EXPECTED}
 }

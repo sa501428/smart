@@ -31,19 +31,15 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 
 public class InterOnlyMatrix extends HiCMatrix {
 
     public InterOnlyMatrix(Dataset ds, NormalizationType norm, int resolution,
-                           Chromosome[] rowsChromosomes, Chromosome[] colsChromosomes,
-                           SimilarityMetric metric) {
-        super(ds, norm, resolution, rowsChromosomes, colsChromosomes, metric,
-                false, INTRA_TYPE.DEFAULT, true, 0);
+                           Chromosome[] rowsChromosomes, Chromosome[] colsChromosomes) {
+        super(ds, norm, resolution, rowsChromosomes, colsChromosomes);
     }
 
-    public static InterOnlyMatrix getMatrix(Dataset ds, NormalizationType norm, int resolution, InterMapType mapType,
-                                            SimilarityMetric metric) {
+    public static InterOnlyMatrix getMatrix(Dataset ds, NormalizationType norm, int resolution, InterMapType mapType) {
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
         Chromosome[] rowsChromosomes, colsChromosomes;
         switch (mapType) {
@@ -62,7 +58,7 @@ public class InterOnlyMatrix extends HiCMatrix {
                 break;
         }
 
-        return new InterOnlyMatrix(ds, norm, resolution, rowsChromosomes, colsChromosomes, metric);
+        return new InterOnlyMatrix(ds, norm, resolution, rowsChromosomes, colsChromosomes);
     }
 
     protected void fillInChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,

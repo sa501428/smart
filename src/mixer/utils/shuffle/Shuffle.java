@@ -26,12 +26,10 @@ package mixer.utils.shuffle;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
-import javastraw.reader.basics.Chromosome;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.SimpleArray2DTools;
 import mixer.utils.matrix.*;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
@@ -48,18 +46,13 @@ public class Shuffle {
     private final int numRounds = 50;
     private final InterOnlyMatrix.InterMapType[] mapTypes = {InterOnlyMatrix.InterMapType.ODDS_VS_EVENS,
             InterOnlyMatrix.InterMapType.SKIP_BY_TWOS, InterOnlyMatrix.InterMapType.FIRST_HALF_VS_SECOND_HALF};
-    private final SimilarityMetric metric;
     private final ScoreContainer scoreContainer = new ScoreContainer(mapTypes.length, NUM_SCORES);
-    private final boolean isIntra = false;
-    private Chromosome[] chromosomes;
 
-    public Shuffle(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
-                   SimilarityMetric metric) {
+    public Shuffle(Dataset ds, NormalizationType norm, int resolution, int compressionFactor) {
         this.resolution = resolution;
         this.compressionFactor = compressionFactor;
         this.ds = ds;
         this.norm = norm;
-        this.metric = metric;
     }
 
     private static long[] getSeedsForRound(Random generator, int numRounds) {
@@ -73,7 +66,7 @@ public class Shuffle {
     public void runInterAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder,
                                  Random generator) {
         for (int y = 0; y < mapTypes.length; y++) {
-            final HiCMatrix interMatrix = InterOnlyMatrix.getMatrix(ds, norm, resolution, mapTypes[y], metric);
+            final HiCMatrix interMatrix = InterOnlyMatrix.getMatrix(ds, norm, resolution, mapTypes[y]);
             Map<Integer, List<Integer>> clusterToRowIndices = CHICTools.populateCluster(interMatrix.getRowChromosomes(),
                     interMatrix.getRowOffsets(), subcompartments, resolution);
             Map<Integer, List<Integer>> clusterToColIndices = CHICTools.populateCluster(interMatrix.getColChromosomes(),
@@ -85,16 +78,9 @@ public class Shuffle {
 
     public void savePlotsAndResults(File outfolder, String prefix) {
         String[] names;
-        if (isIntra) {
-            names = new String[chromosomes.length];
-            for (int k = 0; k < chromosomes.length; k++) {
-                names[k] = chromosomes[k].getName();
-            }
-        } else {
-            names = new String[mapTypes.length];
-            for (int k = 0; k < mapTypes.length; k++) {
-                names[k] = mapTypes[k].toString();
-            }
+        names = new String[mapTypes.length];
+        for (int k = 0; k < mapTypes.length; k++) {
+            names[k] = mapTypes[k].toString();
         }
         scoreContainer.savePlotsAndResults(outfolder, prefix, names);
 
@@ -119,10 +105,7 @@ public class Shuffle {
             while (k < numRounds) {
                 Random generator = new Random(seeds[k]);
                 ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, false, generator);
-                ShuffledIndices allColIndices = allRowIndices;
-                if (!isIntra) {
-                    allColIndices = getShuffledByClusterIndices(clusterToColIndices, false, generator);
-                }
+                ShuffledIndices allColIndices = getShuffledByClusterIndices(clusterToColIndices, false, generator);
 
                 double[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices, allColIndices.allIndices);
                 SimpleArray2DTools.simpleLogWithCleanup(matrix, Double.NaN);

@@ -31,27 +31,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/algos/Chic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/BedTools.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/Dimension.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ShuffledIndices.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/CHICTools.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/EntropyCalculations.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/SimpleArray2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/SimpleArray2DTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/SliceUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/SliceUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Chic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Chic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/stats/EntropyCalculations.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +61,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="concensus" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -299,14 +285,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="2890000" />
-    </task>
-    <task id="LOCAL-00198" summary="fix clustering">
-      <created>1648667786448</created>
-      <option name="number" value="00198" />
-      <option name="presentableId" value="LOCAL-00198" />
-      <option name="project" value="LOCAL" />
-      <updated>1648667786448</updated>
+      <workItem from="1662184295493" duration="4641000" />
     </task>
     <task id="LOCAL-00199" summary="bug fixes">
       <created>1648710684889</created>
@@ -644,7 +623,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662101470008</updated>
     </task>
-    <option name="localTasksCounter" value="247" />
+    <task id="LOCAL-00247" summary="copy over chic files">
+      <created>1662255642186</created>
+      <option name="number" value="00247" />
+      <option name="presentableId" value="LOCAL-00247" />
+      <option name="project" value="LOCAL" />
+      <updated>1662255642187</updated>
+    </task>
+    <option name="localTasksCounter" value="248" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -668,7 +654,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="get to compilation pass" />
     <MESSAGE value="update translocation check" />
     <MESSAGE value="update iteration, bug fixes" />
     <MESSAGE value="updated expected model" />
@@ -693,7 +678,8 @@
     <MESSAGE value="code cleanup" />
     <MESSAGE value="remove tracking of gw norm" />
     <MESSAGE value="hub assignment" />
-    <option name="LAST_COMMIT_MESSAGE" value="hub assignment" />
+    <MESSAGE value="copy over chic files" />
+    <option name="LAST_COMMIT_MESSAGE" value="copy over chic files" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

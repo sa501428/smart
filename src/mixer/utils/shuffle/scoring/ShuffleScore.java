@@ -36,15 +36,12 @@ public abstract class ShuffleScore {
     }
 
     public float score(boolean isBaseline) {
-        if (isBaseline) {
-            return baselineScore();
-        }
+        if (isBaseline) return baselineScore();
         return score(rBounds, cBounds);
     }
 
     private float baselineScore() {
-        return score(new Integer[]{0, matrix.length},
-                new Integer[]{0, matrix[0].length});
+        return score(new Integer[]{0, matrix.length}, new Integer[]{0, matrix[0].length});
     }
 
     protected abstract float score(Integer[] rBounds, Integer[] cBounds);

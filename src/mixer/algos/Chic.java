@@ -35,7 +35,6 @@ import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
 import mixer.utils.shuffle.Shuffle;
-import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
@@ -44,10 +43,8 @@ import java.util.Random;
 
 public class Chic extends MixerCLT {
 
-    //private final Random generator = new Random(22871L);
     private final Random generator = new Random(22871L);
-    private final SimilarityMetric metric = null;
-    protected NormalizationType norm = NormalizationHandler.KR;
+    protected NormalizationType norm = NormalizationHandler.INTER_KR;
     private Dataset ds;
     private int resolution = 100000;
     private int compressionFactor = 8;
@@ -55,7 +52,6 @@ public class Chic extends MixerCLT {
     private String[] prefix;
     private String[] referenceBedFiles;
 
-    // subcompartment lanscape identification via clustering enrichment
     public Chic() {
         super("chic [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [-w window] [--verbose] " +
                 "<file.hic> <outfolder> <file1.bed,file2.bed,...> <name1,name2,...>");
@@ -68,11 +64,11 @@ public class Chic extends MixerCLT {
         }
 
         ds = HiCFileTools.extractDatasetForCLT(args[1], false, false, true);
-
         outputDirectory = HiCFileTools.createValidDirectory(args[2]);
         referenceBedFiles = args[3].split(",");
         prefix = args[4].split(",");
         if (referenceBedFiles.length != prefix.length) {
+            System.err.println("Number of bed files should match number of prefixes");
             printUsageAndExit(53);
         }
 
@@ -88,11 +84,12 @@ public class Chic extends MixerCLT {
 
         updateGeneratorSeed(mixerParser, generator);
 
-        compressionFactor = (resolution / 100000) * 16;
 
         int windowSize = mixerParser.getWindowSizeOption();
         if (windowSize > 1) {
             compressionFactor = windowSize;
+        } else {
+            compressionFactor = (100000 / resolution) * 16;
         }
     }
 
@@ -100,7 +97,6 @@ public class Chic extends MixerCLT {
     public void run() {
 
         ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
-
         UNIXTools.makeDir(outputDirectory);
 
         for (int i = 0; i < referenceBedFiles.length; i++) {
@@ -109,9 +105,13 @@ public class Chic extends MixerCLT {
             System.out.println("Processing " + prefix[i]);
             File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
             UNIXTools.makeDir(newFolder);
-            Shuffle matrix = new Shuffle(ds, norm, resolution, compressionFactor, metric);
+            Shuffle matrix = new Shuffle(ds, norm, resolution, compressionFactor);
             matrix.runInterAnalysis(subcompartments, newFolder, generator);
             matrix.savePlotsAndResults(newFolder, prefix[i]);
+
+            // force clear
+            matrix = null;
+            subcompartments = null;
         }
         System.out.println("Shuffle complete");
     }
