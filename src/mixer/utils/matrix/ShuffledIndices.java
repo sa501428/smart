@@ -24,20 +24,15 @@
 
 package mixer.utils.matrix;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ShuffledIndices {
-    public final Map<Integer, Integer> allIndices;
+    public final List<Integer> allIndices;
     public final Integer[] boundaries;
 
-    public ShuffledIndices(List<Integer> orderedIndices, Integer[] boundaries, int compressionFactor) {
-        this.allIndices = new HashMap<>(orderedIndices.size());
-        for (int i = 0; i < orderedIndices.size(); i++) {
-            allIndices.put(orderedIndices.get(i), i / compressionFactor);
-        }
-
+    public ShuffledIndices(List<Integer> allIndices, Integer[] boundaries) {
+        this.allIndices = allIndices;
         this.boundaries = boundaries;
     }
 }
+

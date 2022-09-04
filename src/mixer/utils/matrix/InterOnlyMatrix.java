@@ -32,14 +32,28 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 public class InterOnlyMatrix extends HiCMatrix {
 
     public InterOnlyMatrix(Dataset ds, NormalizationType norm, int resolution,
                            Chromosome[] rowsChromosomes, Chromosome[] colsChromosomes) {
         super(ds, norm, resolution, rowsChromosomes, colsChromosomes);
+    }
+
+    @Override
+    protected void fillInChromosomeRegion(float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
+                                          Chromosome chr2, int offsetIndex2, boolean needToFlip) {
+        Iterator<ContactRecord> iterator = zd.getNormalizedIterator(norm);
+        while (iterator.hasNext()) {
+            ContactRecord record = iterator.next();
+            if (record.getCounts() > 0) {
+                if (needToFlip) {
+                    matrix[offsetIndex1 + record.getBinY()][offsetIndex2 + record.getBinX()] = record.getCounts();
+                } else {
+                    matrix[offsetIndex1 + record.getBinX()][offsetIndex2 + record.getBinY()] = record.getCounts();
+                }
+            }
+        }
     }
 
     public static InterOnlyMatrix getMatrix(Dataset ds, NormalizationType norm, int resolution, InterMapType mapType) {
@@ -62,25 +76,6 @@ public class InterOnlyMatrix extends HiCMatrix {
         }
 
         return new InterOnlyMatrix(ds, norm, resolution, rowsChromosomes, colsChromosomes);
-    }
-
-    protected List<ContactRecord> getRecords(Dataset ds, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
-                                             Chromosome chr2, int offsetIndex2, boolean needToFlip) {
-        Iterator<ContactRecord> iterator = zd.getNormalizedIterator(norm);
-        List<ContactRecord> allDataForRegion = new LinkedList<>();
-        while (iterator.hasNext()) {
-            ContactRecord record = iterator.next();
-            if (record.getCounts() > 0) {
-                if (needToFlip) {
-                    allDataForRegion.add(new ContactRecord(offsetIndex1 + record.getBinY(),
-                            offsetIndex2 + record.getBinX(), record.getCounts()));
-                } else {
-                    allDataForRegion.add(new ContactRecord(offsetIndex1 + record.getBinX(),
-                            offsetIndex2 + record.getBinY(), record.getCounts()));
-                }
-            }
-        }
-        return allDataForRegion;
     }
 
     public enum InterMapType {ODDS_VS_EVENS, FIRST_HALF_VS_SECOND_HALF, SKIP_BY_TWOS}

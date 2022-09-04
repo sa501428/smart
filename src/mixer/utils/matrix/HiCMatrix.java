@@ -26,21 +26,18 @@ package mixer.utils.matrix;
 
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import javastraw.tools.ParallelizationTools;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 abstract public class HiCMatrix {
 
     protected final NormalizationType norm;
     protected final int resolution;
-    List<List<ContactRecord>> allRecords;
+    protected final float[][] interMatrix;
     protected final Chromosome[] rowsChromosomes;
     protected final Chromosome[] colsChromosomes;
     protected final Dimension rowsDimension, colsDimension;
@@ -53,13 +50,12 @@ abstract public class HiCMatrix {
         this.colsChromosomes = colsChromosomes;
         rowsDimension = new Dimension(rowsChromosomes, resolution);
         colsDimension = new Dimension(colsChromosomes, resolution);
-        allRecords = makeCleanScaledInterMatrix(ds);
+        interMatrix = makeCleanScaledInterMatrix(ds);
     }
 
-    private List<List<ContactRecord>> makeCleanScaledInterMatrix(Dataset ds) {
+    private float[][] makeCleanScaledInterMatrix(Dataset ds) {
 
-        final List<List<ContactRecord>> allRecords = new ArrayList<>(rowsDimension.length * colsDimension.length);
-
+        float[][] interMatrix = new float[rowsDimension.length][colsDimension.length];
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
             int i = index.getAndIncrement();
@@ -72,11 +68,8 @@ abstract public class HiCMatrix {
                     if (zd == null) continue;
 
                     boolean needToFlip = chr2.getIndex() < chr1.getIndex();
-                    List<ContactRecord> records = getRecords(ds, zd, chr1, rowsDimension.offset[i],
+                    fillInChromosomeRegion(interMatrix, zd, chr1, rowsDimension.offset[i],
                             chr2, colsDimension.offset[j], needToFlip);
-                    synchronized (allRecords) {
-                        allRecords.add(records);
-                    }
                 }
                 System.out.print(".");
                 i = index.getAndIncrement();
@@ -84,12 +77,12 @@ abstract public class HiCMatrix {
         });
         System.out.println(".");
 
-        return allRecords;
+        return interMatrix;
     }
 
-    abstract protected List<ContactRecord> getRecords(Dataset ds, MatrixZoomData zd,
-                                                      Chromosome chr1, int offsetIndex1,
-                                                      Chromosome chr2, int offsetIndex2, boolean needToFlip);
+    abstract protected void fillInChromosomeRegion(float[][] matrix, MatrixZoomData zd,
+                                                   Chromosome chr1, int offsetIndex1,
+                                                   Chromosome chr2, int offsetIndex2, boolean needToFlip);
 
     public Chromosome[] getRowChromosomes() {
         return rowsChromosomes;
@@ -99,8 +92,8 @@ abstract public class HiCMatrix {
         return colsChromosomes;
     }
 
-    public List<List<ContactRecord>> getMatrix() {
-        return allRecords;
+    public float[][] getMatrix() {
+        return interMatrix;
     }
 
     public int[] getRowOffsets() {
