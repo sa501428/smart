@@ -32,9 +32,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/HiCMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/InterOnlyMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ShuffledIndices.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ShuffledIndices.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -283,14 +281,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="9318000" />
-    </task>
-    <task id="LOCAL-00201" summary="options for log vs not, use norm vector filtering, update data structure, normalize magic matrix, row cleanup improved, code cleanup, allow skipping of bad inter regions">
-      <created>1648931856872</created>
-      <option name="number" value="00201" />
-      <option name="presentableId" value="LOCAL-00201" />
-      <option name="project" value="LOCAL" />
-      <updated>1648931856872</updated>
+      <workItem from="1662184295493" duration="12174000" />
     </task>
     <task id="LOCAL-00202" summary="update version">
       <created>1648931886707</created>
@@ -628,7 +619,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662295787205</updated>
     </task>
-    <option name="localTasksCounter" value="250" />
+    <task id="LOCAL-00250" summary="optimize runtime">
+      <created>1662299072127</created>
+      <option name="number" value="00250" />
+      <option name="presentableId" value="LOCAL-00250" />
+      <option name="project" value="LOCAL" />
+      <updated>1662299072127</updated>
+    </task>
+    <option name="localTasksCounter" value="251" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -652,7 +650,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update iteration, bug fixes" />
     <MESSAGE value="updated expected model" />
     <MESSAGE value="code cleanup, debugging" />
     <MESSAGE value="bug fixes" />
@@ -677,7 +674,8 @@
     <MESSAGE value="copy over chic files" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="optimize runtime and memory usage" />
-    <option name="LAST_COMMIT_MESSAGE" value="optimize runtime and memory usage" />
+    <MESSAGE value="optimize runtime" />
+    <option name="LAST_COMMIT_MESSAGE" value="optimize runtime" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

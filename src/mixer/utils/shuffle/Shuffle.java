@@ -66,12 +66,18 @@ public class Shuffle {
     public void runInterAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder,
                                  Random generator) {
         for (int y = 0; y < mapTypes.length; y++) {
+            long t0 = System.nanoTime();
             final HiCMatrix interMatrix = InterOnlyMatrix.getMatrix(ds, norm, resolution, mapTypes[y]);
+            long t1 = System.nanoTime();
             Map<Integer, List<Integer>> clusterToRowIndices = CHICTools.populateCluster(interMatrix.getRowChromosomes(),
                     interMatrix.getRowOffsets(), subcompartments, resolution);
             Map<Integer, List<Integer>> clusterToColIndices = CHICTools.populateCluster(interMatrix.getColChromosomes(),
                     interMatrix.getColOffsets(), subcompartments, resolution);
+            long t2 = System.nanoTime();
             shuffleMap(interMatrix, clusterToRowIndices, clusterToColIndices, outfolder, mapTypes[y].toString(), y, generator);
+            long t3 = System.nanoTime();
+
+            System.out.println("t0_1 " + (t1 - t0) * 1e-9 + " t1_2 " + (t2 - t1) * 1e-9 + " t2_3 " + (t3 - t2) * 1e-9);
         }
         scoreContainer.calculateRatios();
     }
@@ -89,7 +95,7 @@ public class Shuffle {
     private void shuffleMap(HiCMatrix interMatrix, Map<Integer, List<Integer>> clusterToRowIndices,
                             Map<Integer, List<Integer>> clusterToColIndices,
                             File outfolder, String name, int mapIndex, Random random) {
-
+        long t0 = System.nanoTime();
         final AggregateMatrix aggregate = new AggregateMatrix();
         AtomicInteger currRowIndex = new AtomicInteger(0);
         long[] seeds = getSeedsForRound(random, numRounds);
