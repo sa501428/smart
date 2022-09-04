@@ -31,9 +31,9 @@ import java.io.File;
 
 public class AggregateMatrix {
 
-    private double[][] aggregate = null;
+    private float[][] aggregate = null;
 
-    private static void addBToA(double[][] a, double[][] b) {
+    private static void addBToA(float[][] a, float[][] b) {
         if (a.length == b.length && a[0].length == b[0].length) {
             for (int i = 0; i < a.length; i++) {
                 for (int j = 0; j < a[i].length; j++) {
@@ -46,7 +46,7 @@ public class AggregateMatrix {
         }
     }
 
-    private static void divideBy(double[][] matrix, float scalar) {
+    private static void divideBy(float[][] matrix, float scalar) {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] /= scalar;
@@ -54,14 +54,15 @@ public class AggregateMatrix {
         }
     }
 
-    private static void saveToPNG(double[][] matrix, File outfolder, String name) {
+    private static void saveToPNG(float[][] matrix, File outfolder, String name) {
         File mapLogFile = new File(outfolder, name + ".png");
-        FloatMatrixTools.saveMatrixToPNG(mapLogFile, FloatMatrixTools.convert(matrix), false);
+        FloatMatrixTools.saveMatrixToPNG(mapLogFile, matrix, false);
+        //FloatMatrixTools.convert(matrix)
     }
 
-    public void add(double[][] matrix) {
+    public void add(float[][] matrix) {
         if (aggregate == null) {
-            aggregate = new double[matrix.length][matrix[0].length];
+            aggregate = new float[matrix.length][matrix[0].length];
         }
         addBToA(aggregate, matrix);
     }
@@ -85,6 +86,7 @@ public class AggregateMatrix {
     }
 
     public float[][] getFloatMatrix() {
-        return FloatMatrixTools.deepClone(FloatMatrixTools.convert(aggregate));
+        //return FloatMatrixTools.deepClone(FloatMatrixTools.convert(aggregate));
+        return aggregate;
     }
 }

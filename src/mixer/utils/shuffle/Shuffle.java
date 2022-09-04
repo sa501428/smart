@@ -26,6 +26,7 @@ package mixer.utils.shuffle;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
+import javastraw.reader.block.ContactRecord;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.SimpleArray2DTools;
@@ -96,19 +97,18 @@ public class Shuffle {
 
         final ShuffledIndices[] globalAllIndices = new ShuffledIndices[2];
         Random gen = new Random(random.nextLong());
-        globalAllIndices[0] = getShuffledByClusterIndices(clusterToRowIndices, false, gen);
-        globalAllIndices[1] = getShuffledByClusterIndices(clusterToColIndices, false, gen);
+        globalAllIndices[0] = getShuffledByClusterIndices(clusterToRowIndices, gen);
+        globalAllIndices[1] = getShuffledByClusterIndices(clusterToColIndices, gen);
 
         ParallelizationTools.launchParallelizedCode(() -> {
             int k = currRowIndex.getAndIncrement();
             AggregateMatrix aggregateForThread = new AggregateMatrix();
             while (k < numRounds) {
                 Random generator = new Random(seeds[k]);
-                ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, false, generator);
-                ShuffledIndices allColIndices = getShuffledByClusterIndices(clusterToColIndices, false, generator);
-
-                double[][] matrix = getShuffledMatrix(interMatrix, allRowIndices.allIndices, allColIndices.allIndices);
-                SimpleArray2DTools.simpleLogWithCleanup(matrix, Double.NaN);
+                ShuffledIndices allRowIndices = getShuffledByClusterIndices(clusterToRowIndices, generator);
+                ShuffledIndices allColIndices = getShuffledByClusterIndices(clusterToColIndices, generator);
+                float[][] matrix = getShuffledMatrix(interMatrix, allRowIndices, allColIndices);
+                SimpleArray2DTools.simpleLogWithCleanup(matrix, Float.NaN);
                 aggregateForThread.add(matrix);
                 k = currRowIndex.getAndIncrement();
             }
@@ -126,15 +126,14 @@ public class Shuffle {
     }
 
     private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices,
-                                                        boolean isBackground, Random generator) {
-        List<Integer> allIndices = new ArrayList<>();
-
+                                                        Random generator) {
+        List<Integer> allIndices = new ArrayList<>(clusterToIndices.size());
         List<Integer> order = new ArrayList<>(clusterToIndices.keySet());
         Collections.sort(order);
 
-        int count = 0;
+        int boundaryCount = 0;
         List<Integer> boundaries = new ArrayList<>();
-        boundaries.add(count);
+        boundaries.add(boundaryCount);
 
         for (Integer index : order) {
             List<Integer> indexList = new ArrayList<>(clusterToIndices.get(index));
@@ -143,33 +142,29 @@ public class Shuffle {
             for (int z = 0; z < numToUse; z++) {
                 allIndices.add(indexList.get(z));
             }
-            count += (numToUse / compressionFactor);
-            boundaries.add(count);
-        }
-        if (isBackground) {
-            Collections.shuffle(allIndices, generator);
-            return new ShuffledIndices(allIndices, new Integer[]{0, count});
+            boundaryCount += (numToUse / compressionFactor);
+            boundaries.add(boundaryCount);
         }
         Integer[] output = new Integer[boundaries.size()];
-        return new ShuffledIndices(allIndices, boundaries.toArray(output));
+        return new ShuffledIndices(allIndices, boundaries.toArray(output), compressionFactor);
     }
 
-    private double[][] getShuffledMatrix(HiCMatrix interMatrix, List<Integer> allRowIndices, List<Integer> allColIndices) {
-        int numRows = allRowIndices.size() / compressionFactor;
-        int numCols = allColIndices.size() / compressionFactor;
-        int numRowsKept = numRows * compressionFactor;
-        int numColsKept = numCols * compressionFactor;
-        float[][] original = interMatrix.getMatrix();
+    private float[][] getShuffledMatrix(HiCMatrix interMatrix,
+                                        ShuffledIndices rowIndices,
+                                        ShuffledIndices colIndices) {
+        Map<Integer, Integer> rowMap = rowIndices.allIndices;
+        Map<Integer, Integer> colMap = colIndices.allIndices;
+        int numRows = rowIndices.boundaries[rowIndices.boundaries.length - 1];
+        int numCols = colIndices.boundaries[colIndices.boundaries.length - 1];
 
-        double[][] result = new double[numRows][numCols];
-        for (int i = 0; i < numRowsKept; i++) {
-            final int i0 = allRowIndices.get(i);
-            for (int j = 0; j < numColsKept; j++) {
-                final int j0 = allColIndices.get(j);
-                result[i / compressionFactor][j / compressionFactor] += original[i0][j0];
+        float[][] result = new float[numRows][numCols];
+        for (List<ContactRecord> records : interMatrix.getMatrix()) {
+            for (ContactRecord record : records) {
+                if (rowMap.containsKey(record.getBinX()) && colMap.containsKey(record.getBinY())) {
+                    result[rowMap.get(record.getBinX())][colMap.get(record.getBinY())] += record.getCounts();
+                }
             }
         }
-
         return result;
     }
 }

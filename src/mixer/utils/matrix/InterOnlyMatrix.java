@@ -27,10 +27,13 @@ package mixer.utils.matrix;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
-import javastraw.tools.HiCFileTools;
-import mixer.utils.common.FloatMatrixTools;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InterOnlyMatrix extends HiCMatrix {
 
@@ -61,33 +64,24 @@ public class InterOnlyMatrix extends HiCMatrix {
         return new InterOnlyMatrix(ds, norm, resolution, rowsChromosomes, colsChromosomes);
     }
 
-    protected void fillInChromosomeRegion(Dataset ds, float[][] matrix, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
-                                          Chromosome chr2, int offsetIndex2, boolean needToFlip) {
-
-        int lengthChr1 = (int) Math.ceil((float) chr1.getLength() / resolution);
-        int lengthChr2 = (int) Math.ceil((float) chr2.getLength() / resolution);
-
-        float[][] allDataForRegion = null;
-        try {
-            if (needToFlip) {
-                float[][] allDataForRegionMatrix = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr2,
-                        0, lengthChr1, lengthChr2, lengthChr1, norm, false);
-                allDataForRegion = FloatMatrixTools.transpose(allDataForRegionMatrix);
-            } else {
-                allDataForRegion = HiCFileTools.extractLocalBoundedRegionFloatMatrix(zd, 0, lengthChr1,
-                        0, lengthChr2, lengthChr1, lengthChr2, norm, false);
+    protected List<ContactRecord> getRecords(Dataset ds, MatrixZoomData zd, Chromosome chr1, int offsetIndex1,
+                                             Chromosome chr2, int offsetIndex2, boolean needToFlip) {
+        Iterator<ContactRecord> iterator = zd.getNormalizedIterator(norm);
+        List<ContactRecord> allDataForRegion = new LinkedList<>();
+        while (iterator.hasNext()) {
+            ContactRecord record = iterator.next();
+            if (record.getCounts() > 0) {
+                if (needToFlip) {
+                    allDataForRegion.add(new ContactRecord(offsetIndex1 + record.getBinY(),
+                            offsetIndex2 + record.getBinX(), record.getCounts()));
+                } else {
+                    allDataForRegion.add(new ContactRecord(offsetIndex1 + record.getBinX(),
+                            offsetIndex2 + record.getBinY(), record.getCounts()));
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(99);
         }
-
-        for (int i = 0; i < allDataForRegion.length; i++) {
-            System.arraycopy(allDataForRegion[i], 0,
-                    matrix[offsetIndex1 + i], offsetIndex2, allDataForRegion[i].length);
-        }
+        return allDataForRegion;
     }
-
 
     public enum InterMapType {ODDS_VS_EVENS, FIRST_HALF_VS_SECOND_HALF, SKIP_BY_TWOS}
 }

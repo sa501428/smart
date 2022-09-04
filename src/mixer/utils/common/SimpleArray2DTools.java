@@ -52,29 +52,6 @@ public class SimpleArray2DTools {
         });
     }
 
-    public static void simpleLogWithCleanup(double[][] matrix, double badVal) {
-        AtomicInteger index = new AtomicInteger(0);
-        ParallelizationTools.launchParallelizedCode(() -> {
-            int i = index.getAndIncrement();
-            while (i < matrix.length) {
-                for (int j = 0; j < matrix[i].length; j++) {
-                    double val = matrix[i][j];
-                    if (val > 0) {
-                        val = (float) Math.log(val + 1);
-                        if (Double.isInfinite(val)) {
-                            matrix[i][j] = badVal;
-                        } else {
-                            matrix[i][j] = val;
-                        }
-                    } else {
-                        matrix[i][j] = badVal;
-                    }
-                }
-                i = index.getAndIncrement();
-            }
-        });
-    }
-
     public static void simpleExpm1(float[][] matrix) {
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
