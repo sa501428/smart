@@ -281,14 +281,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="20302000" />
-    </task>
-    <task id="LOCAL-00205" summary="implement zscore scaling">
-      <created>1648940914719</created>
-      <option name="number" value="00205" />
-      <option name="presentableId" value="LOCAL-00205" />
-      <option name="project" value="LOCAL" />
-      <updated>1648940914719</updated>
+      <workItem from="1662184295493" duration="21727000" />
     </task>
     <task id="LOCAL-00206" summary="implement zscore scaling">
       <created>1650143508011</created>
@@ -626,7 +619,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662349522723</updated>
     </task>
-    <option name="localTasksCounter" value="254" />
+    <task id="LOCAL-00254" summary="bug fix KL, parallelize file reading">
+      <created>1662350453380</created>
+      <option name="number" value="00254" />
+      <option name="presentableId" value="LOCAL-00254" />
+      <option name="project" value="LOCAL" />
+      <updated>1662350453380</updated>
+    </task>
+    <option name="localTasksCounter" value="255" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -650,7 +650,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="code cleanup, update straw" />
     <MESSAGE value="minor edit" />
     <MESSAGE value="use straw expected" />
     <MESSAGE value="update parameters" />
@@ -675,7 +674,8 @@
     <MESSAGE value="timing statements" />
     <MESSAGE value="summarize genomewide stats" />
     <MESSAGE value="bug fix KL, plot summary" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix KL, plot summary" />
+    <MESSAGE value="bug fix KL, parallelize file reading" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix KL, parallelize file reading" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

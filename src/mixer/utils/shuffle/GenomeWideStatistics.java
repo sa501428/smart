@@ -55,7 +55,8 @@ public class GenomeWideStatistics {
     private final double varScore;
     private final int n;
 
-    public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm, GenomeWide1DList<SubcompartmentInterval> subcompartments) {
+    public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm,
+                                GenomeWide1DList<SubcompartmentInterval> subcompartments) {
         this.ds = ds;
         this.resolution = resolution;
         this.norm = norm;
@@ -67,10 +68,12 @@ public class GenomeWideStatistics {
         double[][] totals = new double[n][n];
         long[][] areas = new long[n][n];
         populateStatistics(totals, areas);
-        totalsGW = makeSymmetric(totals);
-        areasGW = makeSymmetric(areas);
+        totalsGW = totals;
+        areasGW = areas;
+        //totalsGW = makeSymmetric(totals);
+        //areasGW = makeSymmetric(areas);
         densityMatrix = divideBy(totalsGW, areasGW);
-        varScore = Scores.getVarScore(areasGW, densityMatrix);
+        varScore = Scores.getVarScore(totalsGW, areasGW, densityMatrix);
         klScore = Scores.getKLScore(areasGW, densityMatrix, true);
     }
 

@@ -25,7 +25,7 @@
 package mixer.utils.shuffle;
 
 public class Scores {
-    public static double getVarScore(long[][] areas, double[][] density) {
+    public static double getVarScore(double[][] totals, long[][] areas, double[][] density) {
 
         long totalArea = getTotalArea(areas);
         double totalWeightedSum = getWeightedSum(density, areas);
@@ -83,7 +83,7 @@ public class Scores {
             }
         }
 
-        return (float) klDivergence;
+        return klDivergence;
     }
 
 
