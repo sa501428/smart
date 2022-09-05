@@ -70,7 +70,7 @@ public class GenomeWideStatistics {
         double[][][] total = new double[4][n][n];
         areasGW = new long[4][n][n];
         populateStatistics(total, areasGW);
-        density = divide(total, areasGW);
+        density = TensorTools.divide(total, areasGW);
         //totalsGW = makeSymmetric(totals);
         //areasGW = makeSymmetric(areas);
         //densityMatrix = divideBy(totalsGW, areasGW);
@@ -109,65 +109,10 @@ public class GenomeWideStatistics {
             }
 
             synchronized (allAreas) {
-                addBtoA(allAreas, areas);
-                addBtoA(allTotals, totals);
+                TensorTools.addBtoA(allAreas, areas);
+                TensorTools.addBtoA(allTotals, totals);
             }
         });
-    }
-
-    private void addBtoA(double[][][] a, double[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
-            }
-        }
-    }
-
-    private void addBtoA(long[][][] a, long[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
-            }
-        }
-    }
-
-    private double[][] makeSymmetric(double[][] input) {
-        int n = input.length;
-        double[][] results = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                results[i][j] += input[i][j];
-                results[j][i] += input[i][j];
-            }
-        }
-        return results;
-    }
-
-    private long[][] makeSymmetric(long[][] input) {
-        int n = input.length;
-        long[][] results = new long[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                results[i][j] += input[i][j];
-                results[j][i] += input[i][j];
-            }
-        }
-        return results;
-    }
-
-    private double[][] divideBy(double[][] totals, long[][] areas) {
-        for (int i = 0; i < totals.length; i++) {
-            for (int j = 0; j < totals[i].length; j++) {
-                if (areas[i][j] > 0) {
-                    totals[i][j] /= areas[i][j];
-                }
-            }
-        }
-        return totals;
     }
 
     private Map<Integer, Map<Integer, Integer>> makeChromToIndexToIDMap() {
@@ -259,42 +204,9 @@ public class GenomeWideStatistics {
             e.printStackTrace();
         }
 
-        //float[][] rawCombine = concatenate(totalsGW);
-        //FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_raw.png"), rawCombine, false);
-        //FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_log_raw.png"), rawCombine, true);
-
-        float[][] flattenedDensity = concatenate(density);
+        float[][] flattenedDensity = TensorTools.concatenate(density);
         FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_density.png"), flattenedDensity, false);
-        FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_log_density.png"), flattenedDensity, true);
-
-    }
-
-    private double[][][] divide(double[][][] a, long[][][] b) {
-        double[][][] result = new double[a.length][a[0].length][a[0][0].length];
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    if (b[i][j][k] > 0) {
-                        result[i][j][k] = a[i][j][k] / b[i][j][k];
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private float[][] concatenate(double[][][] input) {
-        int n = input[0].length;
-        float[][] matrix = new float[2 * n][2 * n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                matrix[2 * i][2 * j] = (float) input[0][i][j];
-                matrix[2 * i + 1][2 * j] = (float) input[1][i][j];
-                matrix[2 * i][2 * j + 1] = (float) input[2][i][j];
-                matrix[2 * i + 1][2 * j + 1] = (float) input[3][i][j];
-            }
-        }
-        return matrix;
+        //FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_log_density.png"), flattenedDensity, true);
     }
 
     private String printDivision(double a, double b) {
