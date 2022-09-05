@@ -31,12 +31,14 @@ import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
+import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GenomeWideStatistics {
     private final Dataset ds;
@@ -51,6 +53,7 @@ public class GenomeWideStatistics {
     private final long[][] areasGW;
     private final double klScore;
     private final double varScore;
+    private final int n;
 
     public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm, GenomeWide1DList<SubcompartmentInterval> subcompartments) {
         this.ds = ds;
@@ -60,7 +63,7 @@ public class GenomeWideStatistics {
         chromosomes = ds.getChromosomeHandler().getAutosomalChromosomesArray();
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();
-        int n = clusterToFIdxMap.keySet().size();
+        n = clusterToFIdxMap.keySet().size();
         double[][] totals = new double[n][n];
         long[][] areas = new long[n][n];
         populateStatistics(totals, areas);
@@ -71,23 +74,53 @@ public class GenomeWideStatistics {
         klScore = Scores.getKLScore(areasGW, densityMatrix, true);
     }
 
-    private void populateStatistics(double[][] totals, long[][] areas) {
-        for (int i = 0; i < chromosomes.length; i++) {
-            Chromosome chrom1 = chromosomes[i];
-            Map<Integer, Integer> binToID1 = chromToIndexToID.get(chrom1.getIndex());
+    private void populateStatistics(double[][] allTotals, long[][] allAreas) {
 
-            for (int j = i + 1; j < chromosomes.length; j++) {
-                Chromosome chrom2 = chromosomes[j];
-                Map<Integer, Integer> binToID2 = chromToIndexToID.get(chrom2.getIndex());
+        AtomicInteger index = new AtomicInteger(0);
+        ParallelizationTools.launchParallelizedCode(() -> {
+            double[][] totals = new double[n][n];
+            long[][] areas = new long[n][n];
 
-                final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom1, chrom2, resolution);
-                if (zd != null) {
-                    populateCounts(zd.getNormalizedIterator(norm), binToID1, binToID2, totals);
-                    populateAreas(binToID1, binToID2, areas);
-                    System.out.print(".");
+            int i = index.getAndIncrement();
+            while (i < chromosomes.length) {
+                Chromosome chrom1 = chromosomes[i];
+                Map<Integer, Integer> binToID1 = chromToIndexToID.get(chrom1.getIndex());
+
+                for (int j = i + 1; j < chromosomes.length; j++) {
+                    Chromosome chrom2 = chromosomes[j];
+                    Map<Integer, Integer> binToID2 = chromToIndexToID.get(chrom2.getIndex());
+
+                    final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom1, chrom2, resolution);
+                    if (zd != null) {
+                        populateCounts(zd.getNormalizedIterator(norm), binToID1, binToID2, totals);
+                        populateAreas(binToID1, binToID2, areas);
+                        System.out.print(".");
+                    }
                 }
+                System.out.println(".");
+                i = index.getAndIncrement();
             }
-            System.out.println(".");
+
+            synchronized (allAreas) {
+                addBtoA(allAreas, areas);
+                addBtoA(allTotals, totals);
+            }
+        });
+    }
+
+    private void addBtoA(double[][] a, double[][] b) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[i].length; j++) {
+                a[i][j] += b[i][j];
+            }
+        }
+    }
+
+    private void addBtoA(long[][] a, long[][] b) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[i].length; j++) {
+                a[i][j] += b[i][j];
+            }
         }
     }
 

@@ -72,11 +72,13 @@ public class Scores {
         double klDivergence = 0;
         for (int i = 0; i < areas.length; i++) {
             for (int j = 0; j < areas[i].length; j++) {
-                double p = density[i][j] / totalWeightedSum;
-                if (matrixIsP) {
-                    klDivergence += (p * Math.log(p / q)) * areas[i][j];
-                } else {
-                    klDivergence += (q * Math.log(q / p)) * areas[i][j];
+                if (areas[i][j] > 0) {
+                    double p = density[i][j] / totalWeightedSum;
+                    if (matrixIsP) {
+                        klDivergence += (p * Math.log(p / q)) * areas[i][j];
+                    } else {
+                        klDivergence += (q * Math.log(q / p)) * areas[i][j];
+                    }
                 }
             }
         }
