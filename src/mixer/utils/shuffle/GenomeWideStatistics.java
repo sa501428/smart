@@ -50,7 +50,6 @@ public class GenomeWideStatistics {
     private final Map<Integer, Map<Integer, Integer>> chromToIndexToID;
     private final GenomeWide1DList<SubcompartmentInterval> subcompartments;
     private final double[][][] density;
-    private final long[][][] areasGW;
     private final double klScoreBaseline, klScoreShuffle;
     private final double varScoreBaseline, varScoreShuffle;
     private final int n;
@@ -68,15 +67,11 @@ public class GenomeWideStatistics {
         chromToIndexToID = makeChromToIndexToIDMap();
         n = clusterToFIdxMap.keySet().size();
         double[][][] total = new double[4][n][n];
-        areasGW = new long[4][n][n];
+        long[][][] areasGW = new long[4][n][n];
         populateStatistics(total, areasGW);
         density = TensorTools.divide(total, areasGW);
-        //totalsGW = makeSymmetric(totals);
-        //areasGW = makeSymmetric(areas);
-        //densityMatrix = divideBy(totalsGW, areasGW);
         varScoreBaseline = Scores.getVarScore(areasGW, density, true);
         klScoreBaseline = Scores.getKLScore(areasGW, density, true, true);
-
         varScoreShuffle = Scores.getVarScore(areasGW, density, false);
         klScoreShuffle = Scores.getKLScore(areasGW, density, true, false);
     }

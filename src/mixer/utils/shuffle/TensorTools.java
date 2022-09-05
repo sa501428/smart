@@ -26,21 +26,6 @@ package mixer.utils.shuffle;
 
 public class TensorTools {
 
-    public static double[][][] log(double[][][] a) {
-        double[][][] result = new double[a.length][a[0].length][a[0][0].length];
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    if (a[i][j][k] > 0) {
-                        result[i][j][k] = Math.log(1 + a[i][j][k]);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-
     public static void addBtoA(double[][][] a, double[][][] b) {
         for (int i = 0; i < a.length; i++) {
             for (int j = 0; j < a[i].length; j++) {
@@ -59,41 +44,6 @@ public class TensorTools {
                 }
             }
         }
-    }
-
-    public static double[][] makeSymmetric(double[][] input) {
-        int n = input.length;
-        double[][] results = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                results[i][j] += input[i][j];
-                results[j][i] += input[i][j];
-            }
-        }
-        return results;
-    }
-
-    public static long[][] makeSymmetric(long[][] input) {
-        int n = input.length;
-        long[][] results = new long[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                results[i][j] += input[i][j];
-                results[j][i] += input[i][j];
-            }
-        }
-        return results;
-    }
-
-    public static double[][] divideBy(double[][] totals, long[][] areas) {
-        for (int i = 0; i < totals.length; i++) {
-            for (int j = 0; j < totals[i].length; j++) {
-                if (areas[i][j] > 0) {
-                    totals[i][j] /= areas[i][j];
-                }
-            }
-        }
-        return totals;
     }
 
     public static double[][][] divide(double[][][] a, long[][][] b) {

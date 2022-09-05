@@ -47,13 +47,12 @@ public class Chic extends MixerCLT {
     protected NormalizationType norm = NormalizationHandler.INTER_KR;
     private Dataset ds;
     private int resolution = 100000;
-    private int compressionFactor = 8;
     private File outputDirectory;
     private String[] prefix;
     private String[] referenceBedFiles;
 
     public Chic() {
-        super("chic [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [-w window] [--verbose] " +
+        super("chic [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [--verbose] " +
                 "<file.hic> <outfolder> <file1.bed,file2.bed,...> <name1,name2,...>");
     }
 
@@ -83,14 +82,6 @@ public class Chic extends MixerCLT {
         }
 
         updateGeneratorSeed(mixerParser, generator);
-
-
-        int windowSize = mixerParser.getWindowSizeOption();
-        if (windowSize > 1) {
-            compressionFactor = windowSize;
-        } else {
-            compressionFactor = (100000 / resolution) * 16;
-        }
     }
 
     @Override
@@ -103,12 +94,8 @@ public class Chic extends MixerCLT {
             GenomeWide1DList<SubcompartmentInterval> subcompartments =
                     BedTools.loadBedFile(chromosomeHandler, referenceBedFiles[i]);
             System.out.println("Processing " + prefix[i]);
-            Shuffle matrix = new Shuffle(ds, norm, resolution, compressionFactor);
+            Shuffle matrix = new Shuffle(ds, norm, resolution);
             matrix.runGWStats(subcompartments, outputDirectory, prefix[i]);
-            //matrix.runInterAnalysis(subcompartments, newFolder, generator);
-            //matrix.savePlotsAndResults(newFolder, prefix[i]);
-
-            // force clear
             matrix = null;
             subcompartments = null;
         }
