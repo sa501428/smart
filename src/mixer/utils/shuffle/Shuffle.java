@@ -30,6 +30,7 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.SimpleArray2DTools;
 import mixer.utils.matrix.*;
+import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
@@ -63,6 +64,14 @@ public class Shuffle {
         return seeds;
     }
 
+    public void runGWStats(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder, String prefix) {
+        SliceUtils.collapseGWList(subcompartments);
+        // todo, using only big size? todo sorting picture
+        GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
+        statistics.writeToFile(outfolder, prefix, "GW_Stats");
+        System.out.println("Interaction summary statistics saved");
+    }
+
     public void runInterAnalysis(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder,
                                  Random generator) {
         for (int y = 0; y < mapTypes.length; y++) {
@@ -89,7 +98,6 @@ public class Shuffle {
             names[k] = mapTypes[k].toString();
         }
         scoreContainer.savePlotsAndResults(outfolder, prefix, names);
-
     }
 
     private void shuffleMap(HiCMatrix interMatrix, Map<Integer, List<Integer>> clusterToRowIndices,

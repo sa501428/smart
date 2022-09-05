@@ -106,8 +106,9 @@ public class Chic extends MixerCLT {
             File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
             UNIXTools.makeDir(newFolder);
             Shuffle matrix = new Shuffle(ds, norm, resolution, compressionFactor);
-            matrix.runInterAnalysis(subcompartments, newFolder, generator);
-            matrix.savePlotsAndResults(newFolder, prefix[i]);
+            matrix.runGWStats(subcompartments, newFolder, prefix[i]);
+            //matrix.runInterAnalysis(subcompartments, newFolder, generator);
+            //matrix.savePlotsAndResults(newFolder, prefix[i]);
 
             // force clear
             matrix = null;

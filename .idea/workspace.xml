@@ -30,9 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="timing statements">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Chic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Chic.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +59,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="concensus" />
+        <entry key="$PROJECT_DIR$" value="chic" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -92,11 +94,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.drive" />
       <recent name="mixer.utils.cleaning" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice.drive" />
-      <recent name="mixer.utils.slice" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/utils" />
@@ -107,11 +109,11 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.matrix" />
       <recent name="mixer.utils.common" />
       <recent name="mixer.utils.translocations" />
       <recent name="mixer.utils.magic" />
-      <recent name="mixer.algos" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Aggregate">
@@ -281,14 +283,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="12174000" />
-    </task>
-    <task id="LOCAL-00202" summary="update version">
-      <created>1648931886707</created>
-      <option name="number" value="00202" />
-      <option name="presentableId" value="LOCAL-00202" />
-      <option name="project" value="LOCAL" />
-      <updated>1648931886707</updated>
+      <workItem from="1662184295493" duration="18904000" />
     </task>
     <task id="LOCAL-00203" summary="avoid divide by 0">
       <created>1648932440611</created>
@@ -626,7 +621,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662299072127</updated>
     </task>
-    <option name="localTasksCounter" value="251" />
+    <task id="LOCAL-00251" summary="timing statements">
+      <created>1662330468601</created>
+      <option name="number" value="00251" />
+      <option name="presentableId" value="LOCAL-00251" />
+      <option name="project" value="LOCAL" />
+      <updated>1662330468601</updated>
+    </task>
+    <option name="localTasksCounter" value="252" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -650,7 +652,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="updated expected model" />
     <MESSAGE value="code cleanup, debugging" />
     <MESSAGE value="bug fixes" />
     <MESSAGE value="code cleanup, update straw" />
@@ -675,7 +676,8 @@
     <MESSAGE value="code cleanup" />
     <MESSAGE value="optimize runtime and memory usage" />
     <MESSAGE value="optimize runtime" />
-    <option name="LAST_COMMIT_MESSAGE" value="optimize runtime" />
+    <MESSAGE value="timing statements" />
+    <option name="LAST_COMMIT_MESSAGE" value="timing statements" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
