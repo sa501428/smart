@@ -72,7 +72,14 @@ public class FloatMatrixTools {
         return matrix;
     }
 
-    public static void saveMatrixToPNG(File file, float[][] matrix, boolean useLog) {
+    private static final int MIN_PIXEL_WIDTH = 50;
+
+    public static void saveMatrixToPNG(File file, float[][] matrix0, boolean useLog) {
+        float[][] matrix = matrix0;
+        if (matrix.length < MIN_PIXEL_WIDTH || matrix[0].length < MIN_PIXEL_WIDTH) {
+            matrix = expand(matrix0);
+        }
+
         double range = getMaxVal(matrix);
         double minVal = 0;
         if (useLog) {
@@ -96,6 +103,16 @@ public class FloatMatrixTools {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static float[][] expand(float[][] input) {
+        float[][] result = new float[MIN_PIXEL_WIDTH * input.length][MIN_PIXEL_WIDTH * input[0].length];
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[0].length; j++) {
+                result[i][j] = input[i / MIN_PIXEL_WIDTH][j / MIN_PIXEL_WIDTH];
+            }
+        }
+        return result;
     }
 
     public static float[][] deepClone(float[][] data) {
