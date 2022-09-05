@@ -25,11 +25,12 @@
 package mixer.utils.shuffle;
 
 public class Scores {
-    public static double getVarScore(long[][][] areas, double[][][] counts, boolean isBaseline) {
+    public static double getVarScore(long[][][] areas, double[][][] counts,
+                                     boolean isBaseline, boolean enforceSymm) {
 
         long totalArea = getTotalArea(areas);
         double totalWeightedSum = getWeightedSum(counts, areas);
-        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, counts);
+        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, counts, enforceSymm);
 
         double sumOfSquareErr = 0;
 
@@ -47,10 +48,11 @@ public class Scores {
         return (float) (sumOfSquareErr / totalArea);
     }
 
-    public static double getKLScore(long[][][] areas, double[][][] counts, boolean matrixIsP, boolean isBaseline) {
+    public static double getKLScore(long[][][] areas, double[][][] counts, boolean matrixIsP,
+                                    boolean isBaseline, boolean enforceSymm) {
         long totalArea = getTotalArea(areas);
         double totalWeightedSum = getWeightedSum(counts, areas);
-        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, counts);
+        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, counts, enforceSymm);
 
         double klDivergence = 0;
         for (int i = 0; i < areas.length; i++) {
@@ -73,7 +75,7 @@ public class Scores {
     }
 
     private static double[][] getMean(boolean isBaseline, double totalWeightedSum, long totalArea,
-                                      long[][][] areas, double[][][] counts) {
+                                      long[][][] areas, double[][][] counts, boolean enforceSymm) {
         int n = areas[0].length;
         double[][] result = new double[n][n];
         if (isBaseline) {
@@ -83,20 +85,29 @@ public class Scores {
                 }
             }
         } else {
-            double[][] denom = new double[n][n];
+            double[][] denominator = new double[n][n];
+            double[][] numerator = new double[n][n];
 
             for (int m = 0; m < areas.length; m++) {
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < n; j++) {
-                        result[i][j] += counts[m][i][j] * areas[m][i][j];
-                        denom[i][j] += areas[m][i][j];
+                        numerator[i][j] += counts[m][i][j] * areas[m][i][j];
+                        denominator[i][j] += areas[m][i][j];
                     }
                 }
             }
 
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    result[i][j] /= denom[i][j];
+                    double num = numerator[i][j];
+                    double denom = denominator[i][j];
+                    if (enforceSymm) {
+                        num += numerator[j][i];
+                        denom += denominator[j][i];
+                    }
+                    if (denom > 0) {
+                        result[i][j] = num / denom;
+                    }
                 }
             }
         }

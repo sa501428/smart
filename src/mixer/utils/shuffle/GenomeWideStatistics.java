@@ -50,8 +50,8 @@ public class GenomeWideStatistics {
     private final Map<Integer, Map<Integer, Integer>> chromToIndexToID;
     private final GenomeWide1DList<SubcompartmentInterval> subcompartments;
     private final double[][][] density;
-    private final double klScoreBaseline, klScoreShuffle;
-    private final double varScoreBaseline, varScoreShuffle;
+    private final double klScoreBaseline, klScoreShuffle, klScoreShuffleSymm;
+    private final double varScoreBaseline, varScoreShuffle, varScoreShuffleSymm;
     private final int n;
     private final DecimalFormat df = new DecimalFormat();
 
@@ -70,10 +70,14 @@ public class GenomeWideStatistics {
         long[][][] areasGW = new long[4][n][n];
         populateStatistics(total, areasGW);
         density = TensorTools.divide(total, areasGW);
-        varScoreBaseline = Scores.getVarScore(areasGW, density, true);
-        klScoreBaseline = Scores.getKLScore(areasGW, density, true, true);
-        varScoreShuffle = Scores.getVarScore(areasGW, density, false);
-        klScoreShuffle = Scores.getKLScore(areasGW, density, true, false);
+        varScoreBaseline = Scores.getVarScore(areasGW, density, true, false);
+        klScoreBaseline = Scores.getKLScore(areasGW, density, true, true, false);
+
+        varScoreShuffle = Scores.getVarScore(areasGW, density, false, false);
+        klScoreShuffle = Scores.getKLScore(areasGW, density, true, false, false);
+
+        varScoreShuffleSymm = Scores.getVarScore(areasGW, density, false, true);
+        klScoreShuffleSymm = Scores.getKLScore(areasGW, density, true, false, true);
     }
 
     private void populateStatistics(double[][][] allTotals, long[][][] allAreas) {
@@ -193,7 +197,9 @@ public class GenomeWideStatistics {
         try {
             FileWriter myWriter = new FileWriter(new File(outfolder, filename + "_stats.txt"));
             myWriter.write("Variance Score: " + printDivision(varScoreBaseline, varScoreShuffle) + "\n");
+            myWriter.write("Variance (Symm) Score: " + printDivision(varScoreBaseline, varScoreShuffleSymm) + "\n");
             myWriter.write("KL Divergence Score: " + printDivision(klScoreBaseline, klScoreShuffle) + "\n");
+            myWriter.write("KL Divergence (Symm) Score: " + printDivision(klScoreBaseline, klScoreShuffleSymm) + "\n");
             myWriter.close();
         } catch (Exception e) {
             e.printStackTrace();

@@ -30,11 +30,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="finalize chic">
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Chic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Chic.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="use symmetry for">
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/TensorTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/TensorTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -282,14 +280,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="26624000" />
-    </task>
-    <task id="LOCAL-00212" summary="code cleanup">
-      <created>1657727840782</created>
-      <option name="number" value="00212" />
-      <option name="presentableId" value="LOCAL-00212" />
-      <option name="project" value="LOCAL" />
-      <updated>1657727840782</updated>
+      <workItem from="1662184295493" duration="27399000" />
     </task>
     <task id="LOCAL-00213" summary="implement LL inter only matrix">
       <created>1657730030446</created>
@@ -627,7 +618,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662363485416</updated>
     </task>
-    <option name="localTasksCounter" value="261" />
+    <task id="LOCAL-00261" summary="code cleanup">
+      <created>1662363865239</created>
+      <option name="number" value="00261" />
+      <option name="presentableId" value="LOCAL-00261" />
+      <option name="project" value="LOCAL" />
+      <updated>1662363865239</updated>
+    </task>
+    <option name="localTasksCounter" value="262" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -663,7 +661,6 @@
     <MESSAGE value="remove tracking of gw norm" />
     <MESSAGE value="hub assignment" />
     <MESSAGE value="copy over chic files" />
-    <MESSAGE value="code cleanup" />
     <MESSAGE value="optimize runtime and memory usage" />
     <MESSAGE value="optimize runtime" />
     <MESSAGE value="timing statements" />
@@ -676,7 +673,8 @@
     <MESSAGE value="fix calculation; restore granularity of variance" />
     <MESSAGE value="bug fix" />
     <MESSAGE value="finalize chic" />
-    <option name="LAST_COMMIT_MESSAGE" value="finalize chic" />
+    <MESSAGE value="code cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="code cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
