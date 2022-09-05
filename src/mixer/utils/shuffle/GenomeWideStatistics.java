@@ -49,9 +49,9 @@ public class GenomeWideStatistics {
     private final Map<Integer, Integer> clusterToFIdxMap;
     private final Map<Integer, Map<Integer, Integer>> chromToIndexToID;
     private final GenomeWide1DList<SubcompartmentInterval> subcompartments;
-    private final double[][] densityMatrix;
-    private final double[][] totalsGW;
-    private final long[][] areasGW;
+    //private final double[][] densityMatrix;
+    private final double[][][] density;
+    private final long[][][] areasGW;
     private final double klScoreBaseline, klScoreShuffle;
     private final double varScoreBaseline, varScoreShuffle;
     private final int n;
@@ -68,27 +68,26 @@ public class GenomeWideStatistics {
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();
         n = clusterToFIdxMap.keySet().size();
-        double[][] totals = new double[n][n];
-        long[][] areas = new long[n][n];
-        populateStatistics(totals, areas);
-        totalsGW = totals;
-        areasGW = areas;
+        double[][][] total = new double[4][n][n];
+        areasGW = new long[4][n][n];
+        populateStatistics(total, areasGW);
+        density = divide(total, areasGW);
         //totalsGW = makeSymmetric(totals);
         //areasGW = makeSymmetric(areas);
-        densityMatrix = divideBy(totalsGW, areasGW);
-        varScoreBaseline = Scores.getVarScore(areasGW, densityMatrix, true);
-        klScoreBaseline = Scores.getKLScore(areasGW, densityMatrix, true, true);
+        //densityMatrix = divideBy(totalsGW, areasGW);
+        varScoreBaseline = Scores.getVarScore(areasGW, density, true);
+        klScoreBaseline = Scores.getKLScore(areasGW, density, true, true);
 
-        varScoreShuffle = Scores.getVarScore(areasGW, densityMatrix, false);
-        klScoreShuffle = Scores.getKLScore(areasGW, densityMatrix, true, false);
+        varScoreShuffle = Scores.getVarScore(areasGW, density, false);
+        klScoreShuffle = Scores.getKLScore(areasGW, density, true, false);
     }
 
-    private void populateStatistics(double[][] allTotals, long[][] allAreas) {
+    private void populateStatistics(double[][][] allTotals, long[][][] allAreas) {
 
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
-            double[][] totals = new double[n][n];
-            long[][] areas = new long[n][n];
+            double[][][] totals = new double[4][n][n];
+            long[][][] areas = new long[4][n][n];
 
             int i = index.getAndIncrement();
             while (i < chromosomes.length) {
@@ -117,18 +116,22 @@ public class GenomeWideStatistics {
         });
     }
 
-    private void addBtoA(double[][] a, double[][] b) {
+    private void addBtoA(double[][][] a, double[][][] b) {
         for (int i = 0; i < a.length; i++) {
             for (int j = 0; j < a[i].length; j++) {
-                a[i][j] += b[i][j];
+                for (int k = 0; k < a[i][j].length; k++) {
+                    a[i][j][k] += b[i][j][k];
+                }
             }
         }
     }
 
-    private void addBtoA(long[][] a, long[][] b) {
+    private void addBtoA(long[][][] a, long[][][] b) {
         for (int i = 0; i < a.length; i++) {
             for (int j = 0; j < a[i].length; j++) {
-                a[i][j] += b[i][j];
+                for (int k = 0; k < a[i][j].length; k++) {
+                    a[i][j][k] += b[i][j][k];
+                }
             }
         }
     }
@@ -205,7 +208,7 @@ public class GenomeWideStatistics {
     }
 
     private void populateCounts(Iterator<ContactRecord> iterator, Map<Integer, Integer> binToID1,
-                                Map<Integer, Integer> binToID2, double[][] counts) {
+                                Map<Integer, Integer> binToID2, double[][][] counts) {
         while (iterator.hasNext()) {
             ContactRecord record = iterator.next();
             if (record.getCounts() > 0
@@ -213,18 +216,36 @@ public class GenomeWideStatistics {
                     && binToID2.containsKey(record.getBinY())) {
                 int id1 = binToID1.get(record.getBinX());
                 int id2 = binToID2.get(record.getBinY());
-                counts[id1][id2] += record.getCounts();
+                int sectionID = getSectionID(record.getBinX(), record.getBinY());
+                counts[sectionID][id1][id2] += record.getCounts();
             }
         }
     }
 
     private void populateAreas(Map<Integer, Integer> binToID1,
-                               Map<Integer, Integer> binToID2, long[][] areas) {
+                               Map<Integer, Integer> binToID2, long[][][] areas) {
         for (int bin1 : binToID1.keySet()) {
             int id1 = binToID1.get(bin1);
             for (int bin2 : binToID2.keySet()) {
                 int id2 = binToID2.get(bin2);
-                areas[id1][id2]++;
+                int sectionID = getSectionID(bin1, bin2);
+                areas[sectionID][id1][id2]++;
+            }
+        }
+    }
+
+    private int getSectionID(int x, int y) {
+        if (x % 2 == 0) {
+            if (y % 2 == 0) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else {
+            if (y % 2 == 0) {
+                return 2;
+            } else {
+                return 3;
             }
         }
     }
@@ -239,12 +260,50 @@ public class GenomeWideStatistics {
             e.printStackTrace();
         }
 
-        File mapLogFile = new File(outfolder, filename + "_plot.png");
-        FloatMatrixTools.saveMatrixToPNG(mapLogFile, FloatMatrixTools.convert(densityMatrix), false);
+        //float[][] rawCombine = concatenate(totalsGW);
+        //FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_raw.png"), rawCombine, false);
+        //FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_log_raw.png"), rawCombine, true);
+
+        float[][] flattenedDensity = concatenate(density);
+        FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_density.png"), flattenedDensity, false);
+        FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_log_density.png"), flattenedDensity, true);
+
+    }
+
+    private double[][][] divide(double[][][] a, long[][][] b) {
+        double[][][] result = new double[a.length][a[0].length][a[0][0].length];
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[i].length; j++) {
+                for (int k = 0; k < a[i][j].length; k++) {
+                    if (b[i][j][k] > 0) {
+                        result[i][j][k] = a[i][j][k] / b[i][j][k];
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private float[][] concatenate(double[][][] input) {
+        int n = input[0].length;
+        float[][] matrix = new float[2 * n][2 * n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[2 * i][2 * j] = (float) input[0][i][j];
+                matrix[2 * i + 1][2 * j] = (float) input[1][i][j];
+                matrix[2 * i][2 * j + 1] = (float) input[2][i][j];
+                matrix[2 * i + 1][2 * j + 1] = (float) input[3][i][j];
+            }
+        }
+        return matrix;
     }
 
     private String printDivision(double a, double b) {
-        return round(a / b) + " (" + round(a) + "/" + round(b) + ")";
+        return roundI(a / b) + " (" + round(a) + "/" + round(b) + ")";
+    }
+
+    private int roundI(double v) {
+        return (int) v;
     }
 
     private String round(double v) {

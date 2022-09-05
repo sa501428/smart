@@ -25,39 +25,43 @@
 package mixer.utils.shuffle;
 
 public class Scores {
-    public static double getVarScore(long[][] areas, double[][] density, boolean isBaseline) {
+    public static double getVarScore(long[][][] areas, double[][][] counts, boolean isBaseline) {
 
         long totalArea = getTotalArea(areas);
-        double totalWeightedSum = getWeightedSum(density, areas);
-        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, density);
+        double totalWeightedSum = getWeightedSum(counts, areas);
+        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, counts);
 
         double sumOfSquareErr = 0;
 
         for (int i = 0; i < areas.length; i++) {
             for (int j = 0; j < areas[i].length; j++) {
-                double v = density[i][j] - mu[i][j];
-                sumOfSquareErr += (v * v) * areas[i][j];
+                for (int k = 0; k < areas[i][j].length; k++) {
+                    double v = counts[i][j][k] - mu[j][k];
+                    sumOfSquareErr += (v * v) * areas[i][j][k];
+                }
             }
         }
 
         return (float) (sumOfSquareErr / totalArea);
     }
 
-    public static double getKLScore(long[][] areas, double[][] density, boolean matrixIsP, boolean isBaseline) {
+    public static double getKLScore(long[][][] areas, double[][][] counts, boolean matrixIsP, boolean isBaseline) {
         long totalArea = getTotalArea(areas);
-        double totalWeightedSum = getWeightedSum(density, areas);
-        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, density);
+        double totalWeightedSum = getWeightedSum(counts, areas);
+        double[][] mu = getMean(isBaseline, totalWeightedSum, totalArea, areas, counts);
 
         double klDivergence = 0;
         for (int i = 0; i < areas.length; i++) {
             for (int j = 0; j < areas[i].length; j++) {
-                if (areas[i][j] > 0) {
-                    double q = mu[i][j] / totalWeightedSum;
-                    double p = density[i][j] / totalWeightedSum;
-                    if (matrixIsP) {
-                        klDivergence += (p * Math.log(p / q)) * areas[i][j];
-                    } else {
-                        klDivergence += (q * Math.log(q / p)) * areas[i][j];
+                for (int k = 0; k < areas[i][j].length; k++) {
+                    if (areas[i][j][k] > 0) {
+                        double q = mu[j][k] / totalWeightedSum;
+                        double p = counts[i][j][k] / totalWeightedSum;
+                        if (matrixIsP) {
+                            klDivergence += (p * Math.log(p / q)) * areas[i][j][k];
+                        } else {
+                            klDivergence += (q * Math.log(q / p)) * areas[i][j][k];
+                        }
                     }
                 }
             }
@@ -67,8 +71,8 @@ public class Scores {
     }
 
     private static double[][] getMean(boolean isBaseline, double totalWeightedSum, long totalArea,
-                                      long[][] areas, double[][] density) {
-        int n = areas.length;
+                                      long[][][] areas, double[][][] counts) {
+        int n = areas[0].length;
         double[][] result = new double[n][n];
         if (isBaseline) {
             for (int i = 0; i < n; i++) {
@@ -77,9 +81,20 @@ public class Scores {
                 }
             }
         } else {
+            double[][] denom = new double[n][n];
+
+            for (int m = 0; m < areas.length; m++) {
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < n; j++) {
+                        result[i][j] += counts[m][i][j] * areas[m][i][j];
+                        denom[i][j] += areas[m][i][j];
+                    }
+                }
+            }
+
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    result[i][j] = weightedAverage(density[i][j], areas[i][j], density[j][i], areas[j][i]);
+                    result[i][j] /= denom[i][j];
                 }
             }
         }
@@ -92,21 +107,25 @@ public class Scores {
     }
 
 
-    private static double getWeightedSum(double[][] densityMatrix, long[][] areas) {
+    private static double getWeightedSum(double[][][] densityMatrix, long[][][] areas) {
         double weightedSum = 0;
         for (int i = 0; i < areas.length; i++) {
             for (int j = 0; j < areas[i].length; j++) {
-                weightedSum += densityMatrix[i][j] * areas[i][j];
+                for (int k = 0; k < areas[i][j].length; k++) {
+                    weightedSum += densityMatrix[i][j][k] * areas[i][j][k];
+                }
             }
         }
         return weightedSum;
     }
 
-    private static long getTotalArea(long[][] areas) {
+    private static long getTotalArea(long[][][] areas) {
         long totalArea = 0;
-        for (int i = 0; i < areas.length; i++) {
-            for (int j = 0; j < areas[i].length; j++) {
-                totalArea += areas[i][j];
+        for (long[][] area : areas) {
+            for (long[] longs : area) {
+                for (long aLong : longs) {
+                    totalArea += aLong;
+                }
             }
         }
         return totalArea;

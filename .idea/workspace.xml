@@ -57,7 +57,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="chic" />
+        <entry key="$PROJECT_DIR$" value="max-chic" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -281,14 +281,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="23486000" />
-    </task>
-    <task id="LOCAL-00208" summary="code cleanup">
-      <created>1652896234263</created>
-      <option name="number" value="00208" />
-      <option name="presentableId" value="LOCAL-00208" />
-      <option name="project" value="LOCAL" />
-      <updated>1652896234264</updated>
+      <workItem from="1662184295493" duration="25344000" />
     </task>
     <task id="LOCAL-00209" summary="code cleanup">
       <created>1657723564839</created>
@@ -626,7 +619,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662356186437</updated>
     </task>
-    <option name="localTasksCounter" value="257" />
+    <task id="LOCAL-00257" summary="update printing, mean calculation">
+      <created>1662360453945</created>
+      <option name="number" value="00257" />
+      <option name="presentableId" value="LOCAL-00257" />
+      <option name="project" value="LOCAL" />
+      <updated>1662360453945</updated>
+    </task>
+    <option name="localTasksCounter" value="258" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -650,7 +650,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update parameters" />
     <MESSAGE value="update usage, connect clustering, code cleanup" />
     <MESSAGE value="bug fix for export options, optimize zscore calculation, code cleanup" />
     <MESSAGE value="preprocessing for matrix" />
@@ -675,7 +674,8 @@
     <MESSAGE value="bug fix KL, parallelize file reading" />
     <MESSAGE value="cleanup" />
     <MESSAGE value="expand plotting window" />
-    <option name="LAST_COMMIT_MESSAGE" value="expand plotting window" />
+    <MESSAGE value="update printing, mean calculation" />
+    <option name="LAST_COMMIT_MESSAGE" value="update printing, mean calculation" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
