@@ -37,6 +37,7 @@ import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -51,9 +52,10 @@ public class GenomeWideStatistics {
     private final double[][] densityMatrix;
     private final double[][] totalsGW;
     private final long[][] areasGW;
-    private final double klScore;
-    private final double varScore;
+    private final double klScoreBaseline, klScoreShuffle;
+    private final double varScoreBaseline, varScoreShuffle;
     private final int n;
+    private final DecimalFormat df = new DecimalFormat();
 
     public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm,
                                 GenomeWide1DList<SubcompartmentInterval> subcompartments) {
@@ -61,6 +63,7 @@ public class GenomeWideStatistics {
         this.resolution = resolution;
         this.norm = norm;
         this.subcompartments = subcompartments;
+        df.setMaximumFractionDigits(6);
         chromosomes = ds.getChromosomeHandler().getAutosomalChromosomesArray();
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();
@@ -73,8 +76,11 @@ public class GenomeWideStatistics {
         //totalsGW = makeSymmetric(totals);
         //areasGW = makeSymmetric(areas);
         densityMatrix = divideBy(totalsGW, areasGW);
-        varScore = Scores.getVarScore(totalsGW, areasGW, densityMatrix);
-        klScore = Scores.getKLScore(areasGW, densityMatrix, true);
+        varScoreBaseline = Scores.getVarScore(areasGW, densityMatrix, true);
+        klScoreBaseline = Scores.getKLScore(areasGW, densityMatrix, true, true);
+
+        varScoreShuffle = Scores.getVarScore(areasGW, densityMatrix, false);
+        klScoreShuffle = Scores.getKLScore(areasGW, densityMatrix, true, false);
     }
 
     private void populateStatistics(double[][] allTotals, long[][] allAreas) {
@@ -226,8 +232,8 @@ public class GenomeWideStatistics {
     public void writeToFile(File outfolder, String filename) {
         try {
             FileWriter myWriter = new FileWriter(new File(outfolder, filename + "_stats.txt"));
-            myWriter.write("Variance Score: " + (1.0 / varScore) + "\n");
-            myWriter.write("KL Divergence Score: " + (1.0 / klScore) + "\n");
+            myWriter.write("Variance Score: " + printDivision(varScoreBaseline, varScoreShuffle) + "\n");
+            myWriter.write("KL Divergence Score: " + printDivision(klScoreBaseline, klScoreShuffle) + "\n");
             myWriter.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,5 +241,13 @@ public class GenomeWideStatistics {
 
         File mapLogFile = new File(outfolder, filename + "_plot.png");
         FloatMatrixTools.saveMatrixToPNG(mapLogFile, FloatMatrixTools.convert(densityMatrix), false);
+    }
+
+    private String printDivision(double a, double b) {
+        return round(a / b) + " (" + round(a) + "/" + round(b) + ")";
+    }
+
+    private String round(double v) {
+        return df.format(v);
     }
 }

@@ -32,7 +32,8 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -280,14 +281,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="22207000" />
-    </task>
-    <task id="LOCAL-00207" summary="update straw">
-      <created>1650144895189</created>
-      <option name="number" value="00207" />
-      <option name="presentableId" value="LOCAL-00207" />
-      <option name="project" value="LOCAL" />
-      <updated>1650144895190</updated>
+      <workItem from="1662184295493" duration="23486000" />
     </task>
     <task id="LOCAL-00208" summary="code cleanup">
       <created>1652896234263</created>
@@ -625,7 +619,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662353815364</updated>
     </task>
-    <option name="localTasksCounter" value="256" />
+    <task id="LOCAL-00256" summary="expand plotting window">
+      <created>1662356186437</created>
+      <option name="number" value="00256" />
+      <option name="presentableId" value="LOCAL-00256" />
+      <option name="project" value="LOCAL" />
+      <updated>1662356186437</updated>
+    </task>
+    <option name="localTasksCounter" value="257" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -649,7 +650,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="use straw expected" />
     <MESSAGE value="update parameters" />
     <MESSAGE value="update usage, connect clustering, code cleanup" />
     <MESSAGE value="bug fix for export options, optimize zscore calculation, code cleanup" />
@@ -674,7 +674,8 @@
     <MESSAGE value="bug fix KL, plot summary" />
     <MESSAGE value="bug fix KL, parallelize file reading" />
     <MESSAGE value="cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleanup" />
+    <MESSAGE value="expand plotting window" />
+    <option name="LAST_COMMIT_MESSAGE" value="expand plotting window" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
