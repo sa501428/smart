@@ -36,8 +36,10 @@ public class Scores {
         for (int i = 0; i < areas.length; i++) {
             for (int j = 0; j < areas[i].length; j++) {
                 for (int k = 0; k < areas[i][j].length; k++) {
-                    double v = counts[i][j][k] - mu[j][k];
-                    sumOfSquareErr += (v * v) * areas[i][j][k];
+                    if (areas[i][j][k] > 0) {
+                        double v = counts[i][j][k] - mu[j][k];
+                        sumOfSquareErr += (v * v) * areas[i][j][k];
+                    }
                 }
             }
         }

@@ -49,7 +49,6 @@ public class GenomeWideStatistics {
     private final Map<Integer, Integer> clusterToFIdxMap;
     private final Map<Integer, Map<Integer, Integer>> chromToIndexToID;
     private final GenomeWide1DList<SubcompartmentInterval> subcompartments;
-    //private final double[][] densityMatrix;
     private final double[][][] density;
     private final long[][][] areasGW;
     private final double klScoreBaseline, klScoreShuffle;
