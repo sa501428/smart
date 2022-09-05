@@ -30,9 +30,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="use symmetry for">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -280,21 +280,7 @@
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
       <workItem from="1662091964538" duration="7249000" />
-      <workItem from="1662184295493" duration="27399000" />
-    </task>
-    <task id="LOCAL-00213" summary="implement LL inter only matrix">
-      <created>1657730030446</created>
-      <option name="number" value="00213" />
-      <option name="presentableId" value="LOCAL-00213" />
-      <option name="project" value="LOCAL" />
-      <updated>1657730030446</updated>
-    </task>
-    <task id="LOCAL-00214" summary="mid implementation">
-      <created>1661319826442</created>
-      <option name="number" value="00214" />
-      <option name="presentableId" value="LOCAL-00214" />
-      <option name="project" value="LOCAL" />
-      <updated>1661319826442</updated>
+      <workItem from="1662184295493" duration="30001000" />
     </task>
     <task id="LOCAL-00215" summary="get to compilation pass">
       <created>1661401847817</created>
@@ -625,7 +611,21 @@
       <option name="project" value="LOCAL" />
       <updated>1662363865239</updated>
     </task>
-    <option name="localTasksCounter" value="262" />
+    <task id="LOCAL-00262" summary="include symmetric score">
+      <created>1662364797007</created>
+      <option name="number" value="00262" />
+      <option name="presentableId" value="LOCAL-00262" />
+      <option name="project" value="LOCAL" />
+      <updated>1662364797007</updated>
+    </task>
+    <task id="LOCAL-00263" summary="code cleanup">
+      <created>1662365034001</created>
+      <option name="number" value="00263" />
+      <option name="presentableId" value="LOCAL-00263" />
+      <option name="project" value="LOCAL" />
+      <updated>1662365034001</updated>
+    </task>
+    <option name="localTasksCounter" value="264" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -649,7 +649,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update bounds" />
     <MESSAGE value="compressive clustering" />
     <MESSAGE value="update defaults" />
     <MESSAGE value="use low res ordering, bug fixes, color updates" />
@@ -673,6 +672,7 @@
     <MESSAGE value="fix calculation; restore granularity of variance" />
     <MESSAGE value="bug fix" />
     <MESSAGE value="finalize chic" />
+    <MESSAGE value="include symmetric score" />
     <MESSAGE value="code cleanup" />
     <option name="LAST_COMMIT_MESSAGE" value="code cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />

@@ -37,7 +37,6 @@ import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,7 +52,6 @@ public class GenomeWideStatistics {
     private final double klScoreBaseline, klScoreShuffle, klScoreShuffleSymm;
     private final double varScoreBaseline, varScoreShuffle, varScoreShuffleSymm;
     private final int n;
-    private final DecimalFormat df = new DecimalFormat();
 
     public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm,
                                 GenomeWide1DList<SubcompartmentInterval> subcompartments) {
@@ -61,7 +59,6 @@ public class GenomeWideStatistics {
         this.resolution = resolution;
         this.norm = norm;
         this.subcompartments = subcompartments;
-        df.setMaximumFractionDigits(6);
         chromosomes = ds.getChromosomeHandler().getAutosomalChromosomesArray();
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();
@@ -160,7 +157,7 @@ public class GenomeWideStatistics {
                 int id1 = binToID1.get(record.getBinX());
                 int id2 = binToID2.get(record.getBinY());
                 int sectionID = getSectionID(record.getBinX(), record.getBinY());
-                counts[sectionID][id1][id2] += record.getCounts();
+                counts[sectionID][id1][id2] += record.getCounts(); //todo explore Math.log(1+record.getCounts());
             }
         }
     }
@@ -207,18 +204,13 @@ public class GenomeWideStatistics {
 
         float[][] flattenedDensity = TensorTools.concatenate(density);
         FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_density.png"), flattenedDensity, false);
-        //FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_log_density.png"), flattenedDensity, true);
     }
 
     private String printDivision(double a, double b) {
-        return roundI(a / b) + " (" + round(a) + "/" + round(b) + ")";
+        return roundI(a / b) + " (" + a + "/" + b + ")";
     }
 
     private int roundI(double v) {
         return (int) v;
-    }
-
-    private String round(double v) {
-        return df.format(v);
     }
 }
