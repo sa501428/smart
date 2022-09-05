@@ -31,6 +31,7 @@ import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
@@ -186,15 +187,17 @@ public class GenomeWideStatistics {
         }
     }
 
-    public void writeToFile(File outfolder, String filename, String name) {
+    public void writeToFile(File outfolder, String filename) {
         try {
-            FileWriter myWriter = new FileWriter(new File(outfolder, filename));
-            myWriter.write(name + "------------------\n");
-            myWriter.write("Variance Score: " + varScore + "\n");
-            myWriter.write("KL Divergence Score: " + klScore + "\n");
+            FileWriter myWriter = new FileWriter(new File(outfolder, filename + "_stats.txt"));
+            myWriter.write("Variance Score: " + (1.0 / varScore) + "\n");
+            myWriter.write("KL Divergence Score: " + (1.0 / klScore) + "\n");
             myWriter.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        File mapLogFile = new File(outfolder, filename + "_plot.png");
+        FloatMatrixTools.saveMatrixToPNG(mapLogFile, FloatMatrixTools.convert(densityMatrix), false);
     }
 }

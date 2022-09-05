@@ -68,7 +68,7 @@ public class Shuffle {
         SliceUtils.collapseGWList(subcompartments);
         // todo, using only big size? todo sorting picture
         GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
-        statistics.writeToFile(outfolder, prefix, "GW_Stats");
+        statistics.writeToFile(outfolder, prefix);
         System.out.println("Interaction summary statistics saved");
     }
 

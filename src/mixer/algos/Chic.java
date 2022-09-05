@@ -103,10 +103,8 @@ public class Chic extends MixerCLT {
             GenomeWide1DList<SubcompartmentInterval> subcompartments =
                     BedTools.loadBedFile(chromosomeHandler, referenceBedFiles[i]);
             System.out.println("Processing " + prefix[i]);
-            File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
-            UNIXTools.makeDir(newFolder);
             Shuffle matrix = new Shuffle(ds, norm, resolution, compressionFactor);
-            matrix.runGWStats(subcompartments, newFolder, prefix[i]);
+            matrix.runGWStats(subcompartments, outputDirectory, prefix[i]);
             //matrix.runInterAnalysis(subcompartments, newFolder, generator);
             //matrix.savePlotsAndResults(newFolder, prefix[i]);
 
