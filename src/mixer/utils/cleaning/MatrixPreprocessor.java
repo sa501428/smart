@@ -35,20 +35,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatrixPreprocessor {
 
-    public static void clean(MatrixAndWeight matrix, Chromosome[] chromosomes) {
+    public static MatrixAndWeight clean(MatrixAndWeight matrix, Chromosome[] chromosomes,
+                                        int cutoff, boolean useExp) {
 
         SimpleArray2DTools.setZerosToNan(matrix.matrix);
-
-        matrix.removeAllZeroRows();
-
+        //matrix.removeAllZeroRows();
         matrix.updateWeights(chromosomes);
 
         SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
         removeHighGlobalThresh(matrix.matrix, 5);
-        normalize(matrix.matrix, -3, 3);
-        SimpleArray2DTools.simpleExpm1(matrix.matrix);
-
-        ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix.matrix);
+        normalize(matrix.matrix, -cutoff, cutoff);
+        if (useExp) {
+            SimpleArray2DTools.simpleExpm1(matrix.matrix);
+        }
+        /*
+        if(useZscore) {
+            ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix.matrix);
+        }
+        */
+        return matrix;
     }
 
     private static void removeHighGlobalThresh(float[][] data, int cutoff) {

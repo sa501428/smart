@@ -29,6 +29,7 @@ import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.MatrixTools;
 import mixer.utils.cleaning.EmptyRowCleaner;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
@@ -150,6 +151,11 @@ public class MatrixAndWeight {
 
     public int getNumRows() {
         return matrix.length;
+    }
+
+    public MatrixAndWeight deepCopy() {
+        return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(weights),
+                mappings.deepCopy());
     }
 }
 

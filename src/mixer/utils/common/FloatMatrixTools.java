@@ -123,6 +123,12 @@ public class FloatMatrixTools {
         return copy;
     }
 
+    public static int[] deepClone(int[] data) {
+        int[] copy = new int[data.length];
+        System.arraycopy(data, 0, copy, 0, data.length);
+        return copy;
+    }
+
     private static float getMaxVal(float[][] matrix) {
         float maxVal = matrix[0][0];
         for (int i = 0; i < matrix.length; i++) {

@@ -34,6 +34,7 @@ import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.cleaning.BadIndexFinder;
 import mixer.utils.cleaning.MatrixPreprocessor;
+import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.BinMappings;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
@@ -65,7 +66,7 @@ public class Slice extends MixerCLT {
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
-        super("slice [-r resolution] [--verbose] [--scale]" +
+        super("slice [-r resolution] [--verbose] [--scale] " +
                 //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
                 "<file.hic> <K0,KF> <outfolder> <prefix_>\n" +
                 "   K0 - minimum number of clusters\n" +
@@ -120,18 +121,43 @@ public class Slice extends MixerCLT {
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
-        MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
+        MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
 
-        slice.export(outputDirectory, "pre-clean");
+        slice0.export(outputDirectory, "pre-clean");
 
-        MatrixPreprocessor.clean(slice, chromosomes);
+        for (int cutoff : new int[]{2, 3, 4}) {
+            for (boolean useExp : new boolean[]{true, false}) {
+                MatrixAndWeight slice = MatrixPreprocessor.clean(slice0.deepCopy(), chromosomes,
+                        cutoff, useExp);
+                String prefix2 = getNewPrefix(prefix, cutoff, useExp, false);
+                //slice.export(outputDirectory, "slice");
+                ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+                clustering.extractFinalGWSubcompartments(prefix2);
 
-        slice.export(outputDirectory, "slice");
-
-        ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
-        clustering.extractFinalGWSubcompartments(prefix);
+                prefix2 = getNewPrefix(prefix, cutoff, useExp, true);
+                ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(slice.matrix);
+                clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+                clustering.extractFinalGWSubcompartments(prefix2);
+                System.out.println("*");
+            }
+        }
 
         System.out.println("\nSLICE complete");
+    }
+
+    private String getNewPrefix(String prefix, int cutoff, boolean useExp, boolean useZscore) {
+        String newPrefix = prefix + "_c" + cutoff + "_";
+        if (useExp) {
+            newPrefix += "exp_";
+        } else {
+            newPrefix += "log_";
+        }
+        if (useZscore) {
+            newPrefix += "Zscore_";
+        } else {
+            newPrefix += "noZ_";
+        }
+        return newPrefix;
     }
 }
