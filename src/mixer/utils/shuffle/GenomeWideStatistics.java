@@ -207,7 +207,7 @@ public class GenomeWideStatistics {
     }
 
     private String printDivision(double a, double b) {
-        return roundI(a / b) + " (" + a + "/" + b + ")";
+        return roundI(a / b) + " (" + a + ")/(" + b + ")";
     }
 
     private int roundI(double v) {

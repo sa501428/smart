@@ -25,6 +25,20 @@
 package mixer.utils.shuffle;
 
 public class Scores {
+
+    public static double[][][] getNormalizedMatrix(long[][][] areas, double[][][] counts) {
+        double[][][] normed = new double[counts.length][counts[0].length][counts[0][0].length];
+        double totalWeightedSum = getWeightedSum(counts, areas);
+        for (int i = 0; i < areas.length; i++) {
+            for (int j = 0; j < areas[i].length; j++) {
+                for (int k = 0; k < areas[i][j].length; k++) {
+                    normed[i][j][k] = counts[i][j][k] / totalWeightedSum;
+                }
+            }
+        }
+        return normed;
+    }
+
     public static double getVarScore(long[][][] areas, double[][][] counts,
                                      boolean isBaseline, boolean enforceSymm) {
 
@@ -120,7 +134,7 @@ public class Scores {
     }
 
 
-    private static double getWeightedSum(double[][][] densityMatrix, long[][][] areas) {
+    public static double getWeightedSum(double[][][] densityMatrix, long[][][] areas) {
         double weightedSum = 0;
         for (int i = 0; i < areas.length; i++) {
             for (int j = 0; j < areas[i].length; j++) {
