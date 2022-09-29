@@ -34,7 +34,6 @@ import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.cleaning.BadIndexFinder;
 import mixer.utils.cleaning.MatrixPreprocessor;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.BinMappings;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
@@ -126,24 +125,19 @@ public class Slice extends MixerCLT {
 
         slice0.export(outputDirectory, "pre-clean");
 
-        for (int cutoff : new int[]{2, 3, 4}) {
-            for (boolean useExp : new boolean[]{true, false}) {
-                MatrixAndWeight slice = MatrixPreprocessor.clean(slice0.deepCopy(), chromosomes,
-                        cutoff, useExp);
-                String prefix2 = getNewPrefix(prefix, cutoff, useExp, false);
-                //slice.export(outputDirectory, "slice");
-                ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
-                clustering.extractFinalGWSubcompartments(prefix2);
-
-                prefix2 = getNewPrefix(prefix, cutoff, useExp, true);
-                ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(slice.matrix);
-                clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
-                clustering.extractFinalGWSubcompartments(prefix2);
-                System.out.println("*");
-            }
-        }
+        runWithSettings(slice0, 2, true, true, handler, chromosomes);
+        runWithSettings(slice0, 3, true, false, handler, chromosomes);
 
         System.out.println("\nSLICE complete");
+    }
+
+    private void runWithSettings(MatrixAndWeight slice0, int cutoff, boolean useExp, boolean useZscore,
+                                 ChromosomeHandler handler, Chromosome[] chromosomes) {
+        MatrixAndWeight slice = MatrixPreprocessor.clean(slice0.deepCopy(), chromosomes, cutoff, useExp, useZscore);
+        //slice.export(outputDirectory, "slice");
+        ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+        clustering.extractFinalGWSubcompartments(getNewPrefix(prefix, cutoff, useExp, useZscore));
+        System.out.println("*");
     }
 
     private String getNewPrefix(String prefix, int cutoff, boolean useExp, boolean useZscore) {

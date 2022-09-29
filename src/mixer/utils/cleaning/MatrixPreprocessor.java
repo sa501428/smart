@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MatrixPreprocessor {
 
     public static MatrixAndWeight clean(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                        int cutoff, boolean useExp) {
+                                        int cutoff, boolean useExp, boolean useZscore) {
 
         SimpleArray2DTools.setZerosToNan(matrix.matrix);
         //matrix.removeAllZeroRows();
@@ -48,11 +48,9 @@ public class MatrixPreprocessor {
         if (useExp) {
             SimpleArray2DTools.simpleExpm1(matrix.matrix);
         }
-        /*
         if(useZscore) {
             ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix.matrix);
         }
-        */
         return matrix;
     }
 

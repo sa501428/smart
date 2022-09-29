@@ -65,7 +65,7 @@ public class ZScoreTools {
                 for (int j = 0; j < matrix[i].length; j++) {
                     float val = matrix[i][j];
                     if (val > 0) {
-                        matrix[i][j] = zscores.getZscore(j, val);
+                        matrix[i][j] = (float) zscores.getZscore(j, val);
                     } else {
                         matrix[i][j] = Float.NaN;
                     }
