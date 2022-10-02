@@ -31,6 +31,8 @@ import java.util.Set;
 
 public class NaNRowCleaner {
 
+    private static final int minGoodColsRequired = 3;
+
     public static float[][] cleanUpMatrix(float[][] data, Mappings mappings) {
         Set<Integer> badIndices = getBadIndices(data);
         System.out.println("initial magic matrix num rows: " + data.length + " badIndices: " + badIndices.size());
@@ -39,23 +41,23 @@ public class NaNRowCleaner {
     }
 
     private static Set<Integer> getBadIndices(float[][] matrix) {
-        int minGoodColsRequired = 2;
         Set<Integer> badIndices = new HashSet<>();
         for (int i = 0; i < matrix.length; i++) {
-            if (isBadRow(matrix[i], minGoodColsRequired)) {
+            if (isBadRow(matrix[i])) {
                 badIndices.add(i);
             }
         }
         return badIndices;
     }
 
-    private static boolean isBadRow(float[] row, int limit) {
-        int numBadEntries = 0;
+    private static boolean isBadRow(float[] row) {
+        float numBadEntries = 0;
         for (float val : row) {
             if (Float.isNaN(val)) {
                 numBadEntries++;
             }
         }
-        return row.length - numBadEntries < limit;
+        float percGoodEntries = (row.length - numBadEntries) / row.length;
+        return percGoodEntries < 0.3 || row.length - numBadEntries <= minGoodColsRequired;
     }
 }

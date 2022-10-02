@@ -32,11 +32,8 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/EmptyRowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/NaNRowCleaner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/NaNRowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/NaNRowCleaner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -289,14 +286,7 @@
       <workItem from="1662723680989" duration="4000" />
       <workItem from="1664411917242" duration="799000" />
       <workItem from="1664414671257" duration="7000" />
-      <workItem from="1664479244017" duration="3126000" />
-    </task>
-    <task id="LOCAL-00220" summary="code cleanup">
-      <created>1661520972179</created>
-      <option name="number" value="00220" />
-      <option name="presentableId" value="LOCAL-00220" />
-      <option name="project" value="LOCAL" />
-      <updated>1661520972180</updated>
+      <workItem from="1664479244017" duration="4088000" />
     </task>
     <task id="LOCAL-00221" summary="code cleanup">
       <created>1661571813225</created>
@@ -634,7 +624,14 @@
       <option name="project" value="LOCAL" />
       <updated>1664658668340</updated>
     </task>
-    <option name="localTasksCounter" value="269" />
+    <task id="LOCAL-00269" summary="bug fix, correct matrix handling of sparse rows">
+      <created>1664678079459</created>
+      <option name="number" value="00269" />
+      <option name="presentableId" value="LOCAL-00269" />
+      <option name="project" value="LOCAL" />
+      <updated>1664678079459</updated>
+    </task>
+    <option name="localTasksCounter" value="270" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -658,7 +655,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="add verbose printing" />
     <MESSAGE value="remove null rows" />
     <MESSAGE value="redo versioning" />
     <MESSAGE value="update version" />
@@ -683,7 +679,8 @@
     <MESSAGE value="run different slice configurations, add deep copy options" />
     <MESSAGE value="run different slice configurations, add deep copy options, update straw" />
     <MESSAGE value="use welford based zscore" />
-    <option name="LAST_COMMIT_MESSAGE" value="use welford based zscore" />
+    <MESSAGE value="bug fix, correct matrix handling of sparse rows" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix, correct matrix handling of sparse rows" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

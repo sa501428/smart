@@ -36,7 +36,7 @@ public class AggregateProcessing {
 
     public static void main(String[] argv) throws Exception {
         String[] args = new String[]{"slice", "-r", "25000", "/Users/muhammad/Desktop/hicfiles/gm12878_rh14_30.hic",
-                "5,7", "/Users/muhammad/Desktop/slice2/final_hammer/result_25k", "gm14_"};
+                "5,7", "/Users/muhammad/Desktop/slice2/final_hammer/result_25k_v2", "gm14_"};
         SmartTools.main(args);
     }
 }
