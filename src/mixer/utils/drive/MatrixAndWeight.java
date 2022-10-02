@@ -28,7 +28,7 @@ import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.MatrixTools;
-import mixer.utils.cleaning.EmptyRowCleaner;
+import mixer.utils.cleaning.NaNRowCleaner;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.tracks.SliceUtils;
@@ -129,8 +129,8 @@ public class MatrixAndWeight {
         }
     }
 
-    public void removeAllZeroRows() {
-        matrix = EmptyRowCleaner.cleanUpMatrix(matrix, mappings);
+    public void removeAllNanRows() {
+        matrix = NaNRowCleaner.cleanUpMatrix(matrix, mappings);
     }
 
     public int[] getSumOfAllLoci(Chromosome[] chromosomes) {
@@ -156,6 +156,10 @@ public class MatrixAndWeight {
     public MatrixAndWeight deepCopy() {
         return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(weights),
                 mappings.deepCopy());
+    }
+
+    public boolean notEmpty() {
+        return matrix.length > 10 && matrix[0].length > 2;
     }
 }
 

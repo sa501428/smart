@@ -29,7 +29,7 @@ import mixer.utils.drive.Mappings;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EmptyRowCleaner {
+public class NaNRowCleaner {
 
     public static float[][] cleanUpMatrix(float[][] data, Mappings mappings) {
         Set<Integer> badIndices = getBadIndices(data);
@@ -50,12 +50,12 @@ public class EmptyRowCleaner {
     }
 
     private static boolean isBadRow(float[] row, int limit) {
-        int numGoodEntries = 0;
+        int numBadEntries = 0;
         for (float val : row) {
-            if (val > 0) {
-                numGoodEntries++;
+            if (Float.isNaN(val)) {
+                numBadEntries++;
             }
         }
-        return numGoodEntries < limit;
+        return row.length - numBadEntries < limit;
     }
 }

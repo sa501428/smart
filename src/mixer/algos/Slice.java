@@ -135,9 +135,11 @@ public class Slice extends MixerCLT {
                                  ChromosomeHandler handler, Chromosome[] chromosomes) {
         MatrixAndWeight slice = MatrixPreprocessor.clean(slice0.deepCopy(), chromosomes, cutoff, useExp, useZscore);
         //slice.export(outputDirectory, "slice");
-        ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
-        clustering.extractFinalGWSubcompartments(getNewPrefix(prefix, cutoff, useExp, useZscore));
-        System.out.println("*");
+        if (slice.notEmpty()) {
+            ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+            clustering.extractFinalGWSubcompartments(getNewPrefix(prefix, cutoff, useExp, useZscore));
+            System.out.println("*");
+        }
     }
 
     private String getNewPrefix(String prefix, int cutoff, boolean useExp, boolean useZscore) {

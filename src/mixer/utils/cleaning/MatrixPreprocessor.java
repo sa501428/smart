@@ -39,7 +39,7 @@ public class MatrixPreprocessor {
                                         int cutoff, boolean useExp, boolean useZscore) {
 
         SimpleArray2DTools.setZerosToNan(matrix.matrix);
-        //matrix.removeAllZeroRows();
+
         matrix.updateWeights(chromosomes);
 
         SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
@@ -48,9 +48,11 @@ public class MatrixPreprocessor {
         if (useExp) {
             SimpleArray2DTools.simpleExpm1(matrix.matrix);
         }
-        if(useZscore) {
+        if (useZscore) {
             ZScoreTools.inPlaceZscorePositivesDownColAndSetZeroToNan(matrix.matrix);
         }
+
+        matrix.removeAllNanRows();
         return matrix;
     }
 
