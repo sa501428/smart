@@ -140,12 +140,12 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return optionToBoolean(scaleOption);
     }
 
-    private int optionToInt(Option option) {
+    private int optionToInt(Option option, int defaultNum) {
         Object opt = getOptionValue(option);
-        return opt == null ? 0 : ((Number) opt).intValue();
+        return opt == null ? defaultNum : ((Number) opt).intValue();
     }
 
-    public int getWindowSizeOption() {
-        return optionToInt(windowOption);
+    public int getWindowSizeOption(int defaultNum) {
+        return optionToInt(windowOption, defaultNum);
     }
 }

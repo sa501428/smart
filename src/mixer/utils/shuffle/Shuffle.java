@@ -44,9 +44,10 @@ public class Shuffle {
         this.resolution = resolution;
     }
 
-    public void runGWStats(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder, String prefix) {
+    public void runGWStats(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder,
+                           String prefix, int numSplits) {
         SliceUtils.collapseGWList(subcompartments);
-        GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments);
+        GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments, numSplits);
         statistics.writeToFile(outfolder, prefix);
         System.out.println("Interaction summary statistics saved");
     }

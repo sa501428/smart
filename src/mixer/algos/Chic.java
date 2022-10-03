@@ -50,6 +50,7 @@ public class Chic extends MixerCLT {
     private File outputDirectory;
     private String[] prefix;
     private String[] referenceBedFiles;
+    private int numSplits = 2;
 
     public Chic() {
         super("chic [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [--verbose] " +
@@ -80,7 +81,7 @@ public class Chic extends MixerCLT {
                 System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
             resolution = possibleResolutions.get(0);
         }
-
+        numSplits = mixerParser.getWindowSizeOption(2);
         updateGeneratorSeed(mixerParser, generator);
     }
 
@@ -95,7 +96,7 @@ public class Chic extends MixerCLT {
                     BedTools.loadBedFile(chromosomeHandler, referenceBedFiles[i]);
             System.out.println("Processing " + prefix[i]);
             Shuffle matrix = new Shuffle(ds, norm, resolution);
-            matrix.runGWStats(subcompartments, outputDirectory, prefix[i]);
+            matrix.runGWStats(subcompartments, outputDirectory, prefix[i], numSplits);
             matrix = null;
             subcompartments = null;
         }

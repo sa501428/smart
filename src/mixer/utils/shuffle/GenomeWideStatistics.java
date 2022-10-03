@@ -55,12 +55,12 @@ public class GenomeWideStatistics {
     private final BinSplitter splitter;
 
     public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm,
-                                GenomeWide1DList<SubcompartmentInterval> subcompartments) {
+                                GenomeWide1DList<SubcompartmentInterval> subcompartments, int numSplits) {
         this.ds = ds;
         this.resolution = resolution;
         this.norm = norm;
         this.subcompartments = subcompartments;
-        this.splitter = new BinSplitter(3);
+        this.splitter = new BinSplitter(numSplits);
         chromosomes = ds.getChromosomeHandler().getAutosomalChromosomesArray();
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();
