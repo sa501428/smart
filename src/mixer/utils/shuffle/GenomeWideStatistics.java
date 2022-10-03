@@ -33,6 +33,8 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.splitter.BinSplitter;
+import mixer.utils.splitter.FourSplitter;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
@@ -52,6 +54,7 @@ public class GenomeWideStatistics {
     private final double klScoreBaseline, klScoreShuffle, klScoreShuffleSymm;
     private final double varScoreBaseline, varScoreShuffle, varScoreShuffleSymm;
     private final int n;
+    private final BinSplitter splitter;
 
     public GenomeWideStatistics(Dataset ds, int resolution, NormalizationType norm,
                                 GenomeWide1DList<SubcompartmentInterval> subcompartments) {
@@ -59,12 +62,13 @@ public class GenomeWideStatistics {
         this.resolution = resolution;
         this.norm = norm;
         this.subcompartments = subcompartments;
+        this.splitter = new FourSplitter();
         chromosomes = ds.getChromosomeHandler().getAutosomalChromosomesArray();
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();
         n = clusterToFIdxMap.keySet().size();
-        double[][][] total = new double[4][n][n];
-        long[][][] areasGW = new long[4][n][n];
+        double[][][] total = new double[splitter.getNumGroups()][n][n];
+        long[][][] areasGW = new long[splitter.getNumGroups()][n][n];
         populateStatistics(total, areasGW);
         density = TensorTools.divide(total, areasGW);
         varScoreBaseline = Scores.getVarScore(areasGW, density, true, false);
@@ -81,8 +85,8 @@ public class GenomeWideStatistics {
 
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
-            double[][][] totals = new double[4][n][n];
-            long[][][] areas = new long[4][n][n];
+            double[][][] totals = new double[splitter.getNumGroups()][n][n];
+            long[][][] areas = new long[splitter.getNumGroups()][n][n];
 
             int i = index.getAndIncrement();
             while (i < chromosomes.length) {
@@ -156,7 +160,7 @@ public class GenomeWideStatistics {
                     && binToID2.containsKey(record.getBinY())) {
                 int id1 = binToID1.get(record.getBinX());
                 int id2 = binToID2.get(record.getBinY());
-                int sectionID = getSectionID(record.getBinX(), record.getBinY());
+                int sectionID = splitter.getSectionID(record.getBinX(), record.getBinY());
                 counts[sectionID][id1][id2] += record.getCounts(); //todo explore Math.log(1+record.getCounts());
             }
         }
@@ -168,24 +172,8 @@ public class GenomeWideStatistics {
             int id1 = binToID1.get(bin1);
             for (int bin2 : binToID2.keySet()) {
                 int id2 = binToID2.get(bin2);
-                int sectionID = getSectionID(bin1, bin2);
+                int sectionID = splitter.getSectionID(bin1, bin2);
                 areas[sectionID][id1][id2]++;
-            }
-        }
-    }
-
-    private int getSectionID(int x, int y) {
-        if (x % 2 == 0) {
-            if (y % 2 == 0) {
-                return 0;
-            } else {
-                return 1;
-            }
-        } else {
-            if (y % 2 == 0) {
-                return 2;
-            } else {
-                return 3;
             }
         }
     }
@@ -202,7 +190,7 @@ public class GenomeWideStatistics {
             e.printStackTrace();
         }
 
-        float[][] flattenedDensity = TensorTools.concatenate(density);
+        float[][] flattenedDensity = splitter.flatten(density);
         FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_density.png"), flattenedDensity, false);
     }
 

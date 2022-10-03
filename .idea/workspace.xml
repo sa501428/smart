@@ -30,13 +30,12 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="graph idea, oe updates">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/graph/Binarize.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/splitter/BinSplitter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/splitter/FourSplitter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/SmartTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/SmartTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/TensorTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/TensorTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -289,14 +288,8 @@
       <workItem from="1662723680989" duration="4000" />
       <workItem from="1664411917242" duration="799000" />
       <workItem from="1664414671257" duration="7000" />
-      <workItem from="1664479244017" duration="8320000" />
-    </task>
-    <task id="LOCAL-00222" summary="code cleanup, debugging">
-      <created>1661579316796</created>
-      <option name="number" value="00222" />
-      <option name="presentableId" value="LOCAL-00222" />
-      <option name="project" value="LOCAL" />
-      <updated>1661579316796</updated>
+      <workItem from="1664479244017" duration="9539000" />
+      <workItem from="1664772575844" duration="727000" />
     </task>
     <task id="LOCAL-00223" summary="bug fixes">
       <created>1661584506218</created>
@@ -634,7 +627,14 @@
       <option name="project" value="LOCAL" />
       <updated>1664695980681</updated>
     </task>
-    <option name="localTasksCounter" value="271" />
+    <task id="LOCAL-00271" summary="graph idea, oe updates">
+      <created>1664770580991</created>
+      <option name="number" value="00271" />
+      <option name="presentableId" value="LOCAL-00271" />
+      <option name="project" value="LOCAL" />
+      <updated>1664770580991</updated>
+    </task>
+    <option name="localTasksCounter" value="272" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -658,7 +658,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="remove null rows" />
     <MESSAGE value="redo versioning" />
     <MESSAGE value="update version" />
     <MESSAGE value="remove tracking of gw norm" />
@@ -683,7 +682,8 @@
     <MESSAGE value="run different slice configurations, add deep copy options, update straw" />
     <MESSAGE value="use welford based zscore" />
     <MESSAGE value="bug fix, correct matrix handling of sparse rows" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix, correct matrix handling of sparse rows" />
+    <MESSAGE value="graph idea, oe updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="graph idea, oe updates" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

@@ -22,41 +22,12 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.splitter;
 
-public class TensorTools {
+public interface BinSplitter {
+    int getSectionID(int x, int y);
 
-    public static void addBtoA(double[][][] a, double[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
-            }
-        }
-    }
+    int getNumGroups();
 
-    public static void addBtoA(long[][][] a, long[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
-            }
-        }
-    }
-
-    public static double[][][] divide(double[][][] a, long[][][] b) {
-        double[][][] result = new double[a.length][a[0].length][a[0][0].length];
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    if (b[i][j][k] > 0) {
-                        result[i][j][k] = a[i][j][k] / b[i][j][k];
-                    }
-                }
-            }
-        }
-        return result;
-    }
+    float[][] flatten(double[][][] density);
 }

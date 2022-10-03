@@ -22,41 +22,44 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.splitter;
 
-public class TensorTools {
+public class FourSplitter implements BinSplitter {
 
-    public static void addBtoA(double[][][] a, double[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
+    @Override
+    public int getSectionID(int x, int y) {
+        if (x % 2 == 0) {
+            if (y % 2 == 0) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else {
+            if (y % 2 == 0) {
+                return 2;
+            } else {
+                return 3;
             }
         }
     }
 
-    public static void addBtoA(long[][][] a, long[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
-            }
-        }
+    @Override
+    public int getNumGroups() {
+        return 4;
     }
 
-    public static double[][][] divide(double[][][] a, long[][][] b) {
-        double[][][] result = new double[a.length][a[0].length][a[0][0].length];
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    if (b[i][j][k] > 0) {
-                        result[i][j][k] = a[i][j][k] / b[i][j][k];
-                    }
-                }
+    @Override
+    public float[][] flatten(double[][][] input) {
+        int n = input[0].length;
+        float[][] matrix = new float[2 * n][2 * n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[2 * i][2 * j] = (float) input[0][i][j];
+                matrix[2 * i + 1][2 * j] = (float) input[1][i][j];
+                matrix[2 * i][2 * j + 1] = (float) input[2][i][j];
+                matrix[2 * i + 1][2 * j + 1] = (float) input[3][i][j];
             }
         }
-        return result;
+        return matrix;
     }
 }
