@@ -73,7 +73,7 @@ public class IndexOrderer {
             if (zd != null) {
                 try {
                     float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, lowRes, norm,
-                            badIndices.get(chrom.getIndex()), resFactor);
+                            badIndices.get(chrom.getIndex()), resFactor, true, true);
                     int[] lowResNewOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
                             offset, lowRes, generator.nextLong(), resFactor);
                     int[] newOrderIndexes = convertToHigherRes(lowResNewOrderIndexes, chrom, hires, resFactor);

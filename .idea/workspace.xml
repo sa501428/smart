@@ -30,10 +30,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="graph idea, oe updates">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/graph/Binarize.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/SmartTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/SmartTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/AggregateProcessing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/NaNRowCleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/NaNRowCleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -286,14 +289,7 @@
       <workItem from="1662723680989" duration="4000" />
       <workItem from="1664411917242" duration="799000" />
       <workItem from="1664414671257" duration="7000" />
-      <workItem from="1664479244017" duration="4088000" />
-    </task>
-    <task id="LOCAL-00221" summary="code cleanup">
-      <created>1661571813225</created>
-      <option name="number" value="00221" />
-      <option name="presentableId" value="LOCAL-00221" />
-      <option name="project" value="LOCAL" />
-      <updated>1661571813225</updated>
+      <workItem from="1664479244017" duration="8320000" />
     </task>
     <task id="LOCAL-00222" summary="code cleanup, debugging">
       <created>1661579316796</created>
@@ -631,7 +627,14 @@
       <option name="project" value="LOCAL" />
       <updated>1664678079459</updated>
     </task>
-    <option name="localTasksCounter" value="270" />
+    <task id="LOCAL-00270" summary="bug fix, correct matrix handling of sparse rows">
+      <created>1664695980681</created>
+      <option name="number" value="00270" />
+      <option name="presentableId" value="LOCAL-00270" />
+      <option name="project" value="LOCAL" />
+      <updated>1664695980681</updated>
+    </task>
+    <option name="localTasksCounter" value="271" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
