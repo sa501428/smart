@@ -31,11 +31,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/splitter/BinSplitter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/splitter/FourSplitter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/TensorTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/TensorTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/splitter/BinSplitter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/splitter/BinSplitter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/splitter/FourSplitter.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,11 +107,11 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.splitter" />
       <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.matrix" />
       <recent name="mixer.utils.common" />
       <recent name="mixer.utils.translocations" />
-      <recent name="mixer.utils.magic" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Aggregate">
@@ -289,14 +287,7 @@
       <workItem from="1664411917242" duration="799000" />
       <workItem from="1664414671257" duration="7000" />
       <workItem from="1664479244017" duration="9539000" />
-      <workItem from="1664772575844" duration="727000" />
-    </task>
-    <task id="LOCAL-00223" summary="bug fixes">
-      <created>1661584506218</created>
-      <option name="number" value="00223" />
-      <option name="presentableId" value="LOCAL-00223" />
-      <option name="project" value="LOCAL" />
-      <updated>1661584506218</updated>
+      <workItem from="1664772575844" duration="2573000" />
     </task>
     <task id="LOCAL-00224" summary="code cleanup, update straw">
       <created>1661636764659</created>
@@ -634,7 +625,14 @@
       <option name="project" value="LOCAL" />
       <updated>1664770580991</updated>
     </task>
-    <option name="localTasksCounter" value="272" />
+    <task id="LOCAL-00272" summary="abstraction of index splitter">
+      <created>1664773460231</created>
+      <option name="number" value="00272" />
+      <option name="presentableId" value="LOCAL-00272" />
+      <option name="project" value="LOCAL" />
+      <updated>1664773460231</updated>
+    </task>
+    <option name="localTasksCounter" value="273" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -658,7 +656,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="redo versioning" />
     <MESSAGE value="update version" />
     <MESSAGE value="remove tracking of gw norm" />
     <MESSAGE value="hub assignment" />
@@ -683,7 +680,8 @@
     <MESSAGE value="use welford based zscore" />
     <MESSAGE value="bug fix, correct matrix handling of sparse rows" />
     <MESSAGE value="graph idea, oe updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="graph idea, oe updates" />
+    <MESSAGE value="abstraction of index splitter" />
+    <option name="LAST_COMMIT_MESSAGE" value="abstraction of index splitter" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

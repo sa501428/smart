@@ -33,8 +33,6 @@ import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.splitter.BinSplitter;
-import mixer.utils.splitter.FourSplitter;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
@@ -62,7 +60,7 @@ public class GenomeWideStatistics {
         this.resolution = resolution;
         this.norm = norm;
         this.subcompartments = subcompartments;
-        this.splitter = new FourSplitter();
+        this.splitter = new BinSplitter(3);
         chromosomes = ds.getChromosomeHandler().getAutosomalChromosomesArray();
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();

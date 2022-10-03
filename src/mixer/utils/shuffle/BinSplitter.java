@@ -22,12 +22,36 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.splitter;
+package mixer.utils.shuffle;
 
-public interface BinSplitter {
-    int getSectionID(int x, int y);
+public class BinSplitter {
+    private final int N;
 
-    int getNumGroups();
+    public BinSplitter(int n) {
+        this.N = n;
+    }
 
-    float[][] flatten(double[][][] density);
+    public int getSectionID(int x, int y) {
+        return (N * (x % N)) + (y % N);
+    }
+
+    public int getNumGroups() {
+        return N * N;
+    }
+
+    public float[][] flatten(double[][][] input) {
+        int n = input[0].length;
+        float[][] matrix = new float[N * n][N * n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int ni = 0; ni < N; ni++) {
+                    for (int nj = 0; nj < N; nj++) {
+                        int id = getSectionID(ni, nj);
+                        matrix[(N * i) + ni][(N * j) + nj] = (float) input[id][i][j];
+                    }
+                }
+            }
+        }
+        return matrix;
+    }
 }
