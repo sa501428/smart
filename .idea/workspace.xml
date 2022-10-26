@@ -31,14 +31,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/algos/Compare.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus3DTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/BedTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/BedTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/ConcensusTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/SubcompartmentInterval.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/SubcompartmentInterval.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -296,14 +292,7 @@
       <workItem from="1664952445485" duration="4044000" />
       <workItem from="1665042465595" duration="579000" />
       <workItem from="1666557146717" duration="1582000" />
-      <workItem from="1666712364500" duration="4066000" />
-    </task>
-    <task id="LOCAL-00226" summary="use straw expected">
-      <created>1661638180875</created>
-      <option name="number" value="00226" />
-      <option name="presentableId" value="LOCAL-00226" />
-      <option name="project" value="LOCAL" />
-      <updated>1661638180875</updated>
+      <workItem from="1666712364500" duration="5313000" />
     </task>
     <task id="LOCAL-00227" summary="update parameters">
       <created>1661660981761</created>
@@ -641,7 +630,14 @@
       <option name="project" value="LOCAL" />
       <updated>1664775977652</updated>
     </task>
-    <option name="localTasksCounter" value="275" />
+    <task id="LOCAL-00275" summary="add comparison check, cleanup">
+      <created>1666758306820</created>
+      <option name="number" value="00275" />
+      <option name="presentableId" value="LOCAL-00275" />
+      <option name="project" value="LOCAL" />
+      <updated>1666758306820</updated>
+    </task>
+    <option name="localTasksCounter" value="276" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -665,7 +661,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="hub assignment" />
     <MESSAGE value="copy over chic files" />
     <MESSAGE value="optimize runtime and memory usage" />
     <MESSAGE value="optimize runtime" />
@@ -690,7 +685,8 @@
     <MESSAGE value="abstraction of index splitter" />
     <MESSAGE value="change bin splitting" />
     <MESSAGE value="adjust bin splitting parameter" />
-    <option name="LAST_COMMIT_MESSAGE" value="adjust bin splitting parameter" />
+    <MESSAGE value="add comparison check, cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="add comparison check, cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

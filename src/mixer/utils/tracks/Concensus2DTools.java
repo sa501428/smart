@@ -39,8 +39,8 @@ public class Concensus2DTools {
         int minNum = Math.min(summary.length, summary[0].length);
         for (int q = 0; q < minNum; q++) {
             int[] coords = getMaxCoordinates(summary);
-            totalNum += summary[coords[0]][coords[1]];
             if (coords != null) {
+                totalNum += summary[coords[0]][coords[1]];
                 clearSectionSlices(summary, coords);
             } else {
                 break;
@@ -72,7 +72,8 @@ public class Concensus2DTools {
             Map<Integer, Integer> mapping2 = map2.get(key);
             for (Integer pos : mapping1.keySet()) {
                 if (mapping2.containsKey(pos)) {
-                    counts[mapping1.get(pos)][mapping2.get(pos)]++;
+                    if (mapping1.get(pos) >= 0 && mapping2.get(pos) >= 0)
+                        counts[mapping1.get(pos)][mapping2.get(pos)]++;
                 }
             }
         }

@@ -39,8 +39,6 @@ import java.util.regex.Pattern;
 
 public class BedTools {
 
-    private static final AtomicInteger idCounter = new AtomicInteger(0);
-
     public static GenomeWide1DList<SubcompartmentInterval> loadBedFile(ChromosomeHandler handler, String bedFilePath) {
         List<SubcompartmentInterval> anchors = new ArrayList<>();
 
@@ -63,6 +61,8 @@ public class BedTools {
     private static List<SubcompartmentInterval> parseSubcompartmentBEDFile(String bedFilePath, ChromosomeHandler handler) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(bedFilePath), SmartTools.bufferSize);
 
+        final AtomicInteger idCounter = new AtomicInteger(0);
+
         Set<SubcompartmentInterval> anchors = new HashSet<>();
         String nextLine;
         Map<String, Integer> idToVal = new HashMap<>();
@@ -82,13 +82,7 @@ public class BedTools {
                 int end1 = Integer.parseInt(tokens[2]);
                 String id = tokens[3].toUpperCase();
 
-                int val;
-                try {
-                    val = Integer.parseInt(tokens[4]);
-                } catch (Exception e) {
-                    val = 0;
-                }
-                val = updateMapAndConfirmVal(id, val, idToVal);
+                int val = updateMapAndConfirmVal(id, idToVal, idCounter);
 
                 Chromosome chrom = handler.getChromosomeFromName(chr1Name);
                 if (chrom == null) {
@@ -112,28 +106,11 @@ public class BedTools {
         return new ArrayList<>(anchors);
     }
 
-    private static int updateMapAndConfirmVal(String id, int val, Map<String, Integer> idToVal) {
-        if (idToVal.containsKey(id)) {
-            return idToVal.get(id);
-        } else {
-            int newVal = val;
-            boolean valueIsAlreadyPresent = false;
-            for (Integer valInMap : idToVal.values()) {
-                valueIsAlreadyPresent |= valInMap.intValue() == val;
-            }
-
-            if (valueIsAlreadyPresent) {
-                newVal = idCounter.incrementAndGet();
-            } else {
-                idCounter.set(val);
-                idCounter.incrementAndGet();
-            }
-            idToVal.put(id, newVal);
-            return newVal;
-            //int val2 = idCounter.incrementAndGet();
-            //idToVal.put(id, val2);
-            //return val2;
+    private static int updateMapAndConfirmVal(String id, Map<String, Integer> idToVal, AtomicInteger idCounter) {
+        if (!idToVal.containsKey(id)) {
+            idToVal.put(id, idCounter.incrementAndGet());
         }
+        return idToVal.get(id);
     }
 
 
