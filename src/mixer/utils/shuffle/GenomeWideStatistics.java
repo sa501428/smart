@@ -31,6 +31,7 @@ import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
+import javastraw.tools.MatrixTools;
 import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.tracks.SubcompartmentInterval;
@@ -69,6 +70,7 @@ public class GenomeWideStatistics {
         long[][][] areasGW = new long[splitter.getNumGroups()][n][n];
         populateStatistics(total, areasGW);
         density = TensorTools.divide(total, areasGW);
+        //inPlaceLog(density);
         varScoreBaseline = Scores.getVarScore(areasGW, density, true, false);
         klScoreBaseline = Scores.getKLScore(areasGW, density, true, true, false);
 
@@ -77,6 +79,16 @@ public class GenomeWideStatistics {
 
         varScoreShuffleSymm = Scores.getVarScore(areasGW, density, false, true);
         klScoreShuffleSymm = Scores.getKLScore(areasGW, density, true, false, true);
+    }
+
+    private void inPlaceLog(double[][][] a) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[i].length; j++) {
+                for (int k = 0; k < a[i][j].length; k++) {
+                    a[i][j][k] = Math.log(1 + a[i][j][k]);
+                }
+            }
+        }
     }
 
     private void populateStatistics(double[][][] allTotals, long[][][] allAreas) {
@@ -189,6 +201,8 @@ public class GenomeWideStatistics {
         }
 
         float[][] flattenedDensity = splitter.flatten(density);
+        MatrixTools.saveMatrixTextNumpy(new File(outfolder, filename + "_density.npy").getAbsolutePath(),
+                flattenedDensity);
         FloatMatrixTools.saveMatrixToPNG(new File(outfolder, filename + "_density.png"), flattenedDensity, false);
     }
 

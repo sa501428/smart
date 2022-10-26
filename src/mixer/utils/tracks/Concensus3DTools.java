@@ -30,7 +30,7 @@ import mixer.utils.kmeans.ClusteringMagic;
 
 import java.util.*;
 
-public class ConcensusTools {
+public class Concensus3DTools {
     public static void resolve(int[][] results, ClusteringMagic clusteringMagic,
                                int z, String prefix, boolean useKMedians, int numClusters,
                                MatrixAndWeight matrix, ChromosomeHandler handler) {

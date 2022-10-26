@@ -27,7 +27,7 @@ package mixer.utils.kmeans;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.drive.MatrixAndWeight;
-import mixer.utils.tracks.ConcensusTools;
+import mixer.utils.tracks.Concensus3DTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
@@ -89,7 +89,7 @@ public class ClusteringMagic {
                 }
             }
         }
-        ConcensusTools.resolve(results, this, z, prefix, useKMedians, numClusters, matrix, handler);
+        Concensus3DTools.resolve(results, this, z, prefix, useKMedians, numClusters, matrix, handler);
     }
 
     public void exportKMeansClusteringResults(int z, String prefix, boolean useKMedians, int iter, double wcss,

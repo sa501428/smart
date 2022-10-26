@@ -25,7 +25,7 @@
 package mixer.clt;
 
 import mixer.SmartTools;
-import mixer.algos.Chic;
+import mixer.algos.Compare;
 import mixer.algos.Slice;
 
 
@@ -52,8 +52,8 @@ public class CLTFactory {
         cmd = cmd.toLowerCase();
         if (cmd.startsWith("slice")) {
             return new Slice();
-        } else if (cmd.startsWith("chic") || cmd.startsWith("shuffle")) {
-            return new Chic();
+        } else if (cmd.startsWith("compare")) {
+            return new Compare();
         }
         return null;
     }

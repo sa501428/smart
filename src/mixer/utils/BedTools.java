@@ -135,4 +135,33 @@ public class BedTools {
             //return val2;
         }
     }
+
+
+    public static void splitGWList(GenomeWide1DList<SubcompartmentInterval> intraSubcompartments, int width) {
+        intraSubcompartments.filterLists((chr, featureList) -> splitSubcompartmentIntervals(featureList, width));
+    }
+
+    private static List<SubcompartmentInterval> splitSubcompartmentIntervals(List<SubcompartmentInterval> intervals, int width) {
+        if (intervals.size() > 0) {
+
+            Collections.sort(intervals);
+
+            Set<SubcompartmentInterval> newIntervals = new HashSet<>();
+            for (SubcompartmentInterval currInterval : intervals) {
+                newIntervals.addAll(currInterval.splitByWidth(width));
+            }
+
+            List<SubcompartmentInterval> newIntervalsSorted = new ArrayList<>(newIntervals);
+            Collections.sort(newIntervalsSorted);
+
+            return newIntervalsSorted;
+        }
+        return intervals;
+    }
+
+    public static GenomeWide1DList<SubcompartmentInterval> loadBedFileAtResolution(ChromosomeHandler handler, String path, int resolution) {
+        GenomeWide1DList<SubcompartmentInterval> output = loadBedFile(handler, path);
+        splitGWList(output, resolution);
+        return output;
+    }
 }
