@@ -33,7 +33,6 @@ import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
-import mixer.utils.transform.LogisticTransform;
 import robust.concurrent.kmeans.clustering.Cluster;
 
 import java.io.File;
@@ -165,10 +164,6 @@ public class MatrixAndWeight {
 
     public boolean notEmpty() {
         return matrix.length > 10 && matrix[0].length > 2;
-    }
-
-    public void logisticTransformWithinChromosomeRegions() {
-        LogisticTransform.transform(matrix, mappings);
     }
 }
 

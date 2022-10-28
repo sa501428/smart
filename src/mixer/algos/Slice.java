@@ -123,26 +123,42 @@ public class Slice extends MixerCLT {
                 norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
 
         slice0.export(outputDirectory, "pre-clean");
-        runWithSettings2(slice0, false, handler, chromosomes);
-        runWithSettings2(slice0, true, handler, chromosomes);
+
+        for (boolean useLog : new boolean[]{true, false}) {
+            for (boolean doGlobalThresholding : new boolean[]{true, false}) {
+                for (boolean setZeroToNan : new boolean[]{true, false}) {
+                    for (boolean doRowZscoreWithThreshold : new boolean[]{true, false}) {
+                        if (useLog) {
+                            for (boolean restoreEXP : new boolean[]{true, false}) {
+                                for (boolean doColumnZscore : new boolean[]{true, false}) {
+                                    runWithSettings2(slice0, handler, chromosomes, true, doColumnZscore,
+                                            doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
+                                }
+                            }
+                        } else {
+                            boolean restoreEXP = false;
+                            for (boolean doColumnZscore : new boolean[]{true, false}) {
+                                runWithSettings2(slice0, handler, chromosomes, false, doColumnZscore,
+                                        doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         System.out.println("\nSLICE complete");
     }
 
-    private void runWithSettings(MatrixAndWeight slice0, int cutoff, boolean useExp, boolean useZscore,
-                                 ChromosomeHandler handler, Chromosome[] chromosomes) {
-        MatrixAndWeight slice = MatrixPreprocessor.clean(slice0.deepCopy(), chromosomes, cutoff, useExp, useZscore);
-        //slice.export(outputDirectory, "slice");
-        if (slice.notEmpty()) {
-            ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
-            clustering.extractFinalGWSubcompartments(getNewPrefix(prefix, cutoff, useExp, useZscore));
-            System.out.println("*");
-        }
-    }
 
-    private void runWithSettings2(MatrixAndWeight slice0, boolean useLog,
-                                  ChromosomeHandler handler, Chromosome[] chromosomes) {
-        String stem = getNewPrefix2(prefix, useLog);
-        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, useLog, stem, outputDirectory);
+    private void runWithSettings2(MatrixAndWeight slice0,
+                                  ChromosomeHandler handler, Chromosome[] chromosomes,
+                                  boolean useLog, boolean doColumnZscore, boolean doGlobalThresholding,
+                                  boolean setZeroToNan, boolean doRowZscoreWithThreshold,
+                                  boolean restoreEXP) {
+        String stem = getNewPrefix2(prefix, useLog, doColumnZscore,
+                doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
+        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, useLog, doColumnZscore,
+                doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
         if (slice.notEmpty()) {
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem);
@@ -150,27 +166,41 @@ public class Slice extends MixerCLT {
         }
     }
 
-    private String getNewPrefix(String prefix, int cutoff, boolean useExp, boolean useZscore) {
-        String newPrefix = prefix + "_c" + cutoff + "_";
-        if (useExp) {
-            newPrefix += "exp_";
-        } else {
-            newPrefix += "log_";
-        }
-        if (useZscore) {
-            newPrefix += "Zscore_";
-        } else {
-            newPrefix += "noZ_";
-        }
-        return newPrefix;
-    }
-
-    private String getNewPrefix2(String prefix, boolean useLog) {
+    private String getNewPrefix2(String prefix, boolean useLog, boolean doColumnZscore, boolean doGlobalThresholding,
+                                 boolean setZeroToNan, boolean doRowZscoreWithThreshold,
+                                 boolean restoreEXP) {
         String newPrefix = prefix + "_";
         if (useLog) {
             newPrefix += "log_";
         } else {
             newPrefix += "exp_";
+        }
+        if (doGlobalThresholding) {
+            newPrefix += "GlobalThresh_";
+        } else {
+            newPrefix += "noGlobThresh_";
+        }
+        if (setZeroToNan) {
+            newPrefix += "02N_";
+        } else {
+            newPrefix += "0OK_";
+        }
+        if (doRowZscoreWithThreshold) {
+            newPrefix += "RowZ_";
+        } else {
+            newPrefix += "noRZ_";
+        }
+
+        if (restoreEXP) {
+            newPrefix += "restoreExp_";
+        } else {
+            newPrefix += "nooRestExp_";
+        }
+
+        if (doColumnZscore) {
+            newPrefix += "ColZ_";
+        } else {
+            newPrefix += "noCZ_";
         }
         return newPrefix;
     }

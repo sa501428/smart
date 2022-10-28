@@ -98,7 +98,7 @@ public class ClusteringMagic {
         String kstem = "kmeans";
         if (useKMedians) kstem = "kmedians";
         SliceUtils.collapseGWList(finalCompartments);
-        File outBedFile = new File(outputDirectory, prefix + "_" + kstem + "_k" + k + "_iter" + iter + "_wcss" + wcss + "_clusters.bed");
+        File outBedFile = new File(outputDirectory, prefix + "_" + kstem + "_k" + k + "_i" + iter + "_clusters.bed"); // "_wcss" + wcss +
         finalCompartments.simpleExport(outBedFile);
     }
 }

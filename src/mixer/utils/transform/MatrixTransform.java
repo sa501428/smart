@@ -26,16 +26,15 @@ package mixer.utils.transform;
 
 import javastraw.expected.Welford;
 import javastraw.expected.Zscore;
-import mixer.utils.drive.Mappings;
 
-public class LogisticTransform {
-    public static void transform(float[][] matrix, Mappings mappings) {
+public class MatrixTransform {
+    public static void zscoreByRows(float[][] matrix, int limit) {
         for (int i = 0; i < matrix.length; i++) {
-            normalizeRegion0(matrix[i]);
+            normalizeRegion0(matrix[i], limit);
         }
     }
 
-    private static void normalizeRegion0(float[] row) {
+    private static void normalizeRegion0(float[] row, int limit) {
         Welford welford = new Welford();
         for (float val : row) {
             if (val > 0) {
@@ -45,16 +44,15 @@ public class LogisticTransform {
         if (welford.getCounts() > 2) {
             Zscore zscore = welford.getZscore();
             for (int c = 0; c < row.length; c++) {
-                row[c] = (float) zscore.getZscore(row[c]); // transform
+                row[c] = zscoreRow(zscore, row[c], limit);
             }
         }
     }
 
-    private static int transform(double v) {
-        return (int) Math.round(logisticFunction(v));
-    }
-
-    private static double logisticFunction(double x) {
-        return 4 * ((1 / (1 + Math.exp(-x))) - 0.5);
+    private static float zscoreRow(Zscore zscore, double val, int limit) {
+        float v = (float) zscore.getZscore(val);
+        if (v > limit) return limit;
+        if (v < -limit) return -limit;
+        return v;
     }
 }
