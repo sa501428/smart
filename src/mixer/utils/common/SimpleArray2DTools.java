@@ -36,7 +36,7 @@ public class SimpleArray2DTools {
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
                     float val = matrix[i][j];
-                    if (val > 0) {
+                    if (val >= 0) {
                         val = (float) Math.log(val + 1);
                         if (Float.isInfinite(val)) {
                             matrix[i][j] = badVal;

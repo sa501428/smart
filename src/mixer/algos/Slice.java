@@ -106,7 +106,6 @@ public class Slice extends MixerCLT {
 
     @Override
     public void run() {
-
         ChromosomeHandler handler = ds.getChromosomeHandler();
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
 
@@ -124,10 +123,8 @@ public class Slice extends MixerCLT {
                 norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
 
         slice0.export(outputDirectory, "pre-clean");
-
-        runWithSettings(slice0, 2, true, true, handler, chromosomes);
-        runWithSettings(slice0, 3, true, false, handler, chromosomes);
-
+        runWithSettings2(slice0, false, handler, chromosomes);
+        runWithSettings2(slice0, true, handler, chromosomes);
         System.out.println("\nSLICE complete");
     }
 
@@ -138,6 +135,17 @@ public class Slice extends MixerCLT {
         if (slice.notEmpty()) {
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(getNewPrefix(prefix, cutoff, useExp, useZscore));
+            System.out.println("*");
+        }
+    }
+
+    private void runWithSettings2(MatrixAndWeight slice0, boolean useLog,
+                                  ChromosomeHandler handler, Chromosome[] chromosomes) {
+        String stem = getNewPrefix2(prefix, useLog);
+        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, useLog, stem, outputDirectory);
+        if (slice.notEmpty()) {
+            ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+            clustering.extractFinalGWSubcompartments(stem);
             System.out.println("*");
         }
     }
@@ -153,6 +161,16 @@ public class Slice extends MixerCLT {
             newPrefix += "Zscore_";
         } else {
             newPrefix += "noZ_";
+        }
+        return newPrefix;
+    }
+
+    private String getNewPrefix2(String prefix, boolean useLog) {
+        String newPrefix = prefix + "_";
+        if (useLog) {
+            newPrefix += "log_";
+        } else {
+            newPrefix += "exp_";
         }
         return newPrefix;
     }

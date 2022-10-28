@@ -31,6 +31,7 @@ import mixer.utils.common.SimpleArray2DTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.MatrixAndWeight;
 
+import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatrixPreprocessor {
@@ -44,7 +45,7 @@ public class MatrixPreprocessor {
 
         SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
         removeHighGlobalThresh(matrix.matrix, 5);
-        normalize(matrix.matrix, -cutoff, cutoff);
+        makeColumnsHaveNormalRange(matrix.matrix, -cutoff, cutoff);
         if (useExp) {
             SimpleArray2DTools.simpleExpm1(matrix.matrix);
         }
@@ -79,12 +80,12 @@ public class MatrixPreprocessor {
         });
     }
 
-    private static void normalize(float[][] data, int lowCutOff, int highCutOff) {
+    private static void makeColumnsHaveNormalRange(float[][] data, int lowCutOff, int highCutOff) {
         ZScoreArray zscores = ZScoreTools.getZscores(data);
-        fixToNormalRange(data, zscores, lowCutOff, highCutOff);
+        fixColumnsToNormalRange(data, zscores, lowCutOff, highCutOff);
     }
 
-    private static void fixToNormalRange(float[][] data, ZScoreArray zscores, int lowCutOff, int highCutOff) {
+    private static void fixColumnsToNormalRange(float[][] data, ZScoreArray zscores, int lowCutOff, int highCutOff) {
         AtomicInteger totalNumFixed = new AtomicInteger();
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
@@ -104,5 +105,22 @@ public class MatrixPreprocessor {
             }
             totalNumFixed.addAndGet(numFixed);
         });
+    }
+
+    public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes,
+                                         boolean useLog, String stem, File outputDirectory) {
+        matrix.updateWeights(chromosomes);
+        matrix.divideColumnsByWeights();
+        matrix.export(outputDirectory, stem + "slice1_");
+        if (useLog) {
+            SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
+            matrix.export(outputDirectory, stem + "slice2_");
+        }
+
+        matrix.logisticTransformWithinChromosomeRegions();
+        matrix.export(outputDirectory, stem + "slice3_");
+        matrix.removeAllNanRows();
+        matrix.export(outputDirectory, stem + "slice4_");
+        return matrix;
     }
 }

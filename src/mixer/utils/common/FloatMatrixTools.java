@@ -169,4 +169,12 @@ public class FloatMatrixTools {
         return (((((color1 & mask1) * f1) + ((color2 & mask1) * f2)) >> 8) & mask1)
                 | (((((color1 & mask2) * f1) + ((color2 & mask2) * f2)) >> 8) & mask2);
     }
+
+    public static void divideColumnsByWeights(float[][] matrix, int[] weights) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = matrix[i][j] / weights[j];
+            }
+        }
+    }
 }
