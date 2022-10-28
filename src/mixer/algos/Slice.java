@@ -124,25 +124,18 @@ public class Slice extends MixerCLT {
 
         slice0.export(outputDirectory, "pre-clean");
 
+        // 0 is ok
+        // take Zscore of rows
+        // no restoring EXP
+        boolean doRowZscoreWithThreshold = true;
+        boolean setZeroToNan = false;
+        boolean restoreEXP = false;
+
         for (boolean useLog : new boolean[]{true, false}) {
             for (boolean doGlobalThresholding : new boolean[]{true, false}) {
-                for (boolean setZeroToNan : new boolean[]{true, false}) {
-                    for (boolean doRowZscoreWithThreshold : new boolean[]{true, false}) {
-                        if (useLog) {
-                            for (boolean restoreEXP : new boolean[]{true, false}) {
-                                for (boolean doColumnZscore : new boolean[]{true, false}) {
-                                    runWithSettings2(slice0, handler, chromosomes, true, doColumnZscore,
-                                            doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
-                                }
-                            }
-                        } else {
-                            boolean restoreEXP = false;
-                            for (boolean doColumnZscore : new boolean[]{true, false}) {
-                                runWithSettings2(slice0, handler, chromosomes, false, doColumnZscore,
-                                        doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
-                            }
-                        }
-                    }
+                for (boolean doColumnZscore : new boolean[]{true, false}) {
+                    runWithSettings2(slice0, handler, chromosomes, useLog, doColumnZscore,
+                            doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
                 }
             }
         }
