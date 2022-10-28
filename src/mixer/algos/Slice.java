@@ -130,15 +130,15 @@ public class Slice extends MixerCLT {
         boolean doRowZscoreWithThreshold = true;
         boolean setZeroToNan = false;
         boolean restoreEXP = false;
+        boolean useLog = true;
+        boolean doGlobalThresholding = false;
+        boolean doColumnZscore = false;
 
-        for (boolean useLog : new boolean[]{true, false}) {
-            for (boolean doGlobalThresholding : new boolean[]{true, false}) {
-                for (boolean doColumnZscore : new boolean[]{true, false}) {
-                    runWithSettings2(slice0, handler, chromosomes, useLog, doColumnZscore,
-                            doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
-                }
-            }
+        for (boolean useCosine : new boolean[]{true, false}) {
+            runWithSettings2(slice0, handler, chromosomes, useLog, doColumnZscore,
+                    doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP, useCosine);
         }
+
         System.out.println("\nSLICE complete");
     }
 
@@ -147,11 +147,11 @@ public class Slice extends MixerCLT {
                                   ChromosomeHandler handler, Chromosome[] chromosomes,
                                   boolean useLog, boolean doColumnZscore, boolean doGlobalThresholding,
                                   boolean setZeroToNan, boolean doRowZscoreWithThreshold,
-                                  boolean restoreEXP) {
-        String stem = getNewPrefix2(prefix, useLog, doColumnZscore,
-                doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
+                                  boolean restoreEXP, boolean useCosine) {
+        String stem = getNewPrefix2(useCosine);
+
         MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, useLog, doColumnZscore,
-                doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP);
+                doGlobalThresholding, setZeroToNan, doRowZscoreWithThreshold, restoreEXP, useCosine);
         if (slice.notEmpty()) {
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem);
@@ -159,42 +159,11 @@ public class Slice extends MixerCLT {
         }
     }
 
-    private String getNewPrefix2(String prefix, boolean useLog, boolean doColumnZscore, boolean doGlobalThresholding,
-                                 boolean setZeroToNan, boolean doRowZscoreWithThreshold,
-                                 boolean restoreEXP) {
-        String newPrefix = prefix + "_";
-        if (useLog) {
-            newPrefix += "log_";
+    private String getNewPrefix2(boolean useCosine) {
+        if (useCosine) {
+            return "slice_cosine";
         } else {
-            newPrefix += "exp_";
+            return "slice_no_cos";
         }
-        if (doGlobalThresholding) {
-            newPrefix += "GlobalThresh_";
-        } else {
-            newPrefix += "noGlobThresh_";
-        }
-        if (setZeroToNan) {
-            newPrefix += "02N_";
-        } else {
-            newPrefix += "0OK_";
-        }
-        if (doRowZscoreWithThreshold) {
-            newPrefix += "RowZ_";
-        } else {
-            newPrefix += "noRZ_";
-        }
-
-        if (restoreEXP) {
-            newPrefix += "restoreExp_";
-        } else {
-            newPrefix += "nooRestExp_";
-        }
-
-        if (doColumnZscore) {
-            newPrefix += "ColZ_";
-        } else {
-            newPrefix += "noCZ_";
-        }
-        return newPrefix;
     }
 }

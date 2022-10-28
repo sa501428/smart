@@ -157,6 +157,10 @@ public class MatrixAndWeight {
         return matrix.length;
     }
 
+    public int getNumCols() {
+        return matrix[0].length;
+    }
+
     public MatrixAndWeight deepCopy() {
         return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(weights),
                 mappings.deepCopy());

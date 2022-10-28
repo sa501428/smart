@@ -112,7 +112,7 @@ public class MatrixPreprocessor {
     public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes,
                                          boolean useLog, boolean doColumnZscore, boolean doGlobalThresholding,
                                          boolean setZeroToNan, boolean doRowZscoreWithThreshold,
-                                         boolean restoreEXP) {
+                                         boolean restoreEXP, boolean useCosineCompression) {
         matrix.updateWeights(chromosomes);
         matrix.divideColumnsByWeights();
         if (useLog) {
@@ -140,7 +140,16 @@ public class MatrixPreprocessor {
             ZScoreTools.inPlaceZscorePositivesDownColAndSetBelowThreshToNan(matrix.matrix, -100);
         }
         matrix.removeAllNanRows();
+
+        if (useCosineCompression) {
+            matrix.matrix = SimilarityMatrixTools.getCompressedCosineSimilarityMatrix(matrix.matrix,
+                    getNumCentroids(matrix.getNumRows(), matrix.getNumCols()), 0);
+        }
         return matrix;
+    }
+
+    private static int getNumCentroids(int numRows, int numCols) {
+        return Math.min(numCols, numRows / 20);
     }
 
     private static void thresholdGlobally(float[][] matrix, int upperLimit) {
