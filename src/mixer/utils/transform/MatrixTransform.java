@@ -28,23 +28,27 @@ import javastraw.expected.Welford;
 import javastraw.expected.Zscore;
 
 public class MatrixTransform {
-    public static void zscoreByRows(float[][] matrix, int limit) {
+    public static void zscoreByRows(float[][] matrix, int limit, boolean zscoreWithNeighbors) {
+        int offset = 0;
+        if (zscoreWithNeighbors) offset = 2;
         for (int i = 0; i < matrix.length; i++) {
-            normalizeRegion0(matrix[i], limit);
+            normalizeRegion0(matrix, i, Math.max(0, i - offset), Math.min(i + offset + 1, matrix.length), limit);
         }
     }
 
-    private static void normalizeRegion0(float[] row, int limit) {
+    private static void normalizeRegion0(float[][] matrix, int r, int r0, int rF, int limit) {
         Welford welford = new Welford();
-        for (float val : row) {
-            if (val > 0) {
-                welford.addValue(val);
+        for (int k = r0; k < rF; k++) {
+            for (float val : matrix[k]) {
+                if (val > 0) {
+                    welford.addValue(val);
+                }
             }
         }
         if (welford.getCounts() > 2) {
             Zscore zscore = welford.getZscore();
-            for (int c = 0; c < row.length; c++) {
-                row[c] = zscoreRow(zscore, row[c], limit);
+            for (int c = 0; c < matrix[r].length; c++) {
+                matrix[r][c] = zscoreRow(zscore, matrix[r][c], limit);
             }
         }
     }
@@ -54,5 +58,15 @@ public class MatrixTransform {
         if (v > limit) return limit;
         if (v < -limit) return -limit;
         return v;
+    }
+
+    public static void limitInternally(float[][] matrix, float innerLimit) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > -innerLimit && matrix[i][j] < innerLimit) {
+                    matrix[i][j] = Float.NaN;
+                }
+            }
+        }
     }
 }

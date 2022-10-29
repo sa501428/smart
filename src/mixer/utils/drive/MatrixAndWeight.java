@@ -169,5 +169,10 @@ public class MatrixAndWeight {
     public boolean notEmpty() {
         return matrix.length > 10 && matrix[0].length > 2;
     }
+
+    public void setWeightsTo(int val) {
+        weights = new int[getNumCols()];
+        Arrays.fill(weights, val);
+    }
 }
 

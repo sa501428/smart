@@ -25,126 +25,22 @@
 package mixer.utils.cleaning;
 
 import javastraw.expected.Welford;
-import javastraw.expected.ZScoreArray;
 import javastraw.expected.Zscore;
 import javastraw.reader.basics.Chromosome;
-import javastraw.tools.ParallelizationTools;
 import mixer.utils.common.SimpleArray2DTools;
-import mixer.utils.common.ZScoreTools;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.transform.MatrixTransform;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class MatrixPreprocessor {
 
-    public static MatrixAndWeight clean(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                        int cutoff, boolean useExp, boolean useZscore) {
+    private static final int ZSCORE_LIMIT = 3;
 
-        SimpleArray2DTools.setZerosToNan(matrix.matrix);
-
-        matrix.updateWeights(chromosomes);
-
-        SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
-        removeHighGlobalThresh(matrix.matrix, 5);
-        makeColumnsHaveNormalRange(matrix.matrix, -cutoff, cutoff);
-        if (useExp) {
-            SimpleArray2DTools.simpleExpm1(matrix.matrix);
-        }
-        if (useZscore) {
-            ZScoreTools.inPlaceZscorePositivesDownColAndSetBelowThreshToNan(matrix.matrix, 0);
-        }
-
-        matrix.removeAllNanRows();
-        return matrix;
-    }
-
-    private static void removeHighGlobalThresh(float[][] data, int cutoff) {
-        ZScoreArray zscores = ZScoreTools.getZscores(data, 0);
-
-        AtomicInteger totalNumFixed = new AtomicInteger();
-        AtomicInteger index = new AtomicInteger(0);
-        ParallelizationTools.launchParallelizedCode(() -> {
-            int i = index.getAndIncrement();
-            int numFixed = 0;
-            while (i < data.length) {
-                for (int j = 0; j < data[i].length; j++) {
-                    if (data[i][j] > 0) {
-                        if (zscores.getZscore(j, data[i][j]) > cutoff) {
-                            data[i][j] = Float.NaN;
-                            numFixed++;
-                        }
-                    }
-                }
-                i = index.getAndIncrement();
-            }
-            totalNumFixed.addAndGet(numFixed);
-        });
-    }
-
-    private static void makeColumnsHaveNormalRange(float[][] data, int lowCutOff, int highCutOff) {
-        ZScoreArray zscores = ZScoreTools.getZscores(data, 0);
-        fixColumnsToNormalRange(data, zscores, lowCutOff, highCutOff);
-    }
-
-    private static void fixColumnsToNormalRange(float[][] data, ZScoreArray zscores, int lowCutOff, int highCutOff) {
-        AtomicInteger totalNumFixed = new AtomicInteger();
-        AtomicInteger index = new AtomicInteger(0);
-        ParallelizationTools.launchParallelizedCode(() -> {
-            int i = index.getAndIncrement();
-            int numFixed = 0;
-            while (i < data.length) {
-                for (int j = 0; j < data[i].length; j++) {
-                    if (data[i][j] > 0) {
-                        double zscore = zscores.getZscore(j, data[i][j]);
-                        if (zscore < lowCutOff || zscore > highCutOff) { //
-                            data[i][j] = Float.NaN;
-                            numFixed++;
-                        }
-                    }
-                }
-                i = index.getAndIncrement();
-            }
-            totalNumFixed.addAndGet(numFixed);
-        });
-    }
-
-    public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                         boolean useLog, boolean doColumnZscore, boolean doGlobalThresholding,
-                                         boolean setZeroToNan, boolean doRowZscoreWithThreshold,
-                                         boolean restoreEXP, boolean useCosineCompression) {
+    public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes, boolean zscoreWithNeighbors) {
         matrix.updateWeights(chromosomes);
         matrix.divideColumnsByWeights();
-        if (useLog) {
-            SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
-        }
-
-        if (doGlobalThresholding) {
-            // any z higher than 5 set to nan
-            thresholdGlobally(matrix.matrix, 5);
-        }
-
-        if (setZeroToNan) {
-            cleanUpZerosAndInfs(matrix.matrix);
-        }
-
-        if (doRowZscoreWithThreshold) {
-            MatrixTransform.zscoreByRows(matrix.matrix, 3);
-        }
-
-        if (restoreEXP) {
-            SimpleArray2DTools.simpleExpm1(matrix.matrix);
-        }
-
-        if (doColumnZscore) {
-            ZScoreTools.inPlaceZscorePositivesDownColAndSetBelowThreshToNan(matrix.matrix, -100);
-        }
+        SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
+        MatrixTransform.zscoreByRows(matrix.matrix, ZSCORE_LIMIT, zscoreWithNeighbors);
         matrix.removeAllNanRows();
-
-        if (useCosineCompression) {
-            matrix.matrix = SimilarityMatrixTools.getCompressedCosineSimilarityMatrix(matrix.matrix,
-                    getNumCentroids(matrix.getNumRows(), matrix.getNumCols()), 0);
-        }
         return matrix;
     }
 
