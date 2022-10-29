@@ -24,7 +24,7 @@
 
 package mixer.utils.intra;
 
-import javastraw.expected.LogExpectedZscoreSpline;
+import javastraw.expected.LogExpectedSpline;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
@@ -42,7 +42,7 @@ public class OETools {
                                              NormalizationType norm, Set<Integer> badIndices, int resFactor,
                                              boolean takeLog, boolean skipNearDiagonal) {
 
-        LogExpectedZscoreSpline spline = new LogExpectedZscoreSpline(zd, norm, chrom, resolution);
+        LogExpectedSpline spline = new LogExpectedSpline(zd, norm, chrom, resolution);
 
         int length = (int) (chrom.getLength() / resolution + 1);
         int minDist = FIVE_MB / resolution;
