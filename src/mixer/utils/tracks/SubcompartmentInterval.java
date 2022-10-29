@@ -62,11 +62,6 @@ public class SubcompartmentInterval extends SimpleInterval {
         this.clusterName = "" + clusterID;
     }
 
-    public void setClusterID(Integer clusterID, String clusterName) {
-        this.clusterID = clusterID;
-        this.clusterName = clusterName;
-    }
-
     public SubcompartmentInterval absorbAndReturnNewInterval(SubcompartmentInterval interval) {
         return new SubcompartmentInterval(getChrIndex(), getChrName(), getX1(), interval.getX2(), clusterID, clusterName);
     }

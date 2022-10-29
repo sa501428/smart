@@ -55,7 +55,6 @@ public class Slice extends MixerCLT {
 
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
-    public static final int GW_SCALE_INDEX = 2;
     private boolean useScale = false;
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
@@ -65,13 +64,12 @@ public class Slice extends MixerCLT {
     private String prefix = "";
 
     // subcompartment landscape identification via compressing enrichments
-    public Slice(String command) {
-        super("slice [-r resolution] [--verbose] [--scale]" +
+    public Slice() {
+        super("slice [-r resolution] [--verbose] [--scale] " +
                 //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
-                "<file.hic> <K0,KF,nK> <outfolder> <prefix_>\n" +
+                "<file.hic> <K0,KF> <outfolder> <prefix_>\n" +
                 "   K0 - minimum number of clusters\n" +
-                "   KF - maximum number of clusters\n" +
-                "   nK - number of times to rerun kmeans");
+                "   KF - maximum number of clusters");
     }
 
     @Override
@@ -87,7 +85,6 @@ public class Slice extends MixerCLT {
             String[] valString = args[2].split(",");
             ClusteringMagic.startingClusterSizeK = Integer.parseInt(valString[0]);
             ClusteringMagic.numClusterSizeKValsUsed = Integer.parseInt(valString[1]) - ClusteringMagic.startingClusterSizeK;
-            ClusteringMagic.numAttemptsForKMeans = Integer.parseInt(valString[2]);
         } catch (Exception e) {
             printUsageAndExit(5);
         }
@@ -101,16 +98,14 @@ public class Slice extends MixerCLT {
     }
 
     private NormalizationType[] populateNormalizations(Dataset ds) {
-        NormalizationType[] norms = new NormalizationType[3];
+        NormalizationType[] norms = new NormalizationType[2];
         norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
         norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR"});
-        norms[GW_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"GW_SCALE", "GW_KR"});
         return norms;
     }
 
     @Override
     public void run() {
-
         ChromosomeHandler handler = ds.getChromosomeHandler();
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
 
@@ -124,18 +119,33 @@ public class Slice extends MixerCLT {
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
-        MatrixAndWeight slice = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
+        MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
 
-        slice.export(outputDirectory, "pre-clean");
+        slice0.export(outputDirectory, "pre-clean");
 
-        MatrixPreprocessor.clean(slice, chromosomes);
-
-        slice.export(outputDirectory, "slice");
-
-        ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
-        clustering.extractFinalGWSubcompartments(prefix);
+        runWithSettings2(slice0, handler, chromosomes);
 
         System.out.println("\nSLICE complete");
+    }
+
+
+    private void runWithSettings2(MatrixAndWeight slice0,
+                                  ChromosomeHandler handler, Chromosome[] chromosomes) {
+        String stem = "slice";// getNewPrefix2(zscoreWithNeighbors);
+        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes);
+        if (slice.notEmpty()) {
+            ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+            clustering.extractFinalGWSubcompartments(stem);
+            System.out.println("*");
+        }
+    }
+
+    private String getNewPrefix2(boolean zscoreWithNeighbors) {
+        if (zscoreWithNeighbors) {
+            return "slice_withNeighbors";
+        } else {
+            return "slice_withoutOthers";
+        }
     }
 }

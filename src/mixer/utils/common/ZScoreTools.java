@@ -55,8 +55,8 @@ public class ZScoreTools {
         });
     }
 
-    public static void inPlaceZscorePositivesDownColAndSetZeroToNan(float[][] matrix) {
-        ZScoreArray zscores = getZscores(matrix);
+    public static void inPlaceZscorePositivesDownColAndSetBelowThreshToNan(float[][] matrix, int minval) {
+        ZScoreArray zscores = getZscores(matrix, minval);
 
         AtomicInteger index = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
@@ -64,8 +64,8 @@ public class ZScoreTools {
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
                     float val = matrix[i][j];
-                    if (val > 0) {
-                        matrix[i][j] = zscores.getZscore(j, val);
+                    if (val > minval) {
+                        matrix[i][j] = (float) zscores.getZscore(j, val);
                     } else {
                         matrix[i][j] = Float.NaN;
                     }
@@ -75,12 +75,12 @@ public class ZScoreTools {
         });
     }
 
-    public static ZScoreArray getZscores(float[][] matrix) {
+    public static ZScoreArray getZscores(float[][] matrix, int minval) {
         WelfordArray welfords = new WelfordArray(matrix[0].length);
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] > 0) {
+                if (matrix[i][j] > minval) {
                     welfords.addValue(j, matrix[i][j]);
                 }
             }

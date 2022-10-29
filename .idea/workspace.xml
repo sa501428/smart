@@ -31,9 +31,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" afterPath="$PROJECT_DIR$/CONTRIBUTING.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/SmartTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/SmartTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +55,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="interim" />
+        <entry key="$PROJECT_DIR$" value="SLICE4" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -78,39 +76,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/muhammad/IdeaProjects/smart/lib/general&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/lib/general",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.drive" />
       <recent name="mixer.utils.cleaning" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice.drive" />
-      <recent name="mixer.utils.slice" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/lib/general" />
+      <recent name="$PROJECT_DIR$/src/mixer/utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.tracks" />
+      <recent name="mixer.utils.splitter" />
+      <recent name="mixer.utils.shuffle" />
+      <recent name="mixer.utils.matrix" />
       <recent name="mixer.utils.common" />
-      <recent name="mixer.utils.translocations" />
-      <recent name="mixer.utils.magic" />
-      <recent name="mixer.algos" />
-      <recent name="mixer.utils.rougheval" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Aggregate">
@@ -125,19 +124,6 @@
     <configuration name="GMM" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mixer.utils.slice.gmm.Test" />
       <module name="Smart" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="Smart" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="Smart" />
-      <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -292,294 +278,21 @@
       <workItem from="1661932986639" duration="2754000" />
       <workItem from="1661958152293" duration="2764000" />
       <workItem from="1662088911320" duration="1117000" />
-      <workItem from="1662091964538" duration="1787000" />
-    </task>
-    <task id="LOCAL-00195" summary="switch double array to float array">
-      <created>1645510731888</created>
-      <option name="number" value="00195" />
-      <option name="presentableId" value="LOCAL-00195" />
-      <option name="project" value="LOCAL" />
-      <updated>1645510731888</updated>
-    </task>
-    <task id="LOCAL-00196" summary="update straw">
-      <created>1645828932212</created>
-      <option name="number" value="00196" />
-      <option name="presentableId" value="LOCAL-00196" />
-      <option name="project" value="LOCAL" />
-      <updated>1645828932212</updated>
-    </task>
-    <task id="LOCAL-00197" summary="add magic">
-      <created>1648667394707</created>
-      <option name="number" value="00197" />
-      <option name="presentableId" value="LOCAL-00197" />
-      <option name="project" value="LOCAL" />
-      <updated>1648667394707</updated>
-    </task>
-    <task id="LOCAL-00198" summary="fix clustering">
-      <created>1648667786448</created>
-      <option name="number" value="00198" />
-      <option name="presentableId" value="LOCAL-00198" />
-      <option name="project" value="LOCAL" />
-      <updated>1648667786448</updated>
-    </task>
-    <task id="LOCAL-00199" summary="bug fixes">
-      <created>1648710684889</created>
-      <option name="number" value="00199" />
-      <option name="presentableId" value="LOCAL-00199" />
-      <option name="project" value="LOCAL" />
-      <updated>1648710684889</updated>
-    </task>
-    <task id="LOCAL-00200" summary="fix bed file info extraction, code cleanup, reorganization">
-      <created>1648773815766</created>
-      <option name="number" value="00200" />
-      <option name="presentableId" value="LOCAL-00200" />
-      <option name="project" value="LOCAL" />
-      <updated>1648773815766</updated>
-    </task>
-    <task id="LOCAL-00201" summary="options for log vs not, use norm vector filtering, update data structure, normalize magic matrix, row cleanup improved, code cleanup, allow skipping of bad inter regions">
-      <created>1648931856872</created>
-      <option name="number" value="00201" />
-      <option name="presentableId" value="LOCAL-00201" />
-      <option name="project" value="LOCAL" />
-      <updated>1648931856872</updated>
-    </task>
-    <task id="LOCAL-00202" summary="update version">
-      <created>1648931886707</created>
-      <option name="number" value="00202" />
-      <option name="presentableId" value="LOCAL-00202" />
-      <option name="project" value="LOCAL" />
-      <updated>1648931886707</updated>
-    </task>
-    <task id="LOCAL-00203" summary="avoid divide by 0">
-      <created>1648932440611</created>
-      <option name="number" value="00203" />
-      <option name="presentableId" value="LOCAL-00203" />
-      <option name="project" value="LOCAL" />
-      <updated>1648932440611</updated>
-    </task>
-    <task id="LOCAL-00204" summary="bug fix">
-      <created>1648933556088</created>
-      <option name="number" value="00204" />
-      <option name="presentableId" value="LOCAL-00204" />
-      <option name="project" value="LOCAL" />
-      <updated>1648933556088</updated>
-    </task>
-    <task id="LOCAL-00205" summary="implement zscore scaling">
-      <created>1648940914719</created>
-      <option name="number" value="00205" />
-      <option name="presentableId" value="LOCAL-00205" />
-      <option name="project" value="LOCAL" />
-      <updated>1648940914719</updated>
-    </task>
-    <task id="LOCAL-00206" summary="implement zscore scaling">
-      <created>1650143508011</created>
-      <option name="number" value="00206" />
-      <option name="presentableId" value="LOCAL-00206" />
-      <option name="project" value="LOCAL" />
-      <updated>1650143508012</updated>
-    </task>
-    <task id="LOCAL-00207" summary="update straw">
-      <created>1650144895189</created>
-      <option name="number" value="00207" />
-      <option name="presentableId" value="LOCAL-00207" />
-      <option name="project" value="LOCAL" />
-      <updated>1650144895190</updated>
-    </task>
-    <task id="LOCAL-00208" summary="code cleanup">
-      <created>1652896234263</created>
-      <option name="number" value="00208" />
-      <option name="presentableId" value="LOCAL-00208" />
-      <option name="project" value="LOCAL" />
-      <updated>1652896234264</updated>
-    </task>
-    <task id="LOCAL-00209" summary="code cleanup">
-      <created>1657723564839</created>
-      <option name="number" value="00209" />
-      <option name="presentableId" value="LOCAL-00209" />
-      <option name="project" value="LOCAL" />
-      <updated>1657723564839</updated>
-    </task>
-    <task id="LOCAL-00210" summary="initial scaling port">
-      <created>1657727493425</created>
-      <option name="number" value="00210" />
-      <option name="presentableId" value="LOCAL-00210" />
-      <option name="project" value="LOCAL" />
-      <updated>1657727493425</updated>
-    </task>
-    <task id="LOCAL-00211" summary="update coverage handling">
-      <created>1657727671772</created>
-      <option name="number" value="00211" />
-      <option name="presentableId" value="LOCAL-00211" />
-      <option name="project" value="LOCAL" />
-      <updated>1657727671772</updated>
-    </task>
-    <task id="LOCAL-00212" summary="code cleanup">
-      <created>1657727840782</created>
-      <option name="number" value="00212" />
-      <option name="presentableId" value="LOCAL-00212" />
-      <option name="project" value="LOCAL" />
-      <updated>1657727840782</updated>
-    </task>
-    <task id="LOCAL-00213" summary="implement LL inter only matrix">
-      <created>1657730030446</created>
-      <option name="number" value="00213" />
-      <option name="presentableId" value="LOCAL-00213" />
-      <option name="project" value="LOCAL" />
-      <updated>1657730030446</updated>
-    </task>
-    <task id="LOCAL-00214" summary="mid implementation">
-      <created>1661319826442</created>
-      <option name="number" value="00214" />
-      <option name="presentableId" value="LOCAL-00214" />
-      <option name="project" value="LOCAL" />
-      <updated>1661319826442</updated>
-    </task>
-    <task id="LOCAL-00215" summary="get to compilation pass">
-      <created>1661401847817</created>
-      <option name="number" value="00215" />
-      <option name="presentableId" value="LOCAL-00215" />
-      <option name="project" value="LOCAL" />
-      <updated>1661401847817</updated>
-    </task>
-    <task id="LOCAL-00216" summary="update translocation check">
-      <created>1661412949649</created>
-      <option name="number" value="00216" />
-      <option name="presentableId" value="LOCAL-00216" />
-      <option name="project" value="LOCAL" />
-      <updated>1661412949649</updated>
-    </task>
-    <task id="LOCAL-00217" summary="update translocation check">
-      <created>1661413279148</created>
-      <option name="number" value="00217" />
-      <option name="presentableId" value="LOCAL-00217" />
-      <option name="project" value="LOCAL" />
-      <updated>1661413279148</updated>
-    </task>
-    <task id="LOCAL-00218" summary="update iteration, bug fixes">
-      <created>1661417673518</created>
-      <option name="number" value="00218" />
-      <option name="presentableId" value="LOCAL-00218" />
-      <option name="project" value="LOCAL" />
-      <updated>1661417673518</updated>
-    </task>
-    <task id="LOCAL-00219" summary="updated expected model">
-      <created>1661517506556</created>
-      <option name="number" value="00219" />
-      <option name="presentableId" value="LOCAL-00219" />
-      <option name="project" value="LOCAL" />
-      <updated>1661517506556</updated>
-    </task>
-    <task id="LOCAL-00220" summary="code cleanup">
-      <created>1661520972179</created>
-      <option name="number" value="00220" />
-      <option name="presentableId" value="LOCAL-00220" />
-      <option name="project" value="LOCAL" />
-      <updated>1661520972180</updated>
-    </task>
-    <task id="LOCAL-00221" summary="code cleanup">
-      <created>1661571813225</created>
-      <option name="number" value="00221" />
-      <option name="presentableId" value="LOCAL-00221" />
-      <option name="project" value="LOCAL" />
-      <updated>1661571813225</updated>
-    </task>
-    <task id="LOCAL-00222" summary="code cleanup, debugging">
-      <created>1661579316796</created>
-      <option name="number" value="00222" />
-      <option name="presentableId" value="LOCAL-00222" />
-      <option name="project" value="LOCAL" />
-      <updated>1661579316796</updated>
-    </task>
-    <task id="LOCAL-00223" summary="bug fixes">
-      <created>1661584506218</created>
-      <option name="number" value="00223" />
-      <option name="presentableId" value="LOCAL-00223" />
-      <option name="project" value="LOCAL" />
-      <updated>1661584506218</updated>
-    </task>
-    <task id="LOCAL-00224" summary="code cleanup, update straw">
-      <created>1661636764659</created>
-      <option name="number" value="00224" />
-      <option name="presentableId" value="LOCAL-00224" />
-      <option name="project" value="LOCAL" />
-      <updated>1661636764659</updated>
-    </task>
-    <task id="LOCAL-00225" summary="minor edit">
-      <created>1661638021192</created>
-      <option name="number" value="00225" />
-      <option name="presentableId" value="LOCAL-00225" />
-      <option name="project" value="LOCAL" />
-      <updated>1661638021192</updated>
-    </task>
-    <task id="LOCAL-00226" summary="use straw expected">
-      <created>1661638180875</created>
-      <option name="number" value="00226" />
-      <option name="presentableId" value="LOCAL-00226" />
-      <option name="project" value="LOCAL" />
-      <updated>1661638180875</updated>
-    </task>
-    <task id="LOCAL-00227" summary="update parameters">
-      <created>1661660981761</created>
-      <option name="number" value="00227" />
-      <option name="presentableId" value="LOCAL-00227" />
-      <option name="project" value="LOCAL" />
-      <updated>1661660981761</updated>
-    </task>
-    <task id="LOCAL-00228" summary="code cleanup">
-      <created>1661663567501</created>
-      <option name="number" value="00228" />
-      <option name="presentableId" value="LOCAL-00228" />
-      <option name="project" value="LOCAL" />
-      <updated>1661663567501</updated>
-    </task>
-    <task id="LOCAL-00229" summary="update usage, connect clustering, code cleanup">
-      <created>1661667733934</created>
-      <option name="number" value="00229" />
-      <option name="presentableId" value="LOCAL-00229" />
-      <option name="project" value="LOCAL" />
-      <updated>1661667733934</updated>
-    </task>
-    <task id="LOCAL-00230" summary="bug fix for export options, optimize zscore calculation, code cleanup">
-      <created>1661673130084</created>
-      <option name="number" value="00230" />
-      <option name="presentableId" value="LOCAL-00230" />
-      <option name="project" value="LOCAL" />
-      <updated>1661673130084</updated>
-    </task>
-    <task id="LOCAL-00231" summary="code cleanup">
-      <created>1661717396224</created>
-      <option name="number" value="00231" />
-      <option name="presentableId" value="LOCAL-00231" />
-      <option name="project" value="LOCAL" />
-      <updated>1661717396224</updated>
-    </task>
-    <task id="LOCAL-00232" summary="preprocessing for matrix">
-      <created>1661721820380</created>
-      <option name="number" value="00232" />
-      <option name="presentableId" value="LOCAL-00232" />
-      <option name="project" value="LOCAL" />
-      <updated>1661721820380</updated>
-    </task>
-    <task id="LOCAL-00233" summary="update bounds">
-      <created>1661730404554</created>
-      <option name="number" value="00233" />
-      <option name="presentableId" value="LOCAL-00233" />
-      <option name="project" value="LOCAL" />
-      <updated>1661730404554</updated>
-    </task>
-    <task id="LOCAL-00234" summary="compressive clustering">
-      <created>1661744611159</created>
-      <option name="number" value="00234" />
-      <option name="presentableId" value="LOCAL-00234" />
-      <option name="project" value="LOCAL" />
-      <updated>1661744611159</updated>
-    </task>
-    <task id="LOCAL-00235" summary="update defaults">
-      <created>1661746021212</created>
-      <option name="number" value="00235" />
-      <option name="presentableId" value="LOCAL-00235" />
-      <option name="project" value="LOCAL" />
-      <updated>1661746021212</updated>
+      <workItem from="1662091964538" duration="7249000" />
+      <workItem from="1662184295493" duration="32417000" />
+      <workItem from="1662661823533" duration="2972000" />
+      <workItem from="1662723680989" duration="4000" />
+      <workItem from="1664411917242" duration="799000" />
+      <workItem from="1664414671257" duration="7000" />
+      <workItem from="1664479244017" duration="9539000" />
+      <workItem from="1664772575844" duration="5108000" />
+      <workItem from="1664952445485" duration="4044000" />
+      <workItem from="1665042465595" duration="579000" />
+      <workItem from="1666557146717" duration="1582000" />
+      <workItem from="1666712364500" duration="7815000" />
+      <workItem from="1666893526528" duration="171000" />
+      <workItem from="1666909717746" duration="4127000" />
+      <workItem from="1666931667439" duration="13676000" />
     </task>
     <task id="LOCAL-00236" summary="code cleanup">
       <created>1661751335769</created>
@@ -637,7 +350,294 @@
       <option name="project" value="LOCAL" />
       <updated>1662093915625</updated>
     </task>
-    <option name="localTasksCounter" value="244" />
+    <task id="LOCAL-00244" summary="code cleanup">
+      <created>1662094302130</created>
+      <option name="number" value="00244" />
+      <option name="presentableId" value="LOCAL-00244" />
+      <option name="project" value="LOCAL" />
+      <updated>1662094302131</updated>
+    </task>
+    <task id="LOCAL-00245" summary="remove tracking of gw norm">
+      <created>1662094799416</created>
+      <option name="number" value="00245" />
+      <option name="presentableId" value="LOCAL-00245" />
+      <option name="project" value="LOCAL" />
+      <updated>1662094799416</updated>
+    </task>
+    <task id="LOCAL-00246" summary="hub assignment">
+      <created>1662101470008</created>
+      <option name="number" value="00246" />
+      <option name="presentableId" value="LOCAL-00246" />
+      <option name="project" value="LOCAL" />
+      <updated>1662101470008</updated>
+    </task>
+    <task id="LOCAL-00247" summary="copy over chic files">
+      <created>1662255642186</created>
+      <option name="number" value="00247" />
+      <option name="presentableId" value="LOCAL-00247" />
+      <option name="project" value="LOCAL" />
+      <updated>1662255642187</updated>
+    </task>
+    <task id="LOCAL-00248" summary="code cleanup">
+      <created>1662270825986</created>
+      <option name="number" value="00248" />
+      <option name="presentableId" value="LOCAL-00248" />
+      <option name="project" value="LOCAL" />
+      <updated>1662270825986</updated>
+    </task>
+    <task id="LOCAL-00249" summary="optimize runtime and memory usage">
+      <created>1662295787205</created>
+      <option name="number" value="00249" />
+      <option name="presentableId" value="LOCAL-00249" />
+      <option name="project" value="LOCAL" />
+      <updated>1662295787205</updated>
+    </task>
+    <task id="LOCAL-00250" summary="optimize runtime">
+      <created>1662299072127</created>
+      <option name="number" value="00250" />
+      <option name="presentableId" value="LOCAL-00250" />
+      <option name="project" value="LOCAL" />
+      <updated>1662299072127</updated>
+    </task>
+    <task id="LOCAL-00251" summary="timing statements">
+      <created>1662330468601</created>
+      <option name="number" value="00251" />
+      <option name="presentableId" value="LOCAL-00251" />
+      <option name="project" value="LOCAL" />
+      <updated>1662330468601</updated>
+    </task>
+    <task id="LOCAL-00252" summary="summarize genomewide stats">
+      <created>1662349035403</created>
+      <option name="number" value="00252" />
+      <option name="presentableId" value="LOCAL-00252" />
+      <option name="project" value="LOCAL" />
+      <updated>1662349035403</updated>
+    </task>
+    <task id="LOCAL-00253" summary="bug fix KL, plot summary">
+      <created>1662349522723</created>
+      <option name="number" value="00253" />
+      <option name="presentableId" value="LOCAL-00253" />
+      <option name="project" value="LOCAL" />
+      <updated>1662349522723</updated>
+    </task>
+    <task id="LOCAL-00254" summary="bug fix KL, parallelize file reading">
+      <created>1662350453380</created>
+      <option name="number" value="00254" />
+      <option name="presentableId" value="LOCAL-00254" />
+      <option name="project" value="LOCAL" />
+      <updated>1662350453380</updated>
+    </task>
+    <task id="LOCAL-00255" summary="cleanup">
+      <created>1662353815364</created>
+      <option name="number" value="00255" />
+      <option name="presentableId" value="LOCAL-00255" />
+      <option name="project" value="LOCAL" />
+      <updated>1662353815364</updated>
+    </task>
+    <task id="LOCAL-00256" summary="expand plotting window">
+      <created>1662356186437</created>
+      <option name="number" value="00256" />
+      <option name="presentableId" value="LOCAL-00256" />
+      <option name="project" value="LOCAL" />
+      <updated>1662356186437</updated>
+    </task>
+    <task id="LOCAL-00257" summary="update printing, mean calculation">
+      <created>1662360453945</created>
+      <option name="number" value="00257" />
+      <option name="presentableId" value="LOCAL-00257" />
+      <option name="project" value="LOCAL" />
+      <updated>1662360453945</updated>
+    </task>
+    <task id="LOCAL-00258" summary="fix calculation; restore granularity of variance">
+      <created>1662362634173</created>
+      <option name="number" value="00258" />
+      <option name="presentableId" value="LOCAL-00258" />
+      <option name="project" value="LOCAL" />
+      <updated>1662362634173</updated>
+    </task>
+    <task id="LOCAL-00259" summary="bug fix">
+      <created>1662362769506</created>
+      <option name="number" value="00259" />
+      <option name="presentableId" value="LOCAL-00259" />
+      <option name="project" value="LOCAL" />
+      <updated>1662362769506</updated>
+    </task>
+    <task id="LOCAL-00260" summary="finalize chic">
+      <created>1662363485415</created>
+      <option name="number" value="00260" />
+      <option name="presentableId" value="LOCAL-00260" />
+      <option name="project" value="LOCAL" />
+      <updated>1662363485416</updated>
+    </task>
+    <task id="LOCAL-00261" summary="code cleanup">
+      <created>1662363865239</created>
+      <option name="number" value="00261" />
+      <option name="presentableId" value="LOCAL-00261" />
+      <option name="project" value="LOCAL" />
+      <updated>1662363865239</updated>
+    </task>
+    <task id="LOCAL-00262" summary="include symmetric score">
+      <created>1662364797007</created>
+      <option name="number" value="00262" />
+      <option name="presentableId" value="LOCAL-00262" />
+      <option name="project" value="LOCAL" />
+      <updated>1662364797007</updated>
+    </task>
+    <task id="LOCAL-00263" summary="code cleanup">
+      <created>1662365034001</created>
+      <option name="number" value="00263" />
+      <option name="presentableId" value="LOCAL-00263" />
+      <option name="project" value="LOCAL" />
+      <updated>1662365034001</updated>
+    </task>
+    <task id="LOCAL-00264" summary="code cleanup">
+      <created>1662397398764</created>
+      <option name="number" value="00264" />
+      <option name="presentableId" value="LOCAL-00264" />
+      <option name="project" value="LOCAL" />
+      <updated>1662397398764</updated>
+    </task>
+    <task id="LOCAL-00265" summary="minor edits">
+      <created>1662664503327</created>
+      <option name="number" value="00265" />
+      <option name="presentableId" value="LOCAL-00265" />
+      <option name="project" value="LOCAL" />
+      <updated>1662664503327</updated>
+    </task>
+    <task id="LOCAL-00266" summary="run different slice configurations, add deep copy options">
+      <created>1662665844946</created>
+      <option name="number" value="00266" />
+      <option name="presentableId" value="LOCAL-00266" />
+      <option name="project" value="LOCAL" />
+      <updated>1662665844946</updated>
+    </task>
+    <task id="LOCAL-00267" summary="run different slice configurations, add deep copy options, update straw">
+      <created>1664412177923</created>
+      <option name="number" value="00267" />
+      <option name="presentableId" value="LOCAL-00267" />
+      <option name="project" value="LOCAL" />
+      <updated>1664412177923</updated>
+    </task>
+    <task id="LOCAL-00268" summary="use welford based zscore">
+      <created>1664658668340</created>
+      <option name="number" value="00268" />
+      <option name="presentableId" value="LOCAL-00268" />
+      <option name="project" value="LOCAL" />
+      <updated>1664658668340</updated>
+    </task>
+    <task id="LOCAL-00269" summary="bug fix, correct matrix handling of sparse rows">
+      <created>1664678079459</created>
+      <option name="number" value="00269" />
+      <option name="presentableId" value="LOCAL-00269" />
+      <option name="project" value="LOCAL" />
+      <updated>1664678079459</updated>
+    </task>
+    <task id="LOCAL-00270" summary="bug fix, correct matrix handling of sparse rows">
+      <created>1664695980681</created>
+      <option name="number" value="00270" />
+      <option name="presentableId" value="LOCAL-00270" />
+      <option name="project" value="LOCAL" />
+      <updated>1664695980681</updated>
+    </task>
+    <task id="LOCAL-00271" summary="graph idea, oe updates">
+      <created>1664770580991</created>
+      <option name="number" value="00271" />
+      <option name="presentableId" value="LOCAL-00271" />
+      <option name="project" value="LOCAL" />
+      <updated>1664770580991</updated>
+    </task>
+    <task id="LOCAL-00272" summary="abstraction of index splitter">
+      <created>1664773460231</created>
+      <option name="number" value="00272" />
+      <option name="presentableId" value="LOCAL-00272" />
+      <option name="project" value="LOCAL" />
+      <updated>1664773460231</updated>
+    </task>
+    <task id="LOCAL-00273" summary="change bin splitting">
+      <created>1664775333479</created>
+      <option name="number" value="00273" />
+      <option name="presentableId" value="LOCAL-00273" />
+      <option name="project" value="LOCAL" />
+      <updated>1664775333479</updated>
+    </task>
+    <task id="LOCAL-00274" summary="adjust bin splitting parameter">
+      <created>1664775977652</created>
+      <option name="number" value="00274" />
+      <option name="presentableId" value="LOCAL-00274" />
+      <option name="project" value="LOCAL" />
+      <updated>1664775977652</updated>
+    </task>
+    <task id="LOCAL-00275" summary="add comparison check, cleanup">
+      <created>1666758306820</created>
+      <option name="number" value="00275" />
+      <option name="presentableId" value="LOCAL-00275" />
+      <option name="project" value="LOCAL" />
+      <updated>1666758306820</updated>
+    </task>
+    <task id="LOCAL-00276" summary="add comparison check, cleanup">
+      <created>1666759880245</created>
+      <option name="number" value="00276" />
+      <option name="presentableId" value="LOCAL-00276" />
+      <option name="project" value="LOCAL" />
+      <updated>1666759880245</updated>
+    </task>
+    <task id="LOCAL-00277" summary="new cleanup">
+      <created>1666935706832</created>
+      <option name="number" value="00277" />
+      <option name="presentableId" value="LOCAL-00277" />
+      <option name="project" value="LOCAL" />
+      <updated>1666935706833</updated>
+    </task>
+    <task id="LOCAL-00278" summary="further options">
+      <created>1666973056102</created>
+      <option name="number" value="00278" />
+      <option name="presentableId" value="LOCAL-00278" />
+      <option name="project" value="LOCAL" />
+      <updated>1666973056102</updated>
+    </task>
+    <task id="LOCAL-00279" summary="further options">
+      <created>1666973078637</created>
+      <option name="number" value="00279" />
+      <option name="presentableId" value="LOCAL-00279" />
+      <option name="project" value="LOCAL" />
+      <updated>1666973078637</updated>
+    </task>
+    <task id="LOCAL-00280" summary="updated settings">
+      <created>1666977664937</created>
+      <option name="number" value="00280" />
+      <option name="presentableId" value="LOCAL-00280" />
+      <option name="project" value="LOCAL" />
+      <updated>1666977664937</updated>
+    </task>
+    <task id="LOCAL-00281" summary="updated clutering">
+      <created>1666994165118</created>
+      <option name="number" value="00281" />
+      <option name="presentableId" value="LOCAL-00281" />
+      <option name="project" value="LOCAL" />
+      <updated>1666994165118</updated>
+    </task>
+    <task id="LOCAL-00282" summary="updated clustering">
+      <created>1667048747739</created>
+      <option name="number" value="00282" />
+      <option name="presentableId" value="LOCAL-00282" />
+      <option name="project" value="LOCAL" />
+      <updated>1667048747739</updated>
+    </task>
+    <task id="LOCAL-00283" summary="working version">
+      <created>1667049341315</created>
+      <option name="number" value="00283" />
+      <option name="presentableId" value="LOCAL-00283" />
+      <option name="project" value="LOCAL" />
+      <updated>1667049341315</updated>
+    </task>
+    <task id="LOCAL-00284" summary="latest working version, update straw">
+      <created>1667055744279</created>
+      <option name="number" value="00284" />
+      <option name="presentableId" value="LOCAL-00284" />
+      <option name="project" value="LOCAL" />
+      <updated>1667055744279</updated>
+    </task>
+    <option name="localTasksCounter" value="285" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -661,32 +661,32 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="implement LL inter only matrix" />
-    <MESSAGE value="mid implementation" />
-    <MESSAGE value="get to compilation pass" />
-    <MESSAGE value="update translocation check" />
-    <MESSAGE value="update iteration, bug fixes" />
-    <MESSAGE value="updated expected model" />
-    <MESSAGE value="code cleanup, debugging" />
-    <MESSAGE value="bug fixes" />
-    <MESSAGE value="code cleanup, update straw" />
-    <MESSAGE value="minor edit" />
-    <MESSAGE value="use straw expected" />
-    <MESSAGE value="update parameters" />
-    <MESSAGE value="update usage, connect clustering, code cleanup" />
-    <MESSAGE value="bug fix for export options, optimize zscore calculation, code cleanup" />
-    <MESSAGE value="preprocessing for matrix" />
-    <MESSAGE value="update bounds" />
-    <MESSAGE value="compressive clustering" />
-    <MESSAGE value="update defaults" />
-    <MESSAGE value="use low res ordering, bug fixes, color updates" />
-    <MESSAGE value="implement real-time scaling" />
-    <MESSAGE value="add verbose printing" />
-    <MESSAGE value="remove null rows" />
-    <MESSAGE value="redo versioning" />
+    <MESSAGE value="cleanup" />
+    <MESSAGE value="expand plotting window" />
+    <MESSAGE value="update printing, mean calculation" />
+    <MESSAGE value="fix calculation; restore granularity of variance" />
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="finalize chic" />
+    <MESSAGE value="include symmetric score" />
     <MESSAGE value="code cleanup" />
-    <MESSAGE value="update version" />
-    <option name="LAST_COMMIT_MESSAGE" value="update version" />
+    <MESSAGE value="minor edits" />
+    <MESSAGE value="run different slice configurations, add deep copy options" />
+    <MESSAGE value="run different slice configurations, add deep copy options, update straw" />
+    <MESSAGE value="use welford based zscore" />
+    <MESSAGE value="bug fix, correct matrix handling of sparse rows" />
+    <MESSAGE value="graph idea, oe updates" />
+    <MESSAGE value="abstraction of index splitter" />
+    <MESSAGE value="change bin splitting" />
+    <MESSAGE value="adjust bin splitting parameter" />
+    <MESSAGE value="add comparison check, cleanup" />
+    <MESSAGE value="new cleanup" />
+    <MESSAGE value="further options" />
+    <MESSAGE value="updated settings" />
+    <MESSAGE value="updated clutering" />
+    <MESSAGE value="updated clustering" />
+    <MESSAGE value="working version" />
+    <MESSAGE value="latest working version, update straw" />
+    <option name="LAST_COMMIT_MESSAGE" value="latest working version, update straw" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

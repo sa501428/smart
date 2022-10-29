@@ -25,6 +25,7 @@
 package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
+import mixer.utils.common.FloatMatrixTools;
 
 import java.util.*;
 
@@ -157,6 +158,23 @@ public class BinMappings implements Mappings {
         }
 
         numRows -= badIndices.size();
+    }
+
+    @Override
+    public Mappings deepCopy() {
+        BinMappings newMapping = new BinMappings(resolution, chromosomes);
+        newMapping.numRows = numRows;
+        newMapping.numCols = numCols;
+        copyFromAtoB(chromToBinToProtocluster, newMapping.chromToBinToProtocluster);
+        copyFromAtoB(chromToBinToGlobalIndex, newMapping.chromToBinToGlobalIndex);
+        copyFromAtoB(chromToDistributionForChromosome, newMapping.chromToDistributionForChromosome);
+        return newMapping;
+    }
+
+    private void copyFromAtoB(Map<Integer, int[]> a, Map<Integer, int[]> b) {
+        for (Integer key : a.keySet()) {
+            b.put(key, FloatMatrixTools.deepClone(a.get(key)));
+        }
     }
 
     protected int[][] getGenomeIndices() {

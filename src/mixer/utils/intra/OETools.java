@@ -39,7 +39,8 @@ public class OETools {
     private static final int FIVE_MB = 5000000, FIFTY_MB = 50000000;
 
     public static float[][] getCleanOEMatrix(MatrixZoomData zd, Chromosome chrom, int lowRes,
-                                             NormalizationType norm, Set<Integer> badIndices, int resFactor) {
+                                             NormalizationType norm, Set<Integer> badIndices, int resFactor,
+                                             boolean takeLog, boolean skipNearDiagonal) {
 
         LogExpectedSpline spline = new LogExpectedSpline(zd, norm, chrom, lowRes);
 
@@ -54,14 +55,19 @@ public class OETools {
         while (recordIterator.hasNext()) {
             ContactRecord record = recordIterator.next();
             int dist = Math.abs(record.getBinX() - record.getBinY());
-            if (dist > minDist) {
-                float oe = (float) Math.log(record.getCounts() / spline.getExpectedFromUncompressedBin(dist));
-                matrix[record.getBinX()][record.getBinY()] = oe;
-                matrix[record.getBinY()][record.getBinX()] = oe;
+            if (skipNearDiagonal && dist < minDist) continue;
+
+            float oe = (float) (record.getCounts() / spline.getExpectedFromUncompressedBin(dist));
+            if (takeLog) {
+                oe = (float) Math.log(oe);
             }
+            matrix[record.getBinX()][record.getBinY()] = oe;
+            matrix[record.getBinY()][record.getBinX()] = oe;
         }
 
-        IntraMatrixCleaner.nanFillNearDiagonal(matrix, FIVE_MB / lowRes);
+        if (skipNearDiagonal) {
+            IntraMatrixCleaner.nanFillNearDiagonal(matrix, FIVE_MB / lowRes);
+        }
         IntraMatrixCleaner.nanFillBadRowsColumns(badIndices, matrix, resFactor);
         //IntraMatrixCleaner.nanFillZeroEntries(matrix);
         return matrix;

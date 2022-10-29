@@ -24,13 +24,14 @@
 
 package mixer.utils.cleaning;
 
+import javastraw.expected.Welford;
+import javastraw.expected.Zscore;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.norm.NormalizationVector;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationHandler;
 import javastraw.reader.type.NormalizationType;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,9 +40,8 @@ import java.util.Set;
 
 public class BadIndexFinder {
     protected static final NormalizationType VC = NormalizationHandler.VC;
-    private static final int ZSCORE_MIN_NONZERO_COVERAGE = -2;
+    private static final int ZSCORE_MIN_NONZERO_COVERAGE = -3;
     private static final int ZSCORE_MAX_NONZERO_COVERAGE = 3;
-    private static final float MIN_NORM_VAL = 0.01f;
 
     public static Map<Integer, Set<Integer>> getBadIndices(Dataset dataset, Chromosome[] chromosomes,
                                                            int resolution) {
@@ -57,15 +57,16 @@ public class BadIndexFinder {
     private static Set<Integer> updateCoverageStats(NormalizationVector normalizationVector, Chromosome chromosome,
                                                     int resolution) {
         double[] vector = normalizationVector.getData().getValues().get(0);
-        double[] muAndStd = getMuAndStd(vector);
+        Zscore zLog = getZscore(vector);
+
         int realLength = (int) (1 + (chromosome.getLength() / resolution));
 
         Set<Integer> values = new HashSet<>();
         for (int i = 0; i < realLength; i++) {
-            if (vector[i] > MIN_NORM_VAL) {
+            if (vector[i] > 0) {
                 double val = Math.log(vector[i]);
-                double z = (val - muAndStd[0]) / muAndStd[1];
-                if (z < ZSCORE_MIN_NONZERO_COVERAGE || z > ZSCORE_MAX_NONZERO_COVERAGE) {
+                double z = zLog.getZscore(val);
+                if (z < ZSCORE_MIN_NONZERO_COVERAGE) { // || z > ZSCORE_MAX_NONZERO_COVERAGE
                     values.add(i);
                 }
             } else {
@@ -75,16 +76,13 @@ public class BadIndexFinder {
         return values;
     }
 
-    private static double[] getMuAndStd(double[] vector) {
-        DescriptiveStatistics stats = new DescriptiveStatistics();
+    private static Zscore getZscore(double[] vector) {
+        Welford welford = new Welford();
         for (double val : vector) {
-            if (val > MIN_NORM_VAL) {
-                stats.addValue(Math.log(val));
+            if (val > 0) {
+                welford.addValue(Math.log(val));
             }
         }
-        double mu = stats.getMean();
-        double std = stats.getStandardDeviation();
-        stats.clear();
-        return new double[]{mu, std};
+        return welford.getZscore();
     }
 }

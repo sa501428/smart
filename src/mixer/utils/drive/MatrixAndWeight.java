@@ -26,8 +26,10 @@ package mixer.utils.drive;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
+import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.MatrixTools;
-import mixer.utils.cleaning.EmptyRowCleaner;
+import mixer.utils.cleaning.NaNRowCleaner;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
@@ -42,7 +44,6 @@ public class MatrixAndWeight {
     private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
 
-
     public MatrixAndWeight(float[][] interMatrix, int[] weights, Mappings mappings) {
         this.matrix = interMatrix;
         this.weights = weights;
@@ -52,6 +53,10 @@ public class MatrixAndWeight {
 
     public void inPlaceScaleSqrtWeightCol() {
         ZScoreTools.inPlaceScaleSqrtWeightCol(matrix, weights);
+    }
+
+    public void divideColumnsByWeights() {
+        FloatMatrixTools.divideColumnsByWeights(matrix, weights);
     }
 
     public void export(File outputDirectory, String stem) {
@@ -83,6 +88,27 @@ public class MatrixAndWeight {
         SliceUtils.reSort(subcompartments);
     }
 
+    public GenomeWide1DList<SubcompartmentInterval> getClusteringResult(int[] assignments, ChromosomeHandler handler) {
+        GenomeWide1DList<SubcompartmentInterval> subcompartments = new GenomeWide1DList<>(handler);
+
+        Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
+        for (int i = 0; i < assignments.length; i++) {
+            if (assignments[i] > -1) {
+                int currentClusterID = assignments[i];
+                if (map.containsKey(i)) {
+                    SubcompartmentInterval interv = map.get(i);
+                    if (interv != null) {
+                        subcompartmentIntervals.add(generateNewSubcompartment(interv, currentClusterID));
+                    }
+                }
+            }
+        }
+
+        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
+        SliceUtils.reSort(subcompartments);
+        return subcompartments;
+    }
+
     protected SubcompartmentInterval generateNewSubcompartment(SubcompartmentInterval interv, int currentClusterID) {
         SubcompartmentInterval newInterv = (SubcompartmentInterval) interv.deepClone();
         newInterv.setClusterID(currentClusterID);
@@ -107,8 +133,8 @@ public class MatrixAndWeight {
         }
     }
 
-    public void removeAllZeroRows() {
-        matrix = EmptyRowCleaner.cleanUpMatrix(matrix, mappings);
+    public void removeAllNanRows() {
+        matrix = NaNRowCleaner.cleanUpMatrix(matrix, mappings);
     }
 
     public int[] getSumOfAllLoci(Chromosome[] chromosomes) {
@@ -125,6 +151,28 @@ public class MatrixAndWeight {
     public void updateWeights(Chromosome[] chromosomes) {
         int[] totalDistribution = getSumOfAllLoci(chromosomes);
         System.arraycopy(totalDistribution, 0, weights, 0, mappings.getNumCols());
+    }
+
+    public int getNumRows() {
+        return matrix.length;
+    }
+
+    public int getNumCols() {
+        return matrix[0].length;
+    }
+
+    public MatrixAndWeight deepCopy() {
+        return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(weights),
+                mappings.deepCopy());
+    }
+
+    public boolean notEmpty() {
+        return matrix.length > 10 && matrix[0].length > 2;
+    }
+
+    public void setWeightsTo(int val) {
+        weights = new int[getNumCols()];
+        Arrays.fill(weights, val);
     }
 }
 

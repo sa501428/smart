@@ -42,10 +42,17 @@ public class SimilarityMatrixTools {
     public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric,
                                                       int numPerCentroid, long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
-            return getAsymmetricMatrix(matrix, new SimilarityMetric[]{metric}, matrix.length / numPerCentroid, seed);
+            return getAsymmetricMatrix(matrix, new SimilarityMetric[]{metric},
+                    matrix.length / numPerCentroid, seed);
         }
 
         return getSymmetricMatrix(matrix, metric);
+    }
+
+    public static float[][] getCompressedCosineSimilarityMatrix(float[][] matrix,
+                                                                int numCentroids, long seed) {
+        return getAsymmetricMatrix(matrix, new SimilarityMetric[]{RobustCosineSimilarity.SINGLETON},
+                numCentroids, seed);
     }
 
     public static float[][] getCosinePearsonCorrMatrix(float[][] matrix, int numCentroids, long seed) {

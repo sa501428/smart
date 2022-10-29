@@ -51,7 +51,7 @@ public class IndexOrderer {
     private static final int IGNORE = -1;
     private static final int DEFAULT = -5;
     private static final int CHECK_VAL = -2;
-    private static final float CORR_MIN = 0.2f;
+    private static final float CORR_MIN = 0.3f;
     public static final boolean SHOULD_FILTER_SINGLE_COLUMNS = false;
 
     public static BinMappings getInitialMappings(Dataset ds, Chromosome[] chromosomes,
@@ -73,7 +73,7 @@ public class IndexOrderer {
             if (zd != null) {
                 try {
                     float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, lowRes, norm,
-                            badIndices.get(chrom.getIndex()), resFactor);
+                            badIndices.get(chrom.getIndex()), resFactor, true, true);
                     int[] lowResNewOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
                             offset, lowRes, generator.nextLong(), resFactor);
                     int[] newOrderIndexes = convertToHigherRes(lowResNewOrderIndexes, chrom, hires, resFactor);
@@ -130,7 +130,7 @@ public class IndexOrderer {
                                               long seed, int resFactor) {
 
         int[] newIndexOrderAssignments = generateNewAssignments(oeMatrix1.length, badIndices, resFactor);
-        int numPotentialClusters = (int) (chromosome.getLength() / HUNDRED_MB) + 5;
+        int numPotentialClusters = (int) (chromosome.getLength() / FIFTY_MB) + 5;
 
         float[][] matrixCorr1 = SimilarityMatrixTools.getSymmNonNanSimilarityMatrixWithMask(oeMatrix1,
                 RobustCosineSimilarity.SINGLETON, newIndexOrderAssignments, CHECK_VAL);
