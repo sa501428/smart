@@ -24,7 +24,7 @@
 
 package mixer.utils.intra;
 
-import javastraw.expected.LogExpectedSpline;
+import javastraw.expected.LogExpectedZscoreSpline;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.block.ContactRecord;
 import javastraw.reader.mzd.MatrixZoomData;
@@ -38,13 +38,14 @@ public class OETools {
 
     private static final int FIVE_MB = 5000000, FIFTY_MB = 50000000;
 
-    public static float[][] getCleanOEMatrix(MatrixZoomData zd, Chromosome chrom, int lowRes,
+    public static float[][] getCleanOEMatrix(MatrixZoomData zd, Chromosome chrom, int resolution,
                                              NormalizationType norm, Set<Integer> badIndices, int resFactor,
-                                             boolean takeLog, boolean skipNearDiagonal,
-                                             LogExpectedSpline spline) {
+                                             boolean takeLog, boolean skipNearDiagonal) {
 
-        int length = (int) (chrom.getLength() / lowRes + 1);
-        int minDist = FIVE_MB / lowRes;
+        LogExpectedZscoreSpline spline = new LogExpectedZscoreSpline(zd, norm, chrom, resolution);
+
+        int length = (int) (chrom.getLength() / resolution + 1);
+        int minDist = FIVE_MB / resolution;
 
         float[][] matrix = new float[length][length];
         for (float[] row : matrix) {
@@ -65,7 +66,7 @@ public class OETools {
         }
 
         if (skipNearDiagonal) {
-            IntraMatrixCleaner.nanFillNearDiagonal(matrix, FIVE_MB / lowRes);
+            IntraMatrixCleaner.nanFillNearDiagonal(matrix, FIVE_MB / resolution);
         }
         IntraMatrixCleaner.nanFillBadRowsColumns(badIndices, matrix, resFactor);
         //IntraMatrixCleaner.nanFillZeroEntries(matrix);

@@ -24,7 +24,6 @@
 
 package mixer.algos;
 
-import javastraw.expected.LogExpectedSpline;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -43,7 +42,6 @@ import mixer.utils.kmeans.ClusteringMagic;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -57,7 +55,6 @@ public class Slice extends MixerCLT {
 
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
-    private boolean useScale = false;
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
     private Dataset ds;
@@ -91,7 +88,6 @@ public class Slice extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        useScale = mixerParser.getScaleOption();
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
         norms = populateNormalizations(ds);
@@ -116,14 +112,13 @@ public class Slice extends MixerCLT {
         // todo should be at lower res
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory,
                 badIndices, resolution);
-        Map<Integer, LogExpectedSpline> expectedModels = new HashMap<>();
 
         // todo should be at lower res
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
-                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory, expectedModels);
+                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
+                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory);
 
         slice0.export(outputDirectory, "pre-clean");
 

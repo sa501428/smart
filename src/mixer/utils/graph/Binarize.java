@@ -24,7 +24,6 @@
 
 package mixer.utils.graph;
 
-import javastraw.expected.LogExpectedSpline;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.mzd.Matrix;
@@ -55,10 +54,9 @@ public class Binarize {
             if (matrix == null) continue;
             MatrixZoomData zd = matrix.getZoomData(new HiCZoom(resolution));
             if (zd == null) continue;
-            LogExpectedSpline spline = new LogExpectedSpline(zd, norm, chromosome, resolution);
 
             float[][] data = OETools.getCleanOEMatrix(zd, chromosome, resolution, norm,
-                    new HashSet<>(), 1, false, false, spline);
+                    new HashSet<>(), 1, false, false);
 
             MatrixTools.saveMatrixTextNumpy(chromosome.getName() + "_raw.npy", data);
 

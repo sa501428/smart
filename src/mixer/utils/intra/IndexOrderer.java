@@ -24,7 +24,6 @@
 
 package mixer.utils.intra;
 
-import javastraw.expected.LogExpectedSpline;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.mzd.MatrixZoomData;
@@ -57,7 +56,7 @@ public class IndexOrderer {
 
     public static BinMappings getInitialMappings(Dataset ds, Chromosome[] chromosomes,
                                                  int hires, Map<Integer, Set<Integer>> badIndices, NormalizationType norm,
-                                                 long seed, File outputDirectory, Map<Integer, LogExpectedSpline> splines) {
+                                                 long seed, File outputDirectory) {
 
         Random generator = new Random(seed);
         int[] offset = new int[]{0};
@@ -74,14 +73,9 @@ public class IndexOrderer {
             if (zd != null) {
                 try {
 
-                    if (!splines.containsKey(chrom.getIndex())) {
-                        LogExpectedSpline spline = new LogExpectedSpline(zd, norm, chrom, lowRes);
-                        splines.put(chrom.getIndex(), spline);
-                    }
-
                     float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, lowRes, norm,
                             badIndices.get(chrom.getIndex()), resFactor, true,
-                            true, splines.get(chrom.getIndex()));
+                            true);
                     int[] lowResNewOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
                             offset, lowRes, generator.nextLong(), resFactor);
                     int[] newOrderIndexes = convertToHigherRes(lowResNewOrderIndexes, chrom, hires, resFactor);

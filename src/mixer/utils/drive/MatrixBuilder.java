@@ -35,24 +35,18 @@ import mixer.SmartTools;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 public class MatrixBuilder {
     public static MatrixAndWeight populateMatrix(Dataset ds, Chromosome[] chromosomes, int resolution,
                                                  NormalizationType norm, Mappings mappings,
                                                  SimpleTranslocationFinder translocations,
-                                                 File outputDirectory, boolean useNone) {
+                                                 File outputDirectory) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
         float[][] matrix = new float[numRows][numCols];
-
-        Map<Integer, int[]> genomewideDistributionForChrom = new HashMap<>();
-        for (Chromosome chromosome : chromosomes) {
-            genomewideDistributionForChrom.put(chromosome.getIndex(), new int[numCols]);
-        }
+        float[][] intra = new float[numRows][numCols];
 
         System.out.println(".");
         if (SmartTools.printVerboseComments) {
@@ -63,6 +57,7 @@ public class MatrixBuilder {
             fillInNans(matrix, mappings, chromosomes[i], chromosomes[i]);
 
             for (int j = i + 1; j < chromosomes.length; j++) {
+                fillInNans(intra, mappings, chromosomes[i], chromosomes[j]);
                 if (translocations.contains(chromosomes[i], chromosomes[j])) {
                     fillInNans(matrix, mappings, chromosomes[i], chromosomes[j]);
                     continue;
@@ -72,16 +67,7 @@ public class MatrixBuilder {
                 if (m1 != null) {
                     MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
                     if (zd != null) {
-                        if (useNone || norm.getLabel().equalsIgnoreCase("none")) {
-                            populateMatrixFromIterator(matrix, zd.getDirectIterator(), mappings, chromosomes[i], chromosomes[j]);
-                        } else {
-                            populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), mappings, chromosomes[i], chromosomes[j]);
-                        }
-
-                        updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[i].getIndex()),
-                                mappings.getDistributionForChrom(chromosomes[j]));
-                        updateNumberOfLoci(genomewideDistributionForChrom.get(chromosomes[j].getIndex()),
-                                mappings.getDistributionForChrom(chromosomes[i]));
+                        populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), mappings, chromosomes[i], chromosomes[j]);
                     }
                 }
 
@@ -90,7 +76,7 @@ public class MatrixBuilder {
             System.out.println(".");
         }
 
-        return new MatrixAndWeight(matrix, weights, mappings);
+        return new MatrixAndWeight(matrix, intra, weights, mappings);
     }
 
     private static void fillInNans(float[][] matrix, Mappings mappings, Chromosome c1, Chromosome c2) {
