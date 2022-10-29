@@ -30,10 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/transform/MatrixTransform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/transform/MatrixTransform.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="working version">
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/general/java-straw.2.21.00.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/general/java-straw.2.23.00.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,18 +79,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/muhammad/IdeaProjects/smart/src/mixer/utils&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/lib/general",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="mixer.utils.shuffle" />
@@ -99,8 +100,8 @@
       <recent name="mixer.utils.slice.drive" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/mixer/utils" />
       <recent name="$PROJECT_DIR$/lib/general" />
+      <recent name="$PROJECT_DIR$/src/mixer/utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -294,14 +295,7 @@
       <workItem from="1666712364500" duration="7815000" />
       <workItem from="1666893526528" duration="171000" />
       <workItem from="1666909717746" duration="4127000" />
-      <workItem from="1666931667439" duration="11853000" />
-    </task>
-    <task id="LOCAL-00234" summary="compressive clustering">
-      <created>1661744611159</created>
-      <option name="number" value="00234" />
-      <option name="presentableId" value="LOCAL-00234" />
-      <option name="project" value="LOCAL" />
-      <updated>1661744611159</updated>
+      <workItem from="1666931667439" duration="13366000" />
     </task>
     <task id="LOCAL-00235" summary="update defaults">
       <created>1661746021212</created>
@@ -639,7 +633,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667048747739</updated>
     </task>
-    <option name="localTasksCounter" value="283" />
+    <task id="LOCAL-00283" summary="working version">
+      <created>1667049341315</created>
+      <option name="number" value="00283" />
+      <option name="presentableId" value="LOCAL-00283" />
+      <option name="project" value="LOCAL" />
+      <updated>1667049341315</updated>
+    </task>
+    <option name="localTasksCounter" value="284" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -663,7 +664,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fix KL, plot summary" />
     <MESSAGE value="bug fix KL, parallelize file reading" />
     <MESSAGE value="cleanup" />
     <MESSAGE value="expand plotting window" />
@@ -688,7 +688,8 @@
     <MESSAGE value="updated settings" />
     <MESSAGE value="updated clutering" />
     <MESSAGE value="updated clustering" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated clustering" />
+    <MESSAGE value="working version" />
+    <option name="LAST_COMMIT_MESSAGE" value="working version" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
