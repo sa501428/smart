@@ -124,18 +124,16 @@ public class Slice extends MixerCLT {
 
         slice0.export(outputDirectory, "pre-clean");
 
-        for (boolean zscoreWithNeighbors : new boolean[]{true, false}) {
-            runWithSettings2(slice0, handler, chromosomes, zscoreWithNeighbors);
-        }
+        runWithSettings2(slice0, handler, chromosomes);
 
         System.out.println("\nSLICE complete");
     }
 
 
     private void runWithSettings2(MatrixAndWeight slice0,
-                                  ChromosomeHandler handler, Chromosome[] chromosomes, boolean zscoreWithNeighbors) {
-        String stem = getNewPrefix2(zscoreWithNeighbors);
-        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, zscoreWithNeighbors);
+                                  ChromosomeHandler handler, Chromosome[] chromosomes) {
+        String stem = "slice";// getNewPrefix2(zscoreWithNeighbors);
+        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes);
         if (slice.notEmpty()) {
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem);

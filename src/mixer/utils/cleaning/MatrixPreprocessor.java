@@ -35,11 +35,11 @@ public class MatrixPreprocessor {
 
     private static final int ZSCORE_LIMIT = 3;
 
-    public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes, boolean zscoreWithNeighbors) {
+    public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes) {
         matrix.updateWeights(chromosomes);
         matrix.divideColumnsByWeights();
         SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
-        MatrixTransform.zscoreByRows(matrix.matrix, ZSCORE_LIMIT, zscoreWithNeighbors);
+        MatrixTransform.zscoreByRows(matrix.matrix, ZSCORE_LIMIT);
         matrix.removeAllNanRows();
         return matrix;
     }
