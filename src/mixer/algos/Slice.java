@@ -55,7 +55,6 @@ public class Slice extends MixerCLT {
 
     public static final int INTRA_SCALE_INDEX = 0;
     public static final int INTER_SCALE_INDEX = 1;
-    private boolean useScale = false;
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
     private Dataset ds;
@@ -89,7 +88,6 @@ public class Slice extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        useScale = mixerParser.getScaleOption();
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4];
         norms = populateNormalizations(ds);
@@ -120,7 +118,7 @@ public class Slice extends MixerCLT {
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);
+                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory);
 
         slice0.export(outputDirectory, "pre-clean");
 

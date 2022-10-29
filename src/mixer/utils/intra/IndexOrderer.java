@@ -72,8 +72,10 @@ public class IndexOrderer {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowRes);
             if (zd != null) {
                 try {
+
                     float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, lowRes, norm,
-                            badIndices.get(chrom.getIndex()), resFactor, true, true);
+                            badIndices.get(chrom.getIndex()), resFactor, true,
+                            true);
                     int[] lowResNewOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
                             offset, lowRes, generator.nextLong(), resFactor);
                     int[] newOrderIndexes = convertToHigherRes(lowResNewOrderIndexes, chrom, hires, resFactor);

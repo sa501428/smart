@@ -39,13 +39,14 @@ import java.io.File;
 import java.util.*;
 
 public class MatrixAndWeight {
-    public float[][] matrix;
+    public float[][] matrix, intra;
     public int[] weights;
     private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
 
-    public MatrixAndWeight(float[][] interMatrix, int[] weights, Mappings mappings) {
+    public MatrixAndWeight(float[][] interMatrix, float[][] intraMatrix, int[] weights, Mappings mappings) {
         this.matrix = interMatrix;
+        this.intra = intraMatrix;
         this.weights = weights;
         this.mappings = mappings;
         if (mappings != null) populateRowIndexToIntervalMap(mappings);
@@ -162,8 +163,8 @@ public class MatrixAndWeight {
     }
 
     public MatrixAndWeight deepCopy() {
-        return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(weights),
-                mappings.deepCopy());
+        return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(intra),
+                FloatMatrixTools.deepClone(weights), mappings.deepCopy());
     }
 
     public boolean notEmpty() {
