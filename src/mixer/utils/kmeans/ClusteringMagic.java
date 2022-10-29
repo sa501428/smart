@@ -39,7 +39,7 @@ public class ClusteringMagic {
     public static int numClusterSizeKValsUsed = 10;
     public static final int numAttemptsToRepeat = 3;
     private final File outputDirectory;
-    private static final int maxIters = 200;
+    private static final int maxIters = 500;
     private final Random generator = new Random(2352);
     private final MatrixAndWeight matrix;
     private final ChromosomeHandler handler;

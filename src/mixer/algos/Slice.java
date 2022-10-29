@@ -121,11 +121,9 @@ public class Slice extends MixerCLT {
 
         slice0.export(outputDirectory, "pre-clean");
 
-        //for (boolean useCosine : new boolean[]{true, false}) {
         for (boolean includeIntra : new boolean[]{true, false}) {
             runWithSettings(slice0, handler, chromosomes, includeIntra, false);
         }
-        //}
 
         System.out.println("\nSLICE complete");
     }
@@ -137,6 +135,7 @@ public class Slice extends MixerCLT {
         String stem = getNewPrefix(includeIntra, useCosine);
         MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, includeIntra, useCosine);
         if (slice.notEmpty()) {
+            slice.export(outputDirectory, stem);
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem);
             System.out.println("*");
