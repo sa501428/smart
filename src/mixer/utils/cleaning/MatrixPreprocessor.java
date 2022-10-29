@@ -24,8 +24,6 @@
 
 package mixer.utils.cleaning;
 
-import javastraw.expected.Welford;
-import javastraw.expected.Zscore;
 import javastraw.reader.basics.Chromosome;
 import mixer.utils.common.SimpleArray2DTools;
 import mixer.utils.drive.MatrixAndWeight;
@@ -42,43 +40,5 @@ public class MatrixPreprocessor {
         MatrixTransform.zscoreByRows(matrix.matrix, ZSCORE_LIMIT);
         matrix.removeAllNanRows();
         return matrix;
-    }
-
-    private static int getNumCentroids(int numRows, int numCols) {
-        return Math.min(numCols, numRows / 20);
-    }
-
-    private static void thresholdGlobally(float[][] matrix, int upperLimit) {
-        Welford welford = new Welford();
-        for (int r = 0; r < matrix.length; r++) {
-            for (int c = 0; c < matrix[r].length; c++) {
-                if (matrix[r][c] > 0) {
-                    welford.addValue(matrix[r][c]);
-                }
-            }
-        }
-        Zscore zscore = welford.getZscore();
-        for (int r = 0; r < matrix.length; r++) {
-            for (int c = 0; c < matrix[r].length; c++) {
-                if (zscore.getZscore(matrix[r][c]) > upperLimit) {
-                    matrix[r][c] = Float.NaN;
-                }
-            }
-        }
-    }
-
-    private static void cleanUpZerosAndInfs(float[][] matrix) {
-        for (int r = 0; r < matrix.length; r++) {
-            for (int c = 0; c < matrix[r].length; c++) {
-                float val = matrix[r][c];
-                if (val > 0) {
-                    if (Float.isInfinite(val)) {
-                        matrix[r][c] = Float.NaN;
-                    }
-                } else {
-                    matrix[r][c] = Float.NaN;
-                }
-            }
-        }
     }
 }
