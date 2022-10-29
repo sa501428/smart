@@ -97,8 +97,9 @@ public class Slice extends MixerCLT {
 
     private NormalizationType[] populateNormalizations(Dataset ds) {
         NormalizationType[] norms = new NormalizationType[2];
-        norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
-        norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR"});
+        norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR", "VC"});
+        norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR", "INTER_VC"});
+        System.out.println("Using normalizations: " + norms[INTRA_SCALE_INDEX].getLabel() + " and " + norms[INTER_SCALE_INDEX].getLabel());
         return norms;
     }
 
@@ -108,30 +109,28 @@ public class Slice extends MixerCLT {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
 
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution);
-
-        // todo should be at lower res
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory,
                 badIndices, resolution);
-
-        // todo should be at lower res
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory);
+                norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
 
         slice0.export(outputDirectory, "pre-clean");
 
-        runWithSettings2(slice0, handler, chromosomes);
+        for (boolean includeIntra : new boolean[]{true, false}) {
+            runWithSettings(slice0, handler, chromosomes, includeIntra);
+        }
 
         System.out.println("\nSLICE complete");
     }
 
 
-    private void runWithSettings2(MatrixAndWeight slice0,
-                                  ChromosomeHandler handler, Chromosome[] chromosomes) {
-        String stem = "slice";// getNewPrefix2(zscoreWithNeighbors);
-        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes);
+    private void runWithSettings(MatrixAndWeight slice0,
+                                 ChromosomeHandler handler, Chromosome[] chromosomes, boolean includeIntra) {
+        String stem = getNewPrefix(includeIntra);
+        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, includeIntra);
         if (slice.notEmpty()) {
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem);
@@ -139,11 +138,11 @@ public class Slice extends MixerCLT {
         }
     }
 
-    private String getNewPrefix2(boolean zscoreWithNeighbors) {
-        if (zscoreWithNeighbors) {
-            return "slice_withNeighbors";
+    private String getNewPrefix(boolean includeIntra) {
+        if (includeIntra) {
+            return "sl_withIntra";
         } else {
-            return "slice_withoutOthers";
+            return "sl_noooIntra";
         }
     }
 }

@@ -171,9 +171,14 @@ public class MatrixAndWeight {
         return matrix.length > 10 && matrix[0].length > 2;
     }
 
-    public void setWeightsTo(int val) {
-        weights = new int[getNumCols()];
-        Arrays.fill(weights, val);
+    public void putIntraIntoMainMatrix() {
+        for (int i = 0; i < intra.length; i++) {
+            for (int j = 0; j < intra[i].length; j++) {
+                if (intra[i][j] > -10) {
+                    matrix[i][j] = intra[i][j];
+                }
+            }
+        }
     }
 }
 

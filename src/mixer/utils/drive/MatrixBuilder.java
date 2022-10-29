@@ -24,6 +24,7 @@
 
 package mixer.utils.drive;
 
+import javastraw.expected.ExpectedUtils;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.block.ContactRecord;
@@ -36,10 +37,17 @@ import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MatrixBuilder {
+
+    private static final int FIVE_MB = 5000000;
+
     public static MatrixAndWeight populateMatrix(Dataset ds, Chromosome[] chromosomes, int resolution,
-                                                 NormalizationType norm, Mappings mappings,
+                                                 NormalizationType interNorm,
+                                                 NormalizationType intraNorm,
+                                                 Mappings mappings,
                                                  SimpleTranslocationFinder translocations,
                                                  File outputDirectory) {
         int numRows = mappings.getNumRows();
@@ -47,6 +55,7 @@ public class MatrixBuilder {
         int[] weights = new int[numCols];
         float[][] matrix = new float[numRows][numCols];
         float[][] intra = new float[numRows][numCols];
+        float[][] counts = new float[numRows][numCols];
 
         System.out.println(".");
         if (SmartTools.printVerboseComments) {
@@ -54,20 +63,31 @@ public class MatrixBuilder {
         }
 
         for (int i = 0; i < chromosomes.length; i++) {
-            fillInNans(matrix, mappings, chromosomes[i], chromosomes[i]);
+            for (int j = i; j < chromosomes.length; j++) {
 
-            for (int j = i + 1; j < chromosomes.length; j++) {
-                fillInNans(intra, mappings, chromosomes[i], chromosomes[j]);
-                if (translocations.contains(chromosomes[i], chromosomes[j])) {
-                    fillInNans(matrix, mappings, chromosomes[i], chromosomes[j]);
-                    continue;
-                }
+                if (i == j) {
+                    fillInNans(matrix, mappings, chromosomes[i], chromosomes[i]);
+                    Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
+                    if (m1 != null) {
+                        MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
+                        if (zd != null) {
+                            populateIntraMatrix(intra, counts, zd, intraNorm, mappings, chromosomes[i],
+                                    resolution);
+                        }
+                    }
+                } else {
+                    fillInNans(intra, mappings, chromosomes[i], chromosomes[j]);
+                    if (translocations.contains(chromosomes[i], chromosomes[j])) {
+                        fillInNans(matrix, mappings, chromosomes[i], chromosomes[j]);
+                        continue;
+                    }
 
-                Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
-                if (m1 != null) {
-                    MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
-                    if (zd != null) {
-                        populateMatrixFromIterator(matrix, zd.getNormalizedIterator(norm), mappings, chromosomes[i], chromosomes[j]);
+                    Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
+                    if (m1 != null) {
+                        MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
+                        if (zd != null) {
+                            populateMatrixFromIterator(matrix, zd.getNormalizedIterator(interNorm), mappings, chromosomes[i], chromosomes[j]);
+                        }
                     }
                 }
 
@@ -76,7 +96,7 @@ public class MatrixBuilder {
             System.out.println(".");
         }
 
-        return new MatrixAndWeight(matrix, intra, weights, mappings);
+        return new MatrixAndWeight(matrix, normalize(intra, counts), weights, mappings);
     }
 
     private static void fillInNans(float[][] matrix, Mappings mappings, Chromosome c1, Chromosome c2) {
@@ -126,10 +146,63 @@ public class MatrixBuilder {
         }
     }
 
-    private static void updateNumberOfLoci(int[] totalLoci, int[] lociForRegion) {
-        for (int i = 0; i < totalLoci.length; i++) {
-            totalLoci[i] += lociForRegion[i];
+
+    private static void populateIntraMatrix(float[][] matrix, float[][] counts, MatrixZoomData zd, NormalizationType intraNorm,
+                                            Mappings mappings, Chromosome chromosome, int resolution) {
+        List<ContactRecord> filteredContacts = filter(FIVE_MB / resolution, zd.getNormalizedIterator(intraNorm));
+
+        LogExpectedSubset expected = new LogExpectedSubset(filteredContacts, chromosome, resolution);
+
+        if (mappings.contains(chromosome)) {
+            int[] binToClusterID = mappings.getProtocluster(chromosome);
+            int[] binToGlobalIndex = mappings.getGlobalIndex(chromosome);
+            for (ContactRecord cr : filteredContacts) {
+                if (expected.isInInterval(cr)) {
+                    int r = cr.getBinX();
+                    int c = cr.getBinY();
+                    if (binToClusterID[r] > -1 && binToClusterID[c] > -1) {
+                        float z = expected.getZscoreForObservedUncompressedBin(cr);
+                        if (Math.abs(z) < 5) {
+                            matrix[binToGlobalIndex[r]][binToClusterID[c]] += z;
+                            matrix[binToGlobalIndex[c]][binToClusterID[r]] += z;
+                            counts[binToGlobalIndex[r]][binToClusterID[c]]++;
+                            counts[binToGlobalIndex[c]][binToClusterID[r]]++;
+                        }
+                    }
+                }
+            }
+        } else {
+            System.err.println("Error with intra reading from " + chromosome.getName());
         }
+
+        filteredContacts.clear();
+        filteredContacts = null;
     }
 
+    private static List<ContactRecord> filter(int minDist, Iterator<ContactRecord> iterator) {
+        List<ContactRecord> records = new LinkedList<>();
+        while (iterator.hasNext()) {
+            ContactRecord cr = iterator.next();
+            if (cr.getCounts() > 0) {
+                if (ExpectedUtils.getDist(cr) > minDist) {
+                    records.add(cr);
+                }
+            }
+        }
+        return records;
+    }
+
+
+    private static float[][] normalize(float[][] intra, float[][] counts) {
+        for (int i = 0; i < intra.length; i++) {
+            for (int j = 0; j < intra[i].length; j++) {
+                if (counts[i][j] > 10) {
+                    intra[i][j] = intra[i][j] / counts[i][j];
+                } else {
+                    intra[i][j] = Float.NaN;
+                }
+            }
+        }
+        return intra;
+    }
 }
