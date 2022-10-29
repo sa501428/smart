@@ -56,7 +56,7 @@ public class IndexOrderer {
 
     public static BinMappings getInitialMappings(Dataset ds, Chromosome[] chromosomes,
                                                  int hires, Map<Integer, Set<Integer>> badIndices, NormalizationType norm,
-                                                 long seed, File outputDirectory) {
+                                                 long seed, File outputDirectory, boolean useExpandedIntraOE) {
 
         Random generator = new Random(seed);
         int[] offset = new int[]{0};
@@ -75,7 +75,7 @@ public class IndexOrderer {
 
                     float[][] matrix = OETools.getCleanOEMatrix(zd, chrom, lowRes, norm,
                             badIndices.get(chrom.getIndex()), resFactor, true,
-                            true);
+                            true, useExpandedIntraOE);
                     int[] lowResNewOrderIndexes = getNewOrderOfIndices(chrom, matrix, badIndices.get(chrom.getIndex()),
                             offset, lowRes, generator.nextLong(), resFactor);
                     int[] newOrderIndexes = convertToHigherRes(lowResNewOrderIndexes, chrom, hires, resFactor);

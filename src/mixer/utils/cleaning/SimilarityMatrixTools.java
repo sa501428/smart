@@ -39,8 +39,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric,
-                                                      int numPerCentroid, long seed) {
+    public static SimpleMatrixAndWeight getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric,
+                                                                  int numPerCentroid, long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
             return getAsymmetricMatrix(matrix, new SimilarityMetric[]{metric},
                     matrix.length / numPerCentroid, seed);
@@ -49,13 +49,13 @@ public class SimilarityMatrixTools {
         return getSymmetricMatrix(matrix, metric);
     }
 
-    public static float[][] getCompressedCosineSimilarityMatrix(float[][] matrix,
-                                                                int numCentroids, long seed) {
+    public static SimpleMatrixAndWeight getCompressedCosineSimilarityMatrix(float[][] matrix,
+                                                                            int numCentroids, long seed) {
         return getAsymmetricMatrix(matrix, new SimilarityMetric[]{RobustCosineSimilarity.SINGLETON},
                 numCentroids, seed);
     }
 
-    public static float[][] getCosinePearsonCorrMatrix(float[][] matrix, int numCentroids, long seed) {
+    public static SimpleMatrixAndWeight getCosinePearsonCorrMatrix(float[][] matrix, int numCentroids, long seed) {
         RobustCosineSimilarity.USE_ARC = true;
         RobustCorrelationSimilarity.USE_ARC = true;
 
@@ -66,7 +66,7 @@ public class SimilarityMatrixTools {
                 //RobustManhattanDistance.SINGLETON
         };
 
-        float[][] answer = getAsymmetricMatrix(matrix, metrics, numCentroids, seed);
+        SimpleMatrixAndWeight answer = getAsymmetricMatrix(matrix, metrics, numCentroids, seed);
 
         RobustCosineSimilarity.USE_ARC = false;
         RobustCorrelationSimilarity.USE_ARC = false;
@@ -74,15 +74,12 @@ public class SimilarityMatrixTools {
         return answer;
     }
 
-    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics,
-                                                 int numInitCentroids, long seed) {
-        final float[][] centroids;
-        if (numInitCentroids != matrix.length) {
-            QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 20);
-            centroids = centroidMaker.generateCentroids(5, true);
-        } else {
-            centroids = matrix;
-        }
+    private static SimpleMatrixAndWeight getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics,
+                                                             int numInitCentroids, long seed) {
+        QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 20);
+        final float[][] centroids = centroidMaker.generateCentroids(5, true);
+        int[] weights = centroidMaker.getWeights();
+
 
         int numCentroids = centroids.length;
         if (SmartTools.printVerboseComments || centroids.length != numInitCentroids) {
@@ -116,10 +113,10 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
-        return result;
+        return new SimpleMatrixAndWeight(result, weights);
     }
 
-    private static float[][] getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
+    private static SimpleMatrixAndWeight getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
         float[][] result = new float[matrix.length][matrix.length]; // *2
 
         int numCPUThreads = Runtime.getRuntime().availableProcessors() * 2;
@@ -145,10 +142,9 @@ public class SimilarityMatrixTools {
         while (!executor.isTerminated()) {
         }
 
-        //int[] weights = new int[result[0].length];
-        //Arrays.fill(weights, 1);
-        //ZScoreTools.inPlaceZscoreDownCol(result, weights);
-        return result;
+        int[] weights = new int[result[0].length];
+        Arrays.fill(weights, 1);
+        return new SimpleMatrixAndWeight(result, weights);
     }
 
     public static float[][] getSymmNonNanSimilarityMatrixWithMask(float[][] initialMatrix,

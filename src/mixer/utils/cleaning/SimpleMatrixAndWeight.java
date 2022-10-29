@@ -24,31 +24,13 @@
 
 package mixer.utils.cleaning;
 
-import javastraw.reader.basics.Chromosome;
-import mixer.utils.common.SimpleArray2DTools;
-import mixer.utils.drive.MatrixAndWeight;
-import mixer.utils.transform.MatrixTransform;
 
-public class MatrixPreprocessor {
+public class SimpleMatrixAndWeight {
+    public float[][] matrix;
+    public int[] weights;
 
-    private static final int ZSCORE_LIMIT = 3;
-
-    public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                         boolean includeIntra, boolean useCosine) {
-        matrix.updateWeights(chromosomes);
-        matrix.divideColumnsByWeights();
-        SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
-        MatrixTransform.zscoreByRows(matrix.matrix, ZSCORE_LIMIT);
-        if (includeIntra) {
-            matrix.putIntraIntoMainMatrix();
-        }
-        matrix.removeAllNanRows();
-        if (useCosine) {
-            SimpleMatrixAndWeight mw = SimilarityMatrixTools.getCompressedCosineSimilarityMatrix(matrix.matrix,
-                    50, 0);
-            matrix.matrix = mw.matrix;
-            matrix.weights = mw.weights;
-        }
-        return matrix;
+    public SimpleMatrixAndWeight(float[][] result, int[] weights) {
+        this.matrix = result;
+        this.weights = weights;
     }
 }

@@ -56,7 +56,7 @@ public class Binarize {
             if (zd == null) continue;
 
             float[][] data = OETools.getCleanOEMatrix(zd, chromosome, resolution, norm,
-                    new HashSet<>(), 1, false, false);
+                    new HashSet<>(), 1, false, false, false);
 
             MatrixTools.saveMatrixTextNumpy(chromosome.getName() + "_raw.npy", data);
 

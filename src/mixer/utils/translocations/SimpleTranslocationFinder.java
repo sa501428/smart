@@ -32,7 +32,6 @@ import javastraw.reader.mzd.Matrix;
 import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
-import mixer.SmartTools;
 import mixer.algos.Slice;
 
 import java.io.File;
@@ -61,7 +60,7 @@ public class SimpleTranslocationFinder {
             for (int j = i + 1; j < chroms.length; j++) {
                 if (hasTranslocation(chroms[i], chroms[j], ds, norm, badIndices, factor, lowRes)) {
                     tSet.add(chroms[i], chroms[j]);
-                    if (SmartTools.printVerboseComments) {
+                    if (true) {
                         System.out.println("Translocation at " + chroms[i].getName() + " - " + chroms[j].getName());
                     }
                 }

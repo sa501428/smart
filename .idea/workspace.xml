@@ -30,13 +30,18 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="restore version">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/drive/LogExpectedSubset.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimpleMatrixAndWeight.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/graph/Binarize.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/graph/Binarize.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,9 +100,9 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.cleaning" />
       <recent name="mixer.utils.drive" />
       <recent name="mixer.utils.shuffle" />
-      <recent name="mixer.utils.cleaning" />
       <recent name="mixer.utils.slice.cleaning" />
       <recent name="mixer.utils.slice.drive" />
     </key>
@@ -297,14 +302,7 @@
       <workItem from="1666712364500" duration="7815000" />
       <workItem from="1666893526528" duration="171000" />
       <workItem from="1666909717746" duration="4127000" />
-      <workItem from="1666931667439" duration="23094000" />
-    </task>
-    <task id="LOCAL-00240" summary="remove null rows">
-      <created>1661937463049</created>
-      <option name="number" value="00240" />
-      <option name="presentableId" value="LOCAL-00240" />
-      <option name="project" value="LOCAL" />
-      <updated>1661937463049</updated>
+      <workItem from="1666931667439" duration="26077000" />
     </task>
     <task id="LOCAL-00241" summary="redo versioning">
       <created>1662091710390</created>
@@ -642,7 +640,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667060437485</updated>
     </task>
-    <option name="localTasksCounter" value="289" />
+    <task id="LOCAL-00289" summary="update to include intra">
+      <created>1667068791398</created>
+      <option name="number" value="00289" />
+      <option name="presentableId" value="LOCAL-00289" />
+      <option name="project" value="LOCAL" />
+      <updated>1667068791398</updated>
+    </task>
+    <option name="localTasksCounter" value="290" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -666,7 +671,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fix" />
     <MESSAGE value="finalize chic" />
     <MESSAGE value="include symmetric score" />
     <MESSAGE value="code cleanup" />
@@ -691,7 +695,8 @@
     <MESSAGE value="reorganize expected handling" />
     <MESSAGE value="cleanup structuring" />
     <MESSAGE value="restore version" />
-    <option name="LAST_COMMIT_MESSAGE" value="restore version" />
+    <MESSAGE value="update to include intra" />
+    <option name="LAST_COMMIT_MESSAGE" value="update to include intra" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

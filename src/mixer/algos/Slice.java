@@ -61,6 +61,7 @@ public class Slice extends MixerCLT {
     private File outputDirectory;
     private NormalizationType[] norms;
     private String prefix = "";
+    boolean useExpandedIntraOE = true;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
@@ -112,25 +113,29 @@ public class Slice extends MixerCLT {
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory,
                 badIndices, resolution);
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
-                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
+                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory,
+                useExpandedIntraOE);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
 
         slice0.export(outputDirectory, "pre-clean");
 
+        //for (boolean useCosine : new boolean[]{true, false}) {
         for (boolean includeIntra : new boolean[]{true, false}) {
-            runWithSettings(slice0, handler, chromosomes, includeIntra);
+            runWithSettings(slice0, handler, chromosomes, includeIntra, false);
         }
+        //}
 
         System.out.println("\nSLICE complete");
     }
 
 
     private void runWithSettings(MatrixAndWeight slice0,
-                                 ChromosomeHandler handler, Chromosome[] chromosomes, boolean includeIntra) {
-        String stem = getNewPrefix(includeIntra);
-        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, includeIntra);
+                                 ChromosomeHandler handler, Chromosome[] chromosomes, boolean includeIntra,
+                                 boolean useCosine) {
+        String stem = getNewPrefix(includeIntra, useCosine);
+        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, includeIntra, useCosine);
         if (slice.notEmpty()) {
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem);
@@ -138,11 +143,18 @@ public class Slice extends MixerCLT {
         }
     }
 
-    private String getNewPrefix(boolean includeIntra) {
+    private String getNewPrefix(boolean includeIntra, boolean useCosine) {
+        String stem = "sl";
         if (includeIntra) {
-            return "sl_withIntra";
+            stem += "_withIntra";
         } else {
-            return "sl_noooIntra";
+            stem += "_noooIntra";
         }
+        /* if (useCosine) {
+            stem += "_Cosine";
+        } else {
+            stem += "_nooCos";
+        } */
+        return stem;
     }
 }

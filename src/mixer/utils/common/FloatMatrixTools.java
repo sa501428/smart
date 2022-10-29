@@ -177,4 +177,13 @@ public class FloatMatrixTools {
             }
         }
     }
+
+    public static float[][] concatenate(float[][] matrix1, float[][] matrix2) {
+        float[][] combo = new float[matrix1.length][matrix1[0].length + matrix2[0].length];
+        for (int i = 0; i < matrix1.length; i++) {
+            System.arraycopy(matrix1[i], 0, combo[i], 0, matrix1[i].length);
+            System.arraycopy(matrix2[i], 0, combo[i], matrix1[i].length, matrix2[i].length);
+        }
+        return combo;
+    }
 }

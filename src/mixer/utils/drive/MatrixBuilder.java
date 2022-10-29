@@ -24,7 +24,6 @@
 
 package mixer.utils.drive;
 
-import javastraw.expected.ExpectedUtils;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.block.ContactRecord;
@@ -33,11 +32,11 @@ import javastraw.reader.mzd.MatrixZoomData;
 import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
 import mixer.SmartTools;
+import mixer.utils.intra.OETools;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MatrixBuilder {
@@ -149,7 +148,7 @@ public class MatrixBuilder {
 
     private static void populateIntraMatrix(float[][] matrix, float[][] counts, MatrixZoomData zd, NormalizationType intraNorm,
                                             Mappings mappings, Chromosome chromosome, int resolution) {
-        List<ContactRecord> filteredContacts = filter(FIVE_MB / resolution, zd.getNormalizedIterator(intraNorm));
+        List<ContactRecord> filteredContacts = OETools.filter(resolution, zd.getNormalizedIterator(intraNorm));
 
         LogExpectedSubset expected = new LogExpectedSubset(filteredContacts, chromosome, resolution);
 
@@ -178,20 +177,6 @@ public class MatrixBuilder {
         filteredContacts.clear();
         filteredContacts = null;
     }
-
-    private static List<ContactRecord> filter(int minDist, Iterator<ContactRecord> iterator) {
-        List<ContactRecord> records = new LinkedList<>();
-        while (iterator.hasNext()) {
-            ContactRecord cr = iterator.next();
-            if (cr.getCounts() > 0) {
-                if (ExpectedUtils.getDist(cr) > minDist) {
-                    records.add(cr);
-                }
-            }
-        }
-        return records;
-    }
-
 
     private static float[][] normalize(float[][] intra, float[][] counts) {
         for (int i = 0; i < intra.length; i++) {
