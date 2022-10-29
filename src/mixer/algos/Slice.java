@@ -24,6 +24,7 @@
 
 package mixer.algos;
 
+import javastraw.expected.LogExpectedSpline;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -42,6 +43,7 @@ import mixer.utils.kmeans.ClusteringMagic;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -114,10 +116,11 @@ public class Slice extends MixerCLT {
         // todo should be at lower res
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory,
                 badIndices, resolution);
+        Map<Integer, LogExpectedSpline> expectedModels = new HashMap<>();
 
         // todo should be at lower res
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
-                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
+                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory, expectedModels);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory, useScale);

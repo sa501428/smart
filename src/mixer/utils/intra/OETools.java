@@ -40,9 +40,8 @@ public class OETools {
 
     public static float[][] getCleanOEMatrix(MatrixZoomData zd, Chromosome chrom, int lowRes,
                                              NormalizationType norm, Set<Integer> badIndices, int resFactor,
-                                             boolean takeLog, boolean skipNearDiagonal) {
-
-        LogExpectedSpline spline = new LogExpectedSpline(zd, norm, chrom, lowRes);
+                                             boolean takeLog, boolean skipNearDiagonal,
+                                             LogExpectedSpline spline) {
 
         int length = (int) (chrom.getLength() / lowRes + 1);
         int minDist = FIVE_MB / lowRes;
