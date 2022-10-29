@@ -31,17 +31,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimpleMatrixAndWeight.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/graph/Binarize.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/graph/Binarize.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -302,21 +293,7 @@
       <workItem from="1666712364500" duration="7815000" />
       <workItem from="1666893526528" duration="171000" />
       <workItem from="1666909717746" duration="4127000" />
-      <workItem from="1666931667439" duration="26077000" />
-    </task>
-    <task id="LOCAL-00241" summary="redo versioning">
-      <created>1662091710390</created>
-      <option name="number" value="00241" />
-      <option name="presentableId" value="LOCAL-00241" />
-      <option name="project" value="LOCAL" />
-      <updated>1662091710390</updated>
-    </task>
-    <task id="LOCAL-00242" summary="code cleanup">
-      <created>1662093895283</created>
-      <option name="number" value="00242" />
-      <option name="presentableId" value="LOCAL-00242" />
-      <option name="project" value="LOCAL" />
-      <updated>1662093895283</updated>
+      <workItem from="1666931667439" duration="27269000" />
     </task>
     <task id="LOCAL-00243" summary="update version">
       <created>1662093915625</created>
@@ -647,7 +624,21 @@
       <option name="project" value="LOCAL" />
       <updated>1667068791398</updated>
     </task>
-    <option name="localTasksCounter" value="290" />
+    <task id="LOCAL-00290" summary="use expanded OE, new defaults">
+      <created>1667076114737</created>
+      <option name="number" value="00290" />
+      <option name="presentableId" value="LOCAL-00290" />
+      <option name="project" value="LOCAL" />
+      <updated>1667076114737</updated>
+    </task>
+    <task id="LOCAL-00291" summary="longer iterations, no cosine">
+      <created>1667076257734</created>
+      <option name="number" value="00291" />
+      <option name="presentableId" value="LOCAL-00291" />
+      <option name="project" value="LOCAL" />
+      <updated>1667076257734</updated>
+    </task>
+    <option name="localTasksCounter" value="292" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -671,8 +662,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="finalize chic" />
-    <MESSAGE value="include symmetric score" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="minor edits" />
     <MESSAGE value="run different slice configurations, add deep copy options" />
@@ -696,7 +685,9 @@
     <MESSAGE value="cleanup structuring" />
     <MESSAGE value="restore version" />
     <MESSAGE value="update to include intra" />
-    <option name="LAST_COMMIT_MESSAGE" value="update to include intra" />
+    <MESSAGE value="use expanded OE, new defaults" />
+    <MESSAGE value="longer iterations, no cosine" />
+    <option name="LAST_COMMIT_MESSAGE" value="longer iterations, no cosine" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

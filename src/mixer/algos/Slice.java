@@ -61,7 +61,7 @@ public class Slice extends MixerCLT {
     private File outputDirectory;
     private NormalizationType[] norms;
     private String prefix = "";
-    boolean useExpandedIntraOE = true;
+    boolean useExpandedIntraOE = false;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
