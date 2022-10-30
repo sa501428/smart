@@ -75,6 +75,7 @@ public class ClusteringMagic {
         int[][] results = new int[3][matrix.getNumRows()];
         double wcssLimit = getGoodWCSS(results, kmeansRunner, numClusters, z, prefix, useKMedians);
         int index = 1;
+        int iter = 0;
         while (index < 3) {
             System.out.print(".");
             KmeansResult currResult = resetAndRerun(kmeansRunner, generator, numClusters);
@@ -84,6 +85,11 @@ public class ClusteringMagic {
                         wcss, currResult.getFinalCompartmentsClone());
                 results[index] = currResult.getAssignments(matrix.getNumRows());
                 index++;
+            }
+            if (iter++ > 100) { // don't want to iterate forever if we can't find anything
+                results[index] = results[0];
+                index++;
+                iter = 0;
             }
         }
         Concensus3DTools.resolve(results, this, z, prefix, useKMedians, numClusters, matrix, handler);
