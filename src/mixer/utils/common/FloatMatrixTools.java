@@ -186,4 +186,11 @@ public class FloatMatrixTools {
         }
         return combo;
     }
+
+    public static int[] concatenate(int[] weights1, int[] weights2) {
+        int[] combo = new int[weights1.length + weights2.length];
+        System.arraycopy(weights1, 0, combo, 0, weights1.length);
+        System.arraycopy(weights2, 0, combo, weights1.length, weights2.length);
+        return combo;
+    }
 }

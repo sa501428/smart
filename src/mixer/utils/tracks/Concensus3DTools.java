@@ -25,7 +25,7 @@
 package mixer.utils.tracks;
 
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.utils.drive.MatrixAndWeight;
+import mixer.utils.drive.FinalMatrix;
 import mixer.utils.kmeans.ClusteringMagic;
 
 import java.util.*;
@@ -33,7 +33,7 @@ import java.util.*;
 public class Concensus3DTools {
     public static void resolve(int[][] results, ClusteringMagic clusteringMagic,
                                int z, String prefix, boolean useKMedians, int numClusters,
-                               MatrixAndWeight matrix, ChromosomeHandler handler) {
+                               FinalMatrix matrix, ChromosomeHandler handler) {
 
         Map<String, List<Integer>> superClusterToIndices = new HashMap<>();
         int[][][] summary = populateSummary(numClusters, matrix.getNumRows(), results, superClusterToIndices);

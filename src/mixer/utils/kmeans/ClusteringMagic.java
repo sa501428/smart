@@ -26,7 +26,7 @@ package mixer.utils.kmeans;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
-import mixer.utils.drive.MatrixAndWeight;
+import mixer.utils.drive.FinalMatrix;
 import mixer.utils.tracks.Concensus3DTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
@@ -40,10 +40,10 @@ public class ClusteringMagic {
     private final File outputDirectory;
     private static final int maxIters = 500;
     private final Random generator = new Random(2352);
-    private final MatrixAndWeight matrix;
+    private final FinalMatrix matrix;
     private final ChromosomeHandler handler;
 
-    public ClusteringMagic(MatrixAndWeight matrix, File outputDirectory,
+    public ClusteringMagic(FinalMatrix matrix, File outputDirectory,
                            ChromosomeHandler handler, long seed) {
         this.matrix = matrix;
         this.handler = handler;

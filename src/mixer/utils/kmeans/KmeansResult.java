@@ -27,7 +27,7 @@ package mixer.utils.kmeans;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.SmartTools;
-import mixer.utils.drive.MatrixAndWeight;
+import mixer.utils.drive.FinalMatrix;
 import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
 import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
@@ -68,7 +68,7 @@ public class KmeansResult {
         return finalCompartments.deepClone();
     }
 
-    public void processResultAndUpdateScoringMetrics(Cluster[] clusters, MatrixAndWeight matrix,
+    public void processResultAndUpdateScoringMetrics(Cluster[] clusters, FinalMatrix matrix,
                                                      boolean useKMedians, boolean useCorrMatrix) {
         populateIndicesMap(clusters);
         matrix.processKMeansClusteringResult(clusters, finalCompartments);
@@ -89,7 +89,7 @@ public class KmeansResult {
         return maxVal;
     }
 
-    public double getWCSS(Cluster[] clusters, MatrixAndWeight matrix,
+    public double getWCSS(Cluster[] clusters, FinalMatrix matrix,
                           boolean useCorr, boolean useKMedians) {
         double withinClusterSumOfSquares = 0;
 
