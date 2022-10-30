@@ -119,14 +119,12 @@ public class Slice extends MixerCLT {
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
 
-        for (boolean useBothNorms : new boolean[]{true, false}) {
-            for (boolean useLog : new boolean[]{true, false}) {
-                boolean includeIntra = true;
-                // for (boolean includeIntra : new boolean[]{true, false}) {
-                runWithSettings(slice0, handler, chromosomes, includeIntra, useLog, useBothNorms);
-                // }
-            }
-        }
+        //for (boolean useBothNorms : new boolean[]{true, false}) {
+        boolean useBothNorms = true;
+        boolean useLog = false;
+        boolean includeIntra = true;
+        // for (boolean includeIntra : new boolean[]{true, false}) {
+        runWithSettings(slice0, handler, chromosomes, true, false, true);
 
         System.out.println("\nSLICE complete");
     }
