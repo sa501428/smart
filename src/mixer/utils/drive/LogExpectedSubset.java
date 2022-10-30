@@ -56,10 +56,10 @@ public class LogExpectedSubset {
     }
 
     private WelfordArray getExpectedDistribution(List<ContactRecord> records, int maxBin) {
-        WelfordArray distribution = new WelfordArray(logp1i(maxBin) + 1);
+        WelfordArray distribution = new WelfordArray(maxBin);
         for (ContactRecord record : records) {
             int dist = getDist(record);
-            distribution.addValue(logp1i(dist), logp1(record.getCounts()));
+            distribution.addValue(dist, record.getCounts());
         }
         return distribution;
     }
@@ -73,7 +73,7 @@ public class LogExpectedSubset {
     }
 
     public float getZscoreForObservedUncompressedBin(ContactRecord cr) {
-        return (float) zscores.getZscore(logp1i(getDist(cr)), logp1(cr.getCounts()));
+        return (float) zscores.getZscore(getDist(cr), cr.getCounts());
     }
 
     private int[] setMinMaxFromCountsNeeded(int[] counts, int cutoff) {
