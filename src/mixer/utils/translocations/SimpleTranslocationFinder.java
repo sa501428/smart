@@ -60,9 +60,7 @@ public class SimpleTranslocationFinder {
             for (int j = i + 1; j < chroms.length; j++) {
                 if (hasTranslocation(chroms[i], chroms[j], ds, norm, badIndices, factor, lowRes)) {
                     tSet.add(chroms[i], chroms[j]);
-                    if (true) {
-                        System.out.println("Translocation at " + chroms[i].getName() + " - " + chroms[j].getName());
-                    }
+                    System.out.println("Potential translocation at " + chroms[i].getName() + " - " + chroms[j].getName());
                 }
                 System.out.print(".");
             }

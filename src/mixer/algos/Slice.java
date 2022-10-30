@@ -61,7 +61,7 @@ public class Slice extends MixerCLT {
     private File outputDirectory;
     private NormalizationType[] norms;
     private String prefix = "";
-    boolean useExpandedIntraOE = false;
+    boolean useExpandedIntraOE = true;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
@@ -121,19 +121,19 @@ public class Slice extends MixerCLT {
 
         slice0.export(outputDirectory, "pre-clean");
 
-        for (boolean includeIntra : new boolean[]{true, false}) {
-            runWithSettings(slice0, handler, chromosomes, includeIntra, false);
+        for (boolean useLog : new boolean[]{true, false}) {
+            for (boolean includeIntra : new boolean[]{true, false}) {
+                runWithSettings(slice0, handler, chromosomes, includeIntra, useLog);
+            }
         }
 
         System.out.println("\nSLICE complete");
     }
 
-
-    private void runWithSettings(MatrixAndWeight slice0,
-                                 ChromosomeHandler handler, Chromosome[] chromosomes, boolean includeIntra,
-                                 boolean useCosine) {
-        String stem = getNewPrefix(includeIntra, useCosine);
-        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes, includeIntra, useCosine);
+    private void runWithSettings(MatrixAndWeight slice0, ChromosomeHandler handler, Chromosome[] chromosomes,
+                                 boolean includeIntra, boolean useLog) {
+        String stem = getNewPrefix(includeIntra, useLog);
+        MatrixAndWeight slice = MatrixPreprocessor.clean(slice0.deepCopy(), chromosomes, includeIntra, useLog);
         if (slice.notEmpty()) {
             slice.export(outputDirectory, stem);
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
@@ -142,18 +142,18 @@ public class Slice extends MixerCLT {
         }
     }
 
-    private String getNewPrefix(boolean includeIntra, boolean useCosine) {
-        String stem = "sl";
+    private String getNewPrefix(boolean includeIntra, boolean useLog) {
+        String stem = "SL";
         if (includeIntra) {
-            stem += "_withIntra";
+            stem += "_GW";
         } else {
-            stem += "_noooIntra";
+            stem += "_INTER";
         }
-        /* if (useCosine) {
-            stem += "_Cosine";
+        if (useLog) {
+            stem += "_LOG";
         } else {
-            stem += "_nooCos";
-        } */
+            stem += "_EXP";
+        }
         return stem;
     }
 }
