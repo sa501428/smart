@@ -121,9 +121,10 @@ public class Slice extends MixerCLT {
 
         for (boolean useBothNorms : new boolean[]{true, false}) {
             for (boolean useLog : new boolean[]{true, false}) {
-                for (boolean includeIntra : new boolean[]{true, false}) {
-                    runWithSettings(slice0, handler, chromosomes, includeIntra, useLog, useBothNorms);
-                }
+                boolean includeIntra = true;
+                // for (boolean includeIntra : new boolean[]{true, false}) {
+                runWithSettings(slice0, handler, chromosomes, includeIntra, useLog, useBothNorms);
+                // }
             }
         }
 

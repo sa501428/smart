@@ -73,7 +73,7 @@ public class ClusteringMagic {
                                         int z, boolean useKMedians, String prefix) {
         int numClusters = z + startingClusterSizeK;
         int[][] results = new int[3][matrix.getNumRows()];
-        double wcssLimit = getGoodWCSS(results, kmeansRunner, numClusters);
+        double wcssLimit = getGoodWCSS(results, kmeansRunner, numClusters, z, prefix, useKMedians);
         int index = 1;
         while (index < 3) {
             System.out.print(".");
@@ -89,23 +89,28 @@ public class ClusteringMagic {
         Concensus3DTools.resolve(results, this, z, prefix, useKMedians, numClusters, matrix, handler);
     }
 
-    private double getGoodWCSS(int[][] results, GenomeWideKmeansRunner kmeansRunner, int numClusters) {
+    private double getGoodWCSS(int[][] results, GenomeWideKmeansRunner kmeansRunner, int numClusters,
+                               int z, String prefix, boolean useKMedians) {
         double wcssLimit = Float.MAX_VALUE;
-        int[] bestResult = null;
+        GenomeWide1DList<SubcompartmentInterval> bestClusters = null;
+        int[] bestAssignments = null;
         int attempts = 0;
-        while (bestResult == null || attempts < 20) {
+        while (bestAssignments == null || attempts < 20) {
             System.out.print("-");
             KmeansResult currResult = resetAndRerun(kmeansRunner, generator, numClusters);
             double wcss = currResult.getWithinClusterSumOfSquares();
             if (currResult.getNumActualClusters() == numClusters && wcss < Float.MAX_VALUE) {
                 if (wcss < wcssLimit) {
                     wcssLimit = wcss;
-                    bestResult = currResult.getAssignments(matrix.getNumRows());
+                    bestAssignments = currResult.getAssignments(matrix.getNumRows());
+                    bestClusters = currResult.getFinalCompartmentsClone();
                 }
                 attempts++;
             }
         }
-        results[0] = bestResult;
+        exportKMeansClusteringResults(z, prefix, useKMedians, 0,
+                wcssLimit, bestClusters);
+        results[0] = bestAssignments;
         return 1.01 * wcssLimit;
     }
 
