@@ -41,7 +41,7 @@ public class MatrixPreprocessor {
         }
         matrix.zscoreByRows(ZSCORE_LIMIT, useBothNorms);
         if (includeIntra) {
-            matrix.putIntraIntoMainMatrix(useBothNorms);
+            matrix.putIntraIntoMainMatrix();
         }
         FinalMatrix result = matrix.getFinalMatrix(useBothNorms);
         result.removeAllNanRows();

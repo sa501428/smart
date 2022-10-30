@@ -55,7 +55,6 @@ public class MatrixBuilder {
         float[][] matrix = new float[numRows][numCols];
         float[][] intra = new float[numRows][numCols];
         float[][] matrix2 = new float[numRows][numCols];
-        float[][] intra2 = new float[numRows][numCols];
         float[][] counts = new float[numRows][numCols];
 
         System.out.println(".");
@@ -98,7 +97,7 @@ public class MatrixBuilder {
         }
 
         return new MatrixAndWeight(matrix, normalize(intra, counts),
-                matrix2, normalize(intra2, counts), weights, mappings);
+                matrix2, weights, mappings);
     }
 
     private static void fillInNans(float[][] matrix, Mappings mappings, Chromosome c1, Chromosome c2) {

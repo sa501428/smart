@@ -34,17 +34,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MatrixAndWeight {
-    public float[][] matrix, intra, matrix2, intra2;
+    public float[][] matrix, intra, matrix2;
     public int[] weights;
     private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
 
     public MatrixAndWeight(float[][] interMatrix1, float[][] intraMatrix1,
-                           float[][] interMatrix2, float[][] intraMatrix2, int[] weights, Mappings mappings) {
+                           float[][] interMatrix2, int[] weights, Mappings mappings) {
         this.matrix = interMatrix1;
         this.intra = intraMatrix1;
         this.matrix2 = interMatrix2;
-        this.intra2 = intraMatrix2;
         this.weights = weights;
         this.mappings = mappings;
         if (mappings != null) populateRowIndexToIntervalMap(mappings);
@@ -93,25 +92,15 @@ public class MatrixAndWeight {
 
     public MatrixAndWeight deepCopy() {
         return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(intra),
-                FloatMatrixTools.deepClone(matrix2), FloatMatrixTools.deepClone(intra2),
-                FloatMatrixTools.deepClone(weights), mappings.deepCopy());
+                FloatMatrixTools.deepClone(matrix2), FloatMatrixTools.deepClone(weights), mappings.deepCopy());
     }
 
-    public void putIntraIntoMainMatrix(boolean useBothNorms) {
+    public void putIntraIntoMainMatrix() {
         for (int i = 0; i < intra.length; i++) {
             for (int j = 0; j < intra[i].length; j++) {
                 if (intra[i][j] > -10) {
                     matrix[i][j] = intra[i][j];
-                }
-            }
-        }
-
-        if (useBothNorms) {
-            for (int i = 0; i < intra2.length; i++) {
-                for (int j = 0; j < intra2[i].length; j++) {
-                    if (intra2[i][j] > -10) {
-                        matrix2[i][j] = intra2[i][j];
-                    }
+                    matrix2[i][j] = intra[i][j];
                 }
             }
         }
