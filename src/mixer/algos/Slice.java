@@ -119,20 +119,20 @@ public class Slice extends MixerCLT {
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
 
-        //for (boolean useBothNorms : new boolean[]{true, false}) {
-        boolean useBothNorms = true;
-        boolean useLog = false;
-        boolean includeIntra = true;
-        // for (boolean includeIntra : new boolean[]{true, false}) {
-        runWithSettings(slice0, handler, chromosomes, true, false, true);
-
+        for (boolean appendIntra : new boolean[]{true, false}) {
+            for (boolean useBothNorms : new boolean[]{true, false}) {
+                runWithSettings(slice0, handler, chromosomes,
+                        true, false, useBothNorms, appendIntra);
+            }
+        }
         System.out.println("\nSLICE complete");
     }
 
     private void runWithSettings(MatrixAndWeight slice0, ChromosomeHandler handler, Chromosome[] chromosomes,
-                                 boolean includeIntra, boolean useLog, boolean useBothNorms) {
-        String stem = getNewPrefix(includeIntra, useLog, useBothNorms);
-        FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes, includeIntra, useLog, useBothNorms);
+                                 boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra) {
+        String stem = getNewPrefix(includeIntra, useLog, useBothNorms, appendIntra);
+        FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes, includeIntra, useLog,
+                useBothNorms, appendIntra);
 
         if (slice.notEmpty()) {
             if (SmartTools.printVerboseComments) {
@@ -144,12 +144,17 @@ public class Slice extends MixerCLT {
         }
     }
 
-    private String getNewPrefix(boolean includeIntra, boolean useLog, boolean useBothNorms) {
+    private String getNewPrefix(boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra) {
         String stem = "SL";
         if (includeIntra) {
             stem += "_GW";
         } else {
             stem += "_INTER";
+        }
+        if (appendIntra) {
+            stem += "_APPEND";
+        } else {
+            stem += "_INSERT";
         }
         if (useLog) {
             stem += "_LOG";
@@ -157,9 +162,9 @@ public class Slice extends MixerCLT {
             stem += "_EXP";
         }
         if (useBothNorms) {
-            stem += "_1NORM";
-        } else {
             stem += "_2NORM";
+        } else {
+            stem += "_1NORM";
         }
         return stem;
     }

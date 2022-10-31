@@ -34,14 +34,14 @@ import javastraw.tools.UNIXTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
-import mixer.utils.shuffle.Shuffle;
+import mixer.utils.shuffle.MaxChic;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.List;
 import java.util.Random;
 
-public class Chic extends MixerCLT {
+public class MChic extends MixerCLT {
 
     private final Random generator = new Random(22871L);
     protected NormalizationType norm = NormalizationHandler.INTER_KR;
@@ -52,8 +52,8 @@ public class Chic extends MixerCLT {
     private String[] referenceBedFiles;
     private int numSplits = 2;
 
-    public Chic() {
-        super("chic [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [--verbose] " +
+    public MChic() {
+        super("mchic [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [--verbose] " +
                 "<file.hic> <outfolder> <file1.bed,file2.bed,...> <name1,name2,...>");
     }
 
@@ -95,7 +95,7 @@ public class Chic extends MixerCLT {
             GenomeWide1DList<SubcompartmentInterval> subcompartments =
                     BedTools.loadBedFile(chromosomeHandler, referenceBedFiles[i]);
             System.out.println("Processing " + prefix[i]);
-            Shuffle matrix = new Shuffle(ds, norm, resolution);
+            MaxChic matrix = new MaxChic(ds, norm, resolution);
             matrix.runGWStats(subcompartments, outputDirectory, prefix[i], numSplits);
             matrix = null;
             subcompartments = null;

@@ -193,4 +193,12 @@ public class FloatMatrixTools {
         System.arraycopy(weights2, 0, combo, weights1.length, weights2.length);
         return combo;
     }
+
+    public static int[] concatenate(int[] row, int[] row2, int[] row3) {
+        return concatenate(concatenate(row, row2), row3);
+    }
+
+    public static float[][] concatenate(float[][] matrix, float[][] matrix2, float[][] matrix3) {
+        return concatenate(concatenate(matrix, matrix2), matrix3);
+    }
 }

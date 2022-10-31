@@ -32,13 +32,13 @@ import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
 
-public class Shuffle {
+public class MaxChic {
 
     private final Dataset ds;
     private final NormalizationType norm;
     private final int resolution;
 
-    public Shuffle(Dataset ds, NormalizationType norm, int resolution) {
+    public MaxChic(Dataset ds, NormalizationType norm, int resolution) {
         this.ds = ds;
         this.norm = norm;
         this.resolution = resolution;

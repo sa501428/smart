@@ -120,14 +120,32 @@ public class MatrixAndWeight {
         }
     }
 
-    public FinalMatrix getFinalMatrix(boolean useBothNorms) {
+    public FinalMatrix getFinalMatrix(boolean useBothNorms, boolean appendIntra) {
         if (useBothNorms) {
-            return new FinalMatrix(FloatMatrixTools.concatenate(matrix, matrix2),
+            if (appendIntra) {
+                return new FinalMatrix(FloatMatrixTools.concatenate(matrix, matrix2, intra),
+                        FloatMatrixTools.concatenate(weights, weights, mutiply(weights, 2)),
+                        mappings, map);
+            } else {
+                return new FinalMatrix(FloatMatrixTools.concatenate(matrix, matrix2),
+                        FloatMatrixTools.concatenate(weights, weights),
+                        mappings, map);
+            }
+        } else if (appendIntra) {
+            return new FinalMatrix(FloatMatrixTools.concatenate(matrix, intra),
                     FloatMatrixTools.concatenate(weights, weights),
                     mappings, map);
         } else {
             return new FinalMatrix(matrix, weights, mappings, map);
         }
+    }
+
+    private int[] mutiply(int[] input, int scalar) {
+        int[] copy = new int[input.length];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = input[i] * scalar;
+        }
+        return copy;
     }
 }
 

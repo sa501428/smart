@@ -33,17 +33,17 @@ public class MatrixPreprocessor {
     private static final int ZSCORE_LIMIT = 3;
 
     public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                         boolean includeIntra, boolean useLog, boolean useBothNorms) {
+                                         boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra) {
         matrix.updateWeights(chromosomes);
         matrix.divideColumnsByWeights(useBothNorms);
         if (useLog) {
             matrix.applyLog(useBothNorms);
         }
         matrix.zscoreByRows(ZSCORE_LIMIT, useBothNorms);
-        if (includeIntra) {
+        if (includeIntra && !appendIntra) {
             matrix.putIntraIntoMainMatrix();
         }
-        FinalMatrix result = matrix.getFinalMatrix(useBothNorms);
+        FinalMatrix result = matrix.getFinalMatrix(useBothNorms, includeIntra && appendIntra);
         result.removeAllNanRows();
         /*
         if (false) {
