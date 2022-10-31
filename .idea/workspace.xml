@@ -31,13 +31,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Chic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/MChic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/FloatMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Shuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/MaxChic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/MChic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/graph/Binarize.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/BinSplitter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/GenomeWideStatistics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/MaxChic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/Scores.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/TensorTools.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +61,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="SLICE8" />
+        <entry key="$PROJECT_DIR$" value="chic2" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -298,14 +298,7 @@
       <workItem from="1666712364500" duration="7815000" />
       <workItem from="1666893526528" duration="171000" />
       <workItem from="1666909717746" duration="4127000" />
-      <workItem from="1666931667439" duration="40929000" />
-    </task>
-    <task id="LOCAL-00252" summary="summarize genomewide stats">
-      <created>1662349035403</created>
-      <option name="number" value="00252" />
-      <option name="presentableId" value="LOCAL-00252" />
-      <option name="project" value="LOCAL" />
-      <updated>1662349035403</updated>
+      <workItem from="1666931667439" duration="41568000" />
     </task>
     <task id="LOCAL-00253" summary="bug fix KL, plot summary">
       <created>1662349522723</created>
@@ -643,7 +636,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667138234052</updated>
     </task>
-    <option name="localTasksCounter" value="301" />
+    <task id="LOCAL-00301" summary="backup max-chic">
+      <created>1667229390213</created>
+      <option name="number" value="00301" />
+      <option name="presentableId" value="LOCAL-00301" />
+      <option name="project" value="LOCAL" />
+      <updated>1667229390213</updated>
+    </task>
+    <option name="localTasksCounter" value="302" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -667,7 +667,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="change bin splitting" />
     <MESSAGE value="adjust bin splitting parameter" />
     <MESSAGE value="add comparison check, cleanup" />
     <MESSAGE value="new cleanup" />
@@ -692,7 +691,8 @@
     <MESSAGE value="set defaults, save inter with norm2, bug fix" />
     <MESSAGE value="prevent infinite loop" />
     <MESSAGE value="set defaults" />
-    <option name="LAST_COMMIT_MESSAGE" value="set defaults" />
+    <MESSAGE value="backup max-chic" />
+    <option name="LAST_COMMIT_MESSAGE" value="backup max-chic" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
