@@ -131,7 +131,6 @@ public class ShuffleAction {
     private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices,
                                                         Random generator) {
         List<Integer> allIndices = new ArrayList<>();
-
         List<Integer> order = new ArrayList<>(clusterToIndices.keySet());
         Collections.sort(order);
 

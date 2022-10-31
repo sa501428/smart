@@ -39,18 +39,18 @@ public class KLDivergenceScoring extends ShuffleScore {
     }
 
     @Override
-    protected double score(Integer[] rBounds, Integer[] cBounds, Integer[] rIDs, Integer[] cIDs) {
+    public double score() {
         Map<String, Double> sumMap = new HashMap<>();
         Map<String, Long> numRegionMap = new HashMap<>();
-        populateMeanMap(sumMap, numRegionMap);
+        populateSumMap(sumMap, numRegionMap);
         double sumTotal = getTotalSum(sumMap);
 
         double klDivergence = 0;
         for (int rI = 0; rI < rBounds.length - 1; rI++) {
             for (int cI = 0; cI < cBounds.length - 1; cI++) {
                 String key = getKey(rI, cI);
-                double q = (sumMap.get(key) / numRegionMap.get(key)) / sumTotal;
                 if (numRegionMap.get(key) > 0) {
+                    double q = (sumMap.get(key) / numRegionMap.get(key)) / sumTotal;
                     for (int i = rBounds[rI]; i < rBounds[rI + 1]; i++) {
                         for (int j = cBounds[cI]; j < cBounds[cI + 1]; j++) {
                             double p = matrix[i][j] / sumTotal;

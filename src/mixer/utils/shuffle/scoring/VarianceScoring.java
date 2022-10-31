@@ -35,12 +35,11 @@ public class VarianceScoring extends ShuffleScore {
     }
 
     @Override
-    protected double score(Integer[] rBounds, Integer[] cBounds, Integer[] rIDs, Integer[] cIDs) {
+    public double score() {
         double sumOfSquareErr = 0;
         Map<String, Double> sumMap = new HashMap<>();
         Map<String, Long> numRegionMap = new HashMap<>();
-        long numElements = populateMeanMap(sumMap, numRegionMap);
-
+        long numElements = populateSumMap(sumMap, numRegionMap);
 
         for (int rI = 0; rI < rBounds.length - 1; rI++) {
             for (int cI = 0; cI < cBounds.length - 1; cI++) {

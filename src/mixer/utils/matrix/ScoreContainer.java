@@ -30,6 +30,7 @@ import mixer.utils.shuffle.scoring.VarianceScoring;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ScoreContainer {
@@ -55,8 +56,15 @@ public class ScoreContainer {
     public static double[] updateAggMatrixScores(float[][] matrix, ShuffledIndices rowBounds, ShuffledIndices colBounds,
                                                  boolean isBaseline, boolean useSymmetry) {
         double[] scores = new double[2];
-        scores[0] = (new VarianceScoring(matrix, rowBounds, colBounds, useSymmetry)).score(isBaseline);
-        scores[1] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true, useSymmetry)).score(isBaseline);
+        if (isBaseline) {
+            ShuffledIndices rowBounds2 = new ShuffledIndices(new ArrayList<>(), new Integer[]{0, matrix.length}, new Integer[]{0});
+            ShuffledIndices colBounds2 = new ShuffledIndices(new ArrayList<>(), new Integer[]{0, matrix[0].length}, new Integer[]{0});
+            scores[0] = (new VarianceScoring(matrix, rowBounds2, colBounds2, useSymmetry)).score();
+            scores[1] = (new KLDivergenceScoring(matrix, rowBounds2, colBounds2, true, useSymmetry)).score();
+        } else {
+            scores[0] = (new VarianceScoring(matrix, rowBounds, colBounds, useSymmetry)).score();
+            scores[1] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true, useSymmetry)).score();
+        }
         return scores;
     }
 

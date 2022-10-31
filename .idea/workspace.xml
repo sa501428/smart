@@ -30,7 +30,14 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -80,7 +87,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/src/mixer/utils",
+    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/src/mixer/utils/shuffle/scoring",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
@@ -95,6 +102,7 @@
       <recent name="mixer.utils.slice.drive" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring" />
       <recent name="$PROJECT_DIR$/src/mixer/utils" />
       <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle" />
       <recent name="$PROJECT_DIR$/lib/general" />
@@ -292,13 +300,7 @@
       <workItem from="1666893526528" duration="171000" />
       <workItem from="1666909717746" duration="4127000" />
       <workItem from="1666931667439" duration="44451000" />
-    </task>
-    <task id="LOCAL-00256" summary="expand plotting window">
-      <created>1662356186437</created>
-      <option name="number" value="00256" />
-      <option name="presentableId" value="LOCAL-00256" />
-      <option name="project" value="LOCAL" />
-      <updated>1662356186437</updated>
+      <workItem from="1667234977734" duration="2588000" />
     </task>
     <task id="LOCAL-00257" summary="update printing, mean calculation">
       <created>1662360453945</created>
@@ -636,7 +638,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667233573135</updated>
     </task>
-    <option name="localTasksCounter" value="305" />
+    <task id="LOCAL-00305" summary="switch to double for scores">
+      <created>1667235282937</created>
+      <option name="number" value="00305" />
+      <option name="presentableId" value="LOCAL-00305" />
+      <option name="project" value="LOCAL" />
+      <updated>1667235282937</updated>
+    </task>
+    <option name="localTasksCounter" value="306" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -660,7 +669,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="new cleanup" />
     <MESSAGE value="further options" />
     <MESSAGE value="updated settings" />
     <MESSAGE value="updated clutering" />
@@ -685,7 +693,8 @@
     <MESSAGE value="cleanup" />
     <MESSAGE value="initial commit of shuffle code" />
     <MESSAGE value="update default runs" />
-    <option name="LAST_COMMIT_MESSAGE" value="update default runs" />
+    <MESSAGE value="switch to double for scores" />
+    <option name="LAST_COMMIT_MESSAGE" value="switch to double for scores" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

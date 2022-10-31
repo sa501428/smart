@@ -30,63 +30,57 @@ import java.util.Map;
 
 public abstract class ShuffleScore {
     protected final float[][] matrix;
-    protected final ShuffledIndices rBounds;
-    protected final ShuffledIndices cBounds;
-    private final boolean useSymmetry;
+    protected final boolean useSymmetry;
+    protected final Integer[] rBounds, cBounds;
+    protected final Integer[] rIDs, cIDs;
 
     public ShuffleScore(float[][] matrix, ShuffledIndices rBounds, ShuffledIndices cBounds, boolean useSymmetry) {
         this.matrix = matrix;
-        this.rBounds = rBounds;
-        this.cBounds = cBounds;
         this.useSymmetry = useSymmetry;
+        this.rBounds = rBounds.boundaries;
+        this.cBounds = cBounds.boundaries;
+        this.rIDs = rBounds.ids;
+        this.cIDs = cBounds.ids;
     }
 
-    public double score(boolean isBaseline) {
-        if (isBaseline) {
-            return score(new Integer[]{0, matrix.length}, new Integer[]{0, matrix[0].length},
-                    new Integer[]{0}, new Integer[]{0});
-        }
-        return score(rBounds.boundaries, cBounds.boundaries,
-                rBounds.ids, cBounds.ids);
-    }
-
-    protected abstract double score(Integer[] rBounds, Integer[] cBounds,
-                                    Integer[] rIDs, Integer[] cIDs);
+    public abstract double score();
 
     protected String getKey(int rI, int cI) {
         if (useSymmetry) {
-            int id1 = rBounds.ids[rI];
-            int id2 = cBounds.ids[cI];
+            int id1 = rIDs[rI];
+            int id2 = cIDs[cI];
             if (id1 <= id2) return id1 + "_" + id2;
             return id2 + "_" + id1;
         }
-        return rI + "_" + cI;
+        return rIDs[rI] + "_" + cIDs[cI];
     }
 
-    protected long populateMeanMap(Map<String, Double> sumMap, Map<String, Long> numRegionMap) {
-        long numElements = 0;
-        for (int rI = 0; rI < rBounds.boundaries.length - 1; rI++) {
-            for (int cI = 0; cI < cBounds.boundaries.length - 1; cI++) {
-                double sum = 0;
-                long numInRegion = 0;
-                for (int i = rBounds.boundaries[rI]; i < rBounds.boundaries[rI + 1]; i++) {
-                    for (int j = cBounds.boundaries[cI]; j < cBounds.boundaries[cI + 1]; j++) {
-                        sum += matrix[i][j];
-                        numInRegion++;
+    protected long populateSumMap(Map<String, Double> sumMap, Map<String, Long> numRegionMap) {
+        long totalNumElements = 0;
+        sumMap.clear();
+        numRegionMap.clear();
+        for (int rI = 0; rI < rBounds.length - 1; rI++) {
+            for (int cI = 0; cI < cBounds.length - 1; cI++) {
+                double localSum = 0;
+                long localNumElements = 0;
+                for (int i = rBounds[rI]; i < rBounds[rI + 1]; i++) {
+                    for (int j = cBounds[cI]; j < cBounds[cI + 1]; j++) {
+                        localSum += matrix[i][j];
+                        localNumElements++;
                     }
                 }
 
                 String key = getKey(rI, cI);
                 if (sumMap.containsKey(key)) {
-                    sumMap.put(key, sumMap.get(key) + sum);
-                    numRegionMap.put(key, numRegionMap.get(key) + numInRegion);
+                    sumMap.put(key, sumMap.get(key) + localSum);
+                    numRegionMap.put(key, numRegionMap.get(key) + localNumElements);
                 } else {
-                    sumMap.put(key, sum);
-                    numRegionMap.put(key, numInRegion);
+                    sumMap.put(key, localSum);
+                    numRegionMap.put(key, localNumElements);
                 }
-                numElements += numInRegion;
+                totalNumElements += localNumElements;
             }
         }
-        return numElements;
+        return totalNumElements;
     }
 }
