@@ -50,7 +50,7 @@ public class ChicScore extends MixerCLT {
 
     //private final Random generator = new Random(22871L);
     private final Random generator = new Random(22871L);
-    private final boolean useSymmetry, useOriginal;
+    private final boolean useOriginal;
     private Dataset ds;
     private int resolution = 100000;
     private int compressionFactor = 8;
@@ -64,7 +64,6 @@ public class ChicScore extends MixerCLT {
         super("shuffle [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
                 "<file.hic> <subcompartment.bed(s)> <outfolder> <prefix>");
         useOriginal = name.contains("original");
-        useSymmetry = name.contains("symm");
     }
 
     @Override
@@ -116,7 +115,7 @@ public class ChicScore extends MixerCLT {
             System.out.println("Processing " + prefix[i]);
             File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
             UNIXTools.makeDir(newFolder);
-            ShuffleAction matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, useSymmetry, mapTypes);
+            ShuffleAction matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, mapTypes);
             matrix.runInterAnalysis(subcompartments, newFolder, generator);
             matrix.savePlotsAndResults(newFolder, prefix[i]);
         }

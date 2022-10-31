@@ -39,11 +39,17 @@ public class ScoreContainer {
     private final float[][] baselines;
     private final float[][] shuffled;
     private final float[][] ratios;
+    private final float[][] symmBaselines;
+    private final float[][] symmShuffled;
+    private final float[][] symmRatios;
 
     public ScoreContainer(int numMaps, int numScores) {
         baselines = new float[numMaps][numScores];
         shuffled = new float[numMaps][numScores];
         ratios = new float[numMaps][numScores];
+        symmBaselines = new float[numMaps][numScores];
+        symmShuffled = new float[numMaps][numScores];
+        symmRatios = new float[numMaps][numScores];
     }
 
     public static float[] updateAggMatrixScores(float[][] matrix, ShuffledIndices rowBounds, ShuffledIndices colBounds,
@@ -58,23 +64,28 @@ public class ScoreContainer {
         for (int y = 0; y < ratios.length; y++) {
             for (int l = 0; l < ratios[0].length; l++) {
                 ratios[y][l] = baselines[y][l] / shuffled[y][l];
+                symmRatios[y][l] = symmBaselines[y][l] / symmShuffled[y][l];
                 // baseline/shuffled so that bigger is better
             }
         }
     }
 
-    public void updateAggregateScores(AggregateMatrix aggregate, ShuffledIndices[] globalAllIndices, int mapIndex,
-                                      boolean useSymmetry) {
+    public void updateAggregateScores(AggregateMatrix aggregate, ShuffledIndices[] globalAllIndices, int mapIndex) {
         float[][] aggMatrix = aggregate.getFloatMatrix();
         baselines[mapIndex] = updateAggMatrixScores(aggMatrix, globalAllIndices[0],
-                globalAllIndices[1], true, useSymmetry);
+                globalAllIndices[1], true, false);
         shuffled[mapIndex] = updateAggMatrixScores(aggMatrix, globalAllIndices[0],
-                globalAllIndices[1], false, useSymmetry);
+                globalAllIndices[1], false, false);
+        symmBaselines[mapIndex] = updateAggMatrixScores(aggMatrix, globalAllIndices[0],
+                globalAllIndices[1], true, true);
+        symmShuffled[mapIndex] = updateAggMatrixScores(aggMatrix, globalAllIndices[0],
+                globalAllIndices[1], false, true);
     }
 
     public void savePlotsAndResults(File outfolder, String prefix, String[] names) {
         try {
             writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
+            writeToFile(outfolder, "aggregate_scores_" + prefix + "_symm.txt", symmShuffled, symmBaselines, symmRatios, names);
         } catch (Exception ee) {
             System.err.println("Unable to write results to text file");
         }
@@ -104,7 +115,7 @@ public class ScoreContainer {
 
         myWriter.write("Geometric Mean of CHIC Scores------------------\n\n");
         for (int z = 0; z < scoreTypes.length; z++) {
-            myWriter.write("CHIC Score (" + scoreTypes[z] + "): " + geometricMeans[z] + "\n\n");
+            myWriter.write("Mean CHIC Score (" + scoreTypes[z] + "): " + geometricMeans[z] + "\n\n");
         }
 
         myWriter.close();

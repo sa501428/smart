@@ -59,7 +59,6 @@ public class FloatMatrixTools {
                 result[i][j] = (float) matrix[i][j];
             }
         }
-        //System.out.println("Converted");
         return result;
     }
 

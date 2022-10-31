@@ -46,15 +46,13 @@ public class ShuffleAction {
     private final int numRounds = 50;
     private final Partition.Type[] mapTypes;
     private final ScoreContainer scoreContainer;
-    private final boolean useSymmetry;
 
     public ShuffleAction(Dataset ds, NormalizationType norm, int resolution, int compressionFactor,
-                         boolean useSymmetry, Partition.Type[] maptypes) {
+                         Partition.Type[] maptypes) {
         this.resolution = resolution;
         this.compressionFactor = compressionFactor;
         this.ds = ds;
         this.norm = norm;
-        this.useSymmetry = useSymmetry;
         this.mapTypes = maptypes;
         this.scoreContainer = new ScoreContainer(mapTypes.length, NUM_SCORES);
     }
@@ -127,7 +125,7 @@ public class ShuffleAction {
 
         aggregate.scaleForNumberOfRounds(numRounds);
         aggregate.saveToPNG(outfolder, name);
-        scoreContainer.updateAggregateScores(aggregate, globalAllIndices, mapIndex, useSymmetry);
+        scoreContainer.updateAggregateScores(aggregate, globalAllIndices, mapIndex);
     }
 
     private ShuffledIndices getShuffledByClusterIndices(Map<Integer, List<Integer>> clusterToIndices,

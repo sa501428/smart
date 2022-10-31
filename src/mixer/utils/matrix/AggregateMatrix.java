@@ -85,6 +85,6 @@ public class AggregateMatrix {
     }
 
     public float[][] getFloatMatrix() {
-        return FloatMatrixTools.deepClone(FloatMatrixTools.convert(aggregate));
+        return FloatMatrixTools.convert(aggregate); // is deep copy
     }
 }
