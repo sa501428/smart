@@ -22,42 +22,18 @@
  *  THE SOFTWARE.
  */
 
-package mixer.clt;
+package mixer.utils.matrix;
 
-import mixer.SmartTools;
-import mixer.algos.ChicScore;
-import mixer.algos.Compare;
-import mixer.algos.Slice;
+import java.util.List;
 
+public class ShuffledIndices {
+    public final List<Integer> allIndices;
+    public final Integer[] boundaries;
+    public final Integer[] ids;
 
-/**
- * Factory for command line tools to call different functions
- *
- * @author Muhammad Shamim
- * @since 1/30/2015
- */
-public class CLTFactory {
-
-    public static void generalUsage() {
-        System.out.println("SMART Version " + SmartTools.versionNum);
-        System.out.println("Usage:");
-        System.out.println("\t" + "-h, --help print help");
-        System.out.println("\t" + "-v, --verbose verbose mode");
-        System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
-        System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
-    }
-
-    public static MixerCLT getCLTCommand(String cmd) {
-
-        cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice")) {
-            return new Slice();
-        } else if (cmd.startsWith("compare")) {
-            return new Compare();
-        } else if (cmd.startsWith("shuffle") || cmd.startsWith("chic")) {
-            return new ChicScore(cmd);
-        }
-        return null;
+    public ShuffledIndices(List<Integer> allIndices, Integer[] boundaries, Integer[] ids) {
+        this.allIndices = allIndices;
+        this.boundaries = boundaries;
+        this.ids = ids;
     }
 }

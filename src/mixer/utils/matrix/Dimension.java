@@ -22,42 +22,29 @@
  *  THE SOFTWARE.
  */
 
-package mixer.clt;
+package mixer.utils.matrix;
 
-import mixer.SmartTools;
-import mixer.algos.ChicScore;
-import mixer.algos.Compare;
-import mixer.algos.Slice;
-
+import javastraw.reader.basics.Chromosome;
 
 /**
- * Factory for command line tools to call different functions
- *
- * @author Muhammad Shamim
- * @since 1/30/2015
+ * Container class for dimensions of a matrix and tracking indices
  */
-public class CLTFactory {
 
-    public static void generalUsage() {
-        System.out.println("SMART Version " + SmartTools.versionNum);
-        System.out.println("Usage:");
-        System.out.println("\t" + "-h, --help print help");
-        System.out.println("\t" + "-v, --verbose verbose mode");
-        System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
-        System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
-    }
+public class Dimension {
+    public final int[] offset;
+    public int length = 0;
+    public int[] interval;
 
-    public static MixerCLT getCLTCommand(String cmd) {
-
-        cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice")) {
-            return new Slice();
-        } else if (cmd.startsWith("compare")) {
-            return new Compare();
-        } else if (cmd.startsWith("shuffle") || cmd.startsWith("chic")) {
-            return new ChicScore(cmd);
+    // simple binning
+    public Dimension(Chromosome[] chromosomes, int resolution) {
+        offset = new int[chromosomes.length];
+        interval = new int[chromosomes.length];
+        for (int i = 0; i < chromosomes.length; i++) {
+            length += (int) (chromosomes[i].getLength() / resolution + 1);
+            if (i < chromosomes.length - 1) {
+                offset[i + 1] = length;
+            }
+            interval[i] = length;
         }
-        return null;
     }
 }

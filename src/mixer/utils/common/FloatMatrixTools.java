@@ -36,6 +36,22 @@ import java.io.File;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class FloatMatrixTools {
 
+    public static void log(float[][] matrix, int pseudocount) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = (float) Math.log(matrix[i][j] + pseudocount);
+            }
+        }
+    }
+
+    public static void log(double[][] matrix, int pseudocount) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = Math.log(matrix[i][j] + pseudocount);
+            }
+        }
+    }
+
     public static float[][] convert(double[][] matrix) {
         float[][] result = new float[matrix.length][matrix[0].length];
         for (int i = 0; i < result.length; i++) {
