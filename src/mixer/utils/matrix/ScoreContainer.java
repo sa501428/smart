@@ -36,25 +36,25 @@ public class ScoreContainer {
 
     private final String[] scoreTypes = {"Variation", "Relative Entropy"};
 
-    private final float[][] baselines;
-    private final float[][] shuffled;
-    private final float[][] ratios;
-    private final float[][] symmBaselines;
-    private final float[][] symmShuffled;
-    private final float[][] symmRatios;
+    private final double[][] baselines;
+    private final double[][] shuffled;
+    private final double[][] ratios;
+    private final double[][] symmBaselines;
+    private final double[][] symmShuffled;
+    private final double[][] symmRatios;
 
     public ScoreContainer(int numMaps, int numScores) {
-        baselines = new float[numMaps][numScores];
-        shuffled = new float[numMaps][numScores];
-        ratios = new float[numMaps][numScores];
-        symmBaselines = new float[numMaps][numScores];
-        symmShuffled = new float[numMaps][numScores];
-        symmRatios = new float[numMaps][numScores];
+        baselines = new double[numMaps][numScores];
+        shuffled = new double[numMaps][numScores];
+        ratios = new double[numMaps][numScores];
+        symmBaselines = new double[numMaps][numScores];
+        symmShuffled = new double[numMaps][numScores];
+        symmRatios = new double[numMaps][numScores];
     }
 
-    public static float[] updateAggMatrixScores(float[][] matrix, ShuffledIndices rowBounds, ShuffledIndices colBounds,
-                                                boolean isBaseline, boolean useSymmetry) {
-        float[] scores = new float[2];
+    public static double[] updateAggMatrixScores(float[][] matrix, ShuffledIndices rowBounds, ShuffledIndices colBounds,
+                                                 boolean isBaseline, boolean useSymmetry) {
+        double[] scores = new double[2];
         scores[0] = (new VarianceScoring(matrix, rowBounds, colBounds, useSymmetry)).score(isBaseline);
         scores[1] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true, useSymmetry)).score(isBaseline);
         return scores;
@@ -91,7 +91,7 @@ public class ScoreContainer {
         }
     }
 
-    private void writeToFile(File outfolder, String filename, float[][] shuffle, float[][] baseline, float[][] ratio,
+    private void writeToFile(File outfolder, String filename, double[][] shuffle, double[][] baseline, double[][] ratio,
                              String[] names) throws IOException {
         FileWriter myWriter = new FileWriter(new File(outfolder, filename));
         double[] geometricMeans = new double[scoreTypes.length];

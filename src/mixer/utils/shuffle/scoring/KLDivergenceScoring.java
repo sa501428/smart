@@ -39,7 +39,7 @@ public class KLDivergenceScoring extends ShuffleScore {
     }
 
     @Override
-    protected float score(Integer[] rBounds, Integer[] cBounds, Integer[] rIDs, Integer[] cIDs) {
+    protected double score(Integer[] rBounds, Integer[] cBounds, Integer[] rIDs, Integer[] cIDs) {
         Map<String, Double> sumMap = new HashMap<>();
         Map<String, Long> numRegionMap = new HashMap<>();
         populateMeanMap(sumMap, numRegionMap);
@@ -65,7 +65,7 @@ public class KLDivergenceScoring extends ShuffleScore {
             }
         }
 
-        return (float) klDivergence;
+        return klDivergence;
     }
 
     private double getTotalSum(Map<String, Double> sumMap) {

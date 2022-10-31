@@ -41,7 +41,7 @@ public abstract class ShuffleScore {
         this.useSymmetry = useSymmetry;
     }
 
-    public float score(boolean isBaseline) {
+    public double score(boolean isBaseline) {
         if (isBaseline) {
             return score(new Integer[]{0, matrix.length}, new Integer[]{0, matrix[0].length},
                     new Integer[]{0}, new Integer[]{0});
@@ -50,8 +50,8 @@ public abstract class ShuffleScore {
                 rBounds.ids, cBounds.ids);
     }
 
-    protected abstract float score(Integer[] rBounds, Integer[] cBounds,
-                                   Integer[] rIDs, Integer[] cIDs);
+    protected abstract double score(Integer[] rBounds, Integer[] cBounds,
+                                    Integer[] rIDs, Integer[] cIDs);
 
     protected String getKey(int rI, int cI) {
         if (useSymmetry) {

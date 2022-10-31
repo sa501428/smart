@@ -35,7 +35,7 @@ public class VarianceScoring extends ShuffleScore {
     }
 
     @Override
-    protected float score(Integer[] rBounds, Integer[] cBounds, Integer[] rIDs, Integer[] cIDs) {
+    protected double score(Integer[] rBounds, Integer[] cBounds, Integer[] rIDs, Integer[] cIDs) {
         double sumOfSquareErr = 0;
         Map<String, Double> sumMap = new HashMap<>();
         Map<String, Long> numRegionMap = new HashMap<>();
@@ -56,6 +56,6 @@ public class VarianceScoring extends ShuffleScore {
                 }
             }
         }
-        return (float) (sumOfSquareErr / numElements);
+        return (sumOfSquareErr / numElements);
     }
 }
