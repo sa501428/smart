@@ -22,36 +22,18 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.matrix;
 
-public class BinSplitter {
-    private final int N;
+import java.util.List;
 
-    public BinSplitter(int n) {
-        this.N = n;
-    }
+public class ShuffledIndices {
+    public final List<Integer> allIndices;
+    public final Integer[] boundaries;
+    public final Integer[] ids;
 
-    public int getSectionID(int x, int y) {
-        return (N * (x % N)) + (y % N);
-    }
-
-    public int getNumGroups() {
-        return N * N;
-    }
-
-    public float[][] flatten(double[][][] input) {
-        int n = input[0].length;
-        float[][] matrix = new float[N * n][N * n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                for (int ni = 0; ni < N; ni++) {
-                    for (int nj = 0; nj < N; nj++) {
-                        int id = getSectionID(ni, nj);
-                        matrix[(N * i) + ni][(N * j) + nj] = (float) input[id][i][j];
-                    }
-                }
-            }
-        }
-        return matrix;
+    public ShuffledIndices(List<Integer> allIndices, Integer[] boundaries, Integer[] ids) {
+        this.allIndices = allIndices;
+        this.boundaries = boundaries;
+        this.ids = ids;
     }
 }

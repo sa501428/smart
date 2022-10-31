@@ -25,20 +25,33 @@
 package mixer.utils.cleaning;
 
 import javastraw.reader.basics.Chromosome;
-import mixer.utils.common.SimpleArray2DTools;
+import mixer.utils.drive.FinalMatrix;
 import mixer.utils.drive.MatrixAndWeight;
-import mixer.utils.transform.MatrixTransform;
 
 public class MatrixPreprocessor {
 
     private static final int ZSCORE_LIMIT = 3;
 
-    public static MatrixAndWeight clean2(MatrixAndWeight matrix, Chromosome[] chromosomes) {
+    public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes,
+                                         boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra) {
         matrix.updateWeights(chromosomes);
-        matrix.divideColumnsByWeights();
-        SimpleArray2DTools.simpleLogWithCleanup(matrix.matrix, Float.NaN);
-        MatrixTransform.zscoreByRows(matrix.matrix, ZSCORE_LIMIT);
-        matrix.removeAllNanRows();
-        return matrix;
+        matrix.divideColumnsByWeights(useBothNorms);
+        if (useLog) {
+            matrix.applyLog(useBothNorms);
+        }
+        matrix.zscoreByRows(ZSCORE_LIMIT, useBothNorms);
+        if (includeIntra && !appendIntra) {
+            matrix.putIntraIntoMainMatrix();
+        }
+        FinalMatrix result = matrix.getFinalMatrix(useBothNorms, includeIntra && appendIntra);
+        result.removeAllNanRows();
+        /*
+        if (false) {
+            SimpleMatrixAndWeight mw = SimilarityMatrixTools.getCompressedCosineSimilarityMatrix(matrix.matrix,
+                    50, 0);
+            matrix.matrix = mw.matrix;
+            matrix.weights = mw.weights;
+        } */
+        return result;
     }
 }

@@ -36,6 +36,22 @@ import java.io.File;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class FloatMatrixTools {
 
+    public static void log(float[][] matrix, int pseudocount) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = (float) Math.log(matrix[i][j] + pseudocount);
+            }
+        }
+    }
+
+    public static void log(double[][] matrix, int pseudocount) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = Math.log(matrix[i][j] + pseudocount);
+            }
+        }
+    }
+
     public static float[][] convert(double[][] matrix) {
         float[][] result = new float[matrix.length][matrix[0].length];
         for (int i = 0; i < result.length; i++) {
@@ -43,7 +59,6 @@ public class FloatMatrixTools {
                 result[i][j] = (float) matrix[i][j];
             }
         }
-        //System.out.println("Converted");
         return result;
     }
 
@@ -176,5 +191,29 @@ public class FloatMatrixTools {
                 matrix[i][j] = matrix[i][j] / weights[j];
             }
         }
+    }
+
+    public static float[][] concatenate(float[][] matrix1, float[][] matrix2) {
+        float[][] combo = new float[matrix1.length][matrix1[0].length + matrix2[0].length];
+        for (int i = 0; i < matrix1.length; i++) {
+            System.arraycopy(matrix1[i], 0, combo[i], 0, matrix1[i].length);
+            System.arraycopy(matrix2[i], 0, combo[i], matrix1[i].length, matrix2[i].length);
+        }
+        return combo;
+    }
+
+    public static int[] concatenate(int[] weights1, int[] weights2) {
+        int[] combo = new int[weights1.length + weights2.length];
+        System.arraycopy(weights1, 0, combo, 0, weights1.length);
+        System.arraycopy(weights2, 0, combo, weights1.length, weights2.length);
+        return combo;
+    }
+
+    public static int[] concatenate(int[] row, int[] row2, int[] row3) {
+        return concatenate(concatenate(row, row2), row3);
+    }
+
+    public static float[][] concatenate(float[][] matrix, float[][] matrix2, float[][] matrix3) {
+        return concatenate(concatenate(matrix, matrix2), matrix3);
     }
 }

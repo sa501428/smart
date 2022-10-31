@@ -22,41 +22,39 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.shuffle.scoring;
 
-public class TensorTools {
+import mixer.utils.matrix.ShuffledIndices;
 
-    public static void addBtoA(double[][][] a, double[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
-            }
-        }
+import java.util.HashMap;
+import java.util.Map;
+
+public class VarianceScoring extends ShuffleScore {
+    public VarianceScoring(float[][] matrix, ShuffledIndices rBounds, ShuffledIndices cBounds, boolean useSymmetry) {
+        super(matrix, rBounds, cBounds, useSymmetry);
     }
 
-    public static void addBtoA(long[][][] a, long[][][] b) {
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    a[i][j][k] += b[i][j][k];
-                }
-            }
-        }
-    }
+    @Override
+    public double score() {
+        double sumOfSquareErr = 0;
+        Map<String, Double> sumMap = new HashMap<>();
+        Map<String, Long> numRegionMap = new HashMap<>();
+        long numElements = populateSumMap(sumMap, numRegionMap);
 
-    public static double[][][] divide(double[][][] a, long[][][] b) {
-        double[][][] result = new double[a.length][a[0].length][a[0][0].length];
-        for (int i = 0; i < a.length; i++) {
-            for (int j = 0; j < a[i].length; j++) {
-                for (int k = 0; k < a[i][j].length; k++) {
-                    if (b[i][j][k] > 0) {
-                        result[i][j][k] = a[i][j][k] / b[i][j][k];
+        for (int rI = 0; rI < rBounds.length - 1; rI++) {
+            for (int cI = 0; cI < cBounds.length - 1; cI++) {
+                String key = getKey(rI, cI);
+                if (numRegionMap.get(key) > 0) {
+                    double mu = sumMap.get(key) / numRegionMap.get(key);
+                    for (int i = rBounds[rI]; i < rBounds[rI + 1]; i++) {
+                        for (int j = cBounds[cI]; j < cBounds[cI + 1]; j++) {
+                            double v = matrix[i][j] - mu;
+                            sumOfSquareErr += v * v;
+                        }
                     }
                 }
             }
         }
-        return result;
+        return (sumOfSquareErr / numElements);
     }
 }

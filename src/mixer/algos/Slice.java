@@ -30,11 +30,13 @@ import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.norm.NormalizationPicker;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
+import mixer.SmartTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.cleaning.BadIndexFinder;
 import mixer.utils.cleaning.MatrixPreprocessor;
 import mixer.utils.drive.BinMappings;
+import mixer.utils.drive.FinalMatrix;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
 import mixer.utils.intra.IndexOrderer;
@@ -60,20 +62,20 @@ public class Slice extends MixerCLT {
     private Dataset ds;
     private File outputDirectory;
     private NormalizationType[] norms;
-    private String prefix = "";
+    boolean useExpandedIntraOE = true;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
         super("slice [-r resolution] [--verbose] [--scale] " +
                 //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
-                "<file.hic> <K0,KF> <outfolder> <prefix_>\n" +
+                "<file.hic> <K0,KF> <outfolder>\n" +
                 "   K0 - minimum number of clusters\n" +
                 "   KF - maximum number of clusters");
     }
 
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
-        if (args.length != 5) {
+        if (args.length != 4) {
             printUsageAndExit(5);
         }
 
@@ -89,7 +91,6 @@ public class Slice extends MixerCLT {
         }
 
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
-        prefix = args[4];
         norms = populateNormalizations(ds);
 
         updateGeneratorSeed(mixerParser, generator);
@@ -97,8 +98,9 @@ public class Slice extends MixerCLT {
 
     private NormalizationType[] populateNormalizations(Dataset ds) {
         NormalizationType[] norms = new NormalizationType[2];
-        norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR"});
-        norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR"});
+        norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR", "VC"});
+        norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR", "INTER_VC"});
+        System.out.println("Using normalizations: " + norms[INTRA_SCALE_INDEX].getLabel() + " and " + norms[INTER_SCALE_INDEX].getLabel());
         return norms;
     }
 
@@ -108,42 +110,62 @@ public class Slice extends MixerCLT {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
 
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution);
-
-        // todo should be at lower res
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory,
                 badIndices, resolution);
-
-        // todo should be at lower res
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
-                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory);
+                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory,
+                useExpandedIntraOE);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], mappings, translocations, outputDirectory);
+                norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
 
-        slice0.export(outputDirectory, "pre-clean");
-
-        runWithSettings2(slice0, handler, chromosomes);
-
+        for (boolean appendIntra : new boolean[]{true, false}) {
+            for (boolean useBothNorms : new boolean[]{true, false}) {
+                runWithSettings(slice0, handler, chromosomes,
+                        true, false, useBothNorms, appendIntra);
+            }
+        }
         System.out.println("\nSLICE complete");
     }
 
+    private void runWithSettings(MatrixAndWeight slice0, ChromosomeHandler handler, Chromosome[] chromosomes,
+                                 boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra) {
+        String stem = getNewPrefix(includeIntra, useLog, useBothNorms, appendIntra);
+        FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes, includeIntra, useLog,
+                useBothNorms, appendIntra);
 
-    private void runWithSettings2(MatrixAndWeight slice0,
-                                  ChromosomeHandler handler, Chromosome[] chromosomes) {
-        String stem = "slice";// getNewPrefix2(zscoreWithNeighbors);
-        MatrixAndWeight slice = MatrixPreprocessor.clean2(slice0.deepCopy(), chromosomes);
         if (slice.notEmpty()) {
+            if (SmartTools.printVerboseComments) {
+                slice.export(outputDirectory, stem);
+            }
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem);
             System.out.println("*");
         }
     }
 
-    private String getNewPrefix2(boolean zscoreWithNeighbors) {
-        if (zscoreWithNeighbors) {
-            return "slice_withNeighbors";
+    private String getNewPrefix(boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra) {
+        String stem = "SL";
+        if (includeIntra) {
+            stem += "_GW";
         } else {
-            return "slice_withoutOthers";
+            stem += "_INTER";
         }
+        if (appendIntra) {
+            stem += "_APPEND";
+        } else {
+            stem += "_INSERT";
+        }
+        if (useLog) {
+            stem += "_LOG";
+        } else {
+            stem += "_EXP";
+        }
+        if (useBothNorms) {
+            stem += "_2NORM";
+        } else {
+            stem += "_1NORM";
+        }
+        return stem;
     }
 }

@@ -22,42 +22,15 @@
  *  THE SOFTWARE.
  */
 
-package mixer.clt;
-
-import mixer.SmartTools;
-import mixer.algos.ChicScore;
-import mixer.algos.Compare;
-import mixer.algos.Slice;
+package mixer.utils.cleaning;
 
 
-/**
- * Factory for command line tools to call different functions
- *
- * @author Muhammad Shamim
- * @since 1/30/2015
- */
-public class CLTFactory {
+public class SimpleMatrixAndWeight {
+    public float[][] matrix;
+    public int[] weights;
 
-    public static void generalUsage() {
-        System.out.println("SMART Version " + SmartTools.versionNum);
-        System.out.println("Usage:");
-        System.out.println("\t" + "-h, --help print help");
-        System.out.println("\t" + "-v, --verbose verbose mode");
-        System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
-        System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
-    }
-
-    public static MixerCLT getCLTCommand(String cmd) {
-
-        cmd = cmd.toLowerCase();
-        if (cmd.startsWith("slice")) {
-            return new Slice();
-        } else if (cmd.startsWith("compare")) {
-            return new Compare();
-        } else if (cmd.startsWith("shuffle") || cmd.startsWith("chic")) {
-            return new ChicScore(cmd);
-        }
-        return null;
+    public SimpleMatrixAndWeight(float[][] result, int[] weights) {
+        this.matrix = result;
+        this.weights = weights;
     }
 }

@@ -22,33 +22,29 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.shuffle;
+package mixer.utils.matrix;
 
-import javastraw.feature1D.GenomeWide1DList;
-import javastraw.reader.Dataset;
-import javastraw.reader.type.NormalizationType;
-import mixer.utils.tracks.SliceUtils;
-import mixer.utils.tracks.SubcompartmentInterval;
+import javastraw.reader.basics.Chromosome;
 
-import java.io.File;
+/**
+ * Container class for dimensions of a matrix and tracking indices
+ */
 
-public class Shuffle {
+public class Dimension {
+    public final int[] offset;
+    public int length = 0;
+    public int[] interval;
 
-    private final Dataset ds;
-    private final NormalizationType norm;
-    private final int resolution;
-
-    public Shuffle(Dataset ds, NormalizationType norm, int resolution) {
-        this.ds = ds;
-        this.norm = norm;
-        this.resolution = resolution;
-    }
-
-    public void runGWStats(GenomeWide1DList<SubcompartmentInterval> subcompartments, File outfolder,
-                           String prefix, int numSplits) {
-        SliceUtils.collapseGWList(subcompartments);
-        GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments, numSplits);
-        statistics.writeToFile(outfolder, prefix);
-        System.out.println("Interaction summary statistics saved");
+    // simple binning
+    public Dimension(Chromosome[] chromosomes, int resolution) {
+        offset = new int[chromosomes.length];
+        interval = new int[chromosomes.length];
+        for (int i = 0; i < chromosomes.length; i++) {
+            length += (int) (chromosomes[i].getLength() / resolution + 1);
+            if (i < chromosomes.length - 1) {
+                offset[i + 1] = length;
+            }
+            interval[i] = length;
+        }
     }
 }

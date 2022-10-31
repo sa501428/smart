@@ -24,96 +24,29 @@
 
 package mixer.utils.drive;
 
-import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
-import javastraw.reader.basics.ChromosomeHandler;
-import javastraw.tools.MatrixTools;
-import mixer.utils.cleaning.NaNRowCleaner;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.ZScoreTools;
-import mixer.utils.tracks.SliceUtils;
+import mixer.utils.common.SimpleArray2DTools;
 import mixer.utils.tracks.SubcompartmentInterval;
-import robust.concurrent.kmeans.clustering.Cluster;
+import mixer.utils.transform.MatrixTransform;
 
-import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MatrixAndWeight {
-    public float[][] matrix, intra;
+    public float[][] matrix, intra, matrix2;
     public int[] weights;
     private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
 
-    public MatrixAndWeight(float[][] interMatrix, float[][] intraMatrix, int[] weights, Mappings mappings) {
-        this.matrix = interMatrix;
-        this.intra = intraMatrix;
+    public MatrixAndWeight(float[][] interMatrix1, float[][] intraMatrix1,
+                           float[][] interMatrix2, int[] weights, Mappings mappings) {
+        this.matrix = interMatrix1;
+        this.intra = intraMatrix1;
+        this.matrix2 = interMatrix2;
         this.weights = weights;
         this.mappings = mappings;
         if (mappings != null) populateRowIndexToIntervalMap(mappings);
-    }
-
-    public void inPlaceScaleSqrtWeightCol() {
-        ZScoreTools.inPlaceScaleSqrtWeightCol(matrix, weights);
-    }
-
-    public void divideColumnsByWeights() {
-        FloatMatrixTools.divideColumnsByWeights(matrix, weights);
-    }
-
-    public void export(File outputDirectory, String stem) {
-        String path1 = new File(outputDirectory, stem + ".matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path1, matrix);
-
-        String path2 = new File(outputDirectory, stem + ".weights.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path2, weights);
-    }
-
-    public void processKMeansClusteringResult(Cluster[] clusters, GenomeWide1DList<SubcompartmentInterval> subcompartments) {
-
-        Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
-
-        int genomewideCompartmentID = 0;
-        for (Cluster cluster : clusters) {
-            int currentClusterID = ++genomewideCompartmentID;
-            for (int i : cluster.getMemberIndexes()) {
-                if (map.containsKey(i)) {
-                    SubcompartmentInterval interv = map.get(i);
-                    if (interv != null) {
-                        subcompartmentIntervals.add(generateNewSubcompartment(interv, currentClusterID));
-                    }
-                }
-            }
-        }
-
-        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
-        SliceUtils.reSort(subcompartments);
-    }
-
-    public GenomeWide1DList<SubcompartmentInterval> getClusteringResult(int[] assignments, ChromosomeHandler handler) {
-        GenomeWide1DList<SubcompartmentInterval> subcompartments = new GenomeWide1DList<>(handler);
-
-        Set<SubcompartmentInterval> subcompartmentIntervals = new HashSet<>();
-        for (int i = 0; i < assignments.length; i++) {
-            if (assignments[i] > -1) {
-                int currentClusterID = assignments[i];
-                if (map.containsKey(i)) {
-                    SubcompartmentInterval interv = map.get(i);
-                    if (interv != null) {
-                        subcompartmentIntervals.add(generateNewSubcompartment(interv, currentClusterID));
-                    }
-                }
-            }
-        }
-
-        subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
-        SliceUtils.reSort(subcompartments);
-        return subcompartments;
-    }
-
-    protected SubcompartmentInterval generateNewSubcompartment(SubcompartmentInterval interv, int currentClusterID) {
-        SubcompartmentInterval newInterv = (SubcompartmentInterval) interv.deepClone();
-        newInterv.setClusterID(currentClusterID);
-        return newInterv;
     }
 
     private void populateRowIndexToIntervalMap(Mappings mappings) {
@@ -134,8 +67,11 @@ public class MatrixAndWeight {
         }
     }
 
-    public void removeAllNanRows() {
-        matrix = NaNRowCleaner.cleanUpMatrix(matrix, mappings);
+    public void divideColumnsByWeights(boolean useBothNorms) {
+        FloatMatrixTools.divideColumnsByWeights(matrix, weights);
+        if (useBothNorms) {
+            FloatMatrixTools.divideColumnsByWeights(matrix2, weights);
+        }
     }
 
     public int[] getSumOfAllLoci(Chromosome[] chromosomes) {
@@ -154,26 +90,62 @@ public class MatrixAndWeight {
         System.arraycopy(totalDistribution, 0, weights, 0, mappings.getNumCols());
     }
 
-    public int getNumRows() {
-        return matrix.length;
-    }
-
-    public int getNumCols() {
-        return matrix[0].length;
-    }
-
     public MatrixAndWeight deepCopy() {
         return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(intra),
-                FloatMatrixTools.deepClone(weights), mappings.deepCopy());
+                FloatMatrixTools.deepClone(matrix2), FloatMatrixTools.deepClone(weights), mappings.deepCopy());
     }
 
-    public boolean notEmpty() {
-        return matrix.length > 10 && matrix[0].length > 2;
+    public void putIntraIntoMainMatrix() {
+        for (int i = 0; i < intra.length; i++) {
+            for (int j = 0; j < intra[i].length; j++) {
+                if (intra[i][j] > -10) {
+                    matrix[i][j] = intra[i][j];
+                    matrix2[i][j] = intra[i][j];
+                }
+            }
+        }
     }
 
-    public void setWeightsTo(int val) {
-        weights = new int[getNumCols()];
-        Arrays.fill(weights, val);
+    public void zscoreByRows(int zscoreLimit, boolean useBothNorms) {
+        MatrixTransform.zscoreByRows(matrix, zscoreLimit);
+        if (useBothNorms) {
+            MatrixTransform.zscoreByRows(matrix2, zscoreLimit);
+        }
+    }
+
+    public void applyLog(boolean useBothNorms) {
+        SimpleArray2DTools.simpleLogWithCleanup(matrix, Float.NaN);
+        if (useBothNorms) {
+            SimpleArray2DTools.simpleLogWithCleanup(matrix2, Float.NaN);
+        }
+    }
+
+    public FinalMatrix getFinalMatrix(boolean useBothNorms, boolean appendIntra) {
+        if (useBothNorms) {
+            if (appendIntra) {
+                return new FinalMatrix(FloatMatrixTools.concatenate(matrix, matrix2, intra),
+                        FloatMatrixTools.concatenate(weights, weights, mutiply(weights, 2)),
+                        mappings, map);
+            } else {
+                return new FinalMatrix(FloatMatrixTools.concatenate(matrix, matrix2),
+                        FloatMatrixTools.concatenate(weights, weights),
+                        mappings, map);
+            }
+        } else if (appendIntra) {
+            return new FinalMatrix(FloatMatrixTools.concatenate(matrix, intra),
+                    FloatMatrixTools.concatenate(weights, weights),
+                    mappings, map);
+        } else {
+            return new FinalMatrix(matrix, weights, mappings, map);
+        }
+    }
+
+    private int[] mutiply(int[] input, int scalar) {
+        int[] copy = new int[input.length];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = input[i] * scalar;
+        }
+        return copy;
     }
 }
 

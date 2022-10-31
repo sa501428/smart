@@ -26,7 +26,7 @@ package mixer.utils.kmeans;
 
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.SmartTools;
-import mixer.utils.drive.MatrixAndWeight;
+import mixer.utils.drive.FinalMatrix;
 import robust.concurrent.kmeans.clustering.Cluster;
 import robust.concurrent.kmeans.clustering.KMeansListener;
 import robust.concurrent.kmeans.clustering.RobustConcurrentKMeans;
@@ -39,7 +39,7 @@ public class GenomeWideKmeansRunner {
 
     private final float[][] matrix;
     private final ChromosomeHandler chromosomeHandler;
-    private final MatrixAndWeight interMatrix;
+    private final FinalMatrix interMatrix;
     private final AtomicBoolean thisRunIsNotDone = new AtomicBoolean(true);
     private KmeansResult result = null;
 
@@ -47,7 +47,7 @@ public class GenomeWideKmeansRunner {
     private final boolean useKMedians;
 
     public GenomeWideKmeansRunner(ChromosomeHandler chromosomeHandler,
-                                  MatrixAndWeight interMatrix,
+                                  FinalMatrix interMatrix,
                                   boolean useCorrMatrix, boolean useKmedians) {
         this.useCorrMatrix = useCorrMatrix;
         this.interMatrix = interMatrix;

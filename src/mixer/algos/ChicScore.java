@@ -27,34 +27,43 @@ package mixer.algos;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.ChromosomeHandler;
-import javastraw.reader.type.NormalizationHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import javastraw.tools.UNIXTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
-import mixer.utils.shuffle.Shuffle;
+import mixer.utils.shuffle.Partition;
+import mixer.utils.shuffle.ShuffleAction;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
 import java.util.List;
 import java.util.Random;
 
-public class Chic extends MixerCLT {
+/**
+ * experimental code
+ * <p>
+ * Created by muhammadsaadshamim on 9/14/15.
+ */
+public class ChicScore extends MixerCLT {
 
+    //private final Random generator = new Random(22871L);
     private final Random generator = new Random(22871L);
-    protected NormalizationType norm = NormalizationHandler.INTER_KR;
+    private final boolean useOriginal;
     private Dataset ds;
     private int resolution = 100000;
+    private int compressionFactor = 8;
     private File outputDirectory;
     private String[] prefix;
     private String[] referenceBedFiles;
-    private int numSplits = 2;
+    private NormalizationType norm;
 
-    public Chic() {
-        super("chic [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [--verbose] " +
-                "<file.hic> <outfolder> <file1.bed,file2.bed,...> <name1,name2,...>");
+    // subcompartment lanscape identification via clustering enrichment
+    public ChicScore(String name) {
+        super("shuffle [-r resolution] [-k NONE/VC/VC_SQRT/KR/SCALE] [-w window] [--verbose] " +
+                "<file.hic> <subcompartment.bed(s)> <outfolder> <prefix>");
+        useOriginal = name.contains("original");
     }
 
     @Override
@@ -64,13 +73,10 @@ public class Chic extends MixerCLT {
         }
 
         ds = HiCFileTools.extractDatasetForCLT(args[1], false, false, true);
-        outputDirectory = HiCFileTools.createValidDirectory(args[2]);
-        referenceBedFiles = args[3].split(",");
+
+        referenceBedFiles = args[2].split(",");
+        outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         prefix = args[4].split(",");
-        if (referenceBedFiles.length != prefix.length) {
-            System.err.println("Number of bed files should match number of prefixes");
-            printUsageAndExit(53);
-        }
 
         NormalizationType preferredNorm = mixerParser.getNormalizationTypeOption(ds.getNormalizationHandler());
         if (preferredNorm != null) norm = preferredNorm;
@@ -81,24 +87,37 @@ public class Chic extends MixerCLT {
                 System.err.println("Only one resolution can be specified\nUsing " + possibleResolutions.get(0));
             resolution = possibleResolutions.get(0);
         }
-        numSplits = mixerParser.getWindowSizeOption(2);
+
         updateGeneratorSeed(mixerParser, generator);
+
+        int minSize = mixerParser.getWindowSizeOption(1600000 / resolution);
+        if (minSize > 1) {
+            compressionFactor = minSize;
+        }
     }
 
     @Override
     public void run() {
 
-        ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
+        ChromosomeHandler handler = ds.getChromosomeHandler();
+
         UNIXTools.makeDir(outputDirectory);
 
+        Partition.Type[] mapTypes = {Partition.Type.SPLIT1, Partition.Type.SPLIT2,
+                Partition.Type.SPLIT3, Partition.Type.SPLIT4, Partition.Type.SPLIT5};
+        if (useOriginal) {
+            mapTypes = new Partition.Type[]{Partition.Type.ODDS_VS_EVENS,
+                    Partition.Type.SKIP_BY_TWOS, Partition.Type.FIRST_HALF_VS_SECOND_HALF};
+        }
+
         for (int i = 0; i < referenceBedFiles.length; i++) {
-            GenomeWide1DList<SubcompartmentInterval> subcompartments =
-                    BedTools.loadBedFile(chromosomeHandler, referenceBedFiles[i]);
+            GenomeWide1DList<SubcompartmentInterval> subcompartments = BedTools.loadBedFileAtResolution(handler, referenceBedFiles[i], resolution);
             System.out.println("Processing " + prefix[i]);
-            Shuffle matrix = new Shuffle(ds, norm, resolution);
-            matrix.runGWStats(subcompartments, outputDirectory, prefix[i], numSplits);
-            matrix = null;
-            subcompartments = null;
+            File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
+            UNIXTools.makeDir(newFolder);
+            ShuffleAction matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, mapTypes);
+            matrix.runInterAnalysis(subcompartments, newFolder, generator);
+            matrix.savePlotsAndResults(newFolder, prefix[i]);
         }
         System.out.println("Shuffle complete");
     }
