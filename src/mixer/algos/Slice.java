@@ -63,14 +63,15 @@ public class Slice extends MixerCLT {
     private File outputDirectory;
     private NormalizationType[] norms;
     boolean useExpandedIntraOE = true;
+    private final boolean useBothNorms = false, appendIntra = true;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
-        super("slice [-r resolution] [--verbose] [--scale] " +
-                //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
+        super("slice [-r resolution] [--verbose] [--both-norms] [--append] " +
                 "<file.hic> <K0,KF> <outfolder>\n" +
                 "   K0 - minimum number of clusters\n" +
                 "   KF - maximum number of clusters");
+        //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
     }
 
     @Override
@@ -92,7 +93,6 @@ public class Slice extends MixerCLT {
 
         outputDirectory = HiCFileTools.createValidDirectory(args[3]);
         norms = populateNormalizations(ds);
-
         updateGeneratorSeed(mixerParser, generator);
     }
 
@@ -119,12 +119,9 @@ public class Slice extends MixerCLT {
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
 
-        for (boolean appendIntra : new boolean[]{true, false}) {
-            for (boolean useRowZ : new boolean[]{true, false}) {
-                runWithSettings(slice0, handler, chromosomes,
-                        true, false, false, appendIntra, useRowZ, false);
-            }
-        }
+
+        runWithSettings(slice0, handler, chromosomes,
+                true, false, useBothNorms, appendIntra, false, false);
         System.out.println("\nSLICE complete");
     }
 
@@ -147,7 +144,7 @@ public class Slice extends MixerCLT {
 
     private String getNewPrefix(boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra,
                                 boolean useRowZ, boolean shouldRegularize) {
-        String stem = "SL";
+        String stem = "SLICE";
         /*
         if (includeIntra) {
             stem += "_GW";
@@ -159,17 +156,17 @@ public class Slice extends MixerCLT {
         } else {
             stem += "_EXP";
         }
-        if (useBothNorms) {
-            stem += "_2NORM";
-        } else {
-            stem += "_1NORM";
-        }
+
         if (shouldRegularize) {
             stem += "_REG";
         } else {
             stem += "_IRR";
         }
-         */
+        if (useBothNorms) {
+            stem += "_2NORM";
+        } else {
+            stem += "_1NORM";
+        }
         if (appendIntra) {
             stem += "_APPEND";
         } else {
@@ -180,6 +177,7 @@ public class Slice extends MixerCLT {
         } else {
             stem += "_ColZ";
         }
+         */
         return stem;
     }
 }

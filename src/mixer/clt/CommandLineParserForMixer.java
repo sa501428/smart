@@ -46,6 +46,8 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option multipleResolutionsOption = addStringOption('r', "resolutions");
     private final Option randomSeedsOption = addStringOption("seed");
     private final Option zScoreOption = addBooleanOption("zscore");
+    private final Option bothNormsOption = addBooleanOption("both-norms");
+    private final Option appendOption = addBooleanOption("append");
     private final Option scaleOption = addBooleanOption("scale");
     private final Option windowOption = addIntegerOption('w', "window");
 
@@ -138,6 +140,14 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getScaleOption() {
         return optionToBoolean(scaleOption);
+    }
+
+    public boolean getUseBothNormsOption() {
+        return optionToBoolean(bothNormsOption);
+    }
+
+    public boolean getAppendOption() {
+        return optionToBoolean(appendOption);
     }
 
     private int optionToInt(Option option, int defaultNum) {
