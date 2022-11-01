@@ -30,16 +30,28 @@ import mixer.utils.drive.MatrixAndWeight;
 
 public class MatrixPreprocessor {
 
-    private static final int ZSCORE_LIMIT = 3;
+    private static final int ZSCORE_LIMIT = 3, MAX_ZSCORE_UPPER_LIMIT = 5;
 
     public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                         boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra) {
+                                         boolean includeIntra, boolean useLog, boolean useBothNorms,
+                                         boolean appendIntra, boolean useRowZ, boolean shouldRegularize) {
         matrix.updateWeights(chromosomes);
         matrix.divideColumnsByWeights(useBothNorms);
-        if (useLog) {
+
+        if (shouldRegularize) {
             matrix.applyLog(useBothNorms);
+            matrix.removeHighGlobalThresh(useBothNorms, MAX_ZSCORE_UPPER_LIMIT);
+            matrix.setZerosToNan(useBothNorms);
+            matrix.regularize(useBothNorms, ZSCORE_LIMIT);
+            matrix.applyExpm1(useBothNorms);
         }
-        matrix.zscoreByRows(ZSCORE_LIMIT, useBothNorms);
+
+        if (useRowZ) {
+            matrix.zscoreByRows(ZSCORE_LIMIT, useBothNorms);
+        } else {
+            matrix.zscoreByCols(ZSCORE_LIMIT, useBothNorms);
+        }
+
         if (includeIntra && !appendIntra) {
             matrix.putIntraIntoMainMatrix();
         }

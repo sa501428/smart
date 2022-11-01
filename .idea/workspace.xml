@@ -31,12 +31,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/common/MathTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/ScoreContainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/KLDivergenceScoring.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/ShuffleScore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring/VarianceScoring.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/SimpleArray2DTools.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/transform/MatrixTransform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/transform/MatrixTransform.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,6 +88,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
+    "extract.method.default.visibility": "private",
     "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/src/mixer/utils/shuffle/scoring",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
@@ -301,13 +303,7 @@
       <workItem from="1666909717746" duration="4127000" />
       <workItem from="1666931667439" duration="44451000" />
       <workItem from="1667234977734" duration="2588000" />
-    </task>
-    <task id="LOCAL-00257" summary="update printing, mean calculation">
-      <created>1662360453945</created>
-      <option name="number" value="00257" />
-      <option name="presentableId" value="LOCAL-00257" />
-      <option name="project" value="LOCAL" />
-      <updated>1662360453945</updated>
+      <workItem from="1667263054372" duration="5999000" />
     </task>
     <task id="LOCAL-00258" summary="fix calculation; restore granularity of variance">
       <created>1662362634173</created>
@@ -645,7 +641,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667235282937</updated>
     </task>
-    <option name="localTasksCounter" value="306" />
+    <task id="LOCAL-00306" summary="set new version">
+      <created>1667241712665</created>
+      <option name="number" value="00306" />
+      <option name="presentableId" value="LOCAL-00306" />
+      <option name="project" value="LOCAL" />
+      <updated>1667241712665</updated>
+    </task>
+    <option name="localTasksCounter" value="307" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -669,7 +672,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="further options" />
     <MESSAGE value="updated settings" />
     <MESSAGE value="updated clutering" />
     <MESSAGE value="updated clustering" />
@@ -694,7 +696,8 @@
     <MESSAGE value="initial commit of shuffle code" />
     <MESSAGE value="update default runs" />
     <MESSAGE value="switch to double for scores" />
-    <option name="LAST_COMMIT_MESSAGE" value="switch to double for scores" />
+    <MESSAGE value="set new version" />
+    <option name="LAST_COMMIT_MESSAGE" value="set new version" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -702,10 +705,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/mixer/utils/intra/IndexOrderer.java</url>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">
           <properties class="java.lang.ArrayIndexOutOfBoundsException" package="java.lang" />
           <option name="timeStamp" value="2" />

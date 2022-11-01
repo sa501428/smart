@@ -25,16 +25,18 @@
 package mixer.utils.transform;
 
 import javastraw.expected.Welford;
+import javastraw.expected.WelfordArray;
+import javastraw.expected.ZScoreArray;
 import javastraw.expected.Zscore;
 
 public class MatrixTransform {
     public static void zscoreByRows(float[][] matrix, int limit) {
         for (int i = 0; i < matrix.length; i++) {
-            normalizeRegion0(matrix[i], limit);
+            normalizeRow(matrix[i], limit);
         }
     }
 
-    private static void normalizeRegion0(float[] row, int limit) {
+    private static void normalizeRow(float[] row, int limit) {
         Welford welford = new Welford();
         for (float val : row) {
             if (val > 0) {
@@ -44,25 +46,41 @@ public class MatrixTransform {
         if (welford.getCounts() > 2) {
             Zscore zscore = welford.getZscore();
             for (int c = 0; c < row.length; c++) {
-                row[c] = zscoreRow(zscore, row[c], limit);
+                row[c] = thresholdZscore(zscore, row[c], limit);
             }
         }
     }
 
-    private static float zscoreRow(Zscore zscore, double val, int limit) {
-        float v = (float) zscore.getZscore(val);
-        if (v > limit) return limit;
-        if (v < -limit) return -limit;
-        return v;
-    }
-
-    public static void limitInternally(float[][] matrix, float innerLimit) {
+    public static void zscoreByCols(float[][] matrix, int limit) {
+        WelfordArray welfords = new WelfordArray(matrix[0].length);
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] > -innerLimit && matrix[i][j] < innerLimit) {
-                    matrix[i][j] = Float.NaN;
+                if (matrix[i][j] > 0) {
+                    welfords.addValue(j, matrix[i][j]);
                 }
             }
         }
+        ZScoreArray zscores = welfords.getZscores();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > 0) {
+                    matrix[i][j] = thresholdZscores(zscores, j, matrix[i][j], limit);
+                }
+            }
+        }
+    }
+
+    private static float thresholdZscores(ZScoreArray zscores, int index, double val, int limit) {
+        return threshold(zscores.getZscore(index, val), limit);
+    }
+
+    private static float thresholdZscore(Zscore zscore, double val, int limit) {
+        return threshold(zscore.getZscore(val), limit);
+    }
+
+    private static float threshold(double v, int limit) {
+        if (v > limit) return limit;
+        if (v < -limit) return -limit;
+        return (float) v;
     }
 }

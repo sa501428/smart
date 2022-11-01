@@ -26,7 +26,7 @@ package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.SimpleArray2DTools;
+import mixer.utils.common.MathTools;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.transform.MatrixTransform;
 
@@ -113,11 +113,54 @@ public class MatrixAndWeight {
         }
     }
 
-    public void applyLog(boolean useBothNorms) {
-        SimpleArray2DTools.simpleLogWithCleanup(matrix, Float.NaN);
+    public void zscoreByCols(int zscoreLimit, boolean useBothNorms) {
+        MatrixTransform.zscoreByCols(matrix, zscoreLimit);
         if (useBothNorms) {
-            SimpleArray2DTools.simpleLogWithCleanup(matrix2, Float.NaN);
+            MatrixTransform.zscoreByCols(matrix2, zscoreLimit);
         }
+    }
+
+    public void setZerosToNan(boolean useBothNorms) {
+        MathTools.setZerosToNan(matrix);
+        if (useBothNorms) {
+            MathTools.setZerosToNan(matrix2);
+        }
+    }
+
+    public void applyLog(boolean useBothNorms) {
+        MathTools.simpleLogWithCleanup(matrix, Float.NaN);
+        if (useBothNorms) {
+            MathTools.simpleLogWithCleanup(matrix2, Float.NaN);
+        }
+    }
+
+    public void applyExpm1(boolean useBothNorms) {
+        MathTools.simpleExpm1(matrix);
+        if (useBothNorms) {
+            MathTools.simpleExpm1(matrix2);
+        }
+    }
+
+    public void removeHighGlobalThresh(boolean useBothNorms, int maxZscoreUpperLimit) {
+        MathTools.removeHighGlobalThresh(matrix, maxZscoreUpperLimit);
+        if (useBothNorms) {
+            MathTools.removeHighGlobalThresh(matrix2, maxZscoreUpperLimit);
+        }
+    }
+
+    public void regularize(boolean useBothNorms, int zscoreLimit) {
+        MathTools.regularize(matrix, zscoreLimit);
+        if (useBothNorms) {
+            MathTools.regularize(matrix2, zscoreLimit);
+        }
+    }
+
+    private int[] mutiply(int[] input, int scalar) {
+        int[] copy = new int[input.length];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = input[i] * scalar;
+        }
+        return copy;
     }
 
     public FinalMatrix getFinalMatrix(boolean useBothNorms, boolean appendIntra) {
@@ -138,14 +181,6 @@ public class MatrixAndWeight {
         } else {
             return new FinalMatrix(matrix, weights, mappings, map);
         }
-    }
-
-    private int[] mutiply(int[] input, int scalar) {
-        int[] copy = new int[input.length];
-        for (int i = 0; i < copy.length; i++) {
-            copy[i] = input[i] * scalar;
-        }
-        return copy;
     }
 }
 
