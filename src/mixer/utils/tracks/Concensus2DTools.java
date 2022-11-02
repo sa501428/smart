@@ -112,7 +112,7 @@ public class Concensus2DTools {
         }
     }
 
-    private static int[] getMaxCoordinates(int[][] tensor) {
+    public static int[] getMaxCoordinates(int[][] tensor) {
         int maxVal = 0;
         int[] coords = null;
         for (int i = 0; i < tensor.length; i++) {

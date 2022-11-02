@@ -50,6 +50,13 @@ public class Concensus3DTools {
             }
         }
 
+        int[] hubAssignment = assignHubs(matrix, numClusters, superClusterToIndices, finalKeys);
+
+        clusteringMagic.exportKMeansClusteringResults(z, prefix + "_hub", useKMedians,
+                matrix.getClusteringResult(hubAssignment, handler));
+    }
+
+    public static int[] assignHubs(FinalMatrix matrix, int numClusters, Map<String, List<Integer>> superClusterToIndices, List<String> finalKeys) {
         int[] hubAssignment = new int[matrix.getNumRows()];
         Arrays.fill(hubAssignment, -1);
         for (int q = 0; q < numClusters; q++) {
@@ -57,9 +64,7 @@ public class Concensus3DTools {
                 hubAssignment[i] = q;
             }
         }
-
-        clusteringMagic.exportKMeansClusteringResults(z, prefix + "_hub", useKMedians, 4, 0,
-                matrix.getClusteringResult(hubAssignment, handler));
+        return hubAssignment;
     }
 
     private static int[][][] populateSummary(int numClusters, int numRows, int[][] results,

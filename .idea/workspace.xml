@@ -30,11 +30,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="set new defaults">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/refinement/IterativeRefinement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/refinement/NearestNeighbors.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/SmartTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/SmartTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus3DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus3DTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +60,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="chic2" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -94,11 +96,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.refinement" />
       <recent name="mixer.utils.drive" />
       <recent name="mixer.utils.cleaning" />
       <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.slice.cleaning" />
-      <recent name="mixer.utils.slice.drive" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring" />
@@ -300,14 +302,7 @@
       <workItem from="1666909717746" duration="4127000" />
       <workItem from="1666931667439" duration="44451000" />
       <workItem from="1667234977734" duration="2588000" />
-      <workItem from="1667263054372" duration="11142000" />
-    </task>
-    <task id="LOCAL-00259" summary="bug fix">
-      <created>1662362769506</created>
-      <option name="number" value="00259" />
-      <option name="presentableId" value="LOCAL-00259" />
-      <option name="project" value="LOCAL" />
-      <updated>1662362769506</updated>
+      <workItem from="1667263054372" duration="19672000" />
     </task>
     <task id="LOCAL-00260" summary="finalize chic">
       <created>1662363485415</created>
@@ -645,7 +640,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667307243953</updated>
     </task>
-    <option name="localTasksCounter" value="308" />
+    <task id="LOCAL-00308" summary="set new defaults">
+      <created>1667341874604</created>
+      <option name="number" value="00308" />
+      <option name="presentableId" value="LOCAL-00308" />
+      <option name="project" value="LOCAL" />
+      <updated>1667341874604</updated>
+    </task>
+    <option name="localTasksCounter" value="309" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
