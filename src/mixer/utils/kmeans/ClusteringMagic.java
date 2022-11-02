@@ -27,7 +27,6 @@ package mixer.utils.kmeans;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.drive.FinalMatrix;
-import mixer.utils.tracks.Concensus3DTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
@@ -82,6 +81,7 @@ public class ClusteringMagic {
         int numClusters = z + startingClusterSizeK;
         int[][] results = new int[3][matrix.getNumRows()];
         double wcssLimit = getGoodWCSS(results, kmeansRunner, numClusters, z, prefix, useKMedians);
+        /*
         int index = 1;
         int iter = 0;
         while (index < 3) {
@@ -100,6 +100,7 @@ public class ClusteringMagic {
             }
         }
         Concensus3DTools.resolve(results, this, z, prefix, useKMedians, numClusters, matrix, handler);
+        */
     }
 
     private double getGoodWCSS(int[][] results, GenomeWideKmeansRunner kmeansRunner, int numClusters,
@@ -109,7 +110,6 @@ public class ClusteringMagic {
         int[] bestAssignments = null;
         int attempts = 0;
         while (bestAssignments == null || attempts < 20) {
-            System.out.print("-");
             KmeansResult currResult = resetAndRerun(kmeansRunner, generator, numClusters);
             double wcss = currResult.getWithinClusterSumOfSquares();
             if (currResult.getNumActualClusters() == numClusters && wcss < Float.MAX_VALUE) {
@@ -121,9 +121,10 @@ public class ClusteringMagic {
                 attempts++;
             }
         }
-        exportKMeansClusteringResults(z, prefix + "_i" + 0, useKMedians, bestClusters);
+        System.out.print(">");
+        exportKMeansClusteringResults(z, prefix, useKMedians, bestClusters);
         results[0] = bestAssignments;
-        return 1.01 * wcssLimit;
+        return wcssLimit; // 1.01 *
     }
 
     protected KmeansResult resetAndRerun(GenomeWideKmeansRunner kmeansRunner, Random generator, int numClusters) {
