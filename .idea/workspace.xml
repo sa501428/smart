@@ -31,12 +31,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/refinement/IterativeRefinement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/refinement/IterativeRefinement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/refinement/NearestNeighbors.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/refinement/NearestNeighbors.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus3DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus3DTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -302,21 +297,7 @@
       <workItem from="1666909717746" duration="4127000" />
       <workItem from="1666931667439" duration="44451000" />
       <workItem from="1667234977734" duration="2588000" />
-      <workItem from="1667263054372" duration="23944000" />
-    </task>
-    <task id="LOCAL-00262" summary="include symmetric score">
-      <created>1662364797007</created>
-      <option name="number" value="00262" />
-      <option name="presentableId" value="LOCAL-00262" />
-      <option name="project" value="LOCAL" />
-      <updated>1662364797007</updated>
-    </task>
-    <task id="LOCAL-00263" summary="code cleanup">
-      <created>1662365034001</created>
-      <option name="number" value="00263" />
-      <option name="presentableId" value="LOCAL-00263" />
-      <option name="project" value="LOCAL" />
-      <updated>1662365034001</updated>
+      <workItem from="1667263054372" duration="24253000" />
     </task>
     <task id="LOCAL-00264" summary="code cleanup">
       <created>1662397398764</created>
@@ -647,7 +628,21 @@
       <option name="project" value="LOCAL" />
       <updated>1667394222900</updated>
     </task>
-    <option name="localTasksCounter" value="311" />
+    <task id="LOCAL-00311" summary="restore original clustering">
+      <created>1667398410284</created>
+      <option name="number" value="00311" />
+      <option name="presentableId" value="LOCAL-00311" />
+      <option name="project" value="LOCAL" />
+      <updated>1667398410284</updated>
+    </task>
+    <task id="LOCAL-00312" summary="before cleanup">
+      <created>1667398598823</created>
+      <option name="number" value="00312" />
+      <option name="presentableId" value="LOCAL-00312" />
+      <option name="project" value="LOCAL" />
+      <updated>1667398598823</updated>
+    </task>
+    <option name="localTasksCounter" value="313" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -671,8 +666,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="working version" />
-    <MESSAGE value="latest working version, update straw" />
     <MESSAGE value="reorganize expected handling" />
     <MESSAGE value="cleanup structuring" />
     <MESSAGE value="restore version" />
@@ -696,7 +689,9 @@
     <MESSAGE value="set new defaults" />
     <MESSAGE value="redo consensus" />
     <MESSAGE value="iterative refinement" />
-    <option name="LAST_COMMIT_MESSAGE" value="iterative refinement" />
+    <MESSAGE value="restore original clustering" />
+    <MESSAGE value="before cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="before cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
