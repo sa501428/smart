@@ -47,6 +47,12 @@ public class NearestNeighbors {
         percentUnassigned = setPercentUnassigned(hubs);
     }
 
+    public NearestNeighbors(int index, float[][] matrix, int[] assignment, SimilarityMetric metric) {
+        this.index = index;
+        neighbors = getNearestN(index, matrix, metric);
+        percentUnassigned = 0;
+    }
+
     private Set<Integer> getNearestN(int index, float[][] matrix, SimilarityMetric metric) {
         double[] distances = new double[matrix.length];
         for (int r = 0; r < matrix.length; r++) {
@@ -94,12 +100,7 @@ public class NearestNeighbors {
     }
 
     public int getMajorityNeighborAssignment(int[] assignment, int numClusters) {
-        int[] counts = new int[numClusters];
-        for (int i : neighbors) {
-            if (assignment[i] > -1) {
-                counts[assignment[i]]++;
-            }
-        }
+        int[] counts = getCounts(assignment, numClusters);
 
         int bestIndex = 0;
         for (int i = 1; i < numClusters; i++) {
@@ -108,6 +109,29 @@ public class NearestNeighbors {
             }
         }
 
+        return bestIndex;
+    }
+
+    private int[] getCounts(int[] assignment, int numClusters) {
+        int[] counts = new int[numClusters];
+        for (int i : neighbors) {
+            if (assignment[i] > -1) {
+                counts[assignment[i]]++;
+            }
+        }
+        return counts;
+    }
+
+    public int getMajorityNeighborAssignment(int[] assignment, int numClusters, float fraction) {
+        int[] counts = getCounts(assignment, numClusters);
+
+        int cutoff = (int) (fraction * assignment.length);
+        int bestIndex = -1;
+        for (int i = 1; i < numClusters; i++) {
+            if (counts[i] > cutoff) {
+                bestIndex = i;
+            }
+        }
         return bestIndex;
     }
 }

@@ -28,6 +28,7 @@ import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.MatrixTools;
 import mixer.utils.drive.FinalMatrix;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 import mixer.utils.tracks.Concensus2DTools;
 import mixer.utils.tracks.Concensus3DTools;
 import mixer.utils.tracks.SliceUtils;
@@ -132,5 +133,39 @@ public class IterativeRefinement {
 
     private static String makeKey(int i, int j) {
         return i + "_" + j;
+    }
+
+    public static void refine(FinalMatrix fMatrix, float[][] data, SimilarityMetric metric,
+                              int numClusters, int[] assignments,
+                              ChromosomeHandler handler, File outputDirectory, String outputName) {
+
+        refineEntries(assignments, data, numClusters, metric);
+        GenomeWide1DList<SubcompartmentInterval> finalCompartments = fMatrix.getClusteringResult(assignments, handler);
+        SliceUtils.collapseGWList(finalCompartments);
+        File outBedFile = new File(outputDirectory, outputName);
+        finalCompartments.simpleExport(outBedFile);
+    }
+
+    private static void refineEntries(int[] assignment, float[][] matrix, int numClusters, SimilarityMetric metric) {
+        List<NearestNeighbors> neighborhoods = getAllNearestNeighbors(matrix, assignment, metric);
+        int count = 0;
+        for (NearestNeighbors neighborhood : neighborhoods) {
+            if (++count % 1000 == 0) System.out.print(".");
+            int newAssignment = neighborhood.getMajorityNeighborAssignment(assignment,
+                    numClusters, 0.55f);
+            if (newAssignment > -1) {
+                assignment[neighborhood.getIndex()] = newAssignment;
+            }
+        }
+        System.out.println(".");
+    }
+
+    private static List<NearestNeighbors> getAllNearestNeighbors(float[][] matrix, int[] assignment,
+                                                                 SimilarityMetric metric) {
+        List<NearestNeighbors> neighborhoods = new ArrayList<>(matrix.length);
+        for (int i = 0; i < matrix.length; i++) {
+            neighborhoods.add(new NearestNeighbors(i, matrix, assignment, metric));
+        }
+        return neighborhoods;
     }
 }

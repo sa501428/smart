@@ -29,6 +29,8 @@ import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.drive.FinalMatrix;
 import mixer.utils.refinement.IterativeRefinement;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
@@ -60,21 +62,26 @@ public class ClusteringMagic {
     }
 
     public void extractFinalGWSubcompartments(String prefix) {
-        System.out.println("Genomewide clustering");
+        System.out.println("\nKmeans clustering");
         matrix.inPlaceScaleSqrtWeightCol();
         int[][] assignments1 = runClusteringOnMatrix(prefix, false);
         float[][] backup = FloatMatrixTools.deepClone(matrix.matrix);
 
+        System.out.println("\nKmedians clustering");
         matrix.inPlaceScaleSqrtWeightCol();
         int[][] assignments2 = runClusteringOnMatrix(prefix, true);
 
+        System.out.println("\nNearest Neighbors Refinement");
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             int numClusters = z + startingClusterSizeK;
-            IterativeRefinement.resolve(matrix, backup, prefix, numClusters, z,
-                    assignments1[z], assignments2[z],
-                    handler, outputDirectory);
+            IterativeRefinement.refine(matrix, backup, RobustEuclideanDistance.SINGLETON,
+                    numClusters, assignments1[z], handler, outputDirectory,
+                    prefix + "_k" + numClusters + "_kmeans_refinement_clusters.bed");
+            IterativeRefinement.refine(matrix, matrix.matrix, RobustManhattanDistance.SINGLETON,
+                    numClusters, assignments2[z], handler, outputDirectory,
+                    prefix + "_k" + numClusters + "_kmedians_refinement_clusters.bed");
+            System.out.println('*');
         }
-        System.out.println(".");
     }
 
     private int[][] runClusteringOnMatrix(String prefix, boolean useKMedians) {
@@ -100,8 +107,9 @@ public class ClusteringMagic {
         double wcssLimit = Float.MAX_VALUE;
         GenomeWide1DList<SubcompartmentInterval> bestClusters = null;
         int[] bestAssignments = null;
-        int attempts = 0;
-        while (bestAssignments == null || attempts < 50) {
+        int attemptsWhichWorked = 0;
+        int attempt = 0;
+        while (bestAssignments == null || attemptsWhichWorked < 20) {
             System.out.print("-");
             KmeansResult currResult = resetAndRerun(kmeansRunner, generator, numClusters);
             double wcss = currResult.getWithinClusterSumOfSquares();
@@ -111,8 +119,9 @@ public class ClusteringMagic {
                     bestAssignments = currResult.getAssignments(matrix.getNumRows());
                     bestClusters = currResult.getFinalCompartmentsClone();
                 }
-                attempts++;
+                attemptsWhichWorked++;
             }
+            if (++attempt > 200 && bestAssignments != null) break;
         }
         exportKMeansClusteringResults(z, prefix, useKMedians,
                 bestClusters);
