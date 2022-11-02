@@ -37,8 +37,8 @@ public class ClusteringMagic2 extends ClusteringMagic {
         super(matrix, outputDirectory, handler, seed);
     }
 
-    @Override
-    public void extractFinalGWSubcompartments(String prefix) {
+
+    public String[] extractFinalGWSubcompartments2(String prefix) {
         System.out.println("\nKmeans clustering");
         matrix.inPlaceScaleSqrtWeightCol();
         int[][] assignments1 = runClusteringOnMatrix(prefix, false);
@@ -61,6 +61,7 @@ public class ClusteringMagic2 extends ClusteringMagic {
             System.out.println('*');
             */
         }
+        return new String[0];
     }
 
     private int[][] runClusteringOnMatrix(String prefix, boolean useKMedians) {
@@ -96,7 +97,7 @@ public class ClusteringMagic2 extends ClusteringMagic {
             }
             if (++attempt > 200 && bestAssignments != null) break;
         }
-        exportKMeansClusteringResults(z, prefix, useKMedians, bestClusters);
+        exportKMeansClusteringResults(z, prefix, useKMedians, bestClusters, null);
         return bestAssignments;
     }
 }

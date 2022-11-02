@@ -24,6 +24,7 @@
 
 package mixer.algos;
 
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
@@ -41,9 +42,12 @@ import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
 import mixer.utils.intra.IndexOrderer;
 import mixer.utils.kmeans.ClusteringMagic;
+import mixer.utils.refinement.InternalShuffle;
+import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -63,7 +67,6 @@ public class Slice extends MixerCLT {
     private File outputDirectory;
     private NormalizationType[] norms;
     boolean useExpandedIntraOE = true;
-    private final boolean useBothNorms = false, appendIntra = true;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
@@ -119,9 +122,8 @@ public class Slice extends MixerCLT {
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
 
-
         runWithSettings(slice0, handler, chromosomes,
-                true, false, useBothNorms, appendIntra, false, false);
+                true, false, false, true, false, false);
         System.out.println("\nSLICE complete");
     }
 
@@ -137,8 +139,16 @@ public class Slice extends MixerCLT {
                 slice.export(outputDirectory, stem);
             }
             ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
-            clustering.extractFinalGWSubcompartments(stem);
-            System.out.println("*");
+            Map<Integer, List<String>> bedFiles = clustering.extractFinalGWSubcompartments(stem);
+            System.out.print("*");
+            Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings =
+                    InternalShuffle.determineBest(bedFiles, resolution,
+                            handler, ds, norms[INTER_SCALE_INDEX]);
+            for (int k : bestClusterings.keySet()) {
+                File outBedFile = new File(outputDirectory, stem + "_k" + k + "_best_clusters.bed"); // "_wcss" + wcss +
+                bestClusterings.get(k).simpleExport(outBedFile);
+            }
+            System.out.println(">>");
         }
     }
 

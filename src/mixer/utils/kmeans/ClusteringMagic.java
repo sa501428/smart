@@ -26,12 +26,13 @@ package mixer.utils.kmeans;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.tools.UNIXTools;
 import mixer.utils.drive.FinalMatrix;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.Random;
+import java.util.*;
 
 public class ClusteringMagic {
     public static int startingClusterSizeK = 2;
@@ -42,11 +43,12 @@ public class ClusteringMagic {
     protected final FinalMatrix matrix;
     protected final ChromosomeHandler handler;
 
-    public ClusteringMagic(FinalMatrix matrix, File outputDirectory,
+    public ClusteringMagic(FinalMatrix matrix, File parentDirectory,
                            ChromosomeHandler handler, long seed) {
         this.matrix = matrix;
         this.handler = handler;
-        this.outputDirectory = outputDirectory;
+        this.outputDirectory = new File(parentDirectory, "work");
+        UNIXTools.makeDir(outputDirectory);
         generator.setSeed(seed);
     }
 
@@ -56,27 +58,35 @@ public class ClusteringMagic {
         return prefix + "_" + kstem + "_k" + k + "_clusters.bed";
     }
 
-    public void extractFinalGWSubcompartments(String prefix) {
+    public Map<Integer, List<String>> extractFinalGWSubcompartments(String prefix) {
+
+        Map<Integer, List<String>> outputs = new HashMap<>();
+        for (int z = 0; z < numClusterSizeKValsUsed; z++) {
+            int numClusters = z + startingClusterSizeK;
+            outputs.put(numClusters, new ArrayList<>(2));
+        }
+
         System.out.println("Genome-wide KMeans clustering");
         matrix.inPlaceScaleSqrtWeightCol();
-        runClusteringOnMatrix(prefix, false);
+        runClusteringOnMatrix(prefix, false, outputs);
 
         System.out.println("Genome-wide KMedians clustering");
         matrix.inPlaceScaleSqrtWeightCol();
-        runClusteringOnMatrix(prefix, true);
+        runClusteringOnMatrix(prefix, true, outputs);
+        return outputs;
     }
 
-    private void runClusteringOnMatrix(String prefix, boolean useKMedians) {
+    private void runClusteringOnMatrix(String prefix, boolean useKMedians, Map<Integer, List<String>> outputs) {
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(handler, matrix,
                 false, useKMedians);
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
-            runKMeansMultipleTimes(kmeansRunner, z, useKMedians, prefix);
+            runKMeansMultipleTimes(kmeansRunner, z, useKMedians, prefix, outputs);
         }
         System.out.println(">");
     }
 
     private void runKMeansMultipleTimes(GenomeWideKmeansRunner kmeansRunner,
-                                        int z, boolean useKMedians, String prefix) {
+                                        int z, boolean useKMedians, String prefix, Map<Integer, List<String>> outputs) {
         int numClusters = z + startingClusterSizeK;
         double wcssLimit = Float.MAX_VALUE;
         GenomeWide1DList<SubcompartmentInterval> bestClusters = null;
@@ -94,7 +104,7 @@ public class ClusteringMagic {
                 attempts++;
             }
         }
-        exportKMeansClusteringResults(z, prefix, useKMedians, bestClusters);
+        exportKMeansClusteringResults(z, prefix, useKMedians, bestClusters, outputs);
     }
 
     protected KmeansResult resetAndRerun(GenomeWideKmeansRunner kmeansRunner, Random generator, int numClusters) {
@@ -104,10 +114,12 @@ public class ClusteringMagic {
     }
 
     public void exportKMeansClusteringResults(int z, String prefix, boolean useKMedians,
-                                              GenomeWide1DList<SubcompartmentInterval> finalCompartments) {
+                                              GenomeWide1DList<SubcompartmentInterval> finalCompartments,
+                                              Map<Integer, List<String>> outputs) {
         int k = z + startingClusterSizeK;
         SliceUtils.collapseGWList(finalCompartments);
         File outBedFile = new File(outputDirectory, getOutputName(prefix, useKMedians, k)); // "_wcss" + wcss +
+        if (outputs != null) outputs.get(k).add(outBedFile.getAbsolutePath());
         finalCompartments.simpleExport(outBedFile);
     }
 }

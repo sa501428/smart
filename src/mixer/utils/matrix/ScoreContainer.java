@@ -35,6 +35,8 @@ import java.util.Arrays;
 
 public class ScoreContainer {
 
+    private static final int VAR_SCORE_INDEX = 0;
+    private static final int ENTROPY_SCORE_INDEX = 1;
     private final String[] scoreTypes = {"Variation", "Relative Entropy"};
 
     private final double[][] baselines;
@@ -59,11 +61,11 @@ public class ScoreContainer {
         if (isBaseline) {
             ShuffledIndices rowBounds2 = new ShuffledIndices(new ArrayList<>(), new Integer[]{0, matrix.length}, new Integer[]{0});
             ShuffledIndices colBounds2 = new ShuffledIndices(new ArrayList<>(), new Integer[]{0, matrix[0].length}, new Integer[]{0});
-            scores[0] = (new VarianceScoring(matrix, rowBounds2, colBounds2, useSymmetry)).score();
-            scores[1] = (new KLDivergenceScoring(matrix, rowBounds2, colBounds2, true, useSymmetry)).score();
+            scores[VAR_SCORE_INDEX] = (new VarianceScoring(matrix, rowBounds2, colBounds2, useSymmetry)).score();
+            scores[ENTROPY_SCORE_INDEX] = (new KLDivergenceScoring(matrix, rowBounds2, colBounds2, true, useSymmetry)).score();
         } else {
-            scores[0] = (new VarianceScoring(matrix, rowBounds, colBounds, useSymmetry)).score();
-            scores[1] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true, useSymmetry)).score();
+            scores[VAR_SCORE_INDEX] = (new VarianceScoring(matrix, rowBounds, colBounds, useSymmetry)).score();
+            scores[ENTROPY_SCORE_INDEX] = (new KLDivergenceScoring(matrix, rowBounds, colBounds, true, useSymmetry)).score();
         }
         return scores;
     }
@@ -96,6 +98,14 @@ public class ScoreContainer {
             writeToFile(outfolder, "aggregate_scores_" + prefix + "_symm.txt", symmShuffled, symmBaselines, symmRatios, names);
         } catch (Exception ee) {
             System.err.println("Unable to write results to text file");
+        }
+    }
+
+    public double getDirectScore(boolean getSymmetric, int mapTypeIndex) {
+        if (getSymmetric) {
+            return symmRatios[mapTypeIndex][VAR_SCORE_INDEX];
+        } else {
+            return ratios[mapTypeIndex][VAR_SCORE_INDEX];
         }
     }
 

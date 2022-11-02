@@ -61,7 +61,7 @@ public class Concensus3DTools {
         IterativeRefinement.assignRemainingEntries(hubAssignment, matrix.matrix, metric, numClusters);
 
         clusteringMagic.exportKMeansClusteringResults(z, prefix + "_refined", useKMedians,
-                matrix.getClusteringResult(hubAssignment, handler));
+                matrix.getClusteringResult(hubAssignment, handler), null);
     }
 
     public static int[] assignHubs(FinalMatrix matrix, int numClusters, Map<String, List<Integer>> superClusterToIndices, List<String> finalKeys) {
