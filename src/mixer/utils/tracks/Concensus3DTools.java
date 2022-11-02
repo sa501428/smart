@@ -27,6 +27,10 @@ package mixer.utils.tracks;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.drive.FinalMatrix;
 import mixer.utils.kmeans.ClusteringMagic;
+import mixer.utils.refinement.IterativeRefinement;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.RobustManhattanDistance;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.*;
 
@@ -45,14 +49,18 @@ public class Concensus3DTools {
                 clearSectionSlices(summary, coords);
                 finalKeys.add(makeKey(coords));
             } else {
-                System.err.println("Weird error getting concensus; skipping");
+                System.err.println("Could not get consensus; skipping refinement");
                 return;
             }
         }
 
-        int[] hubAssignment = assignHubs(matrix, numClusters, superClusterToIndices, finalKeys);
+        SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
+        if (useKMedians) metric = RobustManhattanDistance.SINGLETON;
 
-        clusteringMagic.exportKMeansClusteringResults(z, prefix + "_hub", useKMedians,
+        int[] hubAssignment = assignHubs(matrix, numClusters, superClusterToIndices, finalKeys);
+        IterativeRefinement.assignRemainingEntries(hubAssignment, matrix.matrix, metric, numClusters);
+
+        clusteringMagic.exportKMeansClusteringResults(z, prefix + "_refined", useKMedians,
                 matrix.getClusteringResult(hubAssignment, handler));
     }
 

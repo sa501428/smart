@@ -70,16 +70,35 @@ public class IterativeRefinement {
         finalCompartments.simpleExport(outBedFile);
     }
 
-    private static void assignRemainingEntries(int[] hubAssignment, float[][] matrixL1, float[][] matrixL2,
-                                               int numClusters) {
+    public static void assignRemainingEntries(int[] hubAssignment, float[][] matrixL1, float[][] matrixL2,
+                                              int numClusters) {
         List<Integer> unassigned = getUnassignedIndices(hubAssignment);
-
         List<NearestNeighbors> neighborhoods = getNearestNeighbors(unassigned, matrixL1, matrixL2, hubAssignment);
+        sortAndAssignRemaining(neighborhoods, hubAssignment, numClusters);
+    }
+
+    public static void assignRemainingEntries(int[] hubAssignment, float[][] matrix, SimilarityMetric metric,
+                                              int numClusters) {
+        List<Integer> unassigned = getUnassignedIndices(hubAssignment);
+        List<NearestNeighbors> neighborhoods = getNearestNeighbors(unassigned, matrix, metric, hubAssignment);
+        sortAndAssignRemaining(neighborhoods, hubAssignment, numClusters);
+    }
+
+    private static void sortAndAssignRemaining(List<NearestNeighbors> neighborhoods, int[] hubAssignment, int numClusters) {
         neighborhoods.sort(Comparator.comparingDouble(NearestNeighbors::getPercentUnassigned));
         for (NearestNeighbors neighborhood : neighborhoods) {
             hubAssignment[neighborhood.getIndex()] = neighborhood.getMajorityNeighborAssignment(hubAssignment,
                     numClusters);
         }
+    }
+
+    private static List<NearestNeighbors> getNearestNeighbors(List<Integer> unassigned, float[][] matrix,
+                                                              SimilarityMetric metric, int[] hubAssignment) {
+        List<NearestNeighbors> neighborhoods = new ArrayList<>(unassigned.size());
+        for (int i : unassigned) {
+            neighborhoods.add(new NearestNeighbors(i, matrix, metric, hubAssignment));
+        }
+        return neighborhoods;
     }
 
     private static List<NearestNeighbors> getNearestNeighbors(List<Integer> unassigned,
@@ -135,6 +154,7 @@ public class IterativeRefinement {
         return i + "_" + j;
     }
 
+    /*
     public static void refine(FinalMatrix fMatrix, float[][] data, SimilarityMetric metric,
                               int numClusters, int[] assignments,
                               ChromosomeHandler handler, File outputDirectory, String outputName) {
@@ -164,8 +184,9 @@ public class IterativeRefinement {
                                                                  SimilarityMetric metric) {
         List<NearestNeighbors> neighborhoods = new ArrayList<>(matrix.length);
         for (int i = 0; i < matrix.length; i++) {
-            neighborhoods.add(new NearestNeighbors(i, matrix, assignment, metric));
+            neighborhoods.add(new NearestNeighbors(i, matrix, metric, nullx));
         }
         return neighborhoods;
     }
+    */
 }

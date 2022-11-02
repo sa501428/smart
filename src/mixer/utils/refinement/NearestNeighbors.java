@@ -47,10 +47,14 @@ public class NearestNeighbors {
         percentUnassigned = setPercentUnassigned(hubs);
     }
 
-    public NearestNeighbors(int index, float[][] matrix, int[] assignment, SimilarityMetric metric) {
+    public NearestNeighbors(int index, float[][] matrix, SimilarityMetric metric, int[] hubs) {
         this.index = index;
         neighbors = getNearestN(index, matrix, metric);
-        percentUnassigned = 0;
+        if (hubs != null) {
+            percentUnassigned = setPercentUnassigned(hubs);
+        } else {
+            percentUnassigned = 0;
+        }
     }
 
     private Set<Integer> getNearestN(int index, float[][] matrix, SimilarityMetric metric) {
