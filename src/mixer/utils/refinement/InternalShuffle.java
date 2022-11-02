@@ -31,6 +31,7 @@ import javastraw.reader.type.NormalizationType;
 import mixer.utils.BedTools;
 import mixer.utils.shuffle.Partition;
 import mixer.utils.shuffle.ShuffleAction;
+import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.util.HashMap;
@@ -69,6 +70,7 @@ public class InternalShuffle {
                 }
             }
             if (bestClustering != null) {
+                SliceUtils.collapseGWList(bestClustering);
                 bestClusterings.put(k, bestClustering);
             }
         }
