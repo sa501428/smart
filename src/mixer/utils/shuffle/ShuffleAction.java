@@ -88,6 +88,10 @@ public class ShuffleAction {
 
     }
 
+    public double getResult(int index) {
+        return scoreContainer.getDirectScore(false, index);
+    }
+
     private void shuffleMap(HiCMatrix interMatrix, Map<Integer, List<Integer>> clusterToRowIndices,
                             Map<Integer, List<Integer>> clusterToColIndices,
                             File outfolder, String name, int mapIndex, Random random) {
@@ -124,7 +128,7 @@ public class ShuffleAction {
         });
 
         aggregate.scaleForNumberOfRounds(numRounds);
-        aggregate.saveToPNG(outfolder, name);
+        if (outfolder != null) aggregate.saveToPNG(outfolder, name);
         scoreContainer.updateAggregateScores(aggregate, globalAllIndices, mapIndex);
     }
 

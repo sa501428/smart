@@ -54,7 +54,7 @@ public class CLTFactory {
         if (cmd.startsWith("slice")) {
             return new Slice();
         } else if (cmd.startsWith("compare")) {
-            return new Compare();
+            return new Compare(cmd);
         } else if (cmd.startsWith("shuffle") || cmd.startsWith("chic")) {
             return new ChicScore(cmd);
         }

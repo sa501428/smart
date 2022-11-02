@@ -27,6 +27,10 @@ package mixer.utils.tracks;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.drive.FinalMatrix;
 import mixer.utils.kmeans.ClusteringMagic;
+import mixer.utils.refinement.IterativeRefinement;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
+import mixer.utils.similaritymeasures.RobustManhattanDistance;
+import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.*;
 
@@ -45,11 +49,22 @@ public class Concensus3DTools {
                 clearSectionSlices(summary, coords);
                 finalKeys.add(makeKey(coords));
             } else {
-                System.err.println("Weird error getting concensus; skipping");
+                System.err.println("Could not get consensus; skipping refinement");
                 return;
             }
         }
 
+        SimilarityMetric metric = RobustEuclideanDistance.SINGLETON;
+        if (useKMedians) metric = RobustManhattanDistance.SINGLETON;
+
+        int[] hubAssignment = assignHubs(matrix, numClusters, superClusterToIndices, finalKeys);
+        IterativeRefinement.assignRemainingEntries(hubAssignment, matrix.matrix, metric, numClusters);
+
+        clusteringMagic.exportKMeansClusteringResults(z, prefix + "_refined", useKMedians,
+                matrix.getClusteringResult(hubAssignment, handler), null);
+    }
+
+    public static int[] assignHubs(FinalMatrix matrix, int numClusters, Map<String, List<Integer>> superClusterToIndices, List<String> finalKeys) {
         int[] hubAssignment = new int[matrix.getNumRows()];
         Arrays.fill(hubAssignment, -1);
         for (int q = 0; q < numClusters; q++) {
@@ -57,9 +72,7 @@ public class Concensus3DTools {
                 hubAssignment[i] = q;
             }
         }
-
-        clusteringMagic.exportKMeansClusteringResults(z, prefix + "_hub", useKMedians, 4, 0,
-                matrix.getClusteringResult(hubAssignment, handler));
+        return hubAssignment;
     }
 
     private static int[][][] populateSummary(int numClusters, int numRows, int[][] results,

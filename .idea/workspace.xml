@@ -30,11 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="set new defaults">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="filter extreme columns">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/SmartTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/SmartTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +58,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="chic2" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -94,11 +94,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="mixer.utils.refinement" />
       <recent name="mixer.utils.drive" />
       <recent name="mixer.utils.cleaning" />
       <recent name="mixer.utils.shuffle" />
       <recent name="mixer.utils.slice.cleaning" />
-      <recent name="mixer.utils.slice.drive" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring" />
@@ -300,77 +300,7 @@
       <workItem from="1666909717746" duration="4127000" />
       <workItem from="1666931667439" duration="44451000" />
       <workItem from="1667234977734" duration="2588000" />
-      <workItem from="1667263054372" duration="11142000" />
-    </task>
-    <task id="LOCAL-00259" summary="bug fix">
-      <created>1662362769506</created>
-      <option name="number" value="00259" />
-      <option name="presentableId" value="LOCAL-00259" />
-      <option name="project" value="LOCAL" />
-      <updated>1662362769506</updated>
-    </task>
-    <task id="LOCAL-00260" summary="finalize chic">
-      <created>1662363485415</created>
-      <option name="number" value="00260" />
-      <option name="presentableId" value="LOCAL-00260" />
-      <option name="project" value="LOCAL" />
-      <updated>1662363485416</updated>
-    </task>
-    <task id="LOCAL-00261" summary="code cleanup">
-      <created>1662363865239</created>
-      <option name="number" value="00261" />
-      <option name="presentableId" value="LOCAL-00261" />
-      <option name="project" value="LOCAL" />
-      <updated>1662363865239</updated>
-    </task>
-    <task id="LOCAL-00262" summary="include symmetric score">
-      <created>1662364797007</created>
-      <option name="number" value="00262" />
-      <option name="presentableId" value="LOCAL-00262" />
-      <option name="project" value="LOCAL" />
-      <updated>1662364797007</updated>
-    </task>
-    <task id="LOCAL-00263" summary="code cleanup">
-      <created>1662365034001</created>
-      <option name="number" value="00263" />
-      <option name="presentableId" value="LOCAL-00263" />
-      <option name="project" value="LOCAL" />
-      <updated>1662365034001</updated>
-    </task>
-    <task id="LOCAL-00264" summary="code cleanup">
-      <created>1662397398764</created>
-      <option name="number" value="00264" />
-      <option name="presentableId" value="LOCAL-00264" />
-      <option name="project" value="LOCAL" />
-      <updated>1662397398764</updated>
-    </task>
-    <task id="LOCAL-00265" summary="minor edits">
-      <created>1662664503327</created>
-      <option name="number" value="00265" />
-      <option name="presentableId" value="LOCAL-00265" />
-      <option name="project" value="LOCAL" />
-      <updated>1662664503327</updated>
-    </task>
-    <task id="LOCAL-00266" summary="run different slice configurations, add deep copy options">
-      <created>1662665844946</created>
-      <option name="number" value="00266" />
-      <option name="presentableId" value="LOCAL-00266" />
-      <option name="project" value="LOCAL" />
-      <updated>1662665844946</updated>
-    </task>
-    <task id="LOCAL-00267" summary="run different slice configurations, add deep copy options, update straw">
-      <created>1664412177923</created>
-      <option name="number" value="00267" />
-      <option name="presentableId" value="LOCAL-00267" />
-      <option name="project" value="LOCAL" />
-      <updated>1664412177923</updated>
-    </task>
-    <task id="LOCAL-00268" summary="use welford based zscore">
-      <created>1664658668340</created>
-      <option name="number" value="00268" />
-      <option name="presentableId" value="LOCAL-00268" />
-      <option name="project" value="LOCAL" />
-      <updated>1664658668340</updated>
+      <workItem from="1667263054372" duration="32220000" />
     </task>
     <task id="LOCAL-00269" summary="bug fix, correct matrix handling of sparse rows">
       <created>1664678079459</created>
@@ -645,7 +575,77 @@
       <option name="project" value="LOCAL" />
       <updated>1667307243953</updated>
     </task>
-    <option name="localTasksCounter" value="308" />
+    <task id="LOCAL-00308" summary="set new defaults">
+      <created>1667341874604</created>
+      <option name="number" value="00308" />
+      <option name="presentableId" value="LOCAL-00308" />
+      <option name="project" value="LOCAL" />
+      <updated>1667341874604</updated>
+    </task>
+    <task id="LOCAL-00309" summary="redo consensus">
+      <created>1667362364209</created>
+      <option name="number" value="00309" />
+      <option name="presentableId" value="LOCAL-00309" />
+      <option name="project" value="LOCAL" />
+      <updated>1667362364209</updated>
+    </task>
+    <task id="LOCAL-00310" summary="iterative refinement">
+      <created>1667394222900</created>
+      <option name="number" value="00310" />
+      <option name="presentableId" value="LOCAL-00310" />
+      <option name="project" value="LOCAL" />
+      <updated>1667394222900</updated>
+    </task>
+    <task id="LOCAL-00311" summary="restore original clustering">
+      <created>1667398410284</created>
+      <option name="number" value="00311" />
+      <option name="presentableId" value="LOCAL-00311" />
+      <option name="project" value="LOCAL" />
+      <updated>1667398410284</updated>
+    </task>
+    <task id="LOCAL-00312" summary="before cleanup">
+      <created>1667398598823</created>
+      <option name="number" value="00312" />
+      <option name="presentableId" value="LOCAL-00312" />
+      <option name="project" value="LOCAL" />
+      <updated>1667398598823</updated>
+    </task>
+    <task id="LOCAL-00313" summary="after cleanup">
+      <created>1667398824677</created>
+      <option name="number" value="00313" />
+      <option name="presentableId" value="LOCAL-00313" />
+      <option name="project" value="LOCAL" />
+      <updated>1667398824677</updated>
+    </task>
+    <task id="LOCAL-00314" summary="updates, cleanup, version for deployment">
+      <created>1667404204642</created>
+      <option name="number" value="00314" />
+      <option name="presentableId" value="LOCAL-00314" />
+      <option name="project" value="LOCAL" />
+      <updated>1667404204642</updated>
+    </task>
+    <task id="LOCAL-00315" summary="update output directories">
+      <created>1667404543596</created>
+      <option name="number" value="00315" />
+      <option name="presentableId" value="LOCAL-00315" />
+      <option name="project" value="LOCAL" />
+      <updated>1667404543596</updated>
+    </task>
+    <task id="LOCAL-00316" summary="bug fix">
+      <created>1667405975604</created>
+      <option name="number" value="00316" />
+      <option name="presentableId" value="LOCAL-00316" />
+      <option name="project" value="LOCAL" />
+      <updated>1667405975604</updated>
+    </task>
+    <task id="LOCAL-00317" summary="add per chromosome comparison">
+      <created>1667409044723</created>
+      <option name="number" value="00317" />
+      <option name="presentableId" value="LOCAL-00317" />
+      <option name="project" value="LOCAL" />
+      <updated>1667409044723</updated>
+    </task>
+    <option name="localTasksCounter" value="318" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -669,15 +669,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="updated clutering" />
-    <MESSAGE value="updated clustering" />
-    <MESSAGE value="working version" />
-    <MESSAGE value="latest working version, update straw" />
-    <MESSAGE value="reorganize expected handling" />
-    <MESSAGE value="cleanup structuring" />
-    <MESSAGE value="restore version" />
-    <MESSAGE value="update to include intra" />
-    <MESSAGE value="use expanded OE, new defaults" />
     <MESSAGE value="longer iterations, no cosine" />
     <MESSAGE value="current version" />
     <MESSAGE value="update clustering" />
@@ -694,7 +685,16 @@
     <MESSAGE value="switch to double for scores" />
     <MESSAGE value="set new version" />
     <MESSAGE value="set new defaults" />
-    <option name="LAST_COMMIT_MESSAGE" value="set new defaults" />
+    <MESSAGE value="redo consensus" />
+    <MESSAGE value="iterative refinement" />
+    <MESSAGE value="restore original clustering" />
+    <MESSAGE value="before cleanup" />
+    <MESSAGE value="after cleanup" />
+    <MESSAGE value="updates, cleanup, version for deployment" />
+    <MESSAGE value="update output directories" />
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="add per chromosome comparison" />
+    <option name="LAST_COMMIT_MESSAGE" value="add per chromosome comparison" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
