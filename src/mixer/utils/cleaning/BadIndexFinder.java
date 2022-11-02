@@ -41,42 +41,44 @@ import java.util.Set;
 public class BadIndexFinder {
     protected static final NormalizationType VC = NormalizationHandler.VC;
     private static final int ZSCORE_MIN_NONZERO_COVERAGE = -3;
-    private static final int ZSCORE_MAX_NONZERO_COVERAGE = 3;
+    private static final int ZSCORE_MAX_NONZERO_COVERAGE = 5;
 
     public static Map<Integer, Set<Integer>> getBadIndices(Dataset dataset, Chromosome[] chromosomes,
-                                                           int resolution) {
+                                                           int resolution, NormalizationType norm) {
         Map<Integer, Set<Integer>> badIndices = new HashMap<>();
 
         for (Chromosome chromosome : chromosomes) {
-            NormalizationVector nv = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), VC);
-            badIndices.put(chromosome.getIndex(), updateCoverageStats(nv, chromosome, resolution));
+            NormalizationVector nv1 = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), VC);
+            NormalizationVector nv2 = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), norm);
+            Set<Integer> badValues = getBadCoverageRowsFromNorm(nv1, chromosome, resolution);
+            badValues.addAll(getBadCoverageRowsFromNorm(nv2, chromosome, resolution));
+            badIndices.put(chromosome.getIndex(), badValues);
         }
         return badIndices;
     }
 
-    private static Set<Integer> updateCoverageStats(NormalizationVector normalizationVector, Chromosome chromosome,
-                                                    int resolution) {
+    private static Set<Integer> getBadCoverageRowsFromNorm(NormalizationVector normalizationVector, Chromosome chromosome,
+                                                           int resolution) {
         double[] vector = normalizationVector.getData().getValues().get(0);
-        Zscore zLog = getZscore(vector);
+        Zscore zLog = getZscoreOfLogs(vector);
 
         int realLength = (int) (1 + (chromosome.getLength() / resolution));
-
-        Set<Integer> values = new HashSet<>();
+        Set<Integer> badIndices = new HashSet<>();
         for (int i = 0; i < realLength; i++) {
             if (vector[i] > 0) {
                 double val = Math.log(vector[i]);
                 double z = zLog.getZscore(val);
-                if (z < ZSCORE_MIN_NONZERO_COVERAGE) { // || z > ZSCORE_MAX_NONZERO_COVERAGE
-                    values.add(i);
+                if (z < ZSCORE_MIN_NONZERO_COVERAGE || z > ZSCORE_MAX_NONZERO_COVERAGE) { //
+                    badIndices.add(i);
                 }
             } else {
-                values.add(i);
+                badIndices.add(i);
             }
         }
-        return values;
+        return badIndices;
     }
 
-    private static Zscore getZscore(double[] vector) {
+    private static Zscore getZscoreOfLogs(double[] vector) {
         Welford welford = new Welford();
         for (double val : vector) {
             if (val > 0) {

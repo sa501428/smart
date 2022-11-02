@@ -113,7 +113,7 @@ public class Slice extends MixerCLT {
         ChromosomeHandler handler = ds.getChromosomeHandler();
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
 
-        Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution);
+        Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution, norms[INTRA_SCALE_INDEX]);
         File tempOutputDirectory = new File(parentDirectory, "work");
         UNIXTools.makeDir(tempOutputDirectory);
         SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, tempOutputDirectory,

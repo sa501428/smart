@@ -30,11 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="filter extreme columns">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Compare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Compare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -300,14 +300,7 @@
       <workItem from="1666909717746" duration="4127000" />
       <workItem from="1666931667439" duration="44451000" />
       <workItem from="1667234977734" duration="2588000" />
-      <workItem from="1667263054372" duration="29996000" />
-    </task>
-    <task id="LOCAL-00268" summary="use welford based zscore">
-      <created>1664658668340</created>
-      <option name="number" value="00268" />
-      <option name="presentableId" value="LOCAL-00268" />
-      <option name="project" value="LOCAL" />
-      <updated>1664658668340</updated>
+      <workItem from="1667263054372" duration="32220000" />
     </task>
     <task id="LOCAL-00269" summary="bug fix, correct matrix handling of sparse rows">
       <created>1664678079459</created>
@@ -645,7 +638,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667405975604</updated>
     </task>
-    <option name="localTasksCounter" value="317" />
+    <task id="LOCAL-00317" summary="add per chromosome comparison">
+      <created>1667409044723</created>
+      <option name="number" value="00317" />
+      <option name="presentableId" value="LOCAL-00317" />
+      <option name="project" value="LOCAL" />
+      <updated>1667409044723</updated>
+    </task>
+    <option name="localTasksCounter" value="318" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -669,7 +669,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="use expanded OE, new defaults" />
     <MESSAGE value="longer iterations, no cosine" />
     <MESSAGE value="current version" />
     <MESSAGE value="update clustering" />
@@ -694,7 +693,8 @@
     <MESSAGE value="updates, cleanup, version for deployment" />
     <MESSAGE value="update output directories" />
     <MESSAGE value="bug fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix" />
+    <MESSAGE value="add per chromosome comparison" />
+    <option name="LAST_COMMIT_MESSAGE" value="add per chromosome comparison" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

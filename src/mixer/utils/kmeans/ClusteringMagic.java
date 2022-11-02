@@ -65,11 +65,11 @@ public class ClusteringMagic {
         }
 
         System.out.println("Genome-wide KMeans clustering");
-        matrix.inPlaceScaleSqrtWeightCol();
+        // todo matrix.inPlaceScaleSqrtWeightCol();
         runClusteringOnMatrix(prefix, false, outputs);
 
         System.out.println("Genome-wide KMedians clustering");
-        matrix.inPlaceScaleSqrtWeightCol();
+        // todo matrix.inPlaceScaleSqrtWeightCol();
         runClusteringOnMatrix(prefix, true, outputs);
         return outputs;
     }
