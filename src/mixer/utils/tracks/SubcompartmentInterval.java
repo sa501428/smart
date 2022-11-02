@@ -72,7 +72,8 @@ public class SubcompartmentInterval extends SimpleInterval {
 
     @Override
     public String toString() {
-        return "chr" + getChrName() + "\t" + getX1() + "\t" + getX2() + "\t" + clusterName + "\t" + clusterID
+        String initialName = getChrName().replace("chr", "");
+        return "chr" + initialName + "\t" + getX1() + "\t" + getX2() + "\t" + clusterName + "\t" + clusterID
                 + "\t.\t" + getX1() + "\t" + getX2() + "\t" + ColorMap.getColorString(clusterID);
     }
 
