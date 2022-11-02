@@ -31,6 +31,7 @@ import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.norm.NormalizationPicker;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
+import javastraw.tools.UNIXTools;
 import mixer.SmartTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
@@ -64,7 +65,7 @@ public class Slice extends MixerCLT {
     private final Random generator = new Random(22871L);
     private int resolution = 100000;
     private Dataset ds;
-    private File outputDirectory;
+    private File parentDirectory;
     private NormalizationType[] norms;
     boolean useExpandedIntraOE = true;
 
@@ -94,7 +95,7 @@ public class Slice extends MixerCLT {
             printUsageAndExit(5);
         }
 
-        outputDirectory = HiCFileTools.createValidDirectory(args[3]);
+        parentDirectory = HiCFileTools.createValidDirectory(args[3]);
         norms = populateNormalizations(ds);
         updateGeneratorSeed(mixerParser, generator);
     }
@@ -113,39 +114,43 @@ public class Slice extends MixerCLT {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
 
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution);
-        SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, outputDirectory,
+        File tempOutputDirectory = new File(parentDirectory, "work");
+        UNIXTools.makeDir(tempOutputDirectory);
+        SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, tempOutputDirectory,
                 badIndices, resolution);
         BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
-                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), outputDirectory,
+                badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), tempOutputDirectory,
                 useExpandedIntraOE);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, outputDirectory);
+                norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, tempOutputDirectory);
 
         runWithSettings(slice0, handler, chromosomes,
-                true, false, false, true, false, false);
+                true, false, false, true, false, false,
+                tempOutputDirectory);
         System.out.println("\nSLICE complete");
     }
 
     private void runWithSettings(MatrixAndWeight slice0, ChromosomeHandler handler, Chromosome[] chromosomes,
                                  boolean includeIntra, boolean useLog, boolean useBothNorms,
-                                 boolean appendIntra, boolean useRowZ, boolean shouldRegularize) {
+                                 boolean appendIntra, boolean useRowZ, boolean shouldRegularize,
+                                 File tempOutputDirectory) {
         String stem = getNewPrefix(includeIntra, useLog, useBothNorms, appendIntra, useRowZ, shouldRegularize);
         FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes, includeIntra, useLog,
                 useBothNorms, appendIntra, useRowZ, shouldRegularize);
 
         if (slice.notEmpty()) {
             if (SmartTools.printVerboseComments) {
-                slice.export(outputDirectory, stem);
+                slice.export(tempOutputDirectory, stem);
             }
-            ClusteringMagic clustering = new ClusteringMagic(slice, outputDirectory, handler, generator.nextLong());
+            ClusteringMagic clustering = new ClusteringMagic(slice, tempOutputDirectory, handler, generator.nextLong());
             Map<Integer, List<String>> bedFiles = clustering.extractFinalGWSubcompartments(stem);
             System.out.print("*");
             Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings =
                     InternalShuffle.determineBest(bedFiles, resolution,
                             handler, ds, norms[INTER_SCALE_INDEX]);
             for (int k : bestClusterings.keySet()) {
-                File outBedFile = new File(outputDirectory, stem + "_k" + k + "_best_clusters.bed"); // "_wcss" + wcss +
+                File outBedFile = new File(parentDirectory, stem + "_k" + k + "_best_clusters.bed"); // "_wcss" + wcss +
                 bestClusterings.get(k).simpleExport(outBedFile);
             }
             System.out.println(">>");

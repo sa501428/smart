@@ -26,7 +26,6 @@ package mixer.utils.kmeans;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
-import javastraw.tools.UNIXTools;
 import mixer.utils.drive.FinalMatrix;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
@@ -43,12 +42,11 @@ public class ClusteringMagic {
     protected final FinalMatrix matrix;
     protected final ChromosomeHandler handler;
 
-    public ClusteringMagic(FinalMatrix matrix, File parentDirectory,
+    public ClusteringMagic(FinalMatrix matrix, File outputDirectory,
                            ChromosomeHandler handler, long seed) {
         this.matrix = matrix;
         this.handler = handler;
-        this.outputDirectory = new File(parentDirectory, "work");
-        UNIXTools.makeDir(outputDirectory);
+        this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
     }
 
