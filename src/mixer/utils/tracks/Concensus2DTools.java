@@ -30,7 +30,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Concensus2DTools {
-    public static void checkOverlap(GenomeWide1DList<SubcompartmentInterval> file1, GenomeWide1DList<SubcompartmentInterval> file2) {
+
+    public static void checkOverlapPerChrom(GenomeWide1DList<SubcompartmentInterval> file1, GenomeWide1DList<SubcompartmentInterval> file2) {
+        Map<String, Map<Integer, Integer>> map1 = summarize(file1);
+        Map<String, Map<Integer, Integer>> map2 = summarize(file2);
+        for (String key : map1.keySet()) {
+            int[][] summary = populateSummary(map1, map2, key);
+            double totalDenom = sum(summary);
+            double totalNum = 0;
+
+            int minNum = Math.min(summary.length, summary[0].length);
+            for (int q = 0; q < minNum; q++) {
+                int[] coords = getMaxCoordinates(summary);
+                if (coords != null) {
+                    totalNum += summary[coords[0]][coords[1]];
+                    clearSectionSlices(summary, coords);
+                } else {
+                    break;
+                }
+            }
+            System.out.println("Accuracy for " + key + " " + (100 * totalNum / totalDenom));
+        }
+    }
+
+    public static void checkOverlap(GenomeWide1DList<SubcompartmentInterval> file1,
+                                    GenomeWide1DList<SubcompartmentInterval> file2) {
 
         int[][] summary = populateSummary(file1, file2);
         double totalDenom = sum(summary);
@@ -78,6 +102,22 @@ public class Concensus2DTools {
             }
         }
 
+        return counts;
+    }
+
+    private static int[][] populateSummary(Map<String, Map<Integer, Integer>> map1,
+                                           Map<String, Map<Integer, Integer>> map2,
+                                           String key) {
+        int n = Math.max(getMaxId(map1), getMaxId(map2)) + 1;
+        int[][] counts = new int[n][n];
+        Map<Integer, Integer> mapping1 = map1.get(key);
+        Map<Integer, Integer> mapping2 = map2.get(key);
+        for (Integer pos : mapping1.keySet()) {
+            if (mapping2.containsKey(pos)) {
+                if (mapping1.get(pos) >= 0 && mapping2.get(pos) >= 0)
+                    counts[mapping1.get(pos)][mapping2.get(pos)]++;
+            }
+        }
         return counts;
     }
 
@@ -133,4 +173,5 @@ public class Concensus2DTools {
     private static String makeKey(int i, int j, int k) {
         return i + "_" + j + "_" + k;
     }
+
 }
