@@ -92,14 +92,7 @@ public class Concensus2DTools {
         int n = Math.max(getMaxId(map1), getMaxId(map2)) + 1;
         int[][] counts = new int[n][n];
         for (String key : map1.keySet()) {
-            Map<Integer, Integer> mapping1 = map1.get(key);
-            Map<Integer, Integer> mapping2 = map2.get(key);
-            for (Integer pos : mapping1.keySet()) {
-                if (mapping2.containsKey(pos)) {
-                    if (mapping1.get(pos) >= 0 && mapping2.get(pos) >= 0)
-                        counts[mapping1.get(pos)][mapping2.get(pos)]++;
-                }
-            }
+            populateContingencyTable(map1, map2, key, counts);
         }
 
         return counts;
@@ -110,6 +103,11 @@ public class Concensus2DTools {
                                            String key) {
         int n = Math.max(getMaxId(map1), getMaxId(map2)) + 1;
         int[][] counts = new int[n][n];
+        populateContingencyTable(map1, map2, key, counts);
+        return counts;
+    }
+
+    private static void populateContingencyTable(Map<String, Map<Integer, Integer>> map1, Map<String, Map<Integer, Integer>> map2, String key, int[][] counts) {
         Map<Integer, Integer> mapping1 = map1.get(key);
         Map<Integer, Integer> mapping2 = map2.get(key);
         for (Integer pos : mapping1.keySet()) {
@@ -118,7 +116,6 @@ public class Concensus2DTools {
                     counts[mapping1.get(pos)][mapping2.get(pos)]++;
             }
         }
-        return counts;
     }
 
     private static int getMaxId(Map<String, Map<Integer, Integer>> map) {

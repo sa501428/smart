@@ -39,11 +39,12 @@ public class Compare extends MixerCLT {
 
     private GenomeWide1DList<SubcompartmentInterval> file1, file2;
     private int resolution = 1000;
-    private final boolean perChromosome;
+    private final boolean perChromosome, doARI;
 
     public Compare(String name) {
         super("compare-per-chrom [-r resolution] <genomeID> <file1.bed> <file2.bed>");
         perChromosome = name.contains("per") && name.contains("chrom");
+        doARI = name.contains("ari");
     }
 
     @Override
@@ -66,9 +67,13 @@ public class Compare extends MixerCLT {
 
     @Override
     public void run() {
-        if (perChromosome) {
-            Concensus2DTools.checkOverlapPerChrom(file1, file2);
+        if (doARI) {
+
+        } else {
+            if (perChromosome) {
+                Concensus2DTools.checkOverlapPerChrom(file1, file2);
+            }
+            Concensus2DTools.checkOverlap(file1, file2);
         }
-        Concensus2DTools.checkOverlap(file1, file2);
     }
 }

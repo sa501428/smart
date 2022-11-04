@@ -53,7 +53,7 @@ public class CLTFactory {
         cmd = cmd.toLowerCase();
         if (cmd.startsWith("slice")) {
             return new Slice();
-        } else if (cmd.startsWith("compare")) {
+        } else if (cmd.startsWith("compare") || cmd.startsWith("ari")) {
             return new Compare(cmd);
         } else if (cmd.startsWith("shuffle") || cmd.startsWith("chic")) {
             return new ChicScore(cmd);
