@@ -74,7 +74,7 @@ public class Concensus2DTools {
         System.out.println("Accuracy " + (100 * totalNum / totalDenom));
     }
 
-    private static int sum(int[][] matrix) {
+    public static int sum(int[][] matrix) {
         int total = 0;
         for (int[] row : matrix) {
             for (int val : row) {
@@ -84,7 +84,7 @@ public class Concensus2DTools {
         return total;
     }
 
-    private static int[][] populateSummary(GenomeWide1DList<SubcompartmentInterval> file1, GenomeWide1DList<SubcompartmentInterval> file2) {
+    public static int[][] populateSummary(GenomeWide1DList<SubcompartmentInterval> file1, GenomeWide1DList<SubcompartmentInterval> file2) {
 
         Map<String, Map<Integer, Integer>> map1 = summarize(file1);
         Map<String, Map<Integer, Integer>> map2 = summarize(file2);

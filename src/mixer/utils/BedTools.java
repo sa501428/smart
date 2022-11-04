@@ -108,7 +108,7 @@ public class BedTools {
 
     private static int updateMapAndConfirmVal(String id, Map<String, Integer> idToVal, AtomicInteger idCounter) {
         if (!idToVal.containsKey(id)) {
-            idToVal.put(id, idCounter.incrementAndGet());
+            idToVal.put(id, idCounter.getAndIncrement());
         }
         return idToVal.get(id);
     }

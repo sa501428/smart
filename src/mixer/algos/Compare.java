@@ -30,6 +30,7 @@ import javastraw.reader.basics.ChromosomeTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
+import mixer.utils.tracks.ARITools;
 import mixer.utils.tracks.Concensus2DTools;
 import mixer.utils.tracks.SubcompartmentInterval;
 
@@ -42,14 +43,14 @@ public class Compare extends MixerCLT {
     private final boolean perChromosome, doARI;
 
     public Compare(String name) {
-        super("compare-per-chrom [-r resolution] <genomeID> <file1.bed> <file2.bed>");
+        super("compare-per-chrom [-r resolution] <genomeID> <file1.bed> <file2.bed> ... <fileN.bed>");
         perChromosome = name.contains("per") && name.contains("chrom");
         doARI = name.contains("ari");
     }
 
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
-        if (args.length != 4) {
+        if (args.length < 4) {
             printUsageAndExit(51);
         }
 
@@ -68,7 +69,7 @@ public class Compare extends MixerCLT {
     @Override
     public void run() {
         if (doARI) {
-
+            System.out.println("ARI = " + ARITools.getARI(file1, file2));
         } else {
             if (perChromosome) {
                 Concensus2DTools.checkOverlapPerChrom(file1, file2);

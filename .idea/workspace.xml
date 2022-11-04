@@ -31,9 +31,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/ARITools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Compare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Compare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/BedTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/BedTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -301,14 +302,8 @@
       <workItem from="1666931667439" duration="44451000" />
       <workItem from="1667234977734" duration="2588000" />
       <workItem from="1667263054372" duration="32220000" />
-      <workItem from="1667530065102" duration="785000" />
-    </task>
-    <task id="LOCAL-00270" summary="bug fix, correct matrix handling of sparse rows">
-      <created>1664695980681</created>
-      <option name="number" value="00270" />
-      <option name="presentableId" value="LOCAL-00270" />
-      <option name="project" value="LOCAL" />
-      <updated>1664695980681</updated>
+      <workItem from="1667530065102" duration="4945000" />
+      <workItem from="1667577864931" duration="826000" />
     </task>
     <task id="LOCAL-00271" summary="graph idea, oe updates">
       <created>1664770580991</created>
@@ -646,7 +641,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667415286068</updated>
     </task>
-    <option name="localTasksCounter" value="319" />
+    <task id="LOCAL-00319" summary="restructure for ARI">
+      <created>1667533872080</created>
+      <option name="number" value="00319" />
+      <option name="presentableId" value="LOCAL-00319" />
+      <option name="project" value="LOCAL" />
+      <updated>1667533872080</updated>
+    </task>
+    <option name="localTasksCounter" value="320" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -670,7 +672,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="longer iterations, no cosine" />
     <MESSAGE value="current version" />
     <MESSAGE value="update clustering" />
     <MESSAGE value="update expected model" />
@@ -695,7 +696,8 @@
     <MESSAGE value="update output directories" />
     <MESSAGE value="add per chromosome comparison" />
     <MESSAGE value="bug fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix" />
+    <MESSAGE value="restructure for ARI" />
+    <option name="LAST_COMMIT_MESSAGE" value="restructure for ARI" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
