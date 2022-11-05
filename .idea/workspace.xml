@@ -30,12 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/ARITools.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="add ARI calculation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Compare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Compare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/BedTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/BedTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -303,14 +302,7 @@
       <workItem from="1667234977734" duration="2588000" />
       <workItem from="1667263054372" duration="32220000" />
       <workItem from="1667530065102" duration="4945000" />
-      <workItem from="1667577864931" duration="826000" />
-    </task>
-    <task id="LOCAL-00271" summary="graph idea, oe updates">
-      <created>1664770580991</created>
-      <option name="number" value="00271" />
-      <option name="presentableId" value="LOCAL-00271" />
-      <option name="project" value="LOCAL" />
-      <updated>1664770580991</updated>
+      <workItem from="1667577864931" duration="3860000" />
     </task>
     <task id="LOCAL-00272" summary="abstraction of index splitter">
       <created>1664773460231</created>
@@ -648,7 +640,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667533872080</updated>
     </task>
-    <option name="localTasksCounter" value="320" />
+    <task id="LOCAL-00320" summary="add ARI calculation">
+      <created>1667596021262</created>
+      <option name="number" value="00320" />
+      <option name="presentableId" value="LOCAL-00320" />
+      <option name="project" value="LOCAL" />
+      <updated>1667596021262</updated>
+    </task>
+    <option name="localTasksCounter" value="321" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -672,7 +671,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="current version" />
     <MESSAGE value="update clustering" />
     <MESSAGE value="update expected model" />
     <MESSAGE value="create infrastructure for 2Norms" />
@@ -697,7 +695,8 @@
     <MESSAGE value="add per chromosome comparison" />
     <MESSAGE value="bug fix" />
     <MESSAGE value="restructure for ARI" />
-    <option name="LAST_COMMIT_MESSAGE" value="restructure for ARI" />
+    <MESSAGE value="add ARI calculation" />
+    <option name="LAST_COMMIT_MESSAGE" value="add ARI calculation" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

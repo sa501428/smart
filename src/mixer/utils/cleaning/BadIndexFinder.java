@@ -48,27 +48,34 @@ public class BadIndexFinder {
         Map<Integer, Set<Integer>> badIndices = new HashMap<>();
 
         for (Chromosome chromosome : chromosomes) {
-            NormalizationVector nv1 = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), VC);
-            NormalizationVector nv2 = dataset.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), norm);
-            Set<Integer> badValues = getBadCoverageRowsFromNorm(nv1, chromosome, resolution);
-            badValues.addAll(getBadCoverageRowsFromNorm(nv2, chromosome, resolution));
+            Set<Integer> badValues = getBadCoverageRowsFromNorm(dataset, VC, chromosome, resolution);
+            badValues.addAll(getBadCoverageRowsFromNorm(dataset, norm, chromosome, resolution));
             badIndices.put(chromosome.getIndex(), badValues);
         }
         return badIndices;
     }
 
-    private static Set<Integer> getBadCoverageRowsFromNorm(NormalizationVector normalizationVector, Chromosome chromosome,
+    private static Set<Integer> getBadCoverageRowsFromNorm(Dataset ds, NormalizationType norm, Chromosome chromosome,
                                                            int resolution) {
-        double[] vector = normalizationVector.getData().getValues().get(0);
+        double[] vector;
+        try {
+            NormalizationVector nv = ds.getNormalizationVector(chromosome.getIndex(), new HiCZoom(resolution), norm);
+            vector = nv.getData().getValues().get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("\n" + norm.getLabel() + " vector missing " + chromosome.getName() + "\n");
+            return new HashSet<>();
+        }
+        if (vector.length < 2) return new HashSet<>();
+
         Zscore zLog = getZscoreOfLogs(vector);
 
         int realLength = (int) (1 + (chromosome.getLength() / resolution));
         Set<Integer> badIndices = new HashSet<>();
         for (int i = 0; i < realLength; i++) {
             if (vector[i] > 0) {
-                double val = Math.log(vector[i]);
-                double z = zLog.getZscore(val);
-                if (z < ZSCORE_MIN_NONZERO_COVERAGE || z > ZSCORE_MAX_NONZERO_COVERAGE) { //
+                double z = zLog.getZscore(Math.log(vector[i]));
+                if (z < ZSCORE_MIN_NONZERO_COVERAGE || z > ZSCORE_MAX_NONZERO_COVERAGE) {
                     badIndices.add(i);
                 }
             } else {

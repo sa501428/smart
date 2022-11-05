@@ -31,7 +31,10 @@ import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class ClusteringMagic {
     public static int startingClusterSizeK = 2;
@@ -56,22 +59,21 @@ public class ClusteringMagic {
         return prefix + "_" + kstem + "_k" + k + "_clusters.bed";
     }
 
-    public Map<Integer, List<String>> extractFinalGWSubcompartments(String prefix) {
-
-        Map<Integer, List<String>> outputs = new HashMap<>();
+    public void extractFinalGWSubcompartments(String prefix, Map<Integer, List<String>> bedFiles) {
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             int numClusters = z + startingClusterSizeK;
-            outputs.put(numClusters, new ArrayList<>(2));
+            if (!bedFiles.containsKey(numClusters)) {
+                bedFiles.put(numClusters, new ArrayList<>(2));
+            }
         }
 
         System.out.println("Genome-wide KMeans clustering");
         // todo matrix.inPlaceScaleSqrtWeightCol();
-        runClusteringOnMatrix(prefix, false, outputs);
+        runClusteringOnMatrix(prefix, false, bedFiles);
 
         System.out.println("Genome-wide KMedians clustering");
         // todo matrix.inPlaceScaleSqrtWeightCol();
-        runClusteringOnMatrix(prefix, true, outputs);
-        return outputs;
+        runClusteringOnMatrix(prefix, true, bedFiles);
     }
 
     private void runClusteringOnMatrix(String prefix, boolean useKMedians, Map<Integer, List<String>> outputs) {

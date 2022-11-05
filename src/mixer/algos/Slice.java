@@ -48,10 +48,7 @@ import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.SimpleTranslocationFinder;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * experimental code
@@ -125,16 +122,24 @@ public class Slice extends MixerCLT {
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
                 norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, tempOutputDirectory);
 
+        Map<Integer, List<String>> bedFiles = new HashMap<>();
         runWithSettings(slice0, handler, chromosomes,
                 true, false, false, true, false, false,
-                tempOutputDirectory);
+                tempOutputDirectory, bedFiles);
+
+        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings = InternalShuffle.determineBest(bedFiles, resolution,
+                handler, ds, norms[INTER_SCALE_INDEX]);
+        for (int k : bestClusterings.keySet()) {
+            File outBedFile = new File(parentDirectory, "SLICE_k" + k + "_best_clusters.bed"); // "_wcss" + wcss +
+            bestClusterings.get(k).simpleExport(outBedFile);
+        }
         System.out.println("\nSLICE complete");
     }
 
     private void runWithSettings(MatrixAndWeight slice0, ChromosomeHandler handler, Chromosome[] chromosomes,
                                  boolean includeIntra, boolean useLog, boolean useBothNorms,
                                  boolean appendIntra, boolean useRowZ, boolean shouldRegularize,
-                                 File tempOutputDirectory) {
+                                 File tempOutputDirectory, Map<Integer, List<String>> bedFiles) {
         String stem = getNewPrefix(includeIntra, useLog, useBothNorms, appendIntra, useRowZ, shouldRegularize);
         FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes, includeIntra, useLog,
                 useBothNorms, appendIntra, useRowZ, shouldRegularize);
@@ -144,16 +149,7 @@ public class Slice extends MixerCLT {
                 slice.export(tempOutputDirectory, stem);
             }
             ClusteringMagic clustering = new ClusteringMagic(slice, tempOutputDirectory, handler, generator.nextLong());
-            Map<Integer, List<String>> bedFiles = clustering.extractFinalGWSubcompartments(stem);
-            System.out.print("*");
-            Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings =
-                    InternalShuffle.determineBest(bedFiles, resolution,
-                            handler, ds, norms[INTER_SCALE_INDEX]);
-            for (int k : bestClusterings.keySet()) {
-                File outBedFile = new File(parentDirectory, stem + "_k" + k + "_best_clusters.bed"); // "_wcss" + wcss +
-                bestClusterings.get(k).simpleExport(outBedFile);
-            }
-            System.out.println(">>");
+            clustering.extractFinalGWSubcompartments(stem, bedFiles);
         }
     }
 
@@ -171,7 +167,6 @@ public class Slice extends MixerCLT {
         } else {
             stem += "_EXP";
         }
-
         if (shouldRegularize) {
             stem += "_REG";
         } else {
