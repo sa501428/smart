@@ -44,7 +44,7 @@ public class CLTFactory {
         System.out.println("\t" + "-h, --help print help");
         System.out.println("\t" + "-v, --verbose verbose mode");
         System.out.println("\t" + "-V, --version print version");
-        System.out.println("Tool(s): slice");
+        System.out.println("Tool(s): slice, compare, ari, shuffle, chic");
         System.out.println("Type mixer_tools <commandName> for more detailed usage instructions");
     }
 

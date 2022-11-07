@@ -27,6 +27,7 @@ package mixer.algos;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.basics.ChromosomeTools;
+import javastraw.tools.MatrixTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
@@ -34,23 +35,26 @@ import mixer.utils.tracks.ARITools;
 import mixer.utils.tracks.Concensus2DTools;
 import mixer.utils.tracks.SubcompartmentInterval;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Compare extends MixerCLT {
 
-    private GenomeWide1DList<SubcompartmentInterval> file1, file2;
+    private List<GenomeWide1DList<SubcompartmentInterval>> files;
     private int resolution = 1000;
     private final boolean perChromosome, doARI;
+    private String outputName;
 
     public Compare(String name) {
-        super("compare-per-chrom [-r resolution] <genomeID> <file1.bed> <file2.bed> ... <fileN.bed>");
+        super("compare[-per-chrom] [-r resolution] <genomeID> <output.npy> <file1.bed> <file2.bed> ... <fileN.bed>\n" +
+                "ari [-r resolution] <genomeID> <output.npy> <file1.bed> <file2.bed> ... <fileN.bed>");
         perChromosome = name.contains("per") && name.contains("chrom");
         doARI = name.contains("ari");
     }
 
     @Override
     protected void readMixerArguments(String[] args, CommandLineParserForMixer mixerParser) {
-        if (args.length < 4) {
+        if (args.length < 5) {
             printUsageAndExit(51);
         }
 
@@ -62,19 +66,38 @@ public class Compare extends MixerCLT {
         }
 
         ChromosomeHandler handler = ChromosomeTools.loadChromosomes(args[1]);
-        file1 = BedTools.loadBedFileAtResolution(handler, args[2], resolution);
-        file2 = BedTools.loadBedFileAtResolution(handler, args[3], resolution);
+        outputName = args[2];
+        files = new ArrayList<>();
+        for (int k = 3; k < args.length; k++) {
+            files.add(BedTools.loadBedFileAtResolution(handler, args[k], resolution));
+        }
     }
 
     @Override
     public void run() {
-        if (doARI) {
-            System.out.println("ARI = " + ARITools.getARI(file1, file2));
-        } else {
-            if (perChromosome) {
-                Concensus2DTools.checkOverlapPerChrom(file1, file2);
+        if (files.size() == 2) {
+            if (doARI) {
+                System.out.println("ARI = " + ARITools.getARI(files.get(0), files.get(1)));
+            } else {
+                if (perChromosome) {
+                    Concensus2DTools.checkOverlapPerChrom(files.get(0), files.get(1));
+                }
+                double accuracy = Concensus2DTools.checkOverlap(files.get(0), files.get(1));
+                System.out.println("Accuracy " + (100 * accuracy));
             }
-            Concensus2DTools.checkOverlap(file1, file2);
+        } else {
+            double[][] result = new double[files.size()][files.size()];
+            for (int i = 0; i < result.length; i++) {
+                for (int j = i; j < result.length; j++) {
+                    if (doARI) {
+                        result[i][j] = ARITools.getARI(files.get(i), files.get(j));
+                    } else {
+                        result[i][j] = Concensus2DTools.checkOverlap(files.get(i), files.get(j));
+                    }
+                    result[j][i] = result[i][j];
+                }
+            }
+            MatrixTools.saveMatrixTextNumpy(outputName, result);
         }
     }
 }

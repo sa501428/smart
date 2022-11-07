@@ -30,11 +30,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="add ARI calculation">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/BadIndexFinder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Compare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Compare.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -302,21 +301,9 @@
       <workItem from="1667234977734" duration="2588000" />
       <workItem from="1667263054372" duration="32220000" />
       <workItem from="1667530065102" duration="4945000" />
-      <workItem from="1667577864931" duration="3860000" />
-    </task>
-    <task id="LOCAL-00272" summary="abstraction of index splitter">
-      <created>1664773460231</created>
-      <option name="number" value="00272" />
-      <option name="presentableId" value="LOCAL-00272" />
-      <option name="project" value="LOCAL" />
-      <updated>1664773460231</updated>
-    </task>
-    <task id="LOCAL-00273" summary="change bin splitting">
-      <created>1664775333479</created>
-      <option name="number" value="00273" />
-      <option name="presentableId" value="LOCAL-00273" />
-      <option name="project" value="LOCAL" />
-      <updated>1664775333479</updated>
+      <workItem from="1667577864931" duration="5209000" />
+      <workItem from="1667784859246" duration="69000" />
+      <workItem from="1667785564692" duration="1007000" />
     </task>
     <task id="LOCAL-00274" summary="adjust bin splitting parameter">
       <created>1664775977652</created>
@@ -647,7 +634,21 @@
       <option name="project" value="LOCAL" />
       <updated>1667596021262</updated>
     </task>
-    <option name="localTasksCounter" value="321" />
+    <task id="LOCAL-00321" summary="update error handling">
+      <created>1667671807464</created>
+      <option name="number" value="00321" />
+      <option name="presentableId" value="LOCAL-00321" />
+      <option name="project" value="LOCAL" />
+      <updated>1667671807464</updated>
+    </task>
+    <task id="LOCAL-00322" summary="update version">
+      <created>1667671824692</created>
+      <option name="number" value="00322" />
+      <option name="presentableId" value="LOCAL-00322" />
+      <option name="project" value="LOCAL" />
+      <updated>1667671824692</updated>
+    </task>
+    <option name="localTasksCounter" value="323" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -671,8 +672,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="update clustering" />
-    <MESSAGE value="update expected model" />
     <MESSAGE value="create infrastructure for 2Norms" />
     <MESSAGE value="only need one copy of intra" />
     <MESSAGE value="set defaults, save inter with norm2, bug fix" />
@@ -696,7 +695,9 @@
     <MESSAGE value="bug fix" />
     <MESSAGE value="restructure for ARI" />
     <MESSAGE value="add ARI calculation" />
-    <option name="LAST_COMMIT_MESSAGE" value="add ARI calculation" />
+    <MESSAGE value="update error handling" />
+    <MESSAGE value="update version" />
+    <option name="LAST_COMMIT_MESSAGE" value="update version" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

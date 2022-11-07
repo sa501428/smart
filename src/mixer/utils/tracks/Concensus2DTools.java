@@ -31,35 +31,24 @@ import java.util.Map;
 
 public class Concensus2DTools {
 
+    public static double checkOverlap(GenomeWide1DList<SubcompartmentInterval> file1,
+                                      GenomeWide1DList<SubcompartmentInterval> file2) {
+        return getAccuracy(populateSummary(file1, file2));
+    }
+
     public static void checkOverlapPerChrom(GenomeWide1DList<SubcompartmentInterval> file1, GenomeWide1DList<SubcompartmentInterval> file2) {
         Map<String, Map<Integer, Integer>> map1 = summarize(file1);
         Map<String, Map<Integer, Integer>> map2 = summarize(file2);
         for (String key : map1.keySet()) {
             int[][] summary = populateSummary(map1, map2, key);
-            double totalDenom = sum(summary);
-            double totalNum = 0;
-
-            int minNum = Math.min(summary.length, summary[0].length);
-            for (int q = 0; q < minNum; q++) {
-                int[] coords = getMaxCoordinates(summary);
-                if (coords != null) {
-                    totalNum += summary[coords[0]][coords[1]];
-                    clearSectionSlices(summary, coords);
-                } else {
-                    break;
-                }
-            }
-            System.out.println("Accuracy for " + key + " " + (100 * totalNum / totalDenom));
+            double accuracy = getAccuracy(summary);
+            System.out.println("Accuracy for " + key + " " + (100 * accuracy));
         }
     }
 
-    public static void checkOverlap(GenomeWide1DList<SubcompartmentInterval> file1,
-                                    GenomeWide1DList<SubcompartmentInterval> file2) {
-
-        int[][] summary = populateSummary(file1, file2);
+    private static double getAccuracy(int[][] summary) {
         double totalDenom = sum(summary);
         double totalNum = 0;
-
         int minNum = Math.min(summary.length, summary[0].length);
         for (int q = 0; q < minNum; q++) {
             int[] coords = getMaxCoordinates(summary);
@@ -70,8 +59,7 @@ public class Concensus2DTools {
                 break;
             }
         }
-
-        System.out.println("Accuracy " + (100 * totalNum / totalDenom));
+        return totalNum / totalDenom;
     }
 
     public static int sum(int[][] matrix) {
@@ -84,7 +72,8 @@ public class Concensus2DTools {
         return total;
     }
 
-    public static int[][] populateSummary(GenomeWide1DList<SubcompartmentInterval> file1, GenomeWide1DList<SubcompartmentInterval> file2) {
+    public static int[][] populateSummary(GenomeWide1DList<SubcompartmentInterval> file1,
+                                          GenomeWide1DList<SubcompartmentInterval> file2) {
 
         Map<String, Map<Integer, Integer>> map1 = summarize(file1);
         Map<String, Map<Integer, Integer>> map2 = summarize(file2);
@@ -162,13 +151,4 @@ public class Concensus2DTools {
         }
         return coords;
     }
-
-    private static String makeKey(int[] coords) {
-        return coords[0] + "_" + coords[1] + "_" + coords[2];
-    }
-
-    private static String makeKey(int i, int j, int k) {
-        return i + "_" + j + "_" + k;
-    }
-
 }
