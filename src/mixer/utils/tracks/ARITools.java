@@ -93,7 +93,7 @@ public class ARITools {
         return sums;
     }
 
-    private static double comb2(int n) {
-        return (double) (n * (n - 1)) / 2.0;
+    private static double comb2(double n) {
+        return (n * (n - 1)) / 2.0;
     }
 }

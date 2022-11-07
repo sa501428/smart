@@ -30,10 +30,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="update version">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Compare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Compare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/ARITools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/ARITools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -303,14 +302,8 @@
       <workItem from="1667530065102" duration="4945000" />
       <workItem from="1667577864931" duration="5209000" />
       <workItem from="1667784859246" duration="69000" />
-      <workItem from="1667785564692" duration="1007000" />
-    </task>
-    <task id="LOCAL-00274" summary="adjust bin splitting parameter">
-      <created>1664775977652</created>
-      <option name="number" value="00274" />
-      <option name="presentableId" value="LOCAL-00274" />
-      <option name="project" value="LOCAL" />
-      <updated>1664775977652</updated>
+      <workItem from="1667785564692" duration="1219000" />
+      <workItem from="1667788218023" duration="1084000" />
     </task>
     <task id="LOCAL-00275" summary="add comparison check, cleanup">
       <created>1666758306820</created>
@@ -648,7 +641,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667671824692</updated>
     </task>
-    <option name="localTasksCounter" value="323" />
+    <task id="LOCAL-00323" summary="multi comparison for bed files">
+      <created>1667786771422</created>
+      <option name="number" value="00323" />
+      <option name="presentableId" value="LOCAL-00323" />
+      <option name="project" value="LOCAL" />
+      <updated>1667786771422</updated>
+    </task>
+    <option name="localTasksCounter" value="324" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -672,7 +672,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="create infrastructure for 2Norms" />
     <MESSAGE value="only need one copy of intra" />
     <MESSAGE value="set defaults, save inter with norm2, bug fix" />
     <MESSAGE value="prevent infinite loop" />
@@ -697,7 +696,8 @@
     <MESSAGE value="add ARI calculation" />
     <MESSAGE value="update error handling" />
     <MESSAGE value="update version" />
-    <option name="LAST_COMMIT_MESSAGE" value="update version" />
+    <MESSAGE value="multi comparison for bed files" />
+    <option name="LAST_COMMIT_MESSAGE" value="multi comparison for bed files" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
