@@ -84,6 +84,10 @@ public class Slice extends MixerCLT {
         resolution = updateResolution(mixerParser, resolution);
         ds = HiCFileTools.extractDatasetForCLT(args[1], true, false, resolution > 100);
 
+        if (resolution < 25000) {
+            SmartTools.NUM_ENTRIES_TO_SKIP_MEDIAN = 30000 / resolution;
+        }
+
         try {
             String[] valString = args[2].split(",");
             ClusteringMagic.startingClusterSizeK = Integer.parseInt(valString[0]);
@@ -124,7 +128,8 @@ public class Slice extends MixerCLT {
 
         Map<Integer, List<String>> bedFiles = new HashMap<>();
         runWithSettings(slice0, handler, chromosomes,
-                true, false, false, true, false, false,
+                true, false, false,
+                true, false, false,
                 tempOutputDirectory, bedFiles);
 
         Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings = InternalShuffle.determineBest(bedFiles, resolution,
@@ -140,7 +145,7 @@ public class Slice extends MixerCLT {
                                  boolean includeIntra, boolean useLog, boolean useBothNorms,
                                  boolean appendIntra, boolean useRowZ, boolean shouldRegularize,
                                  File tempOutputDirectory, Map<Integer, List<String>> bedFiles) {
-        String stem = getNewPrefix(includeIntra, useLog, useBothNorms, appendIntra, useRowZ, shouldRegularize);
+        String stem = "SLICE";
         FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes, includeIntra, useLog,
                 useBothNorms, appendIntra, useRowZ, shouldRegularize);
 
@@ -151,43 +156,5 @@ public class Slice extends MixerCLT {
             ClusteringMagic clustering = new ClusteringMagic(slice, tempOutputDirectory, handler, generator.nextLong());
             clustering.extractFinalGWSubcompartments(stem, bedFiles);
         }
-    }
-
-    private String getNewPrefix(boolean includeIntra, boolean useLog, boolean useBothNorms, boolean appendIntra,
-                                boolean useRowZ, boolean shouldRegularize) {
-        String stem = "SLICE";
-        /*
-        if (includeIntra) {
-            stem += "_GW";
-        } else {
-            stem += "_INTER";
-        }
-        if (useLog) {
-            stem += "_LOG";
-        } else {
-            stem += "_EXP";
-        }
-        if (shouldRegularize) {
-            stem += "_REG";
-        } else {
-            stem += "_IRR";
-        }
-        if (useBothNorms) {
-            stem += "_2NORM";
-        } else {
-            stem += "_1NORM";
-        }
-        if (appendIntra) {
-            stem += "_APPEND";
-        } else {
-            stem += "_INSERT";
-        }
-        if (useRowZ) {
-            stem += "_RowZ";
-        } else {
-            stem += "_ColZ";
-        }
-         */
-        return stem;
     }
 }

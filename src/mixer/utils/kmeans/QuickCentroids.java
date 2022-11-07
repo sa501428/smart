@@ -67,7 +67,8 @@ public class QuickCentroids {
     public float[][] generateCentroids(int minSizeNeeded, boolean useKmedians) {
         RobustConcurrentKMeans kMeans;
         if (useKmedians) {
-            kMeans = new RobustConcurrentKMedians(matrix, initialNumClusters, maxIters, generator.nextLong());
+            kMeans = new RobustConcurrentKMedians(matrix, initialNumClusters, maxIters, generator.nextLong(),
+                    SmartTools.NUM_ENTRIES_TO_SKIP_MEDIAN);
         } else {
             kMeans = new RobustConcurrentKMeans(matrix, initialNumClusters, maxIters, generator.nextLong());
         }

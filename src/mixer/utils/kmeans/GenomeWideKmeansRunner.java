@@ -71,7 +71,8 @@ public class GenomeWideKmeansRunner {
             int numClusters = result.getNumClustersDesired();
             RobustConcurrentKMeans kMeans;
             if (useKMedians) {
-                kMeans = new RobustConcurrentKMedians(matrix, numClusters, maxIters, seed);
+                kMeans = new RobustConcurrentKMedians(matrix, numClusters, maxIters, seed,
+                        SmartTools.NUM_ENTRIES_TO_SKIP_MEDIAN);
             } else {
                 kMeans = new RobustConcurrentKMeans(matrix, numClusters, maxIters, seed);
             }
