@@ -61,6 +61,20 @@ public class CommandLineParserForMixer extends CmdLineParser {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
     }
 
+    public NormalizationType[] getTwoNormsTypeOption(NormalizationHandler normalizationHandler) {
+        String normString = optionToString(normalizationTypeOption);
+        if (normString != null && normString.length() > 3 && normString.contains(",")) {
+            String[] nStrings = normString.split(",");
+            if (nStrings.length == 2) {
+                return new NormalizationType[]{
+                        retrieveNormalization(nStrings[0], normalizationHandler),
+                        retrieveNormalization(nStrings[1], normalizationHandler)
+                };
+            }
+        }
+        return null;
+    }
+
     public List<Integer> getMultipleResolutionOptions() {
         return optionToIntegerList(multipleResolutionsOption);
     }

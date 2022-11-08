@@ -30,10 +30,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="add coefficient of variance code">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/CVS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/CVS.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cv/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cv/GenomeWideStatistics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -312,14 +312,7 @@
       <workItem from="1667882367022" duration="13000" />
       <workItem from="1667882566857" duration="52000" />
       <workItem from="1667882680150" duration="31000" />
-      <workItem from="1667882843429" duration="2809000" />
-    </task>
-    <task id="LOCAL-00281" summary="updated clutering">
-      <created>1666994165118</created>
-      <option name="number" value="00281" />
-      <option name="presentableId" value="LOCAL-00281" />
-      <option name="project" value="LOCAL" />
-      <updated>1666994165118</updated>
+      <workItem from="1667882843429" duration="3905000" />
     </task>
     <task id="LOCAL-00282" summary="updated clustering">
       <created>1667048747739</created>
@@ -657,7 +650,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667882238068</updated>
     </task>
-    <option name="localTasksCounter" value="330" />
+    <task id="LOCAL-00330" summary="bug fixes">
+      <created>1667886185690</created>
+      <option name="number" value="00330" />
+      <option name="presentableId" value="LOCAL-00330" />
+      <option name="project" value="LOCAL" />
+      <updated>1667886185690</updated>
+    </task>
+    <option name="localTasksCounter" value="331" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -681,7 +681,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="cleanup" />
     <MESSAGE value="initial commit of shuffle code" />
     <MESSAGE value="update default runs" />
     <MESSAGE value="switch to double for scores" />
@@ -706,7 +705,8 @@
     <MESSAGE value="update kmedians jar" />
     <MESSAGE value="update version" />
     <MESSAGE value="add coefficient of variance code" />
-    <option name="LAST_COMMIT_MESSAGE" value="add coefficient of variance code" />
+    <MESSAGE value="bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

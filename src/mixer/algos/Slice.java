@@ -68,7 +68,7 @@ public class Slice extends MixerCLT {
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
-        super("slice [-r resolution] [--verbose] [--both-norms] [--append] " +
+        super("slice [-r resolution] [--verbose] [-k INTRA_NORM,INTER_NORM] " +
                 "<file.hic> <K0,KF> <outfolder>\n" +
                 "   K0 - minimum number of clusters\n" +
                 "   KF - maximum number of clusters");
@@ -97,15 +97,24 @@ public class Slice extends MixerCLT {
         }
 
         parentDirectory = HiCFileTools.createValidDirectory(args[3]);
-        norms = populateNormalizations(ds);
+        norms = populateNormalizations(ds, mixerParser);
+        System.out.println("Using normalizations: " + norms[INTRA_SCALE_INDEX].getLabel() + " and " + norms[INTER_SCALE_INDEX].getLabel());
+
         updateGeneratorSeed(mixerParser, generator);
     }
 
-    private NormalizationType[] populateNormalizations(Dataset ds) {
+    private NormalizationType[] populateNormalizations(Dataset ds, CommandLineParserForMixer parser) {
+
+        NormalizationType[] potentialNorms = parser.getTwoNormsTypeOption(ds.getNormalizationHandler());
+        if (potentialNorms != null && potentialNorms.length == 2) {
+            if (potentialNorms[0] != null && potentialNorms[1] != null) {
+                return potentialNorms;
+            }
+        }
+
         NormalizationType[] norms = new NormalizationType[2];
         norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR", "VC"});
         norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR", "INTER_VC"});
-        System.out.println("Using normalizations: " + norms[INTRA_SCALE_INDEX].getLabel() + " and " + norms[INTER_SCALE_INDEX].getLabel());
         return norms;
     }
 
