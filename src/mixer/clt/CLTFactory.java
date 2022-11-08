@@ -25,6 +25,7 @@
 package mixer.clt;
 
 import mixer.SmartTools;
+import mixer.algos.CVS;
 import mixer.algos.ChicScore;
 import mixer.algos.Compare;
 import mixer.algos.Slice;
@@ -57,6 +58,8 @@ public class CLTFactory {
             return new Compare(cmd);
         } else if (cmd.startsWith("shuffle") || cmd.startsWith("chic")) {
             return new ChicScore(cmd);
+        } else if (cmd.startsWith("cvs")) {
+            return new CVS();
         }
         return null;
     }

@@ -31,11 +31,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/algos/MChic.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cv/BinSplitter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cv/GenomeWideStatistics.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cv/MaxChic.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.3.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.4.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +87,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "extract.method.default.visibility": "private",
-    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/lib/general",
+    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/src/mixer/utils/cv",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
@@ -102,10 +102,11 @@
       <recent name="mixer.utils.slice.cleaning" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/mixer/utils/cv" />
+      <recent name="$PROJECT_DIR$/src/mixer/algos" />
       <recent name="$PROJECT_DIR$/lib/general" />
       <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring" />
       <recent name="$PROJECT_DIR$/src/mixer/utils" />
-      <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -309,21 +310,7 @@
       <workItem from="1667788218023" duration="1638000" />
       <workItem from="1667800556282" duration="1044000" />
       <workItem from="1667871549126" duration="2105000" />
-      <workItem from="1667875877432" duration="415000" />
-    </task>
-    <task id="LOCAL-00278" summary="further options">
-      <created>1666973056102</created>
-      <option name="number" value="00278" />
-      <option name="presentableId" value="LOCAL-00278" />
-      <option name="project" value="LOCAL" />
-      <updated>1666973056102</updated>
-    </task>
-    <task id="LOCAL-00279" summary="further options">
-      <created>1666973078637</created>
-      <option name="number" value="00279" />
-      <option name="presentableId" value="LOCAL-00279" />
-      <option name="project" value="LOCAL" />
-      <updated>1666973078637</updated>
+      <workItem from="1667875877432" duration="3877000" />
     </task>
     <task id="LOCAL-00280" summary="updated settings">
       <created>1666977664937</created>
@@ -654,7 +641,21 @@
       <option name="project" value="LOCAL" />
       <updated>1667874992902</updated>
     </task>
-    <option name="localTasksCounter" value="327" />
+    <task id="LOCAL-00327" summary="update kmedians jar">
+      <created>1667876931985</created>
+      <option name="number" value="00327" />
+      <option name="presentableId" value="LOCAL-00327" />
+      <option name="project" value="LOCAL" />
+      <updated>1667876931985</updated>
+    </task>
+    <task id="LOCAL-00328" summary="update version">
+      <created>1667876969307</created>
+      <option name="number" value="00328" />
+      <option name="presentableId" value="LOCAL-00328" />
+      <option name="project" value="LOCAL" />
+      <updated>1667876969307</updated>
+    </task>
+    <option name="localTasksCounter" value="329" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -678,7 +679,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="set defaults" />
     <MESSAGE value="backup max-chic" />
     <MESSAGE value="cleanup" />
     <MESSAGE value="initial commit of shuffle code" />
@@ -698,12 +698,13 @@
     <MESSAGE value="restructure for ARI" />
     <MESSAGE value="add ARI calculation" />
     <MESSAGE value="update error handling" />
-    <MESSAGE value="update version" />
     <MESSAGE value="multi comparison for bed files" />
     <MESSAGE value="bug fix for overflow" />
     <MESSAGE value="allow for approximate median" />
     <MESSAGE value="code cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="code cleanup" />
+    <MESSAGE value="update kmedians jar" />
+    <MESSAGE value="update version" />
+    <option name="LAST_COMMIT_MESSAGE" value="update version" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
