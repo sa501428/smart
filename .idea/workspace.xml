@@ -30,13 +30,12 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="allow for approximate median">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.3.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.4.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,19 +80,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;extract.method.default.visibility&quot;: &quot;private&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/muhammad/IdeaProjects/smart/src/mixer/utils/shuffle/scoring&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "extract.method.default.visibility": "private",
+    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/lib/general",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="mixer.utils.refinement" />
@@ -103,10 +102,10 @@
       <recent name="mixer.utils.slice.cleaning" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/general" />
       <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle/scoring" />
       <recent name="$PROJECT_DIR$/src/mixer/utils" />
       <recent name="$PROJECT_DIR$/src/mixer/utils/shuffle" />
-      <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/mixer/algos" />
@@ -309,14 +308,8 @@
       <workItem from="1667785564692" duration="1219000" />
       <workItem from="1667788218023" duration="1638000" />
       <workItem from="1667800556282" duration="1044000" />
-      <workItem from="1667871549126" duration="1723000" />
-    </task>
-    <task id="LOCAL-00277" summary="new cleanup">
-      <created>1666935706832</created>
-      <option name="number" value="00277" />
-      <option name="presentableId" value="LOCAL-00277" />
-      <option name="project" value="LOCAL" />
-      <updated>1666935706833</updated>
+      <workItem from="1667871549126" duration="2105000" />
+      <workItem from="1667875877432" duration="415000" />
     </task>
     <task id="LOCAL-00278" summary="further options">
       <created>1666973056102</created>
@@ -654,7 +647,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667801365625</updated>
     </task>
-    <option name="localTasksCounter" value="326" />
+    <task id="LOCAL-00326" summary="code cleanup">
+      <created>1667874992902</created>
+      <option name="number" value="00326" />
+      <option name="presentableId" value="LOCAL-00326" />
+      <option name="project" value="LOCAL" />
+      <updated>1667874992902</updated>
+    </task>
+    <option name="localTasksCounter" value="327" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -678,7 +678,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="prevent infinite loop" />
     <MESSAGE value="set defaults" />
     <MESSAGE value="backup max-chic" />
     <MESSAGE value="cleanup" />
@@ -703,7 +702,8 @@
     <MESSAGE value="multi comparison for bed files" />
     <MESSAGE value="bug fix for overflow" />
     <MESSAGE value="allow for approximate median" />
-    <option name="LAST_COMMIT_MESSAGE" value="allow for approximate median" />
+    <MESSAGE value="code cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="code cleanup" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

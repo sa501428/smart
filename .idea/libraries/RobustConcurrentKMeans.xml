@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="RobustConcurrentKMeans">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.4.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
