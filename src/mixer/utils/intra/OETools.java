@@ -99,13 +99,15 @@ public class OETools {
     }
 
     public static List<ContactRecord> filter(int resolution, Iterator<ContactRecord> iterator) {
-        int minDist = FIVE_MB / resolution;
         List<ContactRecord> records = new LinkedList<>();
-        while (iterator.hasNext()) {
-            ContactRecord cr = iterator.next();
-            if (cr.getCounts() > 0) {
-                if (ExpectedUtils.getDist(cr) > minDist) {
-                    records.add(cr);
+        if (iterator != null) {
+            int minDist = FIVE_MB / resolution;
+            while (iterator.hasNext()) {
+                ContactRecord cr = iterator.next();
+                if (cr.getCounts() > 0) {
+                    if (ExpectedUtils.getDist(cr) > minDist) {
+                        records.add(cr);
+                    }
                 }
             }
         }

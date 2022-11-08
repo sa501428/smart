@@ -127,10 +127,7 @@ public class Slice extends MixerCLT {
                 norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, tempOutputDirectory);
 
         Map<Integer, List<String>> bedFiles = new HashMap<>();
-        runWithSettings(slice0, handler, chromosomes,
-                true, false, false,
-                true, false, false,
-                tempOutputDirectory, bedFiles);
+        runWithSettings(slice0, handler, chromosomes, tempOutputDirectory, bedFiles);
 
         Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings = InternalShuffle.determineBest(bedFiles, resolution,
                 handler, ds, norms[INTER_SCALE_INDEX]);
@@ -142,12 +139,9 @@ public class Slice extends MixerCLT {
     }
 
     private void runWithSettings(MatrixAndWeight slice0, ChromosomeHandler handler, Chromosome[] chromosomes,
-                                 boolean includeIntra, boolean useLog, boolean useBothNorms,
-                                 boolean appendIntra, boolean useRowZ, boolean shouldRegularize,
                                  File tempOutputDirectory, Map<Integer, List<String>> bedFiles) {
         String stem = "SLICE";
-        FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes, includeIntra, useLog,
-                useBothNorms, appendIntra, useRowZ, shouldRegularize);
+        FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes);
 
         if (slice.notEmpty()) {
             if (SmartTools.printVerboseComments) {

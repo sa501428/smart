@@ -26,7 +26,6 @@ package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.common.MathTools;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.transform.MatrixTransform;
 
@@ -34,16 +33,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MatrixAndWeight {
-    public float[][] matrix, intra, matrix2;
+    public float[][] matrix, intra;
     public int[] weights;
     private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
 
-    public MatrixAndWeight(float[][] interMatrix1, float[][] intraMatrix1,
-                           float[][] interMatrix2, int[] weights, Mappings mappings) {
+    public MatrixAndWeight(float[][] interMatrix1, float[][] intraMatrix1, int[] weights, Mappings mappings) {
         this.matrix = interMatrix1;
         this.intra = intraMatrix1;
-        this.matrix2 = interMatrix2;
         this.weights = weights;
         this.mappings = mappings;
         if (mappings != null) populateRowIndexToIntervalMap(mappings);
@@ -67,11 +64,8 @@ public class MatrixAndWeight {
         }
     }
 
-    public void divideColumnsByWeights(boolean useBothNorms) {
+    public void divideColumnsByWeights() {
         FloatMatrixTools.divideColumnsByWeights(matrix, weights);
-        if (useBothNorms) {
-            FloatMatrixTools.divideColumnsByWeights(matrix2, weights);
-        }
     }
 
     public int[] getSumOfAllLoci(Chromosome[] chromosomes) {
@@ -92,95 +86,17 @@ public class MatrixAndWeight {
 
     public MatrixAndWeight deepCopy() {
         return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(intra),
-                FloatMatrixTools.deepClone(matrix2), FloatMatrixTools.deepClone(weights), mappings.deepCopy());
+                FloatMatrixTools.deepClone(weights), mappings.deepCopy());
     }
 
-    public void putIntraIntoMainMatrix() {
-        for (int i = 0; i < intra.length; i++) {
-            for (int j = 0; j < intra[i].length; j++) {
-                if (intra[i][j] > -10) {
-                    matrix[i][j] = intra[i][j];
-                    matrix2[i][j] = intra[i][j];
-                }
-            }
-        }
-    }
-
-    public void zscoreByRows(int zscoreLimit, boolean useBothNorms) {
-        MatrixTransform.zscoreByRows(matrix, zscoreLimit);
-        if (useBothNorms) {
-            MatrixTransform.zscoreByRows(matrix2, zscoreLimit);
-        }
-    }
-
-    public void zscoreByCols(int zscoreLimit, boolean useBothNorms) {
+    public void zscoreByCols(int zscoreLimit) {
         MatrixTransform.zscoreByCols(matrix, zscoreLimit);
-        if (useBothNorms) {
-            MatrixTransform.zscoreByCols(matrix2, zscoreLimit);
-        }
     }
 
-    public void setZerosToNan(boolean useBothNorms) {
-        MathTools.setZerosToNan(matrix);
-        if (useBothNorms) {
-            MathTools.setZerosToNan(matrix2);
-        }
-    }
-
-    public void applyLog(boolean useBothNorms) {
-        MathTools.simpleLogWithCleanup(matrix, Float.NaN);
-        if (useBothNorms) {
-            MathTools.simpleLogWithCleanup(matrix2, Float.NaN);
-        }
-    }
-
-    public void applyExpm1(boolean useBothNorms) {
-        MathTools.simpleExpm1(matrix);
-        if (useBothNorms) {
-            MathTools.simpleExpm1(matrix2);
-        }
-    }
-
-    public void removeHighGlobalThresh(boolean useBothNorms, int maxZscoreUpperLimit) {
-        MathTools.removeHighGlobalThresh(matrix, maxZscoreUpperLimit);
-        if (useBothNorms) {
-            MathTools.removeHighGlobalThresh(matrix2, maxZscoreUpperLimit);
-        }
-    }
-
-    public void regularize(boolean useBothNorms, int zscoreLimit) {
-        MathTools.regularize(matrix, zscoreLimit);
-        if (useBothNorms) {
-            MathTools.regularize(matrix2, zscoreLimit);
-        }
-    }
-
-    private int[] mutiply(int[] input, int scalar) {
-        int[] copy = new int[input.length];
-        for (int i = 0; i < copy.length; i++) {
-            copy[i] = input[i] * scalar;
-        }
-        return copy;
-    }
-
-    public FinalMatrix getFinalMatrix(boolean useBothNorms, boolean appendIntra) {
-        if (useBothNorms) {
-            if (appendIntra) {
-                return new FinalMatrix(FloatMatrixTools.concatenate(matrix, matrix2, intra),
-                        FloatMatrixTools.concatenate(weights, weights, mutiply(weights, 2)),
-                        mappings, map);
-            } else {
-                return new FinalMatrix(FloatMatrixTools.concatenate(matrix, matrix2),
-                        FloatMatrixTools.concatenate(weights, weights),
-                        mappings, map);
-            }
-        } else if (appendIntra) {
-            return new FinalMatrix(FloatMatrixTools.concatenate(matrix, intra),
-                    FloatMatrixTools.concatenate(weights, weights),
-                    mappings, map);
-        } else {
-            return new FinalMatrix(matrix, weights, mappings, map);
-        }
+    public FinalMatrix getFinalMatrix() {
+        return new FinalMatrix(FloatMatrixTools.concatenate(matrix, intra),
+                FloatMatrixTools.concatenate(weights, weights),
+                mappings, map);
     }
 }
 

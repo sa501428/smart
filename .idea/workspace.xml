@@ -30,16 +30,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="bug fix for overflow">
-      <change afterPath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.3.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Smart_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/RobustConcurrentKMeans.xml" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="allow for approximate median">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/general/RobustConcurrentKMeans.1.2.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/SmartTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/SmartTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/GenomeWideKmeansRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/GenomeWideKmeansRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/QuickCentroids.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/QuickCentroids.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/intra/OETools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -311,14 +308,8 @@
       <workItem from="1667784859246" duration="69000" />
       <workItem from="1667785564692" duration="1219000" />
       <workItem from="1667788218023" duration="1638000" />
-      <workItem from="1667800556282" duration="678000" />
-    </task>
-    <task id="LOCAL-00276" summary="add comparison check, cleanup">
-      <created>1666759880245</created>
-      <option name="number" value="00276" />
-      <option name="presentableId" value="LOCAL-00276" />
-      <option name="project" value="LOCAL" />
-      <updated>1666759880245</updated>
+      <workItem from="1667800556282" duration="1044000" />
+      <workItem from="1667871549126" duration="1723000" />
     </task>
     <task id="LOCAL-00277" summary="new cleanup">
       <created>1666935706832</created>
@@ -656,7 +647,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667794368360</updated>
     </task>
-    <option name="localTasksCounter" value="325" />
+    <task id="LOCAL-00325" summary="allow for approximate median">
+      <created>1667801365624</created>
+      <option name="number" value="00325" />
+      <option name="presentableId" value="LOCAL-00325" />
+      <option name="project" value="LOCAL" />
+      <updated>1667801365625</updated>
+    </task>
+    <option name="localTasksCounter" value="326" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -680,7 +678,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="set defaults, save inter with norm2, bug fix" />
     <MESSAGE value="prevent infinite loop" />
     <MESSAGE value="set defaults" />
     <MESSAGE value="backup max-chic" />
@@ -705,7 +702,8 @@
     <MESSAGE value="update version" />
     <MESSAGE value="multi comparison for bed files" />
     <MESSAGE value="bug fix for overflow" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix for overflow" />
+    <MESSAGE value="allow for approximate median" />
+    <option name="LAST_COMMIT_MESSAGE" value="allow for approximate median" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

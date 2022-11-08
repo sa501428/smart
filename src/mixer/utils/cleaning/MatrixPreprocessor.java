@@ -30,40 +30,14 @@ import mixer.utils.drive.MatrixAndWeight;
 
 public class MatrixPreprocessor {
 
-    private static final int ZSCORE_LIMIT = 3, MAX_ZSCORE_UPPER_LIMIT = 5;
+    private static final int ZSCORE_LIMIT = 3;
 
-    public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                         boolean includeIntra, boolean useLog, boolean useBothNorms,
-                                         boolean appendIntra, boolean useRowZ, boolean shouldRegularize) {
+    public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes) {
         matrix.updateWeights(chromosomes);
-        matrix.divideColumnsByWeights(useBothNorms);
-
-        if (shouldRegularize) {
-            matrix.applyLog(useBothNorms);
-            matrix.removeHighGlobalThresh(useBothNorms, MAX_ZSCORE_UPPER_LIMIT);
-            matrix.setZerosToNan(useBothNorms);
-            matrix.regularize(useBothNorms, ZSCORE_LIMIT);
-            matrix.applyExpm1(useBothNorms);
-        }
-
-        if (useRowZ) {
-            matrix.zscoreByRows(ZSCORE_LIMIT, useBothNorms);
-        } else {
-            matrix.zscoreByCols(ZSCORE_LIMIT, useBothNorms);
-        }
-
-        if (includeIntra && !appendIntra) {
-            matrix.putIntraIntoMainMatrix();
-        }
-        FinalMatrix result = matrix.getFinalMatrix(useBothNorms, includeIntra && appendIntra);
+        matrix.divideColumnsByWeights();
+        matrix.zscoreByCols(ZSCORE_LIMIT);
+        FinalMatrix result = matrix.getFinalMatrix();
         result.removeAllNanRows();
-        /*
-        if (false) {
-            SimpleMatrixAndWeight mw = SimilarityMatrixTools.getCompressedCosineSimilarityMatrix(matrix.matrix,
-                    50, 0);
-            matrix.matrix = mw.matrix;
-            matrix.weights = mw.weights;
-        } */
         return result;
     }
 }
