@@ -35,6 +35,7 @@ import javastraw.tools.HiCFileTools;
 import javastraw.tools.MatrixTools;
 import mixer.utils.tracks.SubcompartmentInterval;
 
+import java.io.File;
 import java.util.*;
 
 public class GenomeWideStatistics {
@@ -58,7 +59,6 @@ public class GenomeWideStatistics {
         clusterToFIdxMap = makeClusterToFIdxMap(subcompartments);
         chromToIndexToID = makeChromToIndexToIDMap();
         n = clusterToFIdxMap.keySet().size();
-
 
         Welford[][] welfords = populateStatistics();
 
@@ -134,6 +134,7 @@ public class GenomeWideStatistics {
                     System.out.print(".");
                 }
             }
+            System.out.println(".");
         }
         return welfords;
     }
@@ -141,7 +142,9 @@ public class GenomeWideStatistics {
     private void update(Welford[][] welfords, double[][] density) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                welfords[i][j].addValue(density[i][j]);
+                if (density[i][j] > 0) {
+                    welfords[i][j].addValue(density[i][j]);
+                }
             }
         }
     }
@@ -191,7 +194,7 @@ public class GenomeWideStatistics {
                     && binToID2.containsKey(record.getBinY())) {
                 int id1 = binToID1.get(record.getBinX());
                 int id2 = binToID2.get(record.getBinY());
-                counts[id1][id2] += (record.getCounts()); //todo explore Math.log(1+record.getCounts());
+                counts[id1][id2] += Math.log(1 + record.getCounts()); //todo explore Math.log(1+record.getCounts());
             }
         }
     }
@@ -207,7 +210,8 @@ public class GenomeWideStatistics {
         }
     }
 
-    public void export(String prefix) {
-        MatrixTools.saveMatrixTextNumpy(prefix + "_coeff_variances.npy", cvs);
+    public void export(File outputDirectory, String prefix) {
+        MatrixTools.saveMatrixTextNumpy(
+                new File(outputDirectory, prefix + "_coeff_variances.npy").getAbsolutePath(), cvs);
     }
 }

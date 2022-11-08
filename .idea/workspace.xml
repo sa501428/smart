@@ -30,12 +30,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/mixer/algos/MChic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cv/BinSplitter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cv/GenomeWideStatistics.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/cv/MaxChic.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="add coefficient of variance code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/CVS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/CVS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cv/GenomeWideStatistics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cv/GenomeWideStatistics.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,19 +78,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "extract.method.default.visibility": "private",
-    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/src/mixer/utils/cv",
-    "project.structure.last.edited": "Artifacts",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;extract.method.default.visibility&quot;: &quot;private&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/muhammad/IdeaProjects/smart/src/mixer/utils/cv&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="mixer.utils.refinement" />
@@ -310,14 +308,11 @@
       <workItem from="1667788218023" duration="1638000" />
       <workItem from="1667800556282" duration="1044000" />
       <workItem from="1667871549126" duration="2105000" />
-      <workItem from="1667875877432" duration="3877000" />
-    </task>
-    <task id="LOCAL-00280" summary="updated settings">
-      <created>1666977664937</created>
-      <option name="number" value="00280" />
-      <option name="presentableId" value="LOCAL-00280" />
-      <option name="project" value="LOCAL" />
-      <updated>1666977664937</updated>
+      <workItem from="1667875877432" duration="4154000" />
+      <workItem from="1667882367022" duration="13000" />
+      <workItem from="1667882566857" duration="52000" />
+      <workItem from="1667882680150" duration="31000" />
+      <workItem from="1667882843429" duration="2809000" />
     </task>
     <task id="LOCAL-00281" summary="updated clutering">
       <created>1666994165118</created>
@@ -655,7 +650,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667876969307</updated>
     </task>
-    <option name="localTasksCounter" value="329" />
+    <task id="LOCAL-00329" summary="add coefficient of variance code">
+      <created>1667882238068</created>
+      <option name="number" value="00329" />
+      <option name="presentableId" value="LOCAL-00329" />
+      <option name="project" value="LOCAL" />
+      <updated>1667882238068</updated>
+    </task>
+    <option name="localTasksCounter" value="330" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -679,7 +681,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="backup max-chic" />
     <MESSAGE value="cleanup" />
     <MESSAGE value="initial commit of shuffle code" />
     <MESSAGE value="update default runs" />
@@ -704,7 +705,8 @@
     <MESSAGE value="code cleanup" />
     <MESSAGE value="update kmedians jar" />
     <MESSAGE value="update version" />
-    <option name="LAST_COMMIT_MESSAGE" value="update version" />
+    <MESSAGE value="add coefficient of variance code" />
+    <option name="LAST_COMMIT_MESSAGE" value="add coefficient of variance code" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

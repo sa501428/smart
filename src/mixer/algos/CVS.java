@@ -49,7 +49,7 @@ public class CVS extends MixerCLT {
     private Dataset ds;
     private int resolution = 100000;
     private File outputDirectory;
-    private String[] prefix;
+    private String[] prefixes;
     private String[] referenceBedFiles;
     private int numSplits = 2;
 
@@ -67,8 +67,8 @@ public class CVS extends MixerCLT {
         ds = HiCFileTools.extractDatasetForCLT(args[1], false, false, true);
         outputDirectory = HiCFileTools.createValidDirectory(args[2]);
         referenceBedFiles = args[3].split(",");
-        prefix = args[4].split(",");
-        if (referenceBedFiles.length != prefix.length) {
+        prefixes = args[4].split(",");
+        if (referenceBedFiles.length != prefixes.length) {
             System.err.println("Number of bed files should match number of prefixes");
             printUsageAndExit(53);
         }
@@ -95,11 +95,11 @@ public class CVS extends MixerCLT {
         for (int i = 0; i < referenceBedFiles.length; i++) {
             GenomeWide1DList<SubcompartmentInterval> subcompartments =
                     BedTools.loadBedFile(chromosomeHandler, referenceBedFiles[i]);
-            System.out.println("Processing " + prefix[i]);
+            System.out.println("Processing " + prefixes[i]);
 
             SliceUtils.collapseGWList(subcompartments);
             GenomeWideStatistics statistics = new GenomeWideStatistics(ds, resolution, norm, subcompartments, numSplits);
-            statistics.export(prefix[i]);
+            statistics.export(outputDirectory, prefixes[i]);
 
             statistics = null;
             subcompartments = null;
