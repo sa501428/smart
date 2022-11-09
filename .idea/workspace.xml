@@ -32,8 +32,6 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -312,21 +310,8 @@
       <workItem from="1667882367022" duration="13000" />
       <workItem from="1667882566857" duration="52000" />
       <workItem from="1667882680150" duration="31000" />
-      <workItem from="1667882843429" duration="3905000" />
-    </task>
-    <task id="LOCAL-00282" summary="updated clustering">
-      <created>1667048747739</created>
-      <option name="number" value="00282" />
-      <option name="presentableId" value="LOCAL-00282" />
-      <option name="project" value="LOCAL" />
-      <updated>1667048747739</updated>
-    </task>
-    <task id="LOCAL-00283" summary="working version">
-      <created>1667049341315</created>
-      <option name="number" value="00283" />
-      <option name="presentableId" value="LOCAL-00283" />
-      <option name="project" value="LOCAL" />
-      <updated>1667049341315</updated>
+      <workItem from="1667882843429" duration="4407000" />
+      <workItem from="1667934046778" duration="14000" />
     </task>
     <task id="LOCAL-00284" summary="latest working version, update straw">
       <created>1667055744279</created>
@@ -657,7 +642,21 @@
       <option name="project" value="LOCAL" />
       <updated>1667886185690</updated>
     </task>
-    <option name="localTasksCounter" value="331" />
+    <task id="LOCAL-00331" summary="allow custom norms">
+      <created>1667923138095</created>
+      <option name="number" value="00331" />
+      <option name="presentableId" value="LOCAL-00331" />
+      <option name="project" value="LOCAL" />
+      <updated>1667923138095</updated>
+    </task>
+    <task id="LOCAL-00332" summary="update version">
+      <created>1667923151460</created>
+      <option name="number" value="00332" />
+      <option name="presentableId" value="LOCAL-00332" />
+      <option name="project" value="LOCAL" />
+      <updated>1667923151460</updated>
+    </task>
+    <option name="localTasksCounter" value="333" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -681,7 +680,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="initial commit of shuffle code" />
     <MESSAGE value="update default runs" />
     <MESSAGE value="switch to double for scores" />
     <MESSAGE value="set new version" />
@@ -703,10 +701,11 @@
     <MESSAGE value="allow for approximate median" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="update kmedians jar" />
-    <MESSAGE value="update version" />
     <MESSAGE value="add coefficient of variance code" />
     <MESSAGE value="bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
+    <MESSAGE value="allow custom norms" />
+    <MESSAGE value="update version" />
+    <option name="LAST_COMMIT_MESSAGE" value="update version" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

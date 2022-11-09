@@ -65,8 +65,10 @@ public class IndexOrderer {
         int lowRes = Math.max(hires, 100000);
         int resFactor = lowRes / hires;
         if (lowRes % hires != 0) {
-            System.err.println(hires + "is not a factor of " + lowRes + ". Invalid resolutions.");
-            System.exit(23);
+            System.err.println(hires + "is not a factor of " + lowRes + ".");
+            System.err.println("Using " + hires + " resolution for initial intra clustering");
+            lowRes = hires;
+            resFactor = 1;
         }
         for (Chromosome chrom : chromosomes) {
             final MatrixZoomData zd = HiCFileTools.getMatrixZoomData(ds, chrom, chrom, lowRes);
