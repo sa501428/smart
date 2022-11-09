@@ -94,7 +94,7 @@ public class ScoreContainer {
 
     public void savePlotsAndResults(File outfolder, String prefix, String[] names) {
         try {
-            writeToFile(outfolder, "aggregate_scores_" + prefix + ".txt", shuffled, baselines, ratios, names);
+            writeToFile(outfolder, "aggregate_scores_" + prefix + "_main.txt", shuffled, baselines, ratios, names);
             writeToFile(outfolder, "aggregate_scores_" + prefix + "_symm.txt", symmShuffled, symmBaselines, symmRatios, names);
         } catch (Exception ee) {
             System.err.println("Unable to write results to text file");
