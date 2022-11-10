@@ -32,6 +32,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ChicScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ChicScore.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -313,13 +314,7 @@
       <workItem from="1667882843429" duration="4407000" />
       <workItem from="1667934046778" duration="14000" />
       <workItem from="1667954519496" duration="377000" />
-    </task>
-    <task id="LOCAL-00285" summary="cleanup">
-      <created>1667056001094</created>
-      <option name="number" value="00285" />
-      <option name="presentableId" value="LOCAL-00285" />
-      <option name="project" value="LOCAL" />
-      <updated>1667056001094</updated>
+      <workItem from="1668018409782" duration="2883000" />
     </task>
     <task id="LOCAL-00286" summary="reorganize expected handling">
       <created>1667057606762</created>
@@ -657,7 +652,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667954635624</updated>
     </task>
-    <option name="localTasksCounter" value="334" />
+    <task id="LOCAL-00334" summary="fix file naming">
+      <created>1668018515378</created>
+      <option name="number" value="00334" />
+      <option name="presentableId" value="LOCAL-00334" />
+      <option name="project" value="LOCAL" />
+      <updated>1668018515378</updated>
+    </task>
+    <option name="localTasksCounter" value="335" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -681,7 +683,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="switch to double for scores" />
     <MESSAGE value="set new version" />
     <MESSAGE value="set new defaults" />
     <MESSAGE value="redo consensus" />
@@ -706,7 +707,8 @@
     <MESSAGE value="allow custom norms" />
     <MESSAGE value="update version" />
     <MESSAGE value="bug fix for 40kb" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix for 40kb" />
+    <MESSAGE value="fix file naming" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix file naming" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

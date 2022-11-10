@@ -26,6 +26,7 @@ package mixer.algos;
 
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
+import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
@@ -38,8 +39,7 @@ import mixer.utils.shuffle.ShuffleAction;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * experimental code
@@ -110,15 +110,57 @@ public class ChicScore extends MixerCLT {
                     Partition.Type.SKIP_BY_TWOS, Partition.Type.FIRST_HALF_VS_SECOND_HALF};
         }
 
+        List<GenomeWide1DList<SubcompartmentInterval>> subcompartments = new ArrayList<>(referenceBedFiles.length);
+        for (String referenceBedFile : referenceBedFiles) {
+            subcompartments.add(BedTools.loadBedFileAtResolution(handler, referenceBedFile, resolution));
+        }
+
+        ensureSameLoci(subcompartments, handler);
+
         for (int i = 0; i < referenceBedFiles.length; i++) {
-            GenomeWide1DList<SubcompartmentInterval> subcompartments = BedTools.loadBedFileAtResolution(handler, referenceBedFiles[i], resolution);
             System.out.println("Processing " + prefix[i]);
             File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
             UNIXTools.makeDir(newFolder);
             ShuffleAction matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, mapTypes);
-            matrix.runInterAnalysis(subcompartments, newFolder, generator);
+            matrix.runInterAnalysis(subcompartments.get(i), newFolder, generator);
             matrix.savePlotsAndResults(newFolder, prefix[i]);
         }
         System.out.println("Shuffle complete");
+    }
+
+    private void ensureSameLoci(List<GenomeWide1DList<SubcompartmentInterval>> subcompartments,
+                                ChromosomeHandler handler) {
+
+        int numFiles = subcompartments.size();
+
+        Map<String, int[]> chromToLociToCounts = new HashMap<>();
+        for (Chromosome chromosome : handler.getAutosomalChromosomesArray()) {
+            int n = (int) ((chromosome.getLength() / resolution) + 1);
+            chromToLociToCounts.put("" + chromosome.getIndex(), new int[n]);
+        }
+
+        for (GenomeWide1DList<SubcompartmentInterval> list : subcompartments) {
+            list.processLists((s, list1) -> {
+                int[] counts = chromToLociToCounts.get(s);
+                for (SubcompartmentInterval interval : list1) {
+                    counts[interval.getX1() / resolution]++;
+                }
+            });
+        }
+
+        for (GenomeWide1DList<SubcompartmentInterval> list : subcompartments) {
+            list.filterLists((s, list1) -> {
+                int[] counts = chromToLociToCounts.get(s);
+                List<SubcompartmentInterval> toKeep = new ArrayList<>(list1.size());
+                for (SubcompartmentInterval interval : list1) {
+                    if (counts[interval.getX1() / resolution] == numFiles) {
+                        toKeep.add(interval);
+                    }
+                }
+                list1.clear();
+                return toKeep;
+            });
+        }
+
     }
 }
