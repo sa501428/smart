@@ -43,7 +43,7 @@ public class ShuffleAction {
     private final NormalizationType norm;
     private final int compressionFactor;
     private final int resolution;
-    private final int numRounds = 50;
+    private final int numRounds = 10;
     private final Partition.Type[] mapTypes;
     private final ScoreContainer scoreContainer;
 
