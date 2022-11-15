@@ -105,7 +105,7 @@ public class BedTools {
         bufferedReader.close();
 
         for (String key : idToVal.keySet()) {
-            System.out.println(key + " in the bed file becomes " + idToVal.get(key));
+            System.out.println("\n" + key + " in the bed file becomes " + idToVal.get(key) + "\n");
         }
 
         return new ArrayList<>(anchors);
