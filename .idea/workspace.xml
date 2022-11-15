@@ -32,7 +32,6 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ChicScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ChicScore.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -314,21 +313,7 @@
       <workItem from="1667882843429" duration="4407000" />
       <workItem from="1667934046778" duration="14000" />
       <workItem from="1667954519496" duration="377000" />
-      <workItem from="1668018409782" duration="2883000" />
-    </task>
-    <task id="LOCAL-00286" summary="reorganize expected handling">
-      <created>1667057606762</created>
-      <option name="number" value="00286" />
-      <option name="presentableId" value="LOCAL-00286" />
-      <option name="project" value="LOCAL" />
-      <updated>1667057606762</updated>
-    </task>
-    <task id="LOCAL-00287" summary="cleanup structuring">
-      <created>1667059650915</created>
-      <option name="number" value="00287" />
-      <option name="presentableId" value="LOCAL-00287" />
-      <option name="project" value="LOCAL" />
-      <updated>1667059650915</updated>
+      <workItem from="1668018409782" duration="4074000" />
     </task>
     <task id="LOCAL-00288" summary="restore version">
       <created>1667060437485</created>
@@ -659,7 +644,21 @@
       <option name="project" value="LOCAL" />
       <updated>1668018515378</updated>
     </task>
-    <option name="localTasksCounter" value="335" />
+    <task id="LOCAL-00335" summary="fix loci used for chic assessment">
+      <created>1668059143771</created>
+      <option name="number" value="00335" />
+      <option name="presentableId" value="LOCAL-00335" />
+      <option name="project" value="LOCAL" />
+      <updated>1668059143771</updated>
+    </task>
+    <task id="LOCAL-00336" summary="update defaults">
+      <created>1668059244042</created>
+      <option name="number" value="00336" />
+      <option name="presentableId" value="LOCAL-00336" />
+      <option name="project" value="LOCAL" />
+      <updated>1668059244042</updated>
+    </task>
+    <option name="localTasksCounter" value="337" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -683,8 +682,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="set new version" />
-    <MESSAGE value="set new defaults" />
     <MESSAGE value="redo consensus" />
     <MESSAGE value="iterative refinement" />
     <MESSAGE value="restore original clustering" />
@@ -708,7 +705,9 @@
     <MESSAGE value="update version" />
     <MESSAGE value="bug fix for 40kb" />
     <MESSAGE value="fix file naming" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix file naming" />
+    <MESSAGE value="fix loci used for chic assessment" />
+    <MESSAGE value="update defaults" />
+    <option name="LAST_COMMIT_MESSAGE" value="update defaults" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
