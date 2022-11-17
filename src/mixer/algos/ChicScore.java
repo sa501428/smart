@@ -96,40 +96,8 @@ public class ChicScore extends MixerCLT {
         }
     }
 
-    @Override
-    public void run() {
-
-        ChromosomeHandler handler = ds.getChromosomeHandler();
-
-        UNIXTools.makeDir(outputDirectory);
-
-        Partition.Type[] mapTypes = {Partition.Type.SPLIT1, Partition.Type.SPLIT2,
-                Partition.Type.SPLIT3, Partition.Type.SPLIT4, Partition.Type.SPLIT5};
-        if (useOriginal) {
-            mapTypes = new Partition.Type[]{Partition.Type.ODDS_VS_EVENS,
-                    Partition.Type.SKIP_BY_TWOS, Partition.Type.FIRST_HALF_VS_SECOND_HALF};
-        }
-
-        List<GenomeWide1DList<SubcompartmentInterval>> subcompartments = new ArrayList<>(referenceBedFiles.length);
-        for (String referenceBedFile : referenceBedFiles) {
-            subcompartments.add(BedTools.loadBedFileAtResolution(handler, referenceBedFile, resolution));
-        }
-
-        ensureSameLoci(subcompartments, handler);
-
-        for (int i = 0; i < referenceBedFiles.length; i++) {
-            System.out.println("Processing " + prefix[i]);
-            File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
-            UNIXTools.makeDir(newFolder);
-            ShuffleAction matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, mapTypes);
-            matrix.runInterAnalysis(subcompartments.get(i), newFolder, generator);
-            matrix.savePlotsAndResults(newFolder, prefix[i]);
-        }
-        System.out.println("Shuffle complete");
-    }
-
-    private void ensureSameLoci(List<GenomeWide1DList<SubcompartmentInterval>> subcompartments,
-                                ChromosomeHandler handler) {
+    public static void ensureSameLoci(List<GenomeWide1DList<SubcompartmentInterval>> subcompartments,
+                                      ChromosomeHandler handler, int resolution) {
 
         int numFiles = subcompartments.size();
 
@@ -162,5 +130,45 @@ public class ChicScore extends MixerCLT {
             });
         }
 
+    }
+
+    @Override
+    public void run() {
+
+        ChromosomeHandler handler = ds.getChromosomeHandler();
+
+        UNIXTools.makeDir(outputDirectory);
+
+        Partition.Type[] mapTypes = {Partition.Type.SPLIT1, Partition.Type.SPLIT2,
+                Partition.Type.SPLIT3, Partition.Type.SPLIT4, Partition.Type.SPLIT5};
+        if (useOriginal) {
+            mapTypes = new Partition.Type[]{Partition.Type.ODDS_VS_EVENS,
+                    Partition.Type.SKIP_BY_TWOS, Partition.Type.FIRST_HALF_VS_SECOND_HALF};
+        }
+
+        List<GenomeWide1DList<SubcompartmentInterval>> subcompartments = new ArrayList<>(referenceBedFiles.length);
+        for (String referenceBedFile : referenceBedFiles) {
+            subcompartments.add(BedTools.loadBedFileAtResolution(handler, referenceBedFile, resolution));
+        }
+
+        ensureSameLoci(subcompartments, handler, resolution);
+
+        /*
+        for (int i = 0; i < referenceBedFiles.length; i++) {
+            System.out.println("Filtering for common loci " + prefix[i]);
+            File outBedFile = new File(referenceBedFiles[i]+ "_filtered_for_common_loci.bed"); // "_wcss" + wcss +
+            subcompartments.get(i).simpleExport(outBedFile);
+        }
+        */
+
+        for (int i = 0; i < referenceBedFiles.length; i++) {
+            System.out.println("Processing " + prefix[i]);
+            File newFolder = new File(outputDirectory, "shuffle_" + prefix[i]);
+            UNIXTools.makeDir(newFolder);
+            ShuffleAction matrix = new ShuffleAction(ds, norm, resolution, compressionFactor, mapTypes);
+            matrix.runInterAnalysis(subcompartments.get(i), newFolder, generator);
+            matrix.savePlotsAndResults(newFolder, prefix[i]);
+        }
+        System.out.println("Shuffle complete");
     }
 }

@@ -39,6 +39,7 @@ import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -89,12 +90,18 @@ public class CVS extends MixerCLT {
     @Override
     public void run() {
 
-        ChromosomeHandler chromosomeHandler = ds.getChromosomeHandler();
+        ChromosomeHandler handler = ds.getChromosomeHandler();
         UNIXTools.makeDir(outputDirectory);
 
+        List<GenomeWide1DList<SubcompartmentInterval>> allSubcompartments = new ArrayList<>(referenceBedFiles.length);
         for (int i = 0; i < referenceBedFiles.length; i++) {
-            GenomeWide1DList<SubcompartmentInterval> subcompartments =
-                    BedTools.loadBedFile(chromosomeHandler, referenceBedFiles[i]);
+            allSubcompartments.add(BedTools.loadBedFileAtResolution(handler, referenceBedFiles[i], resolution));
+        }
+
+        ChicScore.ensureSameLoci(allSubcompartments, handler, resolution);
+
+        for (int i = 0; i < referenceBedFiles.length; i++) {
+            GenomeWide1DList<SubcompartmentInterval> subcompartments = allSubcompartments.get(i);
             System.out.println("Processing " + prefixes[i]);
 
             SliceUtils.collapseGWList(subcompartments);
