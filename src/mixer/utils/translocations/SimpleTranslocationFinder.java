@@ -89,8 +89,14 @@ public class SimpleTranslocationFinder {
         if (matrix != null) {
             MatrixZoomData zd = matrix.getZoomData(new HiCZoom(lowRes));
             if (zd != null) {
-                double minCutoff = getCutoff(ds.getExpectedValues(new HiCZoom(lowRes), norm, false),
-                        chrom1, chrom2, distance / lowRes);
+                double translocationCutoff = Double.MAX_VALUE;
+                try {
+                    translocationCutoff = getCutoff(ds.getExpectedValues(new HiCZoom(lowRes), norm, false),
+                            chrom1, chrom2, distance / lowRes);
+                } catch (Exception e) {
+                    System.err.println("Expected missing; skipping translocation check");
+                    return false;
+                }
 
                 Set<Integer> badSet1 = badIndices.get(chrom1.getIndex());
                 Set<Integer> badSet2 = badIndices.get(chrom2.getIndex());
@@ -99,7 +105,7 @@ public class SimpleTranslocationFinder {
                 Iterator<ContactRecord> iterator = zd.getNormalizedIterator(norm);
                 while (iterator.hasNext()) {
                     ContactRecord record = iterator.next();
-                    if (record.getCounts() > minCutoff) {
+                    if (record.getCounts() > translocationCutoff) {
                         if (isGoodRow(record.getBinX(), badSet1, factor)
                                 && isGoodRow(record.getBinY(), badSet2, factor)) {
                             if (count++ > minToBeTranslocation) {

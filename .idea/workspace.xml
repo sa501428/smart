@@ -32,7 +32,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/ChicScore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/ChicScore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -317,13 +317,7 @@
       <workItem from="1668018409782" duration="4074000" />
       <workItem from="1668550163764" duration="854000" />
       <workItem from="1668629568187" duration="440000" />
-    </task>
-    <task id="LOCAL-00290" summary="use expanded OE, new defaults">
-      <created>1667076114737</created>
-      <option name="number" value="00290" />
-      <option name="presentableId" value="LOCAL-00290" />
-      <option name="project" value="LOCAL" />
-      <updated>1667076114737</updated>
+      <workItem from="1668675875084" duration="799000" />
     </task>
     <task id="LOCAL-00291" summary="longer iterations, no cosine">
       <created>1667076257734</created>
@@ -661,7 +655,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668555712974</updated>
     </task>
-    <option name="localTasksCounter" value="339" />
+    <task id="LOCAL-00339" summary="verify shared indices for CVS">
+      <created>1668676104101</created>
+      <option name="number" value="00339" />
+      <option name="presentableId" value="LOCAL-00339" />
+      <option name="project" value="LOCAL" />
+      <updated>1668676104101</updated>
+    </task>
+    <option name="localTasksCounter" value="340" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -685,7 +686,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="iterative refinement" />
     <MESSAGE value="restore original clustering" />
     <MESSAGE value="before cleanup" />
     <MESSAGE value="after cleanup" />
@@ -710,7 +710,8 @@
     <MESSAGE value="fix loci used for chic assessment" />
     <MESSAGE value="update defaults" />
     <MESSAGE value="print out key mapping" />
-    <option name="LAST_COMMIT_MESSAGE" value="print out key mapping" />
+    <MESSAGE value="verify shared indices for CVS" />
+    <option name="LAST_COMMIT_MESSAGE" value="verify shared indices for CVS" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
