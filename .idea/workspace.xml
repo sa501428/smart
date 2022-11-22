@@ -30,9 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="bug fix for missing expected">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/CVS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/CVS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -317,14 +319,9 @@
       <workItem from="1668018409782" duration="4074000" />
       <workItem from="1668550163764" duration="854000" />
       <workItem from="1668629568187" duration="440000" />
-      <workItem from="1668675875084" duration="799000" />
-    </task>
-    <task id="LOCAL-00291" summary="longer iterations, no cosine">
-      <created>1667076257734</created>
-      <option name="number" value="00291" />
-      <option name="presentableId" value="LOCAL-00291" />
-      <option name="project" value="LOCAL" />
-      <updated>1667076257734</updated>
+      <workItem from="1668675875084" duration="1185000" />
+      <workItem from="1668891730057" duration="426000" />
+      <workItem from="1669085789210" duration="986000" />
     </task>
     <task id="LOCAL-00292" summary="current version">
       <created>1667081597262</created>
@@ -662,7 +659,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668676104101</updated>
     </task>
-    <option name="localTasksCounter" value="340" />
+    <task id="LOCAL-00340" summary="bug fix for missing expected">
+      <created>1668706264863</created>
+      <option name="number" value="00340" />
+      <option name="presentableId" value="LOCAL-00340" />
+      <option name="project" value="LOCAL" />
+      <updated>1668706264863</updated>
+    </task>
+    <option name="localTasksCounter" value="341" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -686,7 +690,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="restore original clustering" />
     <MESSAGE value="before cleanup" />
     <MESSAGE value="after cleanup" />
     <MESSAGE value="updates, cleanup, version for deployment" />
@@ -711,7 +714,8 @@
     <MESSAGE value="update defaults" />
     <MESSAGE value="print out key mapping" />
     <MESSAGE value="verify shared indices for CVS" />
-    <option name="LAST_COMMIT_MESSAGE" value="verify shared indices for CVS" />
+    <MESSAGE value="bug fix for missing expected" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix for missing expected" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

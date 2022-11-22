@@ -128,7 +128,7 @@ public class ShuffleAction {
         });
 
         aggregate.scaleForNumberOfRounds(numRounds);
-        if (outfolder != null) aggregate.saveToPNG(outfolder, name);
+        if (outfolder != null) aggregate.export(outfolder, name);
         scoreContainer.updateAggregateScores(aggregate, globalAllIndices, mapIndex);
     }
 

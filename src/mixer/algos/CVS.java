@@ -55,7 +55,7 @@ public class CVS extends MixerCLT {
     private int numSplits = 2;
 
     public CVS() {
-        super("CVS [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [--verbose] " +
+        super("cvs [-r resolution] [-k NONE/INTER_KR/INTER_SCALE] [--verbose] " +
                 "<file.hic> <outfolder> <file1.bed,file2.bed,...> <name1,name2,...>");
     }
 

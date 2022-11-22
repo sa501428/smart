@@ -24,6 +24,7 @@
 
 package mixer.utils.matrix;
 
+import javastraw.tools.MatrixTools;
 import javastraw.tools.UNIXTools;
 import mixer.utils.common.FloatMatrixTools;
 
@@ -54,7 +55,7 @@ public class AggregateMatrix {
         }
     }
 
-    private static void saveToPNG(double[][] matrix, File outfolder, String name) {
+    private static void export(double[][] matrix, File outfolder, String name) {
         File mapLogFile = new File(outfolder, name + ".png");
         FloatMatrixTools.saveMatrixToPNG(mapLogFile, FloatMatrixTools.convert(matrix), true);
     }
@@ -74,10 +75,12 @@ public class AggregateMatrix {
         add(matrix.aggregate);
     }
 
-    public void saveToPNG(File outfolder, String name) {
+    public void export(File outfolder, String name) {
         File outfolder2 = new File(outfolder, name);
         UNIXTools.makeDir(outfolder2);
-        saveToPNG(aggregate, outfolder2, name);
+        export(aggregate, outfolder2, name);
+        MatrixTools.saveMatrixTextNumpy(new File(outfolder2, name + ".npy").getAbsolutePath(),
+                aggregate);
     }
 
     public boolean hasData() {
