@@ -26,16 +26,11 @@ package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
 import mixer.utils.common.FloatMatrixTools;
-import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.transform.MatrixTransform;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MatrixAndWeight {
     public float[][] matrix, intra;
     public int[] weights;
-    private final Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
 
     public MatrixAndWeight(float[][] interMatrix1, float[][] intraMatrix1, int[] weights, Mappings mappings) {
@@ -43,25 +38,6 @@ public class MatrixAndWeight {
         this.intra = intraMatrix1;
         this.weights = weights;
         this.mappings = mappings;
-        if (mappings != null) populateRowIndexToIntervalMap(mappings);
-    }
-
-    private void populateRowIndexToIntervalMap(Mappings mappings) {
-        int resolution = mappings.getResolution();
-        Chromosome[] chromosomes = mappings.getChromosomes();
-        for (Chromosome chromosome : chromosomes) {
-            int maxGenomeLen = (int) chromosome.getLength();
-            int[] globalIndices = mappings.getGlobalIndex(chromosome);
-            for (int i = 0; i < globalIndices.length; i++) {
-                if (globalIndices[i] > -1) {
-                    int coord = globalIndices[i];
-                    int x1 = i * resolution;
-                    int x2 = Math.min(x1 + resolution, maxGenomeLen);
-                    SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, -1);
-                    map.put(coord, newRInterval);
-                }
-            }
-        }
     }
 
     public void divideColumnsByWeights() {
@@ -93,10 +69,49 @@ public class MatrixAndWeight {
         MatrixTransform.zscoreByCols(matrix, zscoreLimit);
     }
 
-    public FinalMatrix getFinalMatrix() {
-        return new FinalMatrix(FloatMatrixTools.concatenate(matrix, intra),
-                FloatMatrixTools.concatenate(weights, weights),
-                mappings, map);
+    public FinalMatrix getFinalMatrix(boolean includeIntra) {
+        if (includeIntra) {
+            return new FinalMatrix(FloatMatrixTools.concatenate(matrix, intra),
+                    FloatMatrixTools.concatenate(weights, weights),
+                    mappings);
+        }
+        return new FinalMatrix(matrix, weights, mappings);
+    }
+
+    public void doSimpleVCNorm() {
+        float[] rowSums = new float[matrix.length];
+        float[] colSums = new float[matrix[0].length];
+        double sum1 = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > 0) {
+                    rowSums[i] += matrix[i][j];
+                    colSums[j] += matrix[i][j];
+                    sum1 += matrix[i][j];
+                }
+            }
+        }
+
+        double sum2 = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                double denom = rowSums[i] * colSums[j];
+                if (denom > 0 && matrix[i][j] > 0) {
+                    matrix[i][j] = (float) (matrix[i][j] / denom);
+                    sum2 += matrix[i][j];
+                } else {
+                    matrix[i][j] = Float.NaN;
+                }
+            }
+        }
+
+        double scale = sum1 / sum2;
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] *= scale;
+            }
+        }
     }
 }
 

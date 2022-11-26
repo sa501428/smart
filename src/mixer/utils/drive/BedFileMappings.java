@@ -199,4 +199,25 @@ public class BedFileMappings implements Mappings {
         BinMappings.copyFromAtoB(chromToDistributionForChromosome, newMapping.chromToDistributionForChromosome);
         return newMapping;
     }
+
+    @Override
+    public Map<Integer, SubcompartmentInterval> populateRowIndexToIntervalMap() {
+        Map<Integer, SubcompartmentInterval> map = new HashMap<>();
+        int resolution = getResolution();
+        Chromosome[] chromosomes = getChromosomes();
+        for (Chromosome chromosome : chromosomes) {
+            int maxGenomeLen = (int) chromosome.getLength();
+            int[] globalIndices = getGlobalIndex(chromosome);
+            for (int i = 0; i < globalIndices.length; i++) {
+                if (globalIndices[i] > -1) {
+                    int coord = globalIndices[i];
+                    int x1 = i * resolution;
+                    int x2 = Math.min(x1 + resolution, maxGenomeLen);
+                    SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, -1);
+                    map.put(coord, newRInterval);
+                }
+            }
+        }
+        return map;
+    }
 }

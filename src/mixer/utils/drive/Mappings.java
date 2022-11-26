@@ -25,7 +25,9 @@
 package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
+import mixer.utils.tracks.SubcompartmentInterval;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface Mappings {
@@ -52,4 +54,6 @@ public interface Mappings {
     Mappings deepCopy();
 
     int[] getProtoclusterAssignments(Chromosome chrom);
+
+    Map<Integer, SubcompartmentInterval> populateRowIndexToIntervalMap();
 }

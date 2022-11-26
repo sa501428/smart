@@ -47,7 +47,9 @@ public class MatrixRowCleaner {
             //newRowIndexToIntervalMap.put(i, (SubcompartmentInterval) original.get(newIndexToOrigIndex[i]).deepClone());
         }
 
-        mappings.updateInternalDataStructures(badIndices);
+        if (mappings != null) {
+            mappings.updateInternalDataStructures(badIndices);
+        }
 
         return newMatrix;
     }

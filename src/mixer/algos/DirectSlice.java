@@ -34,10 +34,7 @@ import javastraw.tools.MatrixTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
-import mixer.utils.drive.BedFileMappings;
-import mixer.utils.drive.Mappings;
-import mixer.utils.drive.MatrixAndWeight;
-import mixer.utils.drive.MatrixBuilder;
+import mixer.utils.drive.*;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.TranslocationSet;
 
@@ -90,9 +87,18 @@ public class DirectSlice extends MixerCLT {
                 NormalizationHandler.NONE, NormalizationHandler.NONE, mappings,
                 new TranslocationSet(), false);
 
-        String path1 = new File(parentDirectory, "slice.matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path1, slice.matrix);
+        slice.doSimpleVCNorm();
 
-        System.out.println("\nSLICE complete");
+        FinalMatrix result = slice.getFinalMatrix(false);
+        result.removeAllNanRows();
+        result.removeAllNanCols();
+
+        String path1 = new File(parentDirectory, "slice.matrix.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path1, result.matrix);
+
+        String path2 = new File(parentDirectory, "genome.indices.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path2, result.getGenomeIndices());
+
+        System.out.println("\nDirect SLICE Compression complete");
     }
 }

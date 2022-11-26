@@ -22,22 +22,8 @@
  *  THE SOFTWARE.
  */
 
-package mixer.utils.cleaning;
+package mixer.utils.drive;
 
-import javastraw.reader.basics.Chromosome;
-import mixer.utils.drive.FinalMatrix;
-import mixer.utils.drive.MatrixAndWeight;
+public abstract class AbstractMappings implements Mappings {
 
-public class MatrixPreprocessor {
-
-    private static final int ZSCORE_LIMIT = 3;
-
-    public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes) {
-        matrix.updateWeights(chromosomes);
-        matrix.divideColumnsByWeights();
-        matrix.zscoreByCols(ZSCORE_LIMIT);
-        FinalMatrix result = matrix.getFinalMatrix(true);
-        result.removeAllNanRows();
-        return result;
-    }
 }

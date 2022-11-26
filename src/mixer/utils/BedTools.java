@@ -104,8 +104,10 @@ public class BedTools {
         if (anchors.size() < 1) System.err.println("BED File empty - file may have problems or error was encountered");
         bufferedReader.close();
 
-        for (String key : idToVal.keySet()) {
-            System.out.println("\n" + key + " in the bed file becomes " + idToVal.get(key) + "\n");
+        if (SmartTools.printVerboseComments) {
+            for (String key : idToVal.keySet()) {
+                System.out.println("\n" + key + " in the bed file becomes " + idToVal.get(key) + "\n");
+            }
         }
 
         return new ArrayList<>(anchors);

@@ -26,6 +26,7 @@ package mixer.utils.drive;
 
 import javastraw.reader.basics.Chromosome;
 import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.util.*;
 
@@ -178,19 +179,24 @@ public class BinMappings implements Mappings {
         return chromToBinToProtocluster.get(chrom.getIndex());
     }
 
-    protected int[][] getGenomeIndices() {
-        int[][] coordinates = new int[numRows][3];
-        for (Integer chrIndex : chromToBinToGlobalIndex.keySet()) {
-            int[] globalIndices = chromToBinToGlobalIndex.get(chrIndex);
+    @Override
+    public Map<Integer, SubcompartmentInterval> populateRowIndexToIntervalMap() {
+        Map<Integer, SubcompartmentInterval> map = new HashMap<>();
+        int resolution = getResolution();
+        Chromosome[] chromosomes = getChromosomes();
+        for (Chromosome chromosome : chromosomes) {
+            int maxGenomeLen = (int) chromosome.getLength();
+            int[] globalIndices = getGlobalIndex(chromosome);
             for (int i = 0; i < globalIndices.length; i++) {
-                if (globalIndices[i] > IGNORE) {
+                if (globalIndices[i] > -1) {
                     int coord = globalIndices[i];
-                    coordinates[coord][0] = chrIndex;
-                    coordinates[coord][1] = i * resolution;
-                    coordinates[coord][2] = coordinates[coord][1] + resolution;
+                    int x1 = i * resolution;
+                    int x2 = Math.min(x1 + resolution, maxGenomeLen);
+                    SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, -1);
+                    map.put(coord, newRInterval);
                 }
             }
         }
-        return coordinates;
+        return map;
     }
 }

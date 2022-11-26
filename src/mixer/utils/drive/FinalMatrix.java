@@ -28,32 +28,44 @@ import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.tools.MatrixTools;
 import mixer.utils.cleaning.NaNRowCleaner;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 import robust.concurrent.kmeans.clustering.Cluster;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FinalMatrix {
-    private final Map<Integer, SubcompartmentInterval> map;
+    private Map<Integer, SubcompartmentInterval> map = new HashMap<>();
     private final Mappings mappings;
     public float[][] matrix;
     public int[] weights;
 
-    public FinalMatrix(float[][] matrix, int[] weights, Mappings mappings, Map<Integer, SubcompartmentInterval> map) {
+    public FinalMatrix(float[][] matrix, int[] weights, Mappings mappings) {
         this.matrix = matrix;
         this.weights = weights;
         this.mappings = mappings;
-        this.map = map;
+        resetMap();
+    }
+
+    private void resetMap() {
+        if (mappings != null) {
+            map = mappings.populateRowIndexToIntervalMap();
+        }
     }
 
     public void removeAllNanRows() {
-        matrix = NaNRowCleaner.cleanUpMatrix(matrix, mappings);
+        matrix = NaNRowCleaner.cleanUpMatrix(matrix, mappings, 0.3f);
+        resetMap();
+    }
+
+    public void removeAllNanCols() {
+        float[][] t = FloatMatrixTools.transpose(matrix);
+        t = NaNRowCleaner.cleanUpMatrix(t, null, 0.5f);
+        if (matrix[0].length != t.length) weights = null; // todo
+        matrix = FloatMatrixTools.transpose(t);
     }
 
     public void inPlaceScaleSqrtWeightCol() {
@@ -128,5 +140,15 @@ public class FinalMatrix {
         return matrix.length > 10 && matrix[0].length > 2;
     }
 
-
+    public int[][] getGenomeIndices() {
+        int n = matrix.length;
+        int[][] coordinates = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            SubcompartmentInterval interval = map.get(i);
+            coordinates[i][0] = interval.getChrIndex();
+            coordinates[i][1] = interval.getX1();
+            coordinates[i][2] = interval.getX2();
+        }
+        return coordinates;
+    }
 }

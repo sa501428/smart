@@ -33,24 +33,24 @@ public class NaNRowCleaner {
 
     private static final int minGoodColsRequired = 3;
 
-    public static float[][] cleanUpMatrix(float[][] data, Mappings mappings) {
-        Set<Integer> badIndices = getBadIndices(data);
+    public static float[][] cleanUpMatrix(float[][] data, Mappings mappings, float minPercentGoodEntries) {
+        Set<Integer> badIndices = getBadIndices(data, minPercentGoodEntries);
         System.out.println("initial magic matrix num rows: " + data.length + " badIndices: " + badIndices.size());
 
         return MatrixRowCleaner.makeNewMatrixAndUpdateIndices(data, mappings, badIndices);
     }
 
-    private static Set<Integer> getBadIndices(float[][] matrix) {
+    private static Set<Integer> getBadIndices(float[][] matrix, float minPercentGoodEntries) {
         Set<Integer> badIndices = new HashSet<>();
         for (int i = 0; i < matrix.length; i++) {
-            if (isBadRow(matrix[i])) {
+            if (isBadRow(matrix[i], minPercentGoodEntries)) {
                 badIndices.add(i);
             }
         }
         return badIndices;
     }
 
-    private static boolean isBadRow(float[] row) {
+    private static boolean isBadRow(float[] row, float minPercentGoodEntries) {
         float numBadEntries = 0;
         for (float val : row) {
             if (Float.isNaN(val)) {
@@ -58,6 +58,6 @@ public class NaNRowCleaner {
             }
         }
         float percGoodEntries = (row.length - numBadEntries) / row.length;
-        return percGoodEntries < 0.3 || row.length - numBadEntries <= minGoodColsRequired;
+        return percGoodEntries < minPercentGoodEntries || row.length - numBadEntries <= minGoodColsRequired;
     }
 }
