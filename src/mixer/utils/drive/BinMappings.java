@@ -38,7 +38,7 @@ public class BinMappings implements Mappings {
     private final Map<Integer, int[]> chromToDistributionForChromosome = new HashMap<>();
     private int numRows = 0;
     private int numCols = 0;
-    private static final int IGNORE = -1;
+    protected static final int IGNORE = -1;
     private final int resolution;
     private final Chromosome[] chromosomes;
 
