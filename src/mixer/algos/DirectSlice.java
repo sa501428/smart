@@ -34,7 +34,9 @@ import javastraw.tools.MatrixTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.drive.*;
+import mixer.utils.impute.MatrixImputer;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.TranslocationSet;
 
@@ -89,15 +91,21 @@ public class DirectSlice extends MixerCLT {
 
         slice.doSimpleVCNorm();
 
+
         FinalMatrix result = slice.getFinalMatrix(false);
         result.removeAllNanRows();
         result.removeAllNanCols();
+        FloatMatrixTools.log(result.matrix, 1);
 
-        String path1 = new File(parentDirectory, "slice.matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path1, result.matrix);
+        String path = new File(parentDirectory, "slice.matrix.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path, result.matrix);
 
-        String path2 = new File(parentDirectory, "genome.indices.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path2, result.getGenomeIndices());
+        path = new File(parentDirectory, "genome.indices.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path, result.getGenomeIndices());
+
+        float[][] imputed = MatrixImputer.imputeUntilNoNansOnlyNN(result.matrix, 10);
+        path = new File(parentDirectory, "slice.imputed.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path, imputed);
 
         System.out.println("\nDirect SLICE Compression complete");
     }

@@ -63,7 +63,7 @@ public class FinalMatrix {
 
     public void removeAllNanCols() {
         float[][] t = FloatMatrixTools.transpose(matrix);
-        t = NaNRowCleaner.cleanUpMatrix(t, null, 0.5f);
+        t = NaNRowCleaner.cleanUpMatrix(t, null, 0.75f);
         if (matrix[0].length != t.length) weights = null; // todo
         matrix = FloatMatrixTools.transpose(t);
     }
