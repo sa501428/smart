@@ -37,8 +37,8 @@ import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.cleaning.BadIndexFinder;
 import mixer.utils.cleaning.MatrixPreprocessor;
-import mixer.utils.drive.BinMappings;
 import mixer.utils.drive.FinalMatrix;
+import mixer.utils.drive.Mappings;
 import mixer.utils.drive.MatrixAndWeight;
 import mixer.utils.drive.MatrixBuilder;
 import mixer.utils.intra.IndexOrderer;
@@ -46,6 +46,7 @@ import mixer.utils.kmeans.ClusteringMagic;
 import mixer.utils.refinement.InternalShuffle;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.SimpleTranslocationFinder;
+import mixer.utils.translocations.TranslocationSet;
 
 import java.io.File;
 import java.util.*;
@@ -103,7 +104,7 @@ public class Slice extends MixerCLT {
         updateGeneratorSeed(mixerParser, generator);
     }
 
-    private NormalizationType[] populateNormalizations(Dataset ds, CommandLineParserForMixer parser) {
+    public static NormalizationType[] populateNormalizations(Dataset ds, CommandLineParserForMixer parser) {
 
         NormalizationType[] potentialNorms = parser.getTwoNormsTypeOption(ds.getNormalizationHandler());
         if (potentialNorms != null && potentialNorms.length == 2) {
@@ -126,14 +127,14 @@ public class Slice extends MixerCLT {
         Map<Integer, Set<Integer>> badIndices = BadIndexFinder.getBadIndices(ds, chromosomes, resolution, norms[INTRA_SCALE_INDEX]);
         File tempOutputDirectory = new File(parentDirectory, "work");
         UNIXTools.makeDir(tempOutputDirectory);
-        SimpleTranslocationFinder translocations = new SimpleTranslocationFinder(ds, norms, tempOutputDirectory,
+        TranslocationSet translocations = SimpleTranslocationFinder.find(ds, norms, tempOutputDirectory,
                 badIndices, resolution);
-        BinMappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
+        Mappings mappings = IndexOrderer.getInitialMappings(ds, chromosomes, resolution,
                 badIndices, norms[INTRA_SCALE_INDEX], generator.nextLong(), tempOutputDirectory,
                 useExpandedIntraOE);
 
         MatrixAndWeight slice0 = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, tempOutputDirectory);
+                norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, true);
 
         Map<Integer, List<String>> bedFiles = new HashMap<>();
         runWithSettings(slice0, handler, chromosomes, tempOutputDirectory, bedFiles);

@@ -24,26 +24,56 @@
 
 package mixer.utils.drive;
 
+import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.Chromosome;
-import mixer.utils.common.FloatMatrixTools;
+import mixer.utils.tracks.Concensus2DTools;
+import mixer.utils.tracks.SubcompartmentInterval;
 
 import java.util.*;
 
-public class BinMappings implements Mappings {
+public class BedFileMappings implements Mappings {
+    private static final int IGNORE = -1;
     // chromosome to (bin to proto-cluster index)
     // chromosome to (bin to global index)
     private final Map<Integer, int[]> chromToBinToProtocluster = new HashMap<>();
     private final Map<Integer, int[]> chromToBinToGlobalIndex = new HashMap<>();
     private final Map<Integer, int[]> chromToDistributionForChromosome = new HashMap<>();
-    private int numRows = 0;
-    private int numCols = 0;
-    private static final int IGNORE = -1;
     private final int resolution;
     private final Chromosome[] chromosomes;
+    private int numRows = 0;
+    private int numCols = 0;
 
-    public BinMappings(int resolution, Chromosome[] chromosomes) {
+    private BedFileMappings(int resolution, Chromosome[] chromosomes) {
         this.resolution = resolution;
         this.chromosomes = chromosomes;
+    }
+
+    public BedFileMappings(Chromosome[] chromosomes, int resolution,
+                           GenomeWide1DList<SubcompartmentInterval> clusters) {
+        this(resolution, chromosomes);
+
+        Map<String, Map<Integer, Integer>> map1 = Concensus2DTools.summarize(clusters);
+        int numClusters = Concensus2DTools.getMaxId(map1) + 1;
+
+        int counter = 0;
+        for (Chromosome chrom : chromosomes) {
+            int length = (int) (chrom.getLength() / resolution) + 1;
+            int[] binToProtocluster = new int[length];
+            Arrays.fill(binToProtocluster, -1);
+            fillInClusterAssigments(binToProtocluster, map1.get("" + chrom.getIndex()), counter, resolution);
+            putBinToProtoCluster(chrom, binToProtocluster);
+            counter += numClusters;
+        }
+
+        calculateGlobalIndices(chromosomes);
+    }
+
+    private void fillInClusterAssigments(int[] binToProtocluster, Map<Integer, Integer> posToID,
+                                         int counter, int resolution) {
+        for (Integer pos : posToID.keySet()) {
+            int id = posToID.get(pos);
+            binToProtocluster[pos / resolution] = id + counter;
+        }
     }
 
     public void putBinToProtoCluster(Chromosome chrom, int[] binToProtocluster) {
@@ -82,10 +112,9 @@ public class BinMappings implements Mappings {
         }
     }
 
-    public static void copyFromAtoB(Map<Integer, int[]> a, Map<Integer, int[]> b) {
-        for (Integer key : a.keySet()) {
-            b.put(key, FloatMatrixTools.deepClone(a.get(key)));
-        }
+    @Override
+    public int[] getProtoclusterAssignments(Chromosome chrom) {
+        return chromToBinToProtocluster.get(chrom.getIndex());
     }
 
     @Override
@@ -148,13 +177,11 @@ public class BinMappings implements Mappings {
         for (int bi : badIndx) {
             for (int[] array : chromToBinToGlobalIndex.values()) {
                 for (int i = 0; i < array.length; i++) {
-
                     if (array[i] > bi) {
                         array[i]--;
                     } else if (array[i] == bi) {
                         array[i] = IGNORE;
                     }
-                    // else is < bi, and isn't affected
                 }
             }
         }
@@ -164,33 +191,12 @@ public class BinMappings implements Mappings {
 
     @Override
     public Mappings deepCopy() {
-        BinMappings newMapping = new BinMappings(resolution, chromosomes);
+        BedFileMappings newMapping = new BedFileMappings(resolution, chromosomes);
         newMapping.numRows = numRows;
         newMapping.numCols = numCols;
-        copyFromAtoB(chromToBinToProtocluster, newMapping.chromToBinToProtocluster);
-        copyFromAtoB(chromToBinToGlobalIndex, newMapping.chromToBinToGlobalIndex);
-        copyFromAtoB(chromToDistributionForChromosome, newMapping.chromToDistributionForChromosome);
+        BinMappings.copyFromAtoB(chromToBinToProtocluster, newMapping.chromToBinToProtocluster);
+        BinMappings.copyFromAtoB(chromToBinToGlobalIndex, newMapping.chromToBinToGlobalIndex);
+        BinMappings.copyFromAtoB(chromToDistributionForChromosome, newMapping.chromToDistributionForChromosome);
         return newMapping;
-    }
-
-    @Override
-    public int[] getProtoclusterAssignments(Chromosome chrom) {
-        return chromToBinToProtocluster.get(chrom.getIndex());
-    }
-
-    protected int[][] getGenomeIndices() {
-        int[][] coordinates = new int[numRows][3];
-        for (Integer chrIndex : chromToBinToGlobalIndex.keySet()) {
-            int[] globalIndices = chromToBinToGlobalIndex.get(chrIndex);
-            for (int i = 0; i < globalIndices.length; i++) {
-                if (globalIndices[i] > IGNORE) {
-                    int coord = globalIndices[i];
-                    coordinates[coord][0] = chrIndex;
-                    coordinates[coord][1] = i * resolution;
-                    coordinates[coord][2] = coordinates[coord][1] + resolution;
-                }
-            }
-        }
-        return coordinates;
     }
 }

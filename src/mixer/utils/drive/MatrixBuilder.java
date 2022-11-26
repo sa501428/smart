@@ -33,9 +33,8 @@ import javastraw.reader.type.HiCZoom;
 import javastraw.reader.type.NormalizationType;
 import mixer.SmartTools;
 import mixer.utils.intra.OETools;
-import mixer.utils.translocations.SimpleTranslocationFinder;
+import mixer.utils.translocations.TranslocationSet;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,12 +44,12 @@ public class MatrixBuilder {
                                                  NormalizationType interNorm,
                                                  NormalizationType intraNorm,
                                                  Mappings mappings,
-                                                 SimpleTranslocationFinder translocations,
-                                                 File outputDirectory) {
+                                                 TranslocationSet translocations,
+                                                 boolean fillInIntraMatrix) {
         int numRows = mappings.getNumRows();
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
-        float[][] matrix = new float[numRows][numCols];
+        float[][] inter = new float[numRows][numCols];
         float[][] intra = new float[numRows][numCols];
         float[][] counts = new float[numRows][numCols];
 
@@ -61,22 +60,22 @@ public class MatrixBuilder {
 
         for (int i = 0; i < chromosomes.length; i++) {
             for (int j = i; j < chromosomes.length; j++) {
-
-                // INTRA region
-                if (i == j) {
-                    fillInNans(matrix, mappings, chromosomes[i], chromosomes[i]);
-                    Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
-                    if (m1 != null) {
-                        MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
-                        if (zd != null) {
-                            populateIntraMatrix(intra, counts, zd, intraNorm, mappings, chromosomes[i],
-                                    resolution);
+                if (i == j) { // INTRA region
+                    fillInNans(inter, mappings, chromosomes[i], chromosomes[i]);
+                    if (fillInIntraMatrix) {
+                        Matrix m1 = ds.getMatrix(chromosomes[i], chromosomes[j]);
+                        if (m1 != null) {
+                            MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
+                            if (zd != null) {
+                                populateIntraMatrix(intra, counts, zd, intraNorm, mappings, chromosomes[i],
+                                        resolution);
+                            }
                         }
                     }
                 } else {
                     fillInNans(intra, mappings, chromosomes[i], chromosomes[j]);
                     if (translocations.contains(chromosomes[i], chromosomes[j])) {
-                        fillInNans(matrix, mappings, chromosomes[i], chromosomes[j]);
+                        fillInNans(inter, mappings, chromosomes[i], chromosomes[j]);
                         continue;
                     }
 
@@ -84,18 +83,27 @@ public class MatrixBuilder {
                     if (m1 != null) {
                         MatrixZoomData zd = m1.getZoomData(new HiCZoom(resolution));
                         if (zd != null) {
-                            populateFromIterator(matrix,
-                                    zd.getNormalizedIterator(interNorm), mappings, chromosomes[i], chromosomes[j]);
+                            populateFromIterator(inter,
+                                    getIterator(zd, interNorm), mappings, chromosomes[i], chromosomes[j]);
                         }
                     }
                 }
-
                 System.out.print(".");
             }
             System.out.println(".");
         }
 
-        return new MatrixAndWeight(matrix, normalize(intra, counts), weights, mappings);
+        if (fillInIntraMatrix) {
+            return new MatrixAndWeight(inter, normalize(intra, counts), weights, mappings);
+        }
+        return new MatrixAndWeight(inter, intra, weights, mappings);
+    }
+
+    private static Iterator<ContactRecord> getIterator(MatrixZoomData zd, NormalizationType norm) {
+        if (norm.getLabel().equalsIgnoreCase("none")) {
+            return zd.getDirectIterator();
+        }
+        return zd.getNormalizedIterator(norm);
     }
 
     private static void fillInNans(float[][] matrix, Mappings mappings, Chromosome c1, Chromosome c2) {
@@ -156,7 +164,7 @@ public class MatrixBuilder {
 
     private static void populateIntraMatrix(float[][] matrix, float[][] counts, MatrixZoomData zd, NormalizationType intraNorm,
                                             Mappings mappings, Chromosome chromosome, int resolution) {
-        List<ContactRecord> filteredContacts = OETools.filter(resolution, zd.getNormalizedIterator(intraNorm));
+        List<ContactRecord> filteredContacts = OETools.filter(resolution, getIterator(zd, intraNorm));
 
         if (filteredContacts.size() > 1) {
             LogExpectedSubset expected = new LogExpectedSubset(filteredContacts, chromosome, resolution);

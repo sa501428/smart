@@ -50,4 +50,6 @@ public interface Mappings {
     void updateInternalDataStructures(Set<Integer> badIndices);
 
     Mappings deepCopy();
+
+    int[] getProtoclusterAssignments(Chromosome chrom);
 }

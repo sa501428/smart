@@ -30,11 +30,18 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="bug fix for missing expected">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/algos/DirectSlice.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/drive/BedFileMappings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/CVS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/CVS.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/matrix/AggregateMatrix.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/shuffle/ShuffleAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CLTFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/BinMappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/BinMappings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/Mappings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/Mappings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/Concensus2DTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/SimpleTranslocationFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/translocations/TranslocationSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/translocations/TranslocationSet.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,9 +119,9 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.algos" />
       <recent name="mixer.utils.matrix" />
       <recent name="mixer.utils.shuffle" />
-      <recent name="mixer.algos" />
       <recent name="mixer.utils.tracks" />
       <recent name="mixer.utils.splitter" />
     </key>
@@ -321,14 +328,8 @@
       <workItem from="1668629568187" duration="440000" />
       <workItem from="1668675875084" duration="1185000" />
       <workItem from="1668891730057" duration="426000" />
-      <workItem from="1669085789210" duration="986000" />
-    </task>
-    <task id="LOCAL-00292" summary="current version">
-      <created>1667081597262</created>
-      <option name="number" value="00292" />
-      <option name="presentableId" value="LOCAL-00292" />
-      <option name="project" value="LOCAL" />
-      <updated>1667081597262</updated>
+      <workItem from="1669085789210" duration="1846000" />
+      <workItem from="1669403666972" duration="7528000" />
     </task>
     <task id="LOCAL-00293" summary="update clustering">
       <created>1667100079066</created>
@@ -666,7 +667,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668706264863</updated>
     </task>
-    <option name="localTasksCounter" value="341" />
+    <task id="LOCAL-00341" summary="save shuffle matrix as numpy array">
+      <created>1669089864079</created>
+      <option name="number" value="00341" />
+      <option name="presentableId" value="LOCAL-00341" />
+      <option name="project" value="LOCAL" />
+      <updated>1669089864079</updated>
+    </task>
+    <option name="localTasksCounter" value="342" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -690,7 +698,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="before cleanup" />
     <MESSAGE value="after cleanup" />
     <MESSAGE value="updates, cleanup, version for deployment" />
     <MESSAGE value="update output directories" />
@@ -715,7 +722,8 @@
     <MESSAGE value="print out key mapping" />
     <MESSAGE value="verify shared indices for CVS" />
     <MESSAGE value="bug fix for missing expected" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fix for missing expected" />
+    <MESSAGE value="save shuffle matrix as numpy array" />
+    <option name="LAST_COMMIT_MESSAGE" value="save shuffle matrix as numpy array" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

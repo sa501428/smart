@@ -43,13 +43,11 @@ import java.util.Set;
 public class SimpleTranslocationFinder {
 
     private final static int minToBeTranslocation = 10;
-    private final File outputDirectory;
     private static final int distance = 1000000;
-    private final TranslocationSet tSet = new TranslocationSet();
 
-    public SimpleTranslocationFinder(Dataset ds, NormalizationType[] norms, File outputDirectory,
-                                     Map<Integer, Set<Integer>> badIndices, int hiRes) {
-        this.outputDirectory = outputDirectory;
+    public static TranslocationSet find(Dataset ds, NormalizationType[] norms, File outputDirectory,
+                                        Map<Integer, Set<Integer>> badIndices, int hiRes) {
+        TranslocationSet tSet = new TranslocationSet();
 
         Chromosome[] chroms = ds.getChromosomeHandler().getAutosomalChromosomesArray();
         int lowRes = Math.max(getLowestResolution(ds, 1000000), hiRes);
@@ -66,6 +64,7 @@ public class SimpleTranslocationFinder {
             }
             System.out.println(".");
         }
+        return tSet;
     }
 
     /**
@@ -83,8 +82,8 @@ public class SimpleTranslocationFinder {
         return maxResolution;
     }
 
-    private boolean hasTranslocation(Chromosome chrom1, Chromosome chrom2, Dataset ds, NormalizationType norm,
-                                     Map<Integer, Set<Integer>> badIndices, int factor, int lowRes) {
+    private static boolean hasTranslocation(Chromosome chrom1, Chromosome chrom2, Dataset ds, NormalizationType norm,
+                                            Map<Integer, Set<Integer>> badIndices, int factor, int lowRes) {
         Matrix matrix = ds.getMatrix(chrom1, chrom2);
         if (matrix != null) {
             MatrixZoomData zd = matrix.getZoomData(new HiCZoom(lowRes));
@@ -119,7 +118,7 @@ public class SimpleTranslocationFinder {
         return false;
     }
 
-    private boolean isGoodRow(int bin, Set<Integer> badSet, int factor) {
+    private static boolean isGoodRow(int bin, Set<Integer> badSet, int factor) {
         int binH = bin * factor;
         for (int i = 0; i < factor; i++) {
             if (badSet.contains(binH + i)) return false;
@@ -127,13 +126,9 @@ public class SimpleTranslocationFinder {
         return true;
     }
 
-    private double getCutoff(ExpectedValueFunction expectedValues, Chromosome chrom1, Chromosome chrom2, int dIndex) {
+    private static double getCutoff(ExpectedValueFunction expectedValues, Chromosome chrom1, Chromosome chrom2, int dIndex) {
         double val1 = expectedValues.getExpectedValuesWithNormalization(chrom1.getIndex()).getValues().get(0)[dIndex];
         double val2 = expectedValues.getExpectedValuesWithNormalization(chrom2.getIndex()).getValues().get(0)[dIndex];
         return Math.min(val1, val2);
-    }
-
-    public boolean contains(Chromosome c1, Chromosome c2) {
-        return tSet.hasTranslocation(c1, c2);
     }
 }

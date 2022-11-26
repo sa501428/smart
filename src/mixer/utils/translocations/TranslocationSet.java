@@ -36,7 +36,7 @@ public class TranslocationSet {
         regions.add(new InterChromosomeRegion(chr1, chr2));
     }
 
-    public boolean hasTranslocation(Chromosome chr1, Chromosome chr2) {
+    public boolean contains(Chromosome chr1, Chromosome chr2) {
         return regions.contains(new InterChromosomeRegion(chr1, chr2));
     }
 }

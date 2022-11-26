@@ -107,7 +107,7 @@ public class Concensus2DTools {
         }
     }
 
-    private static int getMaxId(Map<String, Map<Integer, Integer>> map) {
+    public static int getMaxId(Map<String, Map<Integer, Integer>> map) {
         int maxVal = 0;
         for (Map<Integer, Integer> mapping : map.values()) {
             for (Integer val : mapping.values()) {
@@ -117,7 +117,7 @@ public class Concensus2DTools {
         return maxVal;
     }
 
-    private static Map<String, Map<Integer, Integer>> summarize(GenomeWide1DList<SubcompartmentInterval> file1) {
+    public static Map<String, Map<Integer, Integer>> summarize(GenomeWide1DList<SubcompartmentInterval> file1) {
         Map<String, Map<Integer, Integer>> summary = new HashMap<>();
         file1.processLists((s, list) -> {
             Map<Integer, Integer> indexToId = new HashMap<>();
