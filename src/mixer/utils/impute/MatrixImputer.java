@@ -35,11 +35,34 @@ public class MatrixImputer {
 
     public static float[][] imputeUntilNoNansOnlyNN(float[][] data, long seed) {
         generator.setSeed(seed);
-        int numClusters = 100;
+        //int[] allnumClusters = ;
+        //float[][] imputed = MatrixColImputer.impute(MatrixTools.deepClone(data));
         float[][] imputed = MatrixTools.deepClone(data);
-        do {
-            fillInImputedMatrix(imputed, numClusters--);
-        } while (checkIfHasNan(imputed));
+        int numClusters = 1280;
+        boolean useKmedians = false;
+
+        /*
+        for(int numClusters : new int[]{200, 200, 100, 100, 50, 50, 40, 40, 30, 30, 20, 20, 10, 10}){
+            fillInImputedMatrix(imputed, numClusters);
+            if(!checkIfHasNan(imputed)) break;
+            imputed = FloatMatrixTools.transpose(imputed);
+            fillInImputedMatrix(imputed, imputed.length/4);
+            imputed = FloatMatrixTools.transpose(imputed);
+            if(!checkIfHasNan(imputed)) break;
+        }
+        */
+
+        while (checkIfHasNan(imputed) && numClusters >= 10) {
+            boolean nothingChanged = fillInImputedMatrix(imputed, numClusters, false);
+            if (nothingChanged) numClusters /= 2;
+        }
+
+        numClusters = 160;
+        while (checkIfHasNan(imputed) && numClusters >= 10) {
+            boolean nothingChanged = fillInImputedMatrix(imputed, numClusters, true);
+            if (nothingChanged) numClusters /= 2;
+        }
+
         return imputed;
     }
 
@@ -54,15 +77,16 @@ public class MatrixImputer {
         return false;
     }
 
-    private static void fillInImputedMatrix(float[][] imputed, int numClusters) {
-        System.out.println("Imputing...");
-        System.out.println("Starting Nans: " + numNans(imputed));
-        CentroidImputer.updateBasedOnCentroids(imputed, numClusters, generator);
+    private static boolean fillInImputedMatrix(float[][] imputed, int numClusters, boolean useKmedians) {
+        System.out.println("Imputing... (k=" + numClusters + ")");
+        int cont1 = numNans("Starting Nans: ", imputed);
+        CentroidImputer.updateBasedOnCentroids(imputed, numClusters, generator, useKmedians);
         System.out.println(".");
-        System.out.println("Done imputing; Nans: " + numNans(imputed));
+        int cont2 = numNans("Done imputing; Nans: ", imputed);
+        return cont1 == cont2;
     }
 
-    private static String numNans(float[][] data) {
+    private static int numNans(String message, float[][] data) {
         int counter = 0;
         int[] numNanRows = new int[data.length];
         int[] numNanCols = new int[data[0].length];
@@ -81,6 +105,8 @@ public class MatrixImputer {
         int avgNanInRows = ArrayTools.mean(numNanRows);
         int avgNanInCols = ArrayTools.mean(numNanCols);
 
-        return "" + counter + "/(" + maxNanInRows + " : " + avgNanInRows + ")/(" + maxNanInCols + " : " + avgNanInCols + ")";
+        System.out.println(message + counter + "/(" + maxNanInRows + " : " + avgNanInRows + ")/(" +
+                maxNanInCols + " : " + avgNanInCols + ")");
+        return counter;
     }
 }

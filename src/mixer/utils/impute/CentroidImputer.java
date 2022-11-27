@@ -37,10 +37,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CentroidImputer {
 
-    public static void updateBasedOnCentroids(float[][] imputed, int numClusters, Random generator) {
+    public static void updateBasedOnCentroids(float[][] imputed, int numClusters, Random generator,
+                                              boolean useKmedians) {
         AtomicInteger numActualClusters = new AtomicInteger(-1);
-        RobustConcurrentKMeans kMeans = new RobustConcurrentKMedians(imputed, numClusters, 10,
-                generator.nextLong(), SmartTools.NUM_ENTRIES_TO_SKIP_MEDIAN);
+        RobustConcurrentKMeans kMeans;
+        if (useKmedians) {
+            kMeans = new RobustConcurrentKMedians(imputed, numClusters, 15, generator.nextLong(),
+                    SmartTools.NUM_ENTRIES_TO_SKIP_MEDIAN);
+        } else {
+            kMeans = new RobustConcurrentKMeans(imputed, numClusters, 15, generator.nextLong());
+        }
 
         KMeansListener kMeansListener = new KMeansListener() {
             @Override
@@ -82,11 +88,13 @@ public class CentroidImputer {
     }
 
     private static void processCluster(Cluster cluster, float[][] imputed) {
-        float[] center = cluster.getCenter();
-        for (int r : cluster.getMemberIndexes()) {
-            for (int j = 0; j < imputed[r].length; j++) {
-                if (Float.isNaN(imputed[r][j]) && center[j] > 0) {
-                    imputed[r][j] = center[j];
+        if (cluster.getMemberIndexes().length > 10) {
+            float[] center = cluster.getCenter();
+            for (int r : cluster.getMemberIndexes()) {
+                for (int j = 0; j < imputed[r].length; j++) {
+                    if (Float.isNaN(imputed[r][j]) && center[j] > 0) {
+                        imputed[r][j] = center[j];
+                    }
                 }
             }
         }

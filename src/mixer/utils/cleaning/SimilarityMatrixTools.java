@@ -24,6 +24,7 @@
 
 package mixer.utils.cleaning;
 
+import javastraw.tools.ParallelizationTools;
 import mixer.SmartTools;
 import mixer.utils.common.ZScoreTools;
 import mixer.utils.intra.IndexOrderer;
@@ -33,29 +34,27 @@ import mixer.utils.similaritymeasures.RobustCosineSimilarity;
 import mixer.utils.similaritymeasures.SimilarityMetric;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimilarityMatrixTools {
 
-    public static SimpleMatrixAndWeight getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric,
-                                                                  int numPerCentroid, long seed) {
+    public static float[][] getNonNanSimilarityMatrix(float[][] matrix, SimilarityMetric metric,
+                                                      int numPerCentroid, long seed) {
         if ((!metric.isSymmetric()) || numPerCentroid > 1) {
             return getAsymmetricMatrix(matrix, new SimilarityMetric[]{metric},
                     matrix.length / numPerCentroid, seed);
         }
 
-        return getSymmetricMatrix(matrix, metric);
+        return getSymmetricDistanceMatrix(matrix, metric);
     }
 
-    public static SimpleMatrixAndWeight getCompressedCosineSimilarityMatrix(float[][] matrix,
-                                                                            int numCentroids, long seed) {
+    public static float[][] getCompressedCosineSimilarityMatrix(float[][] matrix,
+                                                                int numCentroids, long seed) {
         return getAsymmetricMatrix(matrix, new SimilarityMetric[]{RobustCosineSimilarity.SINGLETON},
                 numCentroids, seed);
     }
 
-    public static SimpleMatrixAndWeight getCosinePearsonCorrMatrix(float[][] matrix, int numCentroids, long seed) {
+    public static float[][] getCosinePearsonCorrMatrix(float[][] matrix, int numCentroids, long seed) {
         RobustCosineSimilarity.USE_ARC = true;
         RobustCorrelationSimilarity.USE_ARC = true;
 
@@ -66,7 +65,7 @@ public class SimilarityMatrixTools {
                 //RobustManhattanDistance.SINGLETON
         };
 
-        SimpleMatrixAndWeight answer = getAsymmetricMatrix(matrix, metrics, numCentroids, seed);
+        float[][] answer = getAsymmetricMatrix(matrix, metrics, numCentroids, seed);
 
         RobustCosineSimilarity.USE_ARC = false;
         RobustCorrelationSimilarity.USE_ARC = false;
@@ -74,11 +73,11 @@ public class SimilarityMatrixTools {
         return answer;
     }
 
-    private static SimpleMatrixAndWeight getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics,
-                                                             int numInitCentroids, long seed) {
+    private static float[][] getAsymmetricMatrix(float[][] matrix, SimilarityMetric[] metrics,
+                                                 int numInitCentroids, long seed) {
         QuickCentroids centroidMaker = new QuickCentroids(matrix, numInitCentroids, seed, 20);
         final float[][] centroids = centroidMaker.generateCentroids(5, true);
-        int[] weights = centroidMaker.getWeights();
+        //int[] weights = centroidMaker.getWeights();
 
 
         int numCentroids = centroids.length;
@@ -87,64 +86,41 @@ public class SimilarityMatrixTools {
         }
 
         float[][] result = new float[matrix.length][numCentroids * metrics.length];
-        int numCPUThreads = Runtime.getRuntime().availableProcessors();
 
         System.out.println("... generating sym matrix");
         AtomicInteger currRowIndex = new AtomicInteger(0);
-        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
-        for (int l = 0; l < numCPUThreads; l++) {
-            Runnable worker = () -> {
-                int i = currRowIndex.getAndIncrement();
-                while (i < matrix.length) {
-                    for (int j = 0; j < numCentroids; j++) {
-                        for (int z = 0; z < metrics.length; z++) {
-                            int offset = z * numCentroids;
-                            result[i][j + offset] = metrics[z].distance(centroids[j], matrix[i]);
-                        }
+        ParallelizationTools.launchParallelizedCode(() -> {
+            int i = currRowIndex.getAndIncrement();
+            while (i < matrix.length) {
+                for (int j = 0; j < numCentroids; j++) {
+                    for (int z = 0; z < metrics.length; z++) {
+                        int offset = z * numCentroids;
+                        result[i][j + offset] = metrics[z].distance(centroids[j], matrix[i]);
                     }
-                    i = currRowIndex.getAndIncrement();
                 }
-            };
-            executor.execute(worker);
-        }
-        executor.shutdown();
-        // Wait until all threads finish
-        //noinspection StatementWithEmptyBody
-        while (!executor.isTerminated()) {
-        }
+                i = currRowIndex.getAndIncrement();
+            }
+        });
 
-        return new SimpleMatrixAndWeight(result, weights);
+        return result;
     }
 
-    private static SimpleMatrixAndWeight getSymmetricMatrix(float[][] matrix, SimilarityMetric metric) {
+    public static float[][] getSymmetricDistanceMatrix(float[][] matrix, SimilarityMetric metric) {
         float[][] result = new float[matrix.length][matrix.length]; // *2
-
-        int numCPUThreads = Runtime.getRuntime().availableProcessors() * 2;
         System.out.println(" .. ");
         AtomicInteger currRowIndex = new AtomicInteger(0);
-        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
-        for (int l = 0; l < numCPUThreads; l++) {
-            Runnable worker = () -> {
-                int i = currRowIndex.getAndIncrement();
-                while (i < matrix.length) {
-                    for (int j = i; j < matrix.length; j++) {
-                        result[i][j] = metric.distance(matrix[i], matrix[j]);
-                        result[j][i] = result[i][j];
-                    }
-                    i = currRowIndex.getAndIncrement();
+        ParallelizationTools.launchParallelizedCode(() -> {
+            int i = currRowIndex.getAndIncrement();
+            while (i < matrix.length) {
+                for (int j = i; j < matrix.length; j++) {
+                    result[i][j] = metric.distance(matrix[i], matrix[j]);
+                    result[j][i] = result[i][j];
                 }
-            };
-            executor.execute(worker);
-        }
-        executor.shutdown();
-        // Wait until all threads finish
-        //noinspection StatementWithEmptyBody
-        while (!executor.isTerminated()) {
-        }
-
-        int[] weights = new int[result[0].length];
-        Arrays.fill(weights, 1);
-        return new SimpleMatrixAndWeight(result, weights);
+                System.out.print(".");
+                i = currRowIndex.getAndIncrement();
+            }
+        });
+        return result;
     }
 
     public static float[][] getSymmNonNanSimilarityMatrixWithMask(float[][] initialMatrix,
@@ -161,30 +137,22 @@ public class SimilarityMatrixTools {
         RobustCorrelationSimilarity.USE_ARC = true;
 
         AtomicInteger currRowIndex = new AtomicInteger(0);
-        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
-        for (int l = 0; l < numCPUThreads; l++) {
-            Runnable worker = () -> {
-                int i = currRowIndex.getAndIncrement();
-                while (i < initialMatrix.length) {
-                    if (newIndexOrderAssignments[i] < checkVal) {
-                        // result[i][i] = Float.NaN; // technically 1, but not useful
-                        for (int j = i + 1; j < initialMatrix.length; j++) {
-                            if (newIndexOrderAssignments[j] < checkVal) {
-                                result[i][j] = metric.distance(initialMatrix[j], initialMatrix[i]);
-                                result[j][i] = result[i][j];
-                            }
+        ParallelizationTools.launchParallelizedCode(() -> {
+            int i = currRowIndex.getAndIncrement();
+            while (i < initialMatrix.length) {
+                if (newIndexOrderAssignments[i] < checkVal) {
+                    // result[i][i] = Float.NaN; // technically 1, but not useful
+                    for (int j = i + 1; j < initialMatrix.length; j++) {
+                        if (newIndexOrderAssignments[j] < checkVal) {
+                            result[i][j] = metric.distance(initialMatrix[j], initialMatrix[i]);
+                            result[j][i] = result[i][j];
                         }
                     }
-                    i = currRowIndex.getAndIncrement();
                 }
-            };
-            executor.execute(worker);
-        }
-        executor.shutdown();
-        // Wait until all threads finish
-        //noinspection StatementWithEmptyBody
-        while (!executor.isTerminated()) {
-        }
+                i = currRowIndex.getAndIncrement();
+            }
+        });
+
         RobustCorrelationSimilarity.USE_ARC = false;
 
         return result;
@@ -212,26 +180,17 @@ public class SimilarityMatrixTools {
         int numCPUThreads = Runtime.getRuntime().availableProcessors();
 
         AtomicInteger currRowIndex = new AtomicInteger(0);
-        ExecutorService executor = Executors.newFixedThreadPool(numCPUThreads);
-        for (int l = 0; l < numCPUThreads; l++) {
-            Runnable worker = () -> {
-                int i = currRowIndex.getAndIncrement();
-                while (i < initialMatrix.length) {
-                    if (newIndexOrderAssignments[i] < checkVal) {
-                        for (int j = 0; j < numCentroids; j++) {
-                            result[i][j] = metric.distance(centroids[j], initialMatrix[i]);
-                        }
+        ParallelizationTools.launchParallelizedCode(() -> {
+            int i = currRowIndex.getAndIncrement();
+            while (i < initialMatrix.length) {
+                if (newIndexOrderAssignments[i] < checkVal) {
+                    for (int j = 0; j < numCentroids; j++) {
+                        result[i][j] = metric.distance(centroids[j], initialMatrix[i]);
                     }
-                    i = currRowIndex.getAndIncrement();
                 }
-            };
-            executor.execute(worker);
-        }
-        executor.shutdown();
-        // Wait until all threads finish
-        //noinspection StatementWithEmptyBody
-        while (!executor.isTerminated()) {
-        }
+                i = currRowIndex.getAndIncrement();
+            }
+        });
 
         ZScoreTools.inPlaceScaleSqrtWeightCol(result, weights);
 

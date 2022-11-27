@@ -34,9 +34,10 @@ import javastraw.tools.MatrixTools;
 import mixer.clt.CommandLineParserForMixer;
 import mixer.clt.MixerCLT;
 import mixer.utils.BedTools;
+import mixer.utils.cleaning.SimilarityMatrixTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.drive.*;
-import mixer.utils.impute.MatrixImputer;
+import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.TranslocationSet;
 
@@ -103,9 +104,10 @@ public class DirectSlice extends MixerCLT {
         path = new File(parentDirectory, "genome.indices.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(path, result.getGenomeIndices());
 
-        float[][] imputed = MatrixImputer.imputeUntilNoNansOnlyNN(result.matrix, 10);
-        path = new File(parentDirectory, "slice.imputed.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path, imputed);
+        float[][] distL1 = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
+                RobustManhattanDistance.SINGLETON);
+        path = new File(parentDirectory, "slice.l1.distance.matrix.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path, distL1);
 
         System.out.println("\nDirect SLICE Compression complete");
     }
