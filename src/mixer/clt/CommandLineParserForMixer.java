@@ -45,6 +45,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option normalizationTypeOption = addStringOption('k', "normalization");
     private final Option multipleResolutionsOption = addStringOption('r', "resolutions");
     private final Option randomSeedsOption = addStringOption("seed");
+    private final Option genomeOption = addStringOption("genome");
     private final Option zScoreOption = addBooleanOption("zscore");
     private final Option bothNormsOption = addBooleanOption("both-norms");
     private final Option appendOption = addBooleanOption("append");
@@ -57,6 +58,10 @@ public class CommandLineParserForMixer extends CmdLineParser {
     /**
      * String flags
      */
+    public String getGenomeOption() {
+        return optionToString(genomeOption);
+    }
+
     public NormalizationType getNormalizationTypeOption(NormalizationHandler normalizationHandler) {
         return retrieveNormalization(optionToString(normalizationTypeOption), normalizationHandler);
     }

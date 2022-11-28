@@ -28,6 +28,7 @@ import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
+import javastraw.reader.basics.ChromosomeTools;
 import javastraw.reader.type.NormalizationHandler;
 import javastraw.tools.HiCFileTools;
 import javastraw.tools.MatrixTools;
@@ -37,6 +38,9 @@ import mixer.utils.BedTools;
 import mixer.utils.cleaning.SimilarityMatrixTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.drive.*;
+import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
+import mixer.utils.similaritymeasures.RobustCosineSimilarity;
+import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.TranslocationSet;
@@ -74,6 +78,10 @@ public class DirectSlice extends MixerCLT {
         resolution = updateResolution(mixerParser, resolution);
         ds = HiCFileTools.extractDatasetForCLT(args[1], true, false, resolution > 100);
         handler = ds.getChromosomeHandler();
+        String genomeID = mixerParser.getGenomeOption();
+        if (genomeID != null && genomeID.length() > 2) {
+            handler = ChromosomeTools.loadChromosomes(genomeID);
+        }
 
         clusters = BedTools.loadBedFileAtResolution(handler, args[2], resolution);
 
@@ -104,10 +112,25 @@ public class DirectSlice extends MixerCLT {
         path = new File(parentDirectory, "genome.indices.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(path, result.getGenomeIndices());
 
-        float[][] distL1 = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
+        float[][] dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
                 RobustManhattanDistance.SINGLETON);
         path = new File(parentDirectory, "slice.l1.distance.matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path, distL1);
+        MatrixTools.saveMatrixTextNumpy(path, dist);
+
+        dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
+                RobustEuclideanDistance.SINGLETON);
+        path = new File(parentDirectory, "slice.l2.distance.matrix.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path, dist);
+
+        dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
+                RobustCosineSimilarity.SINGLETON);
+        path = new File(parentDirectory, "slice.cosine.distance.matrix.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path, dist);
+
+        dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
+                RobustCorrelationSimilarity.SINGLETON);
+        path = new File(parentDirectory, "slice.corr.distance.matrix.npy").getAbsolutePath();
+        MatrixTools.saveMatrixTextNumpy(path, dist);
 
         System.out.println("\nDirect SLICE Compression complete");
     }

@@ -30,15 +30,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="calculate distance matrix directly">
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/impute/MatrixColImputer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mixer/utils/impute/UmapTransform.java" afterDir="false" />
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/SmartTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/SmartTools.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/DirectSlice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/DirectSlice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/SimilarityMatrixTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/impute/CentroidImputer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/impute/CentroidImputer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/impute/MatrixImputer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/impute/MatrixImputer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -326,14 +322,8 @@
       <workItem from="1668675875084" duration="1185000" />
       <workItem from="1668891730057" duration="426000" />
       <workItem from="1669085789210" duration="1846000" />
-      <workItem from="1669403666972" duration="22746000" />
-    </task>
-    <task id="LOCAL-00297" summary="set defaults, save inter with norm2, bug fix">
-      <created>1667135751367</created>
-      <option name="number" value="00297" />
-      <option name="presentableId" value="LOCAL-00297" />
-      <option name="project" value="LOCAL" />
-      <updated>1667135751367</updated>
+      <workItem from="1669403666972" duration="22933000" />
+      <workItem from="1669526463672" duration="1356000" />
     </task>
     <task id="LOCAL-00298" summary="prevent infinite loop">
       <created>1667135986928</created>
@@ -671,7 +661,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669502629966</updated>
     </task>
-    <option name="localTasksCounter" value="346" />
+    <task id="LOCAL-00346" summary="calculate distance matrix directly">
+      <created>1669516300983</created>
+      <option name="number" value="00346" />
+      <option name="presentableId" value="LOCAL-00346" />
+      <option name="project" value="LOCAL" />
+      <updated>1669516300983</updated>
+    </task>
+    <option name="localTasksCounter" value="347" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -695,7 +692,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fix" />
     <MESSAGE value="restructure for ARI" />
     <MESSAGE value="add ARI calculation" />
     <MESSAGE value="update error handling" />
@@ -720,7 +716,8 @@
     <MESSAGE value="bug fixes, get genome indices, code cleanup" />
     <MESSAGE value="code cleanup, simplify classes" />
     <MESSAGE value="add imputation module" />
-    <option name="LAST_COMMIT_MESSAGE" value="add imputation module" />
+    <MESSAGE value="calculate distance matrix directly" />
+    <option name="LAST_COMMIT_MESSAGE" value="calculate distance matrix directly" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
