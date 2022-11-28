@@ -107,7 +107,7 @@ public class SimilarityMatrixTools {
 
     public static float[][] getSymmetricDistanceMatrix(float[][] matrix, SimilarityMetric metric) {
         float[][] result = new float[matrix.length][matrix.length]; // *2
-        System.out.println(" .. ");
+        System.out.println(" .Getting Distance Matrix. ");
         AtomicInteger currRowIndex = new AtomicInteger(0);
         ParallelizationTools.launchParallelizedCode(() -> {
             int i = currRowIndex.getAndIncrement();

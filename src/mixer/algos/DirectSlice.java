@@ -45,7 +45,10 @@ import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.TranslocationSet;
 
-import java.io.File;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * experimental code
@@ -53,9 +56,6 @@ import java.io.File;
  * Created by muhammadsaadshamim on 9/14/15.
  */
 public class DirectSlice extends MixerCLT {
-
-    public static final int INTRA_SCALE_INDEX = 0;
-    public static final int INTER_SCALE_INDEX = 1;
     private int resolution = 100000;
     private Dataset ds;
     private ChromosomeHandler handler;
@@ -88,6 +88,34 @@ public class DirectSlice extends MixerCLT {
         parentDirectory = HiCFileTools.createValidDirectory(args[3]);
     }
 
+    public static void saveMatrixText(String filename, float[][] matrix) {
+        Writer writer = null;
+
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(Paths.get(filename)), StandardCharsets.UTF_8));
+            for (float[] row : matrix) {
+                for (int k = 0; k < row.length; k++) {
+                    writer.write("" + row[k]);
+                    if (k == row.length - 1) {
+                        writer.write("\n");
+                    } else {
+                        writer.write(" ");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void run() {
         Chromosome[] chromosomes = handler.getAutosomalChromosomesArray();
@@ -109,29 +137,43 @@ public class DirectSlice extends MixerCLT {
         String path = new File(parentDirectory, "slice.matrix.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(path, result.matrix);
 
+        System.out.print("matrix size " + result.matrix.length + " x ");
+        System.out.println(result.matrix[0].length);
+
         path = new File(parentDirectory, "genome.indices.npy").getAbsolutePath();
         MatrixTools.saveMatrixTextNumpy(path, result.getGenomeIndices());
 
+        System.out.print("indices size " + result.getGenomeIndices().length + " x ");
+        System.out.println(result.getGenomeIndices()[0].length);
+
         float[][] dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
                 RobustManhattanDistance.SINGLETON);
-        path = new File(parentDirectory, "slice.l1.distance.matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path, dist);
+        export("slice.l1.distance.matrix", dist);
 
         dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
                 RobustEuclideanDistance.SINGLETON);
-        path = new File(parentDirectory, "slice.l2.distance.matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path, dist);
+        export("slice.l2.distance.matrix", dist);
 
         dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
                 RobustCosineSimilarity.SINGLETON);
-        path = new File(parentDirectory, "slice.cosine.distance.matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path, dist);
+        export("slice.cosine.distance.matrix", dist);
 
         dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
                 RobustCorrelationSimilarity.SINGLETON);
-        path = new File(parentDirectory, "slice.corr.distance.matrix.npy").getAbsolutePath();
-        MatrixTools.saveMatrixTextNumpy(path, dist);
+        export("slice.corr.distance.matrix", dist);
 
         System.out.println("\nDirect SLICE Compression complete");
+    }
+
+    private void export(String name, float[][] dist) {
+        long matrixSize = dist.length;
+        matrixSize *= dist.length;
+        if (matrixSize < Integer.MAX_VALUE && matrixSize > 0) {
+            String path = new File(parentDirectory, name + ".npy").getAbsolutePath();
+            MatrixTools.saveMatrixTextNumpy(path, dist);
+        } else {
+            String path = new File(parentDirectory, name + ".txt").getAbsolutePath();
+            saveMatrixText(path, dist);
+        }
     }
 }
