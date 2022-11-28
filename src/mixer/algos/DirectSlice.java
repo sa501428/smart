@@ -38,9 +38,6 @@ import mixer.utils.BedTools;
 import mixer.utils.cleaning.SimilarityMatrixTools;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.drive.*;
-import mixer.utils.similaritymeasures.RobustCorrelationSimilarity;
-import mixer.utils.similaritymeasures.RobustCosineSimilarity;
-import mixer.utils.similaritymeasures.RobustEuclideanDistance;
 import mixer.utils.similaritymeasures.RobustManhattanDistance;
 import mixer.utils.tracks.SubcompartmentInterval;
 import mixer.utils.translocations.TranslocationSet;
@@ -150,6 +147,7 @@ public class DirectSlice extends MixerCLT {
                 RobustManhattanDistance.SINGLETON);
         export("slice.l1.distance.matrix", dist);
 
+        /*
         dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
                 RobustEuclideanDistance.SINGLETON);
         export("slice.l2.distance.matrix", dist);
@@ -161,6 +159,7 @@ public class DirectSlice extends MixerCLT {
         dist = SimilarityMatrixTools.getSymmetricDistanceMatrix(result.matrix,
                 RobustCorrelationSimilarity.SINGLETON);
         export("slice.corr.distance.matrix", dist);
+        */
 
         System.out.println("\nDirect SLICE Compression complete");
     }

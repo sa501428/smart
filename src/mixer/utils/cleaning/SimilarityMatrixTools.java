@@ -116,7 +116,7 @@ public class SimilarityMatrixTools {
                     result[i][j] = metric.distance(matrix[i], matrix[j]);
                     result[j][i] = result[i][j];
                 }
-                System.out.print(".");
+                if (i % 100 == 0) System.out.print(".");
                 i = currRowIndex.getAndIncrement();
             }
         });
