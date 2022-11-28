@@ -59,7 +59,10 @@ public class BedFileMappings extends BinMappings {
                                          int counter, int resolution) {
         for (Integer pos : posToID.keySet()) {
             int id = posToID.get(pos);
-            binToProtocluster[pos / resolution] = id + counter;
+            int pos2 = pos / resolution;
+            if (pos2 < binToProtocluster.length) {
+                binToProtocluster[pos2] = id + counter;
+            }
         }
     }
 }

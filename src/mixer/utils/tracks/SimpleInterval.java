@@ -36,11 +36,11 @@ public class SimpleInterval extends Feature1D implements Comparable<SimpleInterv
     private final Integer chrIndex;
 
 
-    public SimpleInterval(int chrIndex, String chrName, int x1, int x2) {
+    public SimpleInterval(int chrIndex, String chrName, int x1, int x2, int maxX) {
         this.chrIndex = chrIndex;
         this.chrName = chrName;
         this.x1 = x1;
-        this.x2 = x2;
+        this.x2 = Math.min(x2, maxX);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SimpleInterval extends Feature1D implements Comparable<SimpleInterv
 
     @Override
     public Feature1D deepClone() {
-        return new SimpleInterval(chrIndex, chrName, x1, x2);
+        return new SimpleInterval(chrIndex, chrName, x1, x2, x2);
     }
 
     @Override

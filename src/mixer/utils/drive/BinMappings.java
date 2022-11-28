@@ -192,7 +192,7 @@ public class BinMappings implements Mappings {
                     int coord = globalIndices[i];
                     int x1 = i * resolution;
                     int x2 = Math.min(x1 + resolution, maxGenomeLen);
-                    SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, -1);
+                    SubcompartmentInterval newRInterval = new SubcompartmentInterval(chromosome, x1, x2, -1, maxGenomeLen);
                     map.put(coord, newRInterval);
                 }
             }

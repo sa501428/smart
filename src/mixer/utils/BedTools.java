@@ -95,8 +95,9 @@ public class BedTools {
                     errorCount++;
                     continue;
                 }
+                int maxLen = (int) chrom.getLength();
 
-                anchors.add(new SubcompartmentInterval(chrom, start1, end1, val, id));
+                anchors.add(new SubcompartmentInterval(chrom, start1, end1, val, id, maxLen));
             } else {
                 System.out.println("Skipping line: " + nextLine);
             }
