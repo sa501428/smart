@@ -25,6 +25,7 @@
 package mixer.utils.tracks;
 
 import javastraw.feature1D.GenomeWide1DList;
+import mixer.SmartTools;
 
 import java.util.Arrays;
 
@@ -35,8 +36,10 @@ public class ARITools {
     public static double getARI(GenomeWide1DList<SubcompartmentInterval> file1, GenomeWide1DList<SubcompartmentInterval> file2) {
         int[][] summary = populateSummary(file1, file2);
 
-        for (int[] row : summary) {
-            System.out.println(Arrays.toString(row));
+        if (SmartTools.printVerboseComments) {
+            for (int[] row : summary) {
+                System.out.println(Arrays.toString(row));
+            }
         }
 
         int[] rowsSums = sumRows(summary);

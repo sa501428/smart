@@ -77,4 +77,22 @@ public class InternalShuffle {
 
         return bestClusterings;
     }
+
+    public static Map<Integer, GenomeWide1DList<SubcompartmentInterval>> getDefault(Map<Integer, List<String>> allBedFiles,
+                                                                                    int resolution,
+                                                                                    ChromosomeHandler handler) {
+
+        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings = new HashMap<>();
+        for (int k : allBedFiles.keySet()) {
+            List<String> bedFiles = allBedFiles.get(k);
+            if (bedFiles.size() > 1) {
+                System.err.println("too many bed files created - internal warning");
+            }
+            GenomeWide1DList<SubcompartmentInterval> bestClustering = BedTools.loadBedFileAtResolution(handler,
+                    bedFiles.get(0), resolution);
+            SliceUtils.collapseGWList(bestClustering);
+            bestClusterings.put(k, bestClustering);
+        }
+        return bestClusterings;
+    }
 }

@@ -44,13 +44,15 @@ public class ClusteringMagic {
     protected final Random generator = new Random(2352);
     protected final FinalMatrix matrix;
     protected final ChromosomeHandler handler;
+    protected final boolean onlyDoKmedians;
 
     public ClusteringMagic(FinalMatrix matrix, File outputDirectory,
-                           ChromosomeHandler handler, long seed) {
+                           ChromosomeHandler handler, long seed, boolean onlyDoKmedians) {
         this.matrix = matrix;
         this.handler = handler;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
+        this.onlyDoKmedians = onlyDoKmedians;
     }
 
     public static String getOutputName(String prefix, boolean useKMedians, int k) {
@@ -67,9 +69,11 @@ public class ClusteringMagic {
             }
         }
 
-        System.out.println("Genome-wide KMeans clustering");
-        // todo matrix.inPlaceScaleSqrtWeightCol();
-        runClusteringOnMatrix(prefix, false, bedFiles);
+        if (!onlyDoKmedians) {
+            System.out.println("Genome-wide KMeans clustering");
+            // todo matrix.inPlaceScaleSqrtWeightCol();
+            runClusteringOnMatrix(prefix, false, bedFiles);
+        }
 
         System.out.println("Genome-wide KMedians clustering");
         // todo matrix.inPlaceScaleSqrtWeightCol();

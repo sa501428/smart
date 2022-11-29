@@ -34,7 +34,7 @@ import java.io.File;
 
 public class ClusteringMagic2 extends ClusteringMagic {
     public ClusteringMagic2(FinalMatrix matrix, File outputDirectory, ChromosomeHandler handler, long seed) {
-        super(matrix, outputDirectory, handler, seed);
+        super(matrix, outputDirectory, handler, seed, false);
     }
 
 

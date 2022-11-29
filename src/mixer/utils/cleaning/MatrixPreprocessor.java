@@ -32,11 +32,17 @@ public class MatrixPreprocessor {
 
     private static final int ZSCORE_LIMIT = 3;
 
-    public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes) {
+    public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes,
+                                         boolean doPostNorm, boolean appendIntra) {
+
         matrix.updateWeights(chromosomes);
-        matrix.divideColumnsByWeights();
+        if (doPostNorm) {
+            matrix.doSimpleVCNorm();
+        } else {
+            matrix.divideColumnsByWeights();
+        }
         matrix.zscoreByCols(ZSCORE_LIMIT);
-        FinalMatrix result = matrix.getFinalMatrix(true);
+        FinalMatrix result = matrix.getFinalMatrix(appendIntra); //include intra
         result.removeAllNanRows();
         return result;
     }

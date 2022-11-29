@@ -29,6 +29,7 @@ import javastraw.reader.Dataset;
 import javastraw.reader.basics.Chromosome;
 import javastraw.reader.basics.ChromosomeHandler;
 import javastraw.reader.norm.NormalizationPicker;
+import javastraw.reader.type.NormalizationHandler;
 import javastraw.reader.type.NormalizationType;
 import javastraw.tools.HiCFileTools;
 import javastraw.tools.UNIXTools;
@@ -65,11 +66,14 @@ public class Slice extends MixerCLT {
     private Dataset ds;
     private File parentDirectory;
     private NormalizationType[] norms;
-    boolean useExpandedIntraOE = true;
+    boolean useExpandedIntraOE = true, appendIntra = true;
+    private boolean doPostNorm = false;
+    private NormalizationType internalShuffleNorm = NormalizationHandler.INTER_VC;
+    private boolean skipCheck = false;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
-        super("slice [-r resolution] [--verbose] [-k INTRA_NORM,INTER_NORM] " +
+        super("slice [-r resolution] [--post-norm] [--skip-check] [--verbose] [-k INTRA_NORM,INTER_NORM] " +
                 "<file.hic> <K0,KF> <outfolder>\n" +
                 "   K0 - minimum number of clusters\n" +
                 "   KF - maximum number of clusters");
@@ -99,6 +103,12 @@ public class Slice extends MixerCLT {
 
         parentDirectory = HiCFileTools.createValidDirectory(args[3]);
         norms = populateNormalizations(ds, mixerParser);
+        internalShuffleNorm = norms[INTER_SCALE_INDEX];
+        skipCheck = mixerParser.getSkipCheckOption();
+        if (mixerParser.getPostNormOption()) {
+            doPostNorm = true;
+            norms[INTER_SCALE_INDEX] = NormalizationHandler.NONE;
+        }
         System.out.println("Using normalizations: " + norms[INTRA_SCALE_INDEX].getLabel() + " and " + norms[INTER_SCALE_INDEX].getLabel());
 
         updateGeneratorSeed(mixerParser, generator);
@@ -139,8 +149,15 @@ public class Slice extends MixerCLT {
         Map<Integer, List<String>> bedFiles = new HashMap<>();
         runWithSettings(slice0, handler, chromosomes, tempOutputDirectory, bedFiles);
 
-        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings = InternalShuffle.determineBest(bedFiles, resolution,
-                handler, ds, norms[INTER_SCALE_INDEX]);
+        Map<Integer, GenomeWide1DList<SubcompartmentInterval>> bestClusterings;
+        if (skipCheck) {
+            bestClusterings = InternalShuffle.getDefault(bedFiles, resolution,
+                    handler);
+        } else {
+            bestClusterings = InternalShuffle.determineBest(bedFiles, resolution,
+                    handler, ds, internalShuffleNorm);
+        }
+
         for (int k : bestClusterings.keySet()) {
             File outBedFile = new File(parentDirectory, "SLICE_k" + k + "_best_clusters.bed"); // "_wcss" + wcss +
             bestClusterings.get(k).simpleExport(outBedFile);
@@ -151,13 +168,15 @@ public class Slice extends MixerCLT {
     private void runWithSettings(MatrixAndWeight slice0, ChromosomeHandler handler, Chromosome[] chromosomes,
                                  File tempOutputDirectory, Map<Integer, List<String>> bedFiles) {
         String stem = "SLICE";
-        FinalMatrix slice = MatrixPreprocessor.preprocess(slice0.deepCopy(), chromosomes);
+        FinalMatrix slice = MatrixPreprocessor.preprocess(slice0, chromosomes, doPostNorm,
+                appendIntra); // slice0.deepCopy()
 
         if (slice.notEmpty()) {
             if (SmartTools.printVerboseComments) {
                 slice.export(tempOutputDirectory, stem);
             }
-            ClusteringMagic clustering = new ClusteringMagic(slice, tempOutputDirectory, handler, generator.nextLong());
+            ClusteringMagic clustering = new ClusteringMagic(slice, tempOutputDirectory,
+                    handler, generator.nextLong(), skipCheck);
             clustering.extractFinalGWSubcompartments(stem, bedFiles);
         }
     }
