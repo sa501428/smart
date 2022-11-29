@@ -30,16 +30,16 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="support post norm and skip check options">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/algos/DirectSlice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/DirectSlice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/refinement/InternalShuffle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/refinement/InternalShuffle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/tracks/ARITools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/ARITools.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -329,14 +329,7 @@
       <workItem from="1669085789210" duration="1846000" />
       <workItem from="1669403666972" duration="22933000" />
       <workItem from="1669526463672" duration="5545000" />
-      <workItem from="1669679986090" duration="2171000" />
-    </task>
-    <task id="LOCAL-00302" summary="cleanup">
-      <created>1667230016870</created>
-      <option name="number" value="00302" />
-      <option name="presentableId" value="LOCAL-00302" />
-      <option name="project" value="LOCAL" />
-      <updated>1667230016870</updated>
+      <workItem from="1669679986090" duration="8700000" />
     </task>
     <task id="LOCAL-00303" summary="initial commit of shuffle code">
       <created>1667232267653</created>
@@ -674,7 +667,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669618900981</updated>
     </task>
-    <option name="localTasksCounter" value="351" />
+    <task id="LOCAL-00351" summary="support post norm and skip check options">
+      <created>1669728279341</created>
+      <option name="number" value="00351" />
+      <option name="presentableId" value="LOCAL-00351" />
+      <option name="project" value="LOCAL" />
+      <updated>1669728279342</updated>
+    </task>
+    <option name="localTasksCounter" value="352" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -698,7 +698,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="bug fix for overflow" />
     <MESSAGE value="allow for approximate median" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="update kmedians jar" />
@@ -723,7 +722,8 @@
     <MESSAGE value="exporting of very large matrices" />
     <MESSAGE value="bug fix for genome length" />
     <MESSAGE value="restore original distance check" />
-    <option name="LAST_COMMIT_MESSAGE" value="restore original distance check" />
+    <MESSAGE value="support post norm and skip check options" />
+    <option name="LAST_COMMIT_MESSAGE" value="support post norm and skip check options" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

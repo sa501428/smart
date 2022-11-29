@@ -50,7 +50,11 @@ public class MatrixBuilder {
         int numCols = mappings.getNumCols();
         int[] weights = new int[numCols];
         float[][] inter = new float[numRows][numCols];
-        float[][] intra = new float[numRows][numCols];
+        float[][] intra = null;
+        if (fillInIntraMatrix) {
+            intra = new float[numRows][numCols];
+        }
+
         float[][] counts = new float[numRows][numCols];
 
         System.out.println(".");
@@ -73,7 +77,9 @@ public class MatrixBuilder {
                         }
                     }
                 } else {
-                    fillInNans(intra, mappings, chromosomes[i], chromosomes[j]);
+                    if (fillInIntraMatrix) {
+                        fillInNans(intra, mappings, chromosomes[i], chromosomes[j]);
+                    }
                     if (translocations.contains(chromosomes[i], chromosomes[j])) {
                         fillInNans(inter, mappings, chromosomes[i], chromosomes[j]);
                         continue;

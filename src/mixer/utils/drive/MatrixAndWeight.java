@@ -61,7 +61,11 @@ public class MatrixAndWeight {
     }
 
     public MatrixAndWeight deepCopy() {
-        return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(intra),
+        if (intra != null && intra.length > 0) {
+            return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), FloatMatrixTools.deepClone(intra),
+                    FloatMatrixTools.deepClone(weights), mappings.deepCopy());
+        }
+        return new MatrixAndWeight(FloatMatrixTools.deepClone(matrix), null,
                 FloatMatrixTools.deepClone(weights), mappings.deepCopy());
     }
 
@@ -70,7 +74,7 @@ public class MatrixAndWeight {
     }
 
     public FinalMatrix getFinalMatrix(boolean includeIntra) {
-        if (includeIntra) {
+        if (includeIntra && intra != null) {
             return new FinalMatrix(FloatMatrixTools.concatenate(matrix, intra),
                     FloatMatrixTools.concatenate(weights, weights),
                     mappings);

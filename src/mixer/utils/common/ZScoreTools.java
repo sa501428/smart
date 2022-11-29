@@ -45,10 +45,7 @@ public class ZScoreTools {
             int i = index.getAndIncrement();
             while (i < matrix.length) {
                 for (int j = 0; j < matrix[i].length; j++) {
-                    float val = matrix[i][j];
-                    if (!Float.isNaN(val)) {
-                        matrix[i][j] = (float) (Math.sqrt(weights[j]) * val);
-                    }
+                    matrix[i][j] = (float) (Math.sqrt(weights[j]) * matrix[i][j]);
                 }
                 i = index.getAndIncrement();
             }

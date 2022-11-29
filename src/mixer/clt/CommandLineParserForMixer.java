@@ -53,6 +53,8 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option postNormOption = addBooleanOption("post-norm");
     private final Option skipCheckOption = addBooleanOption("skip-check");
     private final Option windowOption = addIntegerOption('w', "window");
+    private final Option skipIntraOption = addBooleanOption("skip-intra");
+
 
     public CommandLineParserForMixer() {
     }
@@ -186,5 +188,9 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public int getWindowSizeOption(int defaultNum) {
         return optionToInt(windowOption, defaultNum);
+    }
+
+    public boolean getSkipIntraOption() {
+        return optionToBoolean(skipIntraOption);
     }
 }

@@ -25,6 +25,7 @@
 package mixer.utils.cleaning;
 
 import javastraw.reader.basics.Chromosome;
+import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.drive.FinalMatrix;
 import mixer.utils.drive.MatrixAndWeight;
 
@@ -33,14 +34,17 @@ public class MatrixPreprocessor {
     private static final int ZSCORE_LIMIT = 3;
 
     public static FinalMatrix preprocess(MatrixAndWeight matrix, Chromosome[] chromosomes,
-                                         boolean doPostNorm, boolean appendIntra) {
-
+                                         boolean doPostNorm, boolean appendIntra, boolean doLog) {
         matrix.updateWeights(chromosomes);
         if (doPostNorm) {
             matrix.doSimpleVCNorm();
         } else {
             matrix.divideColumnsByWeights();
         }
+        if (doLog) {
+            FloatMatrixTools.log(matrix.matrix, 1);
+        }
+
         matrix.zscoreByCols(ZSCORE_LIMIT);
         FinalMatrix result = matrix.getFinalMatrix(appendIntra); //include intra
         result.removeAllNanRows();

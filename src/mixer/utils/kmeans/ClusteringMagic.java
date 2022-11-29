@@ -39,20 +39,18 @@ import java.util.Random;
 public class ClusteringMagic {
     public static int startingClusterSizeK = 2;
     public static int numClusterSizeKValsUsed = 10;
-    protected static final int maxIters = 500;
+    protected static final int maxIters = 200;
     protected final File outputDirectory;
     protected final Random generator = new Random(2352);
     protected final FinalMatrix matrix;
     protected final ChromosomeHandler handler;
-    protected final boolean onlyDoKmedians;
 
     public ClusteringMagic(FinalMatrix matrix, File outputDirectory,
-                           ChromosomeHandler handler, long seed, boolean onlyDoKmedians) {
+                           ChromosomeHandler handler, long seed) {
         this.matrix = matrix;
         this.handler = handler;
         this.outputDirectory = outputDirectory;
         generator.setSeed(seed);
-        this.onlyDoKmedians = onlyDoKmedians;
     }
 
     public static String getOutputName(String prefix, boolean useKMedians, int k) {
@@ -61,7 +59,8 @@ public class ClusteringMagic {
         return prefix + "_" + kstem + "_k" + k + "_clusters.bed";
     }
 
-    public void extractFinalGWSubcompartments(String prefix, Map<Integer, List<String>> bedFiles) {
+    public void extractFinalGWSubcompartments(String prefix, Map<Integer, List<String>> bedFiles,
+                                              boolean scaleColWeights) {
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             int numClusters = z + startingClusterSizeK;
             if (!bedFiles.containsKey(numClusters)) {
@@ -69,14 +68,16 @@ public class ClusteringMagic {
             }
         }
 
-        if (!onlyDoKmedians) {
-            System.out.println("Genome-wide KMeans clustering");
-            // todo matrix.inPlaceScaleSqrtWeightCol();
-            runClusteringOnMatrix(prefix, false, bedFiles);
+        if (scaleColWeights) {
+            matrix.inPlaceScaleSqrtWeightCol();
         }
+        System.out.println("Genome-wide KMeans clustering");
+        runClusteringOnMatrix(prefix, false, bedFiles);
 
+        if (scaleColWeights) {
+            matrix.inPlaceScaleSqrtWeightCol();
+        }
         System.out.println("Genome-wide KMedians clustering");
-        // todo matrix.inPlaceScaleSqrtWeightCol();
         runClusteringOnMatrix(prefix, true, bedFiles);
     }
 
@@ -108,6 +109,7 @@ public class ClusteringMagic {
                 attempts++;
             }
         }
+        SliceUtils.collapseGWList(bestClusters);
         exportKMeansClusteringResults(z, prefix, useKMedians, bestClusters, outputs);
     }
 
