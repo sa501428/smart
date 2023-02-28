@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2023 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,6 +54,7 @@ public class CommandLineParserForMixer extends CmdLineParser {
     private final Option skipCheckOption = addBooleanOption("skip-check");
     private final Option windowOption = addIntegerOption('w', "window");
     private final Option skipIntraOption = addBooleanOption("skip-intra");
+    private final Option includeEigenvectorOption = addBooleanOption("eig");
 
 
     public CommandLineParserForMixer() {
@@ -192,5 +193,9 @@ public class CommandLineParserForMixer extends CmdLineParser {
 
     public boolean getSkipIntraOption() {
         return optionToBoolean(skipIntraOption);
+    }
+
+    public boolean getIncludeEigenvectorOption() {
+        return optionToBoolean(includeEigenvectorOption);
     }
 }

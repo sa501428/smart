@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2023 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,14 +67,30 @@ public class Slice extends MixerCLT {
     private File parentDirectory;
     private NormalizationType[] norms;
     boolean useExpandedIntraOE = true;
+    boolean includeEigenvector = false;
 
     // subcompartment landscape identification via compressing enrichments
     public Slice() {
-        super("slice [-r resolution] [--post-norm] [--skip-check] [--verbose] [-k INTRA_NORM,INTER_NORM] " +
+        super("slice [--eig] [-r resolution] [--post-norm] [--skip-check] [--verbose] [-k INTRA_NORM,INTER_NORM] " +
                 "<file.hic> <K0,KF> <outfolder>\n" +
                 "   K0 - minimum number of clusters\n" +
                 "   KF - maximum number of clusters");
         //"<-k NONE/VC/VC_SQRT/KR/SCALE> [--compare reference.bed] [--has-translocation] " +
+    }
+
+    public static NormalizationType[] populateNormalizations(Dataset ds, CommandLineParserForMixer parser) {
+
+        NormalizationType[] potentialNorms = parser.getTwoNormsTypeOption(ds.getNormalizationHandler());
+        if (potentialNorms != null && potentialNorms.length == 2) {
+            if (potentialNorms[0] != null && potentialNorms[1] != null) {
+                return potentialNorms;
+            }
+        }
+
+        NormalizationType[] norms = new NormalizationType[2];
+        norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR", "VC"});
+        norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR", "INTER_VC", "VC"});
+        return norms;
     }
 
     @Override
@@ -84,6 +100,7 @@ public class Slice extends MixerCLT {
         }
 
         resolution = updateResolution(mixerParser, resolution);
+        includeEigenvector = mixerParser.getIncludeEigenvectorOption();
         ds = HiCFileTools.extractDatasetForCLT(args[1], true, false, resolution > 100);
 
         if (resolution < 25000) {
@@ -104,21 +121,6 @@ public class Slice extends MixerCLT {
         updateGeneratorSeed(mixerParser, generator);
     }
 
-    public static NormalizationType[] populateNormalizations(Dataset ds, CommandLineParserForMixer parser) {
-
-        NormalizationType[] potentialNorms = parser.getTwoNormsTypeOption(ds.getNormalizationHandler());
-        if (potentialNorms != null && potentialNorms.length == 2) {
-            if (potentialNorms[0] != null && potentialNorms[1] != null) {
-                return potentialNorms;
-            }
-        }
-
-        NormalizationType[] norms = new NormalizationType[2];
-        norms[INTRA_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"SCALE", "KR", "VC"});
-        norms[INTER_SCALE_INDEX] = NormalizationPicker.getFirstValidNormInThisOrder(ds, new String[]{"INTER_SCALE", "INTER_KR", "INTER_VC"});
-        return norms;
-    }
-
     @Override
     public void run() {
         ChromosomeHandler handler = ds.getChromosomeHandler();
@@ -134,8 +136,12 @@ public class Slice extends MixerCLT {
                 useExpandedIntraOE);
 
         System.out.println("Building pre-normed matrix");
-        MatrixAndWeight sliceNORMED = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
-                norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, true);
+        MatrixAndWeight sliceNORMED = null;
+        if (norms[INTER_SCALE_INDEX].getLabel().equalsIgnoreCase("VC")) {
+            // skip the inter-scale normalization
+            sliceNORMED = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
+                    norms[INTER_SCALE_INDEX], norms[INTRA_SCALE_INDEX], mappings, translocations, true);
+        }
 
         System.out.println("Building post-normed matrix");
         MatrixAndWeight sliceRAW = MatrixBuilder.populateMatrix(ds, chromosomes, resolution,
@@ -152,7 +158,7 @@ public class Slice extends MixerCLT {
                         if (usePostNorm) {
                             runWithSettings(sliceRAW, handler, chromosomes, tempOutputDirectory, bedFiles,
                                     true, scaleColWeights, doLog, appendIntra);
-                        } else {
+                        } else if (sliceNORMED != null) {
                             runWithSettings(sliceNORMED, handler, chromosomes, tempOutputDirectory, bedFiles,
                                     false, scaleColWeights, doLog, appendIntra);
                         }
@@ -186,7 +192,7 @@ public class Slice extends MixerCLT {
             }
             ClusteringMagic clustering = new ClusteringMagic(slice, tempOutputDirectory,
                     handler, generator.nextLong());
-            clustering.extractFinalGWSubcompartments(stem, bedFiles, scaleColWeights);
+            clustering.extractFinalGWSubcompartments(stem, bedFiles, scaleColWeights, includeEigenvector);
         }
     }
 

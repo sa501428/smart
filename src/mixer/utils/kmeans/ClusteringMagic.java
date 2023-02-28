@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2023 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package mixer.utils.kmeans;
 import javastraw.feature1D.GenomeWide1DList;
 import javastraw.reader.basics.ChromosomeHandler;
 import mixer.utils.drive.FinalMatrix;
+import mixer.utils.eig.EigenvectorTools;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 
@@ -60,7 +61,7 @@ public class ClusteringMagic {
     }
 
     public void extractFinalGWSubcompartments(String prefix, Map<Integer, List<String>> bedFiles,
-                                              boolean scaleColWeights) {
+                                              boolean scaleColWeights, boolean doEigenvector) {
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
             int numClusters = z + startingClusterSizeK;
             if (!bedFiles.containsKey(numClusters)) {
@@ -74,14 +75,22 @@ public class ClusteringMagic {
         System.out.println("Genome-wide KMeans clustering");
         runClusteringOnMatrix(prefix, false, bedFiles);
 
+        if (doEigenvector) {
+            EigenvectorTools.runEigenvectorAnalysis(prefix, bedFiles, handler, matrix);
+        }
+
         if (scaleColWeights) {
             matrix.inPlaceScaleSqrtWeightCol();
+            if (doEigenvector) {
+                EigenvectorTools.runEigenvectorAnalysis(prefix + "_S2", bedFiles, handler, matrix);
+            }
         }
         System.out.println("Genome-wide KMedians clustering");
         runClusteringOnMatrix(prefix, true, bedFiles);
     }
 
-    private void runClusteringOnMatrix(String prefix, boolean useKMedians, Map<Integer, List<String>> outputs) {
+    private void runClusteringOnMatrix(String prefix, boolean useKMedians,
+                                       Map<Integer, List<String>> outputs) {
         GenomeWideKmeansRunner kmeansRunner = new GenomeWideKmeansRunner(handler, matrix,
                 false, useKMedians);
         for (int z = 0; z < numClusterSizeKValsUsed; z++) {
@@ -91,7 +100,8 @@ public class ClusteringMagic {
     }
 
     private void runKMeansMultipleTimes(GenomeWideKmeansRunner kmeansRunner,
-                                        int z, boolean useKMedians, String prefix, Map<Integer, List<String>> outputs) {
+                                        int z, boolean useKMedians, String prefix,
+                                        Map<Integer, List<String>> outputs) {
         int numClusters = z + startingClusterSizeK;
         double wcssLimit = Float.MAX_VALUE;
         GenomeWide1DList<SubcompartmentInterval> bestClusters = null;

@@ -30,16 +30,14 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="support post norm and skip check options">
+    <list default="true" id="6acb92ea-ffe9-4dfd-8d8d-f8ce0f27bdf3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/eig/EigenvectorTools.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mixer/utils/tracks/EigenvectorInterval.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/algos/Slice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/algos/Slice.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/clt/CommandLineParserForMixer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/cleaning/MatrixPreprocessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/common/ZScoreTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixAndWeight.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/MatrixBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mixer/utils/drive/FinalMatrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/drive/FinalMatrix.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mixer/utils/kmeans/ClusteringMagic2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,19 +82,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;extract.method.default.visibility&quot;: &quot;private&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/muhammad/IdeaProjects/smart/src/mixer/utils/cv&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "extract.method.default.visibility": "private",
+    "last_opened_file_path": "/Users/muhammad/IdeaProjects/smart/src/mixer/utils/cv",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="mixer.utils.impute" />
@@ -117,10 +116,10 @@
       <recent name="$PROJECT_DIR$/lib/general" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mixer.utils.tracks" />
       <recent name="mixer.algos" />
       <recent name="mixer.utils.matrix" />
       <recent name="mixer.utils.shuffle" />
-      <recent name="mixer.utils.tracks" />
       <recent name="mixer.utils.splitter" />
     </key>
   </component>
@@ -329,14 +328,9 @@
       <workItem from="1669085789210" duration="1846000" />
       <workItem from="1669403666972" duration="22933000" />
       <workItem from="1669526463672" duration="5545000" />
-      <workItem from="1669679986090" duration="8700000" />
-    </task>
-    <task id="LOCAL-00303" summary="initial commit of shuffle code">
-      <created>1667232267653</created>
-      <option name="number" value="00303" />
-      <option name="presentableId" value="LOCAL-00303" />
-      <option name="project" value="LOCAL" />
-      <updated>1667232267653</updated>
+      <workItem from="1669679986090" duration="9818000" />
+      <workItem from="1669829825298" duration="19000" />
+      <workItem from="1677468087009" duration="10454000" />
     </task>
     <task id="LOCAL-00304" summary="update default runs">
       <created>1667233573135</created>
@@ -674,7 +668,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669728279342</updated>
     </task>
-    <option name="localTasksCounter" value="352" />
+    <task id="LOCAL-00352" summary="allow multiple runs of different types, pick the best clustering">
+      <created>1669762583714</created>
+      <option name="number" value="00352" />
+      <option name="presentableId" value="LOCAL-00352" />
+      <option name="project" value="LOCAL" />
+      <updated>1669762583714</updated>
+    </task>
+    <option name="localTasksCounter" value="353" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -698,7 +699,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="allow for approximate median" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="update kmedians jar" />
     <MESSAGE value="add coefficient of variance code" />
@@ -723,7 +723,8 @@
     <MESSAGE value="bug fix for genome length" />
     <MESSAGE value="restore original distance check" />
     <MESSAGE value="support post norm and skip check options" />
-    <option name="LAST_COMMIT_MESSAGE" value="support post norm and skip check options" />
+    <MESSAGE value="allow multiple runs of different types, pick the best clustering" />
+    <option name="LAST_COMMIT_MESSAGE" value="allow multiple runs of different types, pick the best clustering" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

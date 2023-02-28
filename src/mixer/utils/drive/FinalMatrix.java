@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2011-2022 Rice University, Baylor College of Medicine, Aiden Lab
+ * Copyright (c) 2011-2023 Rice University, Baylor College of Medicine, Aiden Lab
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import javastraw.tools.MatrixTools;
 import mixer.utils.cleaning.NaNRowCleaner;
 import mixer.utils.common.FloatMatrixTools;
 import mixer.utils.common.ZScoreTools;
+import mixer.utils.tracks.EigenvectorInterval;
 import mixer.utils.tracks.SliceUtils;
 import mixer.utils.tracks.SubcompartmentInterval;
 import robust.concurrent.kmeans.clustering.Cluster;
@@ -101,6 +102,24 @@ public class FinalMatrix {
         SliceUtils.reSort(subcompartments);
     }
 
+    public GenomeWide1DList<EigenvectorInterval> processEigenvectorResult(float[] evec, ChromosomeHandler handler) {
+
+        GenomeWide1DList<EigenvectorInterval> eig = new GenomeWide1DList<>(handler);
+        Set<EigenvectorInterval> subcompartmentIntervals = new HashSet<>();
+
+        for (int i = 0; i < evec.length; i++) {
+            if (map.containsKey(i)) {
+                SubcompartmentInterval interv = map.get(i);
+                if (interv != null) {
+                    subcompartmentIntervals.add(generateNewEigCompartment(interv, evec[i]));
+                }
+            }
+        }
+
+        eig.addAll(new ArrayList<>(subcompartmentIntervals));
+        return eig;
+    }
+
     public GenomeWide1DList<SubcompartmentInterval> getClusteringResult(int[] assignments, ChromosomeHandler handler) {
         GenomeWide1DList<SubcompartmentInterval> subcompartments = new GenomeWide1DList<>(handler);
 
@@ -120,6 +139,10 @@ public class FinalMatrix {
         subcompartments.addAll(new ArrayList<>(subcompartmentIntervals));
         SliceUtils.reSort(subcompartments);
         return subcompartments;
+    }
+
+    protected EigenvectorInterval generateNewEigCompartment(SubcompartmentInterval interv, float val) {
+        return new EigenvectorInterval(interv, val);
     }
 
     protected SubcompartmentInterval generateNewSubcompartment(SubcompartmentInterval interv, int currentClusterID) {
